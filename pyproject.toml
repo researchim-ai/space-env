@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "space-env"
+version = "0.1.0"
+description = "Environment for generating pretraining/SFT/RL data for space industry agents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pydantic>=2.0",
+    "boinor>=0.18",
+    "gymnasium>=0.29",
+    "pandas>=2.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+# Отраслевые библиотеки (см. docs/INDUSTRY_LIBRARIES.md)
+sgp4 = ["sgp4>=2.20"]           # TLE/SGP4 — CelesTrak, Space-Track, NORAD
+astropy = ["astropy>=6.0"]      # Время, единицы, координаты
+spice = ["spiceypy>=4.0"]      # NASA SPICE — эфемериды, навигация
+ccsds = ["ccsdspy>=2.0", "spacepackets>=0.22"]  # CCSDS/ECSS — телеметрия и команды
+orekit = ["orekit-jpype>=13.0"] # OreKit — орбиты, время, пропагация (требует JDK 11+ или pip install ".[orekit-jdk]")
+orekit-jdk = ["orekit-jpype[jdk4py]>=13.0"]  # OreKit с подтягиванием JDK через jdk4py
+# pykep (ESA, GPL-3) — см. docs, ставится отдельно
+all-industry = [
+    "sgp4>=2.20",
+    "astropy>=6.0",
+    "spiceypy>=4.0",
+    "ccsdspy>=2.0",
+    "spacepackets>=0.22",
+    "orekit-jpype>=13.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/space_env"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

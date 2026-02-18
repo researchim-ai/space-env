@@ -1,0 +1,48 @@
+{"text": "Процедура при падении напряжения: зафиксировать телеметрию, перейти в safe mode, дождаться AOS следующего сеанса.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Процедура при падении напряжения: зафиксировать телеметрию, перейти в safe mode, дождаться AOS следующего сеанса.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Ограничение по Δv на операционный период: 63 м/с.", "meta": {"source": "template", "domain": "missions"}}
+{"text": "Цель миссии: выполнить не менее 7 съёмок и 4 сеансов связи за сутки.", "meta": {"source": "template", "domain": "missions"}}
+{"text": "Кеплеровы элементы задают орбиту однозначно: большая полуось a, эксцентриситет e, наклонение i, долгота восходящего узла Ω, аргумент перицентра ω, истинная аномалия ν.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "В режиме safe mode КА ориентируется на Солнце и отключает некритичные нагрузки.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Период обращения на орбите равен 93.0 минут.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "При входе в тень (eclipse) рекомендуется снизить потребление до минимума для сохранения заряда.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Период обращения на орбите равен 92.0 минут.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "Высота в перигее составляет 596 км, в апогее — 527 км.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "Процедура при падении напряжения: зафиксировать телеметрию, перейти в safe mode, дождаться AOS следующего сеанса.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Высота в перигее составляет 443 км, в апогее — 446 км.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2024-06-15T12:00:00Z — 40%.", "meta": {"source": "template", "domain": "spacecraft"}}
+{"text": "Высота в перигее составляет 420 км, в апогее — 550 км.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "Орбита КА EO-Sat имеет большую полуось 6759 км и наклонение 86.6°.", "meta": {"source": "template", "domain": "orbits"}}
+{"text": "В режиме safe mode КА ориентируется на Солнце и отключает некритичные нагрузки.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Оставшийся запас характеристической скорости (Δv) составляет 44 м/с.", "meta": {"source": "template", "domain": "spacecraft"}}
+{"text": "В режиме safe mode КА ориентируется на Солнце и отключает некритичные нагрузки.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Процедура при падении напряжения: зафиксировать телеметрию, перейти в safe mode, дождаться AOS следующего сеанса.", "meta": {"source": "template", "domain": "procedures"}}
+{"text": "Ограничение по Δv на операционный период: 57 м/с.", "meta": {"source": "template", "domain": "missions"}}
+{"text": "В 2023-12-31 12:00 UTC КА вошёл в тень Земли (eclipse).", "meta": {"source": "simulation", "domain": "events"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2023-12-31 12:10 UTC — 99%. Высота орбиты 422 км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+{"text": "В 2023-12-31 12:19 UTC КА вышел из тени, солнечные батареи в освещении.", "meta": {"source": "simulation", "domain": "events"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2023-12-31 12:20 UTC — 100%. Высота орбиты 422 км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+{"text": "В 2023-12-31 12:23 UTC КА вошёл в тень Земли (eclipse).", "meta": {"source": "simulation", "domain": "events"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2023-12-31 12:30 UTC — 99%. Высота орбиты 422 км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2023-12-31 12:40 UTC — 98%. Высота орбиты 422 км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+{"text": "Уровень заряда батареи (SoC) на момент 2023-12-31 12:49 UTC — 97%. Высота орбиты 422 км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+{"text": "За 0.8 ч симуляции выполнено 50 шагов пропагации орбиты и обновления подсистем.", "meta": {"source": "simulation", "domain": "missions"}}
+{"text": "AOS: Acquisition of Signal — момент установления связи с КА при появлении его над горизонтом станции.", "meta": {"source": "glossary", "term": "AOS"}}
+{"text": "LOS: Loss of Signal — момент потери связи при уходе КА за горизонт.", "meta": {"source": "glossary", "term": "LOS"}}
+{"text": "eclipse: Период нахождения КА в тени Земли (или другого тела), когда солнечные батареи не вырабатывают энергию.", "meta": {"source": "glossary", "term": "eclipse"}}
+{"text": "conjunction: Сближение двух объектов на орбите; при оценке риска столкновения говорят о conjunction assessment.", "meta": {"source": "glossary", "term": "conjunction"}}
+{"text": "safe mode: Режим сохранения КА при аномалии: минимум нагрузок, ориентация на Солнце, ожидание команд с Земли.", "meta": {"source": "glossary", "term": "safe mode"}}
+{"text": "TLE: Two-Line Element — двухстрочный набор кеплеровых элементов орбиты (NORAD), используется для пропагации SGP4.", "meta": {"source": "glossary", "term": "TLE"}}
+{"text": "delta_v: Характеристическая скорость, м/с; мера затрат топлива на манёвр (Δv).", "meta": {"source": "glossary", "term": "delta_v"}}
+{"text": "SoC: State of Charge — степень заряженности батареи (0–100%).", "meta": {"source": "glossary", "term": "SoC"}}
+{"text": "LEO: Low Earth Orbit — низкая околоземная орбита, типично 200–2000 км.", "meta": {"source": "glossary", "term": "LEO"}}
+{"text": "GEO: Geostationary Earth Orbit — геостационарная орбита (~35786 км), период 24 ч.", "meta": {"source": "glossary", "term": "GEO"}}
+{"text": "MEO: Medium Earth Orbit — средняя околоземная орбита (например, навигационные спутники).", "meta": {"source": "glossary", "term": "MEO"}}
+{"text": "pass: Сеанс связи — период видимости КА со станции от AOS до LOS.", "meta": {"source": "glossary", "term": "pass"}}
+{"text": "telemetry: Телеметрия — поток данных о состоянии КА (температура, напряжение, режимы).", "meta": {"source": "glossary", "term": "telemetry"}}
+{"text": "TC: Telecommand — команда, передаваемая с Земли на борт.", "meta": {"source": "glossary", "term": "TC"}}
+{"text": "TM: Telemetry — телеметрический кадр.", "meta": {"source": "glossary", "term": "TM"}}
+{"text": "apogee: Апогей — наиболее удалённая от Земли точка орбиты.", "meta": {"source": "glossary", "term": "apogee"}}
+{"text": "perigee: Перигей — ближайшая к Земли точка орбиты.", "meta": {"source": "glossary", "term": "perigee"}}
+{"text": "inclination: Наклонение орбиты — угол между плоскостью орбиты и плоскостью экватора, в градусах или радианах.", "meta": {"source": "glossary", "term": "inclination"}}
+{"text": "RAAN: Right Ascension of Ascending Node — долгота восходящего узла, один из кеплеровых элементов.", "meta": {"source": "glossary", "term": "RAAN"}}
