@@ -20,25 +20,37 @@ class SubsystemHealth(str, Enum):
 
 
 class PowerConfig(BaseModel):
-    """Конфиг подсистемы электропитания."""
-    solar_panel_area_m2: float = Field(ge=0, description="Площадь СБ, м²")
-    battery_capacity_Wh: float = Field(gt=0, description="Ёмкость батареи, Вт·ч")
-    consumption_nominal_W: float = Field(ge=0, description="Номинальное потребление, Вт")
-    consumption_peak_W: float = Field(ge=0, description="Пиковое потребление, Вт")
+    """
+    Опорный малый аппарат ~100 кг: около 1.2 м² тройного перехода, шина ~35 Вт, батарея ~280 Вт·ч.
+    Это порядок коммерческого EO-спутника, не паспорт конкретного борта.
+    """
+    solar_panel_area_m2: float = Field(default=1.2, ge=0, description="Площадь СБ, м²")
+    battery_capacity_Wh: float = Field(default=280.0, gt=0, description="Ёмкость батареи, Вт·ч")
+    consumption_nominal_W: float = Field(default=35.0, ge=0, description="Номинальное потребление, Вт")
+    consumption_peak_W: float = Field(default=90.0, ge=0, description="Пиковое потребление, Вт")
+    panel_efficiency: float = Field(default=0.30, ge=0, le=1, description="КПД фотопреобразователей")
 
 
 class ThermalConfig(BaseModel):
-    """Конфиг терморегулирования (упрощённо)."""
+    """Одноузловая термика: теплоёмкость, излучение, нагреватели."""
     temp_min_C: float = Field(default=-20.0, description="Минимальная рабочая температура, °C")
     temp_max_C: float = Field(default=50.0, description="Максимальная рабочая температура, °C")
-    heater_power_W: float = Field(ge=0, default=0, description="Мощность нагревателей, Вт")
+    heater_power_W: float = Field(ge=0, default=40.0, description="Мощность нагревателей, Вт")
+    heat_capacity_J_K: float = Field(default=90_000.0, gt=0, description="Теплоёмкость узла, Дж/К")
+    radiating_area_m2: float = Field(default=1.0, ge=0, description="Площадь излучения, м²")
+    projected_area_m2: float = Field(default=0.40, ge=0, description="Проекция, принимающая Солнце, м²")
+    earth_facing_area_m2: float = Field(default=0.35, ge=0, description="Площадь, смотрящая на Землю, м²")
+    absorptivity: float = Field(default=0.40, ge=0, le=1)
+    emissivity: float = Field(default=0.80, ge=0, le=1)
 
 
 class PropulsionConfig(BaseModel):
     """Конфиг ДУ."""
-    delta_v_total_m_s: float = Field(ge=0, description="Суммарный доступный Δv, м/с")
+    delta_v_total_m_s: float = Field(default=80.0, ge=0, description="Суммарный доступный Δv, м/с")
     thrust_N: float = Field(ge=0, default=0, description="Тяга, Н")
-    mass_kg: float = Field(gt=0, description="Масса КА, кг")
+    mass_kg: float = Field(default=100.0, gt=0, description="Масса КА, кг")
+    drag_area_m2: float = Field(default=0.9, ge=0, description="Мидель для сопротивления, м²")
+    drag_coefficient: float = Field(default=2.2, ge=0, description="Коэффициент сопротивления")
 
 
 class CommsConfig(BaseModel):
@@ -51,6 +63,7 @@ class PayloadConfig(BaseModel):
     """Конфиг полезной нагрузки (режимы)."""
     modes: list[str] = Field(default_factory=lambda: ["idle", "imaging"], description="Режимы работы")
     default_mode: str = Field(default="idle", description="Режим по умолчанию")
+    half_fov_deg: float = Field(default=30.0, gt=0, le=70, description="Половина поля зрения надирного прибора, °")
 
 
 class SpacecraftConfig(BaseModel):
@@ -97,6 +110,7 @@ class SpacecraftState(BaseModel):
     propulsion: PropulsionState = Field(default_factory=PropulsionState)
     comms: CommsState = Field(default_factory=CommsState)
     payload_mode: str = "idle"
+    pointing: str = Field(default="nadir", description="nadir | sun")
     health: dict[str, SubsystemHealth] = Field(
         default_factory=lambda: {
             "power": SubsystemHealth.NOMINAL,
@@ -124,8 +138,13 @@ class Spacecraft(BaseModel):
             power=PowerState(battery_soc=1.0, in_sun=True, consumption_W=self.config.power.consumption_nominal_W),
             thermal=ThermalState(temp_C=20.0, heater_on=False),
             propulsion=PropulsionState(
-                delta_v_remaining_m_s=delta_v_initial_m_s or self.config.propulsion.delta_v_total_m_s
+                delta_v_remaining_m_s=(
+                    self.config.propulsion.delta_v_total_m_s
+                    if delta_v_initial_m_s is None
+                    else delta_v_initial_m_s
+                )
             ),
             comms=CommsState(in_contact=False, data_sent_this_pass_Mb=0.0),
             payload_mode=self.config.payload.default_mode,
+            pointing="nadir",
         )

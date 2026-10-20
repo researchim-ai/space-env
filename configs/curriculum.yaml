@@ -1,0 +1,18 @@
+# Порядок сред для генерации траекторий и короткого обучения.
+stages:
+  - name: resources
+    env: space_env/ResourceManager-v0
+    episodes: 2
+    max_episode_steps: 30
+  - name: anomaly
+    env: space_env/AnomalyResponse-v0
+    episodes: 2
+    max_episode_steps: 12
+  - name: conjunction
+    env: space_env/ConjunctionAssessment-v0
+    episodes: 2
+    max_episode_steps: 12
+  - name: planner
+    env: space_env/MissionPlanner-v0
+    episodes: 2
+    max_episode_steps: 24

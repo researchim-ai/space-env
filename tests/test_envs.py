@@ -27,7 +27,7 @@ def test_resource_manager_env():
 def test_mission_planner_env():
     env = MissionPlannerEnv(max_episode_steps=15, seed=123)
     obs, info = env.reset(seed=123)
-    assert obs.shape == (6,)
+    assert obs.shape == (7,)
     obs2, reward, term, trunc, info2 = env.step(1)  # imaging
     assert "imaging" in info2
     env.close()
@@ -45,9 +45,22 @@ def test_anomaly_response_env():
 def test_conjunction_env():
     env = ConjunctionAssessmentEnv(max_episode_steps=5, seed=2)
     obs, info = env.reset(seed=2)
-    assert obs.shape == (3,)
+    assert obs.shape == (5,)
     obs2, reward, term, trunc, info2 = env.step(0)
-    assert obs2.shape == (3,)
+    assert obs2.shape == (5,)
+    env.close()
+
+
+def test_mission_planner_render_and_registry():
+    import gymnasium as gym
+
+    env = gym.make("space_env/MissionPlanner-v0", max_episode_steps=2, render_mode="ansi")
+    obs, _info = env.reset(seed=0)
+    assert obs.shape == (7,)
+    _obs, _reward, _term, _trunc, info = env.step(0)
+    assert "imaging" in info
+    text = env.render()
+    assert text is not None and "MissionPlanner" in text
     env.close()
 
 

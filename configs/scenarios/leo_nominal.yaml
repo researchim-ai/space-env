@@ -1,0 +1,28 @@
+name: leo_nominal
+scenario_type: nominal
+epoch: "2024-01-01T00:00:00Z"
+orbit:
+  a_m: 6800000
+  inc_deg: 51.6
+spacecraft:
+  name: EO-Sat
+  solar_panel_area_m2: 2.0
+  battery_capacity_Wh: 200.0
+  consumption_nominal_W: 12.0
+  consumption_peak_W: 30.0
+  delta_v_total_m_s: 50.0
+  mass_kg: 50.0
+ground_stations:
+  - name: Moscow
+    lat_deg: 55.752
+    lon_deg: 37.618
+    alt_m: 150
+    min_elevation_deg: 5
+goals:
+  imaging_count: 5
+  comms_sessions_min: 2
+  delta_v_budget_m_s: 20
+constraints:
+  battery_soc_min: 0.2
+  temp_min_C: -20
+  temp_max_C: 50

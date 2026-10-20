@@ -11,7 +11,12 @@ from typing import Iterator
 
 import yaml
 
-from space_env.data_generators.pretraining import _load_yaml, _get_data_dir
+import numpy as np
+
+from space_env.core import Orbit, Time
+from space_env.core.spacecraft import PowerConfig, PropulsionConfig, Spacecraft, SpacecraftConfig
+from space_env.data_generators.pretraining import _get_data_dir, _load_yaml
+from space_env.simulation import SimulationEngine
 
 
 def generate_sft_from_yaml(data_dir: Path | None = None, seed: int | None = None) -> Iterator[dict]:
@@ -65,10 +70,54 @@ def generate_sft_scenario_pairs(seed: int | None = None) -> Iterator[dict]:
         }
 
 
+def generate_sft_from_simulation(seed: int | None = None) -> Iterator[dict]:
+    """Одна пара по живому снимку симуляции: телеметрия → режим нагрузки."""
+    del seed
+    epoch = Time("2024-06-15T12:00:00Z")
+    orbit = Orbit.from_keplerian(6800e3, 0.0, np.deg2rad(51.6), 0.0, 0.0, 0.0, epoch)
+    spacecraft = Spacecraft(
+        config=SpacecraftConfig(
+            power=PowerConfig(
+                solar_panel_area_m2=2.0,
+                battery_capacity_Wh=200.0,
+                consumption_nominal_W=12.0,
+                consumption_peak_W=30.0,
+            ),
+            propulsion=PropulsionConfig(delta_v_total_m_s=50.0, mass_kg=50.0),
+        )
+    )
+    spacecraft.reset_state()
+    engine = SimulationEngine(orbit, spacecraft, seed=0)
+    snap = engine.get_state_snapshot()
+    contact = "есть" if snap.in_contact else "нет"
+    instruction = (
+        f"Телеметрия КА: высота {snap.altitude_km:.0f} км, SoC {snap.battery_soc * 100:.0f}%, "
+        f"температура {snap.temp_C:.0f} °C, освещение «{snap.shadow}», контакт со станцией: {contact}. "
+        "Какой режим нагрузки выбрать?"
+    )
+    if snap.in_eclipse or snap.battery_soc < 0.4:
+        output = (
+            "Снизить нагрузку до минимума, оставить служебные системы и при необходимости включить нагреватели. "
+            "Съёмку не проводить в тени. Связь возможна только при контакте со станцией."
+        )
+    else:
+        output = (
+            "Держать номинальную нагрузку. Съёмка допустима, пока КА на свету и в надирной ориентации. "
+            "Сеанс связи начинать только при угле места выше порога станции."
+        )
+    yield {
+        "instruction": instruction,
+        "output": output,
+        "input": "",
+        "meta": {"source": "simulation", "type": "procedure", "shadow": snap.shadow},
+    }
+
+
 def generate_sft_records(
     output_path: str | Path,
     include_yaml: bool = True,
     include_scenarios: bool = True,
+    include_simulation: bool = True,
     seed: int | None = 42,
 ) -> int:
     """
@@ -84,6 +133,10 @@ def generate_sft_records(
                 count += 1
         if include_scenarios:
             for rec in generate_sft_scenario_pairs(seed=seed):
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                count += 1
+        if include_simulation:
+            for rec in generate_sft_from_simulation(seed=seed):
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 count += 1
     return count

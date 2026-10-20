@@ -7,6 +7,7 @@ from space_env.mission.goals import MissionGoal
 from space_env.mission.scenarios import (
     AnomalyInject,
     ConjunctionInject,
+    GroundTarget,
     ScenarioConfig,
     ScenarioType,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "Constraints",
     "ConjunctionInject",
     "EventKind",
+    "GroundTarget",
     "MissionEvent",
     "MissionGoal",
     "MissionProfile",

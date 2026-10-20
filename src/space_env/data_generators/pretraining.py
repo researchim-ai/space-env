@@ -96,7 +96,13 @@ def generate_from_simulation(
             yield {"text": f"В {t_utc} КА вышел из тени, солнечные батареи в освещении.", "meta": {"source": "simulation", "domain": "events"}}
         prev_eclipse = snap.in_eclipse
         if snap.time_sec > 0 and int(snap.time_sec) % 600 == 0:  # каждые ~10 мин
-            yield {"text": f"Уровень заряда батареи (SoC) на момент {t_utc} — {snap.battery_soc * 100:.0f}%. Высота орбиты {snap.altitude_km:.0f} км.", "meta": {"source": "simulation", "domain": "spacecraft"}}
+            yield {
+                "text": (
+                    f"Уровень заряда батареи (SoC) на момент {t_utc} — {snap.battery_soc * 100:.0f}%. "
+                    f"Высота орбиты {snap.altitude_km:.0f} км, температура {snap.temp_C:.1f} °C, освещение «{snap.shadow}»."
+                ),
+                "meta": {"source": "simulation", "domain": "spacecraft"},
+            }
     yield {"text": f"За {num_steps * step_sec / 3600:.1f} ч симуляции выполнено {num_steps} шагов пропагации орбиты и обновления подсистем.", "meta": {"source": "simulation", "domain": "missions"}}
 
 

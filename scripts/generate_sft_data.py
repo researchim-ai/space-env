@@ -11,12 +11,14 @@ def main():
     p.add_argument("-o", "--output", default="datasets/sft.jsonl", help="Output JSONL path")
     p.add_argument("--no-yaml", action="store_true", help="Skip Q&A from data/sft_pairs.yaml")
     p.add_argument("--no-scenarios", action="store_true", help="Skip scenario procedure pairs")
+    p.add_argument("--no-simulation", action="store_true", help="Skip the pair built from a live simulation snapshot")
     p.add_argument("--seed", type=int, default=42)
     args = p.parse_args()
     count = generate_sft_records(
         args.output,
         include_yaml=not args.no_yaml,
         include_scenarios=not args.no_scenarios,
+        include_simulation=not args.no_simulation,
         seed=args.seed,
     )
     print(f"Wrote {count} SFT records to {args.output}")

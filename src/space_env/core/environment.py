@@ -1,45 +1,87 @@
 """
-Пространственная среда: Земля, тень (eclipse), константы.
-Упрощённая модель — сфера Земли и цилиндрическая тень.
+Пространственная среда: Земля, коническая тень (umbra/penumbra), поток.
+Положение Солнца передаётся снаружи (аналитика или SPICE).
 """
 from __future__ import annotations
 
+from typing import NamedTuple
+
 import numpy as np
 
-from space_env.core.constants import R_EARTH_EQUATOR, SOLAR_CONSTANT
+from space_env.core.constants import AU, R_EARTH_EQUATOR, R_SUN, SOLAR_CONSTANT
 
 
-def in_eclipse(r_sat_m: np.ndarray, r_sun_m: np.ndarray) -> bool:
+class ShadowState(NamedTuple):
+    """Тень Земли: sun — полный свет, penumbra — частичная, umbra — полная."""
+
+    kind: str
+    flux_fraction: float
+    r_perp_m: float
+    umbra_radius_m: float
+    penumbra_radius_m: float
+
+
+def _shadow_radii(x_behind_m: float, sun_distance_m: float) -> tuple[float, float]:
+    """Радиусы umbra и penumbra на расстоянии x_behind_m за центром Земли (антисолнечная сторона)."""
+    d = max(float(sun_distance_m), R_SUN + R_EARTH_EQUATOR)
+    # Длина конуса полной тени от центра Земли до вершины.
+    l_umbra = R_EARTH_EQUATOR * d / (R_SUN - R_EARTH_EQUATOR)
+    # Характерная длина полутени.
+    l_pen = R_EARTH_EQUATOR * d / (R_SUN + R_EARTH_EQUATOR)
+    if x_behind_m <= 0.0 or x_behind_m >= l_umbra:
+        r_umbra = 0.0
+    else:
+        r_umbra = R_EARTH_EQUATOR * (l_umbra - x_behind_m) / l_umbra
+    r_pen = R_EARTH_EQUATOR * (l_pen + max(x_behind_m, 0.0)) / l_pen
+    return float(r_umbra), float(r_pen)
+
+
+def shadow_state(r_sat_m: np.ndarray, r_sun_m: np.ndarray) -> ShadowState:
     """
-    Находится ли КА в тени Земли (упрощённо: цилиндрическая тень).
-    r_sat_m, r_sun_m — векторы положения КА и Солнца в инерциальной СК (м).
+    Коническая тень Земли.
+    r_sat_m, r_sun_m — положения КА и Солнца в одной инерциальной СК, м.
+    КА на солнечной стороне (между Землёй и Солнцем, вне Земли) освещён.
     """
     r_sat = np.asarray(r_sat_m, dtype=float)
     r_sun = np.asarray(r_sun_m, dtype=float)
-    r_sat_norm = np.linalg.norm(r_sat)
-    r_sun_norm = np.linalg.norm(r_sun)
-    if r_sat_norm < 1e3 or r_sun_norm < 1e3:
-        return False
-    # Единичный вектор на Солнце от Земли
-    s = r_sun / r_sun_norm
-    # Проекция положения КА на направление на Солнце
-    proj = np.dot(r_sat, s)
-    if proj <= 0:
-        # КА «за» Землёй по направлению к Солнцу
-        return True
-    # Расстояние от оси Солнце–Земля до КА
-    r_perp = np.linalg.norm(r_sat - proj * s)
-    return bool(r_perp < R_EARTH_EQUATOR)
+    sun_norm = float(np.linalg.norm(r_sun))
+    sat_norm = float(np.linalg.norm(r_sat))
+    if sat_norm < 1e3 or sun_norm < 1e3:
+        return ShadowState("sun", 1.0, 0.0, 0.0, 0.0)
+    s_hat = r_sun / sun_norm
+    proj = float(np.dot(r_sat, s_hat))
+    r_perp = float(np.linalg.norm(r_sat - proj * s_hat))
+    x_behind = -proj
+    r_umbra, r_pen = _shadow_radii(x_behind, sun_norm)
+    if x_behind <= 0.0:
+        return ShadowState("sun", 1.0, r_perp, r_umbra, r_pen)
+    if r_perp <= r_umbra and r_umbra > 0.0:
+        return ShadowState("umbra", 0.0, r_perp, r_umbra, r_pen)
+    if r_perp <= r_pen:
+        span = max(r_pen - r_umbra, 1.0)
+        fraction = float(np.clip((r_perp - r_umbra) / span, 0.0, 1.0))
+        return ShadowState("penumbra", fraction, r_perp, r_umbra, r_pen)
+    return ShadowState("sun", 1.0, r_perp, r_umbra, r_pen)
 
 
-def solar_flux_at_satellite_W_m2(r_sat_m: np.ndarray, r_sun_m: np.ndarray, in_umbra: bool) -> float:
+def in_eclipse(r_sat_m: np.ndarray, r_sun_m: np.ndarray) -> bool:
+    """True только в полной тени (umbra). Полутень сюда не входит."""
+    return shadow_state(r_sat_m, r_sun_m).kind == "umbra"
+
+
+def solar_flux_at_satellite_W_m2(r_sat_m: np.ndarray, r_sun_m: np.ndarray, in_umbra: bool | None = None) -> float:
     """
-    Солнечный поток в месте КА, Вт/м².
-    Упрощённо: SOLAR_CONSTANT если на свету, 0 в тени; расстояние до Солнца не учитываем.
+    Солнечный поток на КА, Вт/м².
+    Учитывает 1/r² и долю диска в полутени. Аргумент in_umbra сохранён для совместимости:
+    если передан и тень ещё не посчитана снаружи, поток берётся из shadow_state, а не из флага.
     """
-    if in_umbra:
+    del in_umbra  # поток всегда считается по геометрии, флаг больше не режет полутень
+    r_sun = np.asarray(r_sun_m, dtype=float)
+    sun_norm = float(np.linalg.norm(r_sun))
+    if sun_norm < 1e3:
         return 0.0
-    return SOLAR_CONSTANT
+    fraction = shadow_state(r_sat_m, r_sun).flux_fraction
+    return float(SOLAR_CONSTANT * (AU / sun_norm) ** 2 * fraction)
 
 
 def altitude_from_position_m(r_m: np.ndarray) -> float:

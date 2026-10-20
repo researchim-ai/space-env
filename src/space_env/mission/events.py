@@ -21,7 +21,10 @@ class EventKind(str, Enum):
     CONJUNCTION_WARNING = "conjunction_warning"
     ECLIPSE_START = "eclipse_start"
     ECLIPSE_END = "eclipse_end"
+    AOS = "aos"
+    LOS = "los"
     CONSTRAINT_VIOLATION = "constraint_violation"
+    RECOVERY = "recovery"
 
 
 class MissionEvent(BaseModel):

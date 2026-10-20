@@ -3,8 +3,14 @@ import numpy as np
 import pytest
 
 from space_env.core import Orbit, Time
-from space_env.core.spacecraft import Spacecraft, SpacecraftConfig, PowerConfig, PropulsionConfig
-from space_env.mission import MissionGoal, ScenarioConfig, ScenarioType, AnomalyInject
+from space_env.core.spacecraft import (
+    PowerConfig,
+    PropulsionConfig,
+    Spacecraft,
+    SpacecraftConfig,
+    SubsystemHealth,
+)
+from space_env.mission import EventKind, MissionGoal, ScenarioConfig, ScenarioType, AnomalyInject
 from space_env.simulation import SimulationEngine, SimulationState
 
 
@@ -26,7 +32,9 @@ def test_engine_nominal_run():
     assert len(engine.log) == 2
     assert isinstance(snap1, SimulationState)
     assert snap1.time_sec == 60.0
-    assert events1 == []  # номинальный сценарий
+    kinds = {event.kind for event in events1}
+    assert EventKind.ANOMALY not in kinds
+    assert EventKind.CONJUNCTION_WARNING not in kinds
 
 
 def test_engine_anomaly_inject():
@@ -48,4 +56,4 @@ def test_engine_anomaly_inject():
         snap, events = engine.step(1.0)
         events_all.extend(events)
     assert any(e.kind.value == "anomaly" for e in events_all)
-    assert sc.state.health.get("power") is not None
+    assert sc.state.health["power"] == SubsystemHealth.DEGRADED

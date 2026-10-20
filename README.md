@@ -14,51 +14,66 @@
 
 ```
 space-env/
-├── docs/IMPLEMENTATION_PLAN.md   # Полный план реализации (все фазы)
-├── src/                          # Исходный код
-├── data/                         # Исходники для генерации: глоссарий, шаблоны, пары Q&A (YAML)
-├── datasets/                     # Сгенерированные датасеты (JSONL) — претренинг, SFT
-├── configs/                      # Конфиги сценариев и генерации
-└── scripts/                      # Скрипты генерации и обучения
+├── docs/                         # План реализации и обзор библиотек
+├── src/space_env/                # Ядро, миссии, симуляция, среды, RL, оценка
+├── data/                         # Глоссарий, шаблоны, пары Q&A
+├── configs/                      # Награды, куррикулум, YAML-сценарии
+├── scripts/                      # Генерация данных, бенчмарк, REINFORCE
+└── tests/
 ```
 
-## План реализации (кратко)
+Каталог `datasets/` скрипты создают сами; он в `.gitignore`.
 
-| Фаза | Содержание |
+## Что умеет версия 0.3
+
+| Слой | Содержание |
 |------|------------|
-| 0 | Инфраструктура: Python, зависимости (boinor, gymnasium, pydantic), структура пакета |
-| 1 | **Core:** время, орбиты (Keplerian/SGP4), модель КА (power, thermal, propulsion, comms), среда (eclipse, debris) |
-| 2 | **Миссии:** типы (LEO/GEO/MEO), цели, сценарии (номинал, аномалии, конъюнкции) |
-| 3 | **Симуляция:** движок шага, логирование, воспроизводимость |
-| 4 | **RL-среды:** MissionPlanner, AnomalyResponse, ConjunctionAssessment, ResourceManager (Gymnasium) |
-| 5 | **Генерация PT:** текст + структура из шаблонов и симуляции |
-| 6 | **Генерация SFT:** инструкции и эталонные ответы (в т.ч. из симуляции) |
-| 7 | **RL-данные:** траектории, куррикулум, описание наград |
-| 8 | **Оценка:** бенчмарки, метрики, эвалюация LLM |
+| Ядро | Кауэлл с J2 и экспоненциальной атмосферой, тень, Солнце/альбедо/ИК Земли, угол места, импульс Δv |
+| Миссии | Съёмка по наземным целям, один сеанс на зону станции, сближение Клохесси–Уилтшира |
+| Симуляция | Шаг с командой, события eclipse/AOS/LOS, Pc по приближению Чена, отказы только по симптомам |
+| RL | `MissionPlanner`, `ResourceManager`, `AnomalyResponse`, `ConjunctionAssessment`; регистрация в Gymnasium |
+| Данные | Претренинг, SFT (YAML, процедуры и снимок симуляции), траектории по куррикулуму |
+| Оценка | Случайный бенчмарк и рубрика терминов. Обучение — линейный REINFORCE |
 
 Подробно — в [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 
-## Генерация данных
+## Генерация данных и прогон
 
-- **Претренинг:** шаблоны (орбиты, КА, процедуры, миссии), тексты из симуляции (eclipse, SoC), глоссарий. Выход — JSONL (`text`, `meta`).
-- **SFT:** пары вопрос–ответ и инструкция–выполнение из `data/sft_pairs.yaml` и сценариев (аномалии, конъюнкции). Выход — JSONL в **datasets/** (`instruction`, `output`, `input`, `meta`).
-
-**Скрипты (датасеты пишутся в `datasets/`):**
 ```bash
+pip install -e ".[dev]"
+pytest -q
+
 # Претренинг → datasets/pretraining.jsonl
 python scripts/generate_pretraining_data.py -o datasets/pretraining.jsonl -n 100 -s 150
 
 # SFT → datasets/sft.jsonl
 python scripts/generate_sft_data.py -o datasets/sft.jsonl
+
+# Траектории RL → datasets/rl_trajectories.jsonl
+python scripts/generate_rl_data.py -o datasets/rl_trajectories.jsonl
+
+# Случайный бенчмарк четырёх сред
+python scripts/evaluate.py --episodes 2 --steps 12
+
+# Короткое обучение
+python scripts/train_reinforce.py --env space_env/AnomalyResponse-v0 --episodes 40
 ```
 
-**Исходники в `data/`** (YAML): глоссарий, шаблоны текстов, пары Q&A — их меняют, чтобы менять содержимое датасетов. **Сгенерированные датасеты** — в **`datasets/`**.
+Среды: `space_env/MissionPlanner-v0`, `space_env/ResourceManager-v0`, `space_env/AnomalyResponse-v0`, `space_env/ConjunctionAssessment-v0`.
+
+Исходники текстов лежат в `data/` (глоссарий, шаблоны, пары Q&A). Веса наград — в `configs/rewards.yaml`.
+
+## Тесты
+
+```bash
+pytest -q
+```
 
 ## Зависимости
 
-- Базовые: `boinor` (орбитальная механика), `gymnasium`, `pydantic`, `numpy`, `pandas`
-- Опционально (отраслевые): `sgp4` (TLE/NORAD), `spiceypy` (NASA SPICE), `ccsdspy`/`spacepackets` (CCSDS), `orekit-jpype` (OreKit; нужен JDK 11+ или `.[orekit-jdk]`)
-- Подробный обзор библиотек, используемых NASA, ESA и в миссиях: **[docs/INDUSTRY_LIBRARIES.md](docs/INDUSTRY_LIBRARIES.md)**
+- Базовые: `boinor` (орбитальная механика), `gymnasium`, `pydantic`, `numpy`, `pandas`, `pyyaml`
+- Опционально: `sgp4` (TLE), `spiceypy` (ядра SPICE), `ccsdspy`/`spacepackets` (разбор CCSDS), `orekit-jpype` (нужен JDK 11+ или extra `orekit-jdk`)
+- Где какая библиотека вызывается: **[docs/INDUSTRY_LIBRARIES.md](docs/INDUSTRY_LIBRARIES.md)**
 
 ## Лицензия
 

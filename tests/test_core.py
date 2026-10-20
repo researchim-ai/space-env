@@ -65,10 +65,24 @@ def test_orbit_from_vectors():
 
 
 def test_eclipse_behind_earth():
-    # КА на оси Земля–Солнце за Землёй (в цилиндрической тени)
-    r_sat = np.array([7e6, 0.0, 0.0])   # LEO по x; Солнце по +x
+    # Солнце по +X, КА на оси за Землёй — полная тень.
+    r_sat = np.array([-7e6, 0.0, 0.0])
     r_sun = np.array([1.5e11, 0.0, 0.0])
-    assert in_eclipse(r_sat, r_sun) is True  # в цилиндре тени
+    assert in_eclipse(r_sat, r_sun) is True
+
+
+def test_eclipse_sunward_axis_is_lit():
+    # КА между Землёй и Солнцем не находится в тени.
+    r_sat = np.array([7e6, 0.0, 0.0])
+    r_sun = np.array([1.5e11, 0.0, 0.0])
+    assert in_eclipse(r_sat, r_sun) is False
+
+
+def test_eclipse_night_side_outside_cone():
+    # Ночная полусфера, но далеко от оси тени.
+    r_sat = np.array([-7e6, 8e6, 0.0])
+    r_sun = np.array([1.5e11, 0.0, 0.0])
+    assert in_eclipse(r_sat, r_sun) is False
 
 
 def test_eclipse_in_sun():

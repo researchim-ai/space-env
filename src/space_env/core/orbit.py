@@ -128,3 +128,8 @@ class Orbit:
         """Высота над сферой R_EARTH_EQUATOR, км."""
         r_norm = np.linalg.norm(self.r)
         return (r_norm - R_EARTH_EQUATOR) / 1000.0
+
+    def with_delta_v(self, dv_m_s: np.ndarray) -> "Orbit":
+        """Импульс в инерциальной СК: новое состояние с той же эпохой."""
+        dv = np.asarray(dv_m_s, dtype=float)
+        return Orbit.from_vectors(self.r, self.v + dv, self.epoch)
