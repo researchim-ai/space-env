@@ -12,7 +12,29 @@ from space_env.envs.constellation_ops_env import ConstellationOpsEnv
 from space_env.envs.mission_planner_env import MissionPlannerEnv
 from space_env.envs.phasing_env import SentinelPhasingEnv
 from space_env.envs.resource_manager_env import ResourceManagerEnv
-from space_env.envs.sentinel_env import LandsatAcquisitionEnv, SentinelAcquisitionEnv
+from space_env.envs.market_envs import OrderBookEnv, StationContentionEnv
+from space_env.envs.sentinel_env import (
+    CubesatAcquisitionEnv,
+    LandsatAcquisitionEnv,
+    SentinelAcquisitionEnv,
+    SentinelPassFaultEnv,
+)
+from space_env.envs.shift_env import FleetShiftEnv
+from space_env.envs.industry_envs import (
+    DebrisAvoidEnv,
+    DisposalEnv,
+    PassFaultEnv,
+    PriorityCoverageEnv,
+    RendezvousHoldEnv,
+)
+from space_env.envs.horizon_envs import (
+    ConjunctionQueueEnv,
+    DecayWatchEnv,
+    DecayWatchHighEnv,
+    PhaseBurnEnv,
+    RerouteEnv,
+)
+from space_env.envs.campaign_env import DayMissionEnv
 from space_env.envs.workplan_env import WorkPlanEnv
 
 _SPECS = (
@@ -26,7 +48,28 @@ _SPECS = (
     ("space_env/LandsatAcquisition-v0", "space_env.envs.sentinel_env:LandsatAcquisitionEnv"),
     ("space_env/SentinelPhasing-v0", "space_env.envs.phasing_env:SentinelPhasingEnv"),
     ("space_env/WorkPlan-v0", "space_env.envs.workplan_env:WorkPlanEnv"),
+    ("space_env/ConjunctionQueue-v0", "space_env.envs.horizon_envs:ConjunctionQueueEnv"),
+    ("space_env/DecayWatch-v0", "space_env.envs.horizon_envs:DecayWatchEnv"),
+    ("space_env/DecayWatchHigh-v0", "space_env.envs.horizon_envs:DecayWatchHighEnv"),
+    ("space_env/PhaseBurn-v0", "space_env.envs.horizon_envs:PhaseBurnEnv"),
+    ("space_env/Reroute-v0", "space_env.envs.horizon_envs:RerouteEnv"),
+    ("space_env/FleetShift-v0", "space_env.envs.shift_env:FleetShiftEnv"),
+    ("space_env/RendezvousHold-v0", "space_env.envs.industry_envs:RendezvousHoldEnv"),
+    ("space_env/PriorityCoverage-v0", "space_env.envs.industry_envs:PriorityCoverageEnv"),
+    ("space_env/PassFault-v0", "space_env.envs.industry_envs:PassFaultEnv"),
+    ("space_env/DebrisAvoid-v0", "space_env.envs.industry_envs:DebrisAvoidEnv"),
+    ("space_env/Disposal-v0", "space_env.envs.industry_envs:DisposalEnv"),
+    ("space_env/StationContention-v0", "space_env.envs.market_envs:StationContentionEnv"),
+    ("space_env/OrderBook-v0", "space_env.envs.market_envs:OrderBookEnv"),
+    ("space_env/SentinelPassFault-v0", "space_env.envs.sentinel_env:SentinelPassFaultEnv"),
+    ("space_env/CubesatAcquisition-v0", "space_env.envs.sentinel_env:CubesatAcquisitionEnv"),
+    ("space_env/DayMission-v0", "space_env.envs.campaign_env:DayMissionEnv"),
 )
+
+def registered_env_ids() -> tuple[str, ...]:
+    """Идентификаторы в порядке регистрации. Импорт пакета уже вносит их в Gymnasium."""
+    return tuple(env_id for env_id, _entry in _SPECS)
+
 
 for _env_id, _entry in _SPECS:
     if _env_id not in registry:
@@ -35,12 +78,29 @@ for _env_id, _entry in _SPECS:
 __all__ = [
     "AnomalyResponseEnv",
     "ConjunctionAssessmentEnv",
+    "ConjunctionQueueEnv",
+    "DebrisAvoidEnv",
+    "DayMissionEnv",
+    "DecayWatchEnv",
+    "DisposalEnv",
+    "DecayWatchHighEnv",
+    "FleetShiftEnv",
     "ConstellationEnv",
+    "CubesatAcquisitionEnv",
     "ConstellationOpsEnv",
     "LandsatAcquisitionEnv",
     "MissionPlannerEnv",
+    "OrderBookEnv",
+    "PassFaultEnv",
+    "PriorityCoverageEnv",
+    "RendezvousHoldEnv",
+    "PhaseBurnEnv",
+    "RerouteEnv",
     "ResourceManagerEnv",
+    "registered_env_ids",
     "SentinelAcquisitionEnv",
+    "SentinelPassFaultEnv",
+    "StationContentionEnv",
     "SentinelPhasingEnv",
     "WorkPlanEnv",
 ]

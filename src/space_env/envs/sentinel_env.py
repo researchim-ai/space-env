@@ -73,7 +73,7 @@ class CatalogAcquisitionEnv(gym.Env):
             drag_area_m2=prop.drag_area_m2,
             drag_coefficient=prop.drag_coefficient,
         )
-        prefix = "L9" if self.vehicle == "landsat-9" else "S2"
+        prefix = {"landsat-9": "L9", "cubesat-6u": "C6"}.get(self.vehicle, "S2")
         return [
             GroundTarget(name=f"{prefix}-{index + 1}", lat_deg=lat, lon_deg=lon)
             for index, (lat, lon) in enumerate(points)
@@ -87,9 +87,9 @@ class CatalogAcquisitionEnv(gym.Env):
         if aos is None or aos <= self.lead_sec:
             return
         engine.step(aos - self.lead_sec, "wait")
-        lat, lon = subsatellite_latlon(engine.orbit.r, engine._now())
+        lat, lon = subsatellite_latlon(engine.orbit.r, engine.now())
         engine.scenario.ground_targets = [GroundTarget(name="у сеанса", lat_deg=lat, lon_deg=lon)]
-        engine._captured_targets.clear()
+        engine.clear_captured_targets()
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
         super().reset(seed=seed)
@@ -114,11 +114,12 @@ class CatalogAcquisitionEnv(gym.Env):
         half = engine.spacecraft.config.payload.half_fov_deg
         if not engine.scenario.ground_targets or half <= 0.0:
             return 1.0
-        moment = engine._now()
+        moment = engine.now()
+        captured = engine.captured_targets()
         angles = [
             off_nadir_deg(engine.orbit.r, target.lat_deg, target.lon_deg, moment)
             for target in engine.scenario.ground_targets
-            if target.name not in engine._captured_targets
+            if target.name not in captured
         ]
         if not angles:
             return 0.0
@@ -217,6 +218,99 @@ class SentinelAcquisitionEnv(CatalogAcquisitionEnv):
             lead_sec=lead_sec,
             render_mode=render_mode,
         )
+
+
+class CubesatAcquisitionEnv(CatalogAcquisitionEnv):
+    """Опорный 6U: та же задача сдачи, что у Sentinel и Landsat, на допущениях класса."""
+
+    def __init__(
+        self,
+        step_sec: float = 60.0,
+        max_episode_steps: int = 110,
+        with_stations: bool = True,
+        start_at_pass: bool = True,
+        lead_sec: float = 180.0,
+        render_mode: str | None = None,
+    ):
+        super().__init__(
+            "cubesat-6u",
+            step_sec=step_sec,
+            max_episode_steps=max_episode_steps,
+            with_stations=with_stations,
+            start_at_pass=start_at_pass,
+            lead_sec=lead_sec,
+            render_mode=render_mode,
+        )
+
+
+class SentinelPassFaultEnv(CatalogAcquisitionEnv):
+    """
+    Сеанс Sentinel-2A уже выбран, радио в защёлке.
+    Действия: 0 ждать, 1 сдавать, 2 перезагрузка.
+    Успех — радио готово и на станции есть биты до конца эпизода.
+    """
+
+    def __init__(self, step_sec: float = 60.0, max_episode_steps: int = 12, render_mode: str | None = None):
+        super().__init__(
+            "sentinel-2a",
+            step_sec=step_sec,
+            max_episode_steps=max_episode_steps,
+            with_stations=True,
+            start_at_pass=True,
+            lead_sec=180.0,
+            render_mode=render_mode,
+        )
+        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(4,), dtype=np.float32)
+        self.action_space = gym.spaces.Discrete(3)
+        self._rebooted = False
+
+    def _fault_obs(self) -> np.ndarray:
+        if self._engine is None:
+            return np.zeros(4, dtype=np.float32)
+        snap = self._engine.get_state_snapshot()
+        window = float(np.clip(1.0 - self._steps / self.max_episode_steps, 0.0, 1.0))
+        return np.array(
+            [
+                float(self._engine.radio_ready()),
+                float(snap.in_contact),
+                1.0 if self._rebooted else 0.0,
+                window,
+            ],
+            dtype=np.float32,
+        )
+
+    def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
+        _obs, info = super().reset(seed=seed, options=options)
+        assert self._engine is not None
+        self._engine.arm_fault("radio_latch")
+        self._rebooted = False
+        self._buffer_bits = 8.0e9
+        info["fault"] = "radio_latch"
+        return self._fault_obs(), info
+
+    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
+        if self._engine is None:
+            raise RuntimeError("Сначала вызовите reset()")
+        choice = int(action)
+        command = {1: "comms", 2: "reboot"}.get(choice)
+        if choice == 2:
+            self._rebooted = True
+        self._engine.step(self.step_sec, command)
+        snap = self._engine.get_state_snapshot()
+        if choice == 1 and snap.link_ok and snap.link_margin_db >= 0.0:
+            rate = stepped_rate_bps(snap.link_margin_db, self._downlink_bps)
+            self._buffer_bits, dumped = dump_bits(self._buffer_bits, self.step_sec, rate)
+            self._delivered_bits += dumped
+        self._steps += 1
+        truncated = self._steps >= self.max_episode_steps
+        success = truncated and self._delivered_bits > 0.0 and self._engine.radio_ready()
+        info = {
+            "delivered_bits": self._delivered_bits,
+            "radio_ready": self._engine.radio_ready(),
+            "in_contact": snap.in_contact,
+            "success": success,
+        }
+        return self._fault_obs(), float(self._delivered_bits > 0.0), False, truncated, info
 
 
 class LandsatAcquisitionEnv(CatalogAcquisitionEnv):

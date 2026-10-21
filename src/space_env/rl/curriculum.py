@@ -15,12 +15,11 @@ DEFAULT_STAGES: list[dict[str, Any]] = [
 
 
 def _config_path() -> Path:
-    name = Path("configs") / "curriculum.yaml"
-    candidates = [Path.cwd() / name, Path(__file__).resolve().parents[3] / name]
-    for path in candidates:
-        if path.exists():
-            return path
-    return candidates[-1]
+    packaged = Path(__file__).resolve().parents[1] / "configs" / "curriculum.yaml"
+    cwd = Path.cwd() / "configs" / "curriculum.yaml"
+    if cwd.is_file():
+        return cwd
+    return packaged
 
 
 def load_curriculum(path: str | Path | None = None) -> list[dict[str, Any]]:

@@ -268,6 +268,31 @@ def generate_sft_from_fleet_plan(seed: int | None = None) -> Iterator[dict]:
     }
 
 
+def generate_sft_from_horizon(seed: int | None = None) -> Iterator[dict]:
+    """Планы на горизонт: очередь сближений, два импульса фазы, снижение и обход луча."""
+    del seed
+    from space_env.mission.horizon import (
+        build_reroute_schedule,
+        build_two_burn_phase_plan,
+        execute_conjunction_plan,
+        execute_decay_plan,
+    )
+
+    plans = (
+        ("Какие объекты маневрировать при бюджете Δv 1 м/с и пороге Pc 10⁻⁴?", execute_conjunction_plan()),
+        ("Когда поставить второй импульс паре Sentinel-2, если первый +0.5 м/с уже дан?", build_two_burn_phase_plan()),
+        ("Поднимать ли перигей опорного борта на 400 км в ближайшие 3 часа?", execute_decay_plan(altitude_m=400_000.0)),
+        ("Прямой луч B–A закрыт. Как донести 8 Мбит до A?", build_reroute_schedule(close_direct=True)),
+    )
+    for instruction, plan in plans:
+        yield {
+            "instruction": instruction,
+            "output": "\n".join(plan.lines()),
+            "input": "",
+            "meta": {"source": "horizon", "type": plan.title},
+        }
+
+
 def generate_sft_records(
     output_path: str | Path,
     include_yaml: bool = True,
@@ -306,6 +331,9 @@ def generate_sft_records(
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 count += 1
             for rec in generate_sft_from_fleet_plan(seed=seed):
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                count += 1
+            for rec in generate_sft_from_horizon(seed=seed):
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 count += 1
     return count

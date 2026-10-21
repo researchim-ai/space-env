@@ -40,16 +40,43 @@ DEFAULT_REWARDS: dict[str, dict[str, float]] = {
         "task_done": 1.0,
         "soc_failure": 1.0,
     },
+    "conjunction_queue": {
+        "avoided": 1.0,
+        "missed": 1.0,
+    },
+    "decay_watch": {
+        "correct": 1.0,
+        "wrong": 0.5,
+    },
+    "phase_burn": {
+        "stopped": 1.0,
+        "drifting": 1.0,
+    },
+    "reroute": {
+        "delivered": 1.0,
+        "stuck": 1.0,
+    },
+    "fleet_shift": {
+        "delivered": 1.0,
+        "cold_burn": 1.0,
+    },
+    "rendezvous_hold": {"held": 1.0, "drift": 1.0},
+    "priority_coverage": {"priority": 1.0, "missed": 1.0},
+    "pass_fault": {"recovered": 1.0, "lost_pass": 1.0},
+    "debris_avoid": {"avoided": 1.0, "missed": 1.0},
+    "disposal": {"lowered": 1.0, "left": 1.0},
+    "station_contention": {"scheduled": 1.0, "conflict": 1.0},
+    "order_book": {"filled": 1.0, "wasted": 1.0},
+    "day_mission": {"accepted": 1.0, "rejected": 1.0},
 }
 
 
 def _config_path() -> Path:
-    name = Path("configs") / "rewards.yaml"
-    candidates = [Path.cwd() / name, Path(__file__).resolve().parents[3] / name]
-    for path in candidates:
-        if path.exists():
-            return path
-    return candidates[-1]
+    packaged = Path(__file__).resolve().parents[1] / "configs" / "rewards.yaml"
+    cwd = Path.cwd() / "configs" / "rewards.yaml"
+    if cwd.is_file():
+        return cwd
+    return packaged
 
 
 @lru_cache(maxsize=1)

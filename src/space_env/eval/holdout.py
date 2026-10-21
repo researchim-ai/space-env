@@ -14,7 +14,7 @@ def _episode(env: gym.Env, seed: int, use_expert: bool) -> tuple[float, bool]:
     success = False
     env_id = env.spec.id if env.spec is not None else ""
     while not done:
-        action = expert_action(env_id, obs) if use_expert else int(env.action_space.sample())
+        action = expert_action(env_id, obs) if use_expert else env.action_space.sample()
         obs, reward, terminated, truncated, info = env.step(action)
         total += float(reward)
         success = bool(info.get("success", False))

@@ -4,6 +4,37 @@ from __future__ import annotations
 import gymnasium as gym
 import pandas as pd
 
+# Потолок шагов в общем прогоне. Длиннее этого горизонта оценка не идёт,
+# даже если вызывающий передал больший max_episode_steps.
+_SUITE_STEPS = {
+    "space_env/MissionPlanner-v0": 4,
+    "space_env/ResourceManager-v0": 4,
+    "space_env/AnomalyResponse-v0": 4,
+    "space_env/ConjunctionAssessment-v0": 2,
+    "space_env/Constellation-v0": 2,
+    "space_env/ConstellationOps-v0": 4,
+    "space_env/SentinelAcquisition-v0": 2,
+    "space_env/LandsatAcquisition-v0": 2,
+    "space_env/SentinelPhasing-v0": 2,
+    "space_env/WorkPlan-v0": 2,
+    "space_env/ConjunctionQueue-v0": 1,
+    "space_env/DecayWatch-v0": 1,
+    "space_env/DecayWatchHigh-v0": 1,
+    "space_env/PhaseBurn-v0": 1,
+    "space_env/Reroute-v0": 1,
+    "space_env/FleetShift-v0": 4,
+    "space_env/RendezvousHold-v0": 1,
+    "space_env/PriorityCoverage-v0": 1,
+    "space_env/PassFault-v0": 6,
+    "space_env/DebrisAvoid-v0": 1,
+    "space_env/Disposal-v0": 1,
+    "space_env/StationContention-v0": 1,
+    "space_env/OrderBook-v0": 1,
+    "space_env/SentinelPassFault-v0": 8,
+    "space_env/CubesatAcquisition-v0": 2,
+    "space_env/DayMission-v0": 1,
+}
+
 
 def run_benchmark(
     env_id: str,
@@ -43,18 +74,22 @@ def run_benchmark(
 
 def run_registered_benchmarks(
     *,
-    episodes: int = 2,
+    episodes: int = 1,
     max_episode_steps: int = 12,
     seed: int = 0,
 ) -> list[dict[str, float | str | int]]:
-    """Четыре зарегистрированные среды подряд."""
-    env_ids = [
-        "space_env/ResourceManager-v0",
-        "space_env/AnomalyResponse-v0",
-        "space_env/ConjunctionAssessment-v0",
-        "space_env/MissionPlanner-v0",
-    ]
-    return [
-        run_benchmark(env_id, episodes=episodes, max_episode_steps=max_episode_steps, seed=seed)
-        for env_id in env_ids
-    ]
+    """Все идентификаторы space_env. Шаг эпизода не длиннее потолка этой среды."""
+    from space_env.envs import registered_env_ids
+
+    rows = []
+    for env_id in registered_env_ids():
+        cap = _SUITE_STEPS.get(env_id, max_episode_steps)
+        rows.append(
+            run_benchmark(
+                env_id,
+                episodes=episodes,
+                max_episode_steps=min(max_episode_steps, cap),
+                seed=seed,
+            )
+        )
+    return rows

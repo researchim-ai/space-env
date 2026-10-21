@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from space_env.envs.cards import ENV_CARDS, observation_index
+
 
 def expert_action(env_id: str, observation: np.ndarray) -> int:
     obs = np.asarray(observation, dtype=float).ravel()
@@ -22,6 +24,39 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         if rate < 0.35 and sun > 0.5:
             return 2
         return 0
+    if "ConjunctionQueue" in env_id:
+        hot = observation_index(env_id, "Pc горячей пары")
+        return 1 if obs[hot] > 0.01 else 0
+    if "RendezvousHold" in env_id or "DebrisAvoid" in env_id or "Disposal" in env_id:
+        return 1
+    if "PriorityCoverage" in env_id:
+        return 1 if obs[0] > 0.5 else 0
+    if "SentinelPassFault" in env_id:
+        if obs[0] > 0.5 and obs[1] > 0.5:
+            return 1
+        if obs[2] < 0.5:
+            return 2
+        return 0
+    if "StationContention" in env_id:
+        count = obs.size // 2
+        buffers = obs[:count]
+        visible = obs[count:]
+        candidates = [index for index in range(count) if visible[index] > 0.5]
+        if not candidates:
+            return 0
+        return max(candidates, key=lambda index: float(buffers[index]))
+    if "OrderBook" in env_id:
+        return 1 if obs[0] > 0.5 else 0
+    if "PassFault" in env_id:
+        if obs[0] > 0.5:
+            return 1
+        if obs[2] < 0.5:
+            return 2
+        return 0
+    if "PhaseBurn" in env_id or "Reroute" in env_id:
+        return 1
+    if "DecayWatch" in env_id:
+        return 1 if obs.size > 1 and obs[1] > 0.5 else 0
     if "ConjunctionAssessment" in env_id:
         radial = abs(obs[0] - 0.5)
         cross = abs(obs[1] - 0.5)
@@ -50,15 +85,28 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         if in_window and kind > 0.25:
             return 1
         return 0
-    if "ConstellationOps" in env_id:
-        count = (obs.size - 2) // 4
+    if "FleetShift" in env_id or "ConstellationOps" in env_id:
+        if "FleetShift" in env_id:
+            count = (obs.size - 4) // 4
+            packet, elevation, stride = 1, 2, 4
+            task_index = count * 4 + 2
+        else:
+            names = ENV_CARDS[env_id].observation
+            count = sum(1 for name in names if name.startswith("доля пакета"))
+            packet = observation_index(env_id, "доля пакета 1")
+            elevation = observation_index(env_id, "угол места 1")
+            stride = observation_index(env_id, "доля пакета 2") - packet
+            task_index = None
         if count < 2:
             return 0
-        buffers = [obs[4 * index + 1] for index in range(count)]
-        elevations = [obs[4 * index + 2] for index in range(count)]
+        buffers = [obs[packet + stride * index] for index in range(count)]
+        elevations = [obs[elevation + stride * index] for index in range(count)]
         holder = int(np.argmax(buffers))
         gateway = int(np.argmax(elevations))
-        if buffers[holder] < 0.5 or holder == gateway:
+        relay = buffers[holder] >= 0.5 and holder != gateway
+        if task_index is not None:
+            relay = relay and obs[task_index] > 0.5
+        if not relay:
             return np.array([holder, 0], dtype=int)
         return np.array([holder, 2], dtype=int)
     return 0

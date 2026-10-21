@@ -249,7 +249,7 @@ class Fleet:
             return np.diag([sigma_m**2, (8.0 * sigma_m) ** 2, sigma_m**2, 0.0, 0.0, 0.0])
         if stored.state_si is not None and stored.tca is not None:
             primary = self.vehicles[leader]
-            dt = (primary._now().jd - stored.tca.jd) * 86400.0
+            dt = (primary.now().jd - stored.tca.jd) * 86400.0
             motion = mean_motion_rad_s(float(np.linalg.norm(primary.orbit.r)))
             phi = cw_stm(motion, dt)
             mapped = phi @ stored.state_si @ phi.T

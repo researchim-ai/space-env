@@ -117,8 +117,20 @@ class SimulationEngine:
             total = self.spacecraft.config.propulsion.delta_v_total_m_s
             self.spacecraft.state.propulsion.delta_v_remaining_m_s = total * self.scenario.initial_delta_v_fraction
 
-    def _now(self) -> Time:
+    def now(self) -> Time:
+        """Время миссии: эпоха старта плюс секунды симуляции."""
         return self._epoch + self._time_sec
+
+    def captured_targets(self) -> frozenset[str]:
+        """Имена целей, уже засчитанных съёмкой."""
+        return frozenset(self._captured_targets)
+
+    def clear_captured_targets(self) -> None:
+        """Сбрасывает засчитанные цели. Нужно, когда сценарий подменяет точки съёмки."""
+        self._captured_targets.clear()
+
+    def _now(self) -> Time:
+        return self.now()
 
     def _health_factor(self, subsystem: str) -> float:
         health = self.spacecraft.state.health.get(subsystem, SubsystemHealth.NOMINAL)

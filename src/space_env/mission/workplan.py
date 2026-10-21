@@ -14,9 +14,10 @@ import numpy as np
 
 from space_env.catalog.build import mean_orbit, spacecraft_config
 from space_env.catalog.references import LANDSAT_STATIONS, SENTINEL_STATIONS, reference
-from space_env.core.access import ground_track_latlon, off_nadir_deg
+from space_env.core.access import ground_track_latlon, off_nadir_deg, subsatellite_latlon
 from space_env.core.environment import in_eclipse
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
+from space_env.core.relative import inertial_delta_v_m_s
 from space_env.core.ground import GroundStation
 from space_env.core.link import link_margin_db, stepped_rate_bps
 from space_env.core.propagate import propagate_state
@@ -332,7 +333,17 @@ def _stations_for(key: str) -> list[GroundStation]:
         return list(SENTINEL_STATIONS)
     if key == "landsat-9":
         return list(LANDSAT_STATIONS)
+    if key == "cubesat-6u":
+        return [station for station in SENTINEL_STATIONS if station.name == "Svalbard"]
     return []
+
+
+def _target_prefix(key: str) -> str:
+    if key == "landsat-9":
+        return "L9"
+    if key == "cubesat-6u":
+        return "C6"
+    return "S2"
 
 
 def _group_open(open_runs: dict[str, list[float]], kind: str, sample_sec: float, rate_of) -> list[Opportunity]:
@@ -364,8 +375,16 @@ def collect_opportunities(
     nu_deg: float = 180.0,
     sample_sec: float = 60.0,
     targets: list[GroundTarget] | None = None,
+    order_every_sec: float | None = None,
+    burn_at_sec: float | None = None,
+    burn_dv_m_s: float = 0.0,
+    burn_direction: str = "normal",
 ) -> tuple[list[Opportunity], tuple[tuple[str, float, float], ...]]:
-    """Окна съёмки и сеансов тем же Кауэллом, что и шаг среды. Шаг сетки — sample_sec."""
+    """Окна съёмки и сеансов тем же Кауэллом, что и шаг среды. Шаг сетки — sample_sec.
+
+    order_every_sec ставит заявку в подспутниковую точку раз в этот интервал, на свету.
+    Так сутки получают отдельную цель на виток, а не три точки короткого плана.
+    """
     spec = reference(key)
     if spec.memory_bits is None or spec.store_rate_bps is None:
         raise ValueError(f"у {key} нет опубликованных памяти и скорости записи")
@@ -377,7 +396,11 @@ def collect_opportunities(
     f107 = 150.0 if weather is None else weather.f107
     f107a = 150.0 if weather is None else weather.f107a
     ap = 4.0 if weather is None else weather.ap
-    if targets is None:
+    if order_every_sec is not None and order_every_sec <= 0.0:
+        raise ValueError("шаг заявок должен быть положительным")
+    dynamic_orders = targets is None and order_every_sec is not None
+    prefix = _target_prefix(key)
+    if targets is None and not dynamic_orders:
         points = ground_track_latlon(
             orbit,
             [600.0, 1500.0, 2400.0],
@@ -385,12 +408,12 @@ def collect_opportunities(
             drag_area_m2=prop.drag_area_m2,
             drag_coefficient=prop.drag_coefficient,
         )
-        prefix = "L9" if key == "landsat-9" else "S2"
         targets = [
             GroundTarget(name=f"{prefix}-{index + 1}", lat_deg=lat, lon_deg=lon)
             for index, (lat, lon) in enumerate(points)
         ]
-    target_rows = tuple((item.name, item.lat_deg, item.lon_deg) for item in targets)
+    elif targets is None:
+        targets = []
     comms = craft.comms
     half_fov = craft.payload.half_fov_deg
     position = orbit.r.copy()
@@ -398,9 +421,23 @@ def collect_opportunities(
     imaging_hits: dict[str, list[float]] = {item.name: [] for item in targets}
     comms_hits: dict[str, list[tuple[float, float]]] = {station.name: [] for station in stations}
     elapsed = 0.0
+    burned = False
     while elapsed <= horizon_sec + 1e-9:
+        if (
+            burn_at_sec is not None
+            and not burned
+            and burn_dv_m_s > 0.0
+            and elapsed + 1e-9 >= burn_at_sec
+        ):
+            velocity = velocity + inertial_delta_v_m_s(position, velocity, burn_dv_m_s, burn_direction)
+            burned = True
         moment = orbit.epoch + elapsed
         sunlit = not in_eclipse(position, sun_position_m(moment))
+        if dynamic_orders and sunlit and elapsed + 1e-9 >= len(targets) * float(order_every_sec):
+            lat, lon = subsatellite_latlon(position, moment)
+            name = f"{prefix}-{len(targets) + 1}"
+            targets.append(GroundTarget(name=name, lat_deg=lat, lon_deg=lon))
+            imaging_hits[name] = []
         if sunlit:
             visible = [
                 (off_nadir_deg(position, item.lat_deg, item.lon_deg, moment), item.name)
@@ -475,6 +512,7 @@ def collect_opportunities(
         end = min(item.end_sec, horizon_sec)
         if end - item.start_sec >= 1.0:
             clipped.append(replace(item, end_sec=end))
+    target_rows = tuple((item.name, item.lat_deg, item.lon_deg) for item in targets)
     return clipped, target_rows
 
 
@@ -488,6 +526,11 @@ def build_acquisition_plan(
     initial_bits: float = 0.0,
     targets: list[GroundTarget] | None = None,
     extra_items: list[WorkItem] | None = None,
+    order_every_sec: float | None = None,
+    imaging_cap_s: float | None = None,
+    burn_at_sec: float | None = None,
+    burn_dv_m_s: float = 0.0,
+    burn_direction: str = "normal",
 ) -> WorkPlan:
     """План съёмки и сдачи для карточки с памятью. Дополнительные дела, например импульс, добавляются как есть."""
     spec = reference(key)
@@ -498,11 +541,17 @@ def build_acquisition_plan(
         nu_deg=nu_deg,
         sample_sec=sample_sec,
         targets=targets,
+        order_every_sec=order_every_sec,
+        burn_at_sec=burn_at_sec,
+        burn_dv_m_s=burn_dv_m_s,
+        burn_direction=burn_direction,
     )
+    if imaging_cap_s is None:
+        imaging_cap_s = float(spec.max_imaging_s) if spec.max_imaging_s is not None else 1.0e12
     items = schedule_acquisition(
         opportunities,
         memory_bits=float(spec.memory_bits),
-        imaging_cap_s=float(spec.max_imaging_s) if spec.max_imaging_s is not None else 1.0e12,
+        imaging_cap_s=imaging_cap_s,
         downlink_bps=float(spec.downlink_bps),
         initial_bits=initial_bits,
     )

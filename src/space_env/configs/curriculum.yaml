@@ -1,0 +1,86 @@
+# Порядок сред для генерации траекторий и короткого обучения.
+stages:
+  - name: resources
+    env: space_env/ResourceManager-v0
+    episodes: 2
+    max_episode_steps: 30
+  - name: anomaly
+    env: space_env/AnomalyResponse-v0
+    episodes: 2
+    max_episode_steps: 12
+  - name: conjunction
+    env: space_env/ConjunctionAssessment-v0
+    episodes: 2
+    max_episode_steps: 12
+  - name: planner
+    env: space_env/MissionPlanner-v0
+    episodes: 2
+    max_episode_steps: 24
+  - name: workplan
+    env: space_env/WorkPlan-v0
+    episodes: 1
+    max_episode_steps: 8
+  - name: constellation
+    env: space_env/ConstellationOps-v0
+    episodes: 1
+    max_episode_steps: 8
+  - name: conjunction_queue
+    env: space_env/ConjunctionQueue-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: decay_low
+    env: space_env/DecayWatch-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: decay_high
+    env: space_env/DecayWatchHigh-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: phase_burn
+    env: space_env/PhaseBurn-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: reroute
+    env: space_env/Reroute-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: fleet_shift
+    env: space_env/FleetShift-v0
+    episodes: 1
+    max_episode_steps: 8
+  - name: rendezvous
+    env: space_env/RendezvousHold-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: coverage
+    env: space_env/PriorityCoverage-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: pass_fault
+    env: space_env/PassFault-v0
+    episodes: 1
+    max_episode_steps: 6
+  - name: debris
+    env: space_env/DebrisAvoid-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: disposal
+    env: space_env/Disposal-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: station
+    env: space_env/StationContention-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: orders
+    env: space_env/OrderBook-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: sentinel_fault
+    env: space_env/SentinelPassFault-v0
+    episodes: 1
+    max_episode_steps: 12
+  - name: day_mission
+    env: space_env/DayMission-v0
+    episodes: 1
+    max_episode_steps: 1

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Случайный бенчмарк четырёх сред и, по желанию, рубрика готового SFT-ответа."""
+"""Случайный бенчмарк всех сред space_env и, по желанию, рубрика готового SFT-ответа."""
 import argparse
 
 from space_env.eval.benchmarks import run_registered_benchmarks

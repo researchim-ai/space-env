@@ -1,4 +1,4 @@
-"""Каталог опубликованных аппаратов: Sentinel-2, Landsat 9, Iridium NEXT."""
+"""Каталог: Sentinel-2, Landsat 9, Iridium NEXT, класс 6U и неманеврирующий фрагмент."""
 
 from space_env.catalog.build import (
     iridium_next_fleet,

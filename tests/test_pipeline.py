@@ -4,6 +4,8 @@ from pathlib import Path
 import gymnasium as gym
 import pytest
 
+import space_env
+
 from space_env.eval.benchmarks import run_benchmark
 from space_env.eval.sft_rubric import score_prediction
 from space_env.mission.loader import load_engine
@@ -26,8 +28,36 @@ def test_rewards_and_curriculum_files():
         "planner",
         "workplan",
         "constellation",
+        "conjunction_queue",
+        "decay_low",
+        "decay_high",
+        "phase_burn",
+        "reroute",
+        "fleet_shift",
+        "rendezvous",
+        "coverage",
+        "pass_fault",
+        "debris",
+        "disposal",
+        "station",
+        "orders",
+        "sentinel_fault",
+        "day_mission",
     ]
     assert rewards["workplan"]["task_done"] == pytest.approx(1.0)
+
+
+def test_reinforce_refuses_a_multi_discrete_action():
+    with pytest.raises(TypeError, match="одно дискретное действие"):
+        train_linear_reinforce("space_env/ConstellationOps-v0", episodes=1, max_episode_steps=1)
+
+
+def test_package_contains_configs_and_training_texts():
+    root = Path(space_env.__file__).resolve().parent
+    assert (root / "configs" / "curriculum.yaml").is_file()
+    assert (root / "configs" / "rewards.yaml").is_file()
+    assert (root / "bundled_data" / "sft_pairs.yaml").is_file()
+    assert (root / "bundled_data" / "glossary.yaml").is_file()
 
 
 def test_scenario_yaml_steps():

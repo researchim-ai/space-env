@@ -24,7 +24,12 @@ def _load_yaml(path: Path) -> dict:
 
 
 def _get_data_dir() -> Path:
-    return Path(__file__).resolve().parent.parent.parent.parent / "data"
+    """Каталог текстов. В checkout это data/, в установленном пакете — bundled_data."""
+    cwd = Path.cwd() / "data"
+    packaged = Path(__file__).resolve().parents[1] / "bundled_data"
+    if (cwd / "sft_pairs.yaml").is_file():
+        return cwd
+    return packaged
 
 
 def generate_from_templates(

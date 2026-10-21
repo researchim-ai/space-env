@@ -13,6 +13,15 @@ from space_env.mission.scenarios import (
 )
 from space_env.mission.types import MissionProfile, MissionType
 from space_env.mission.fleet_plan import FleetSchedule, build_relay_schedule
+from space_env.mission.horizon import (
+    HorizonPlan,
+    build_conjunction_plan,
+    build_decay_plan,
+    build_reroute_schedule,
+    build_two_burn_phase_plan,
+    execute_decay_plan,
+)
+from space_env.mission.campaign import DayCampaign, build_day_campaign
 from space_env.mission.workplan import WorkPlan, build_acquisition_plan, maneuver_item
 
 __all__ = [
@@ -29,8 +38,16 @@ __all__ = [
     "ScenarioConfig",
     "ScenarioType",
     "WorkPlan",
+    "DayCampaign",
     "FleetSchedule",
+    "HorizonPlan",
     "build_acquisition_plan",
+    "build_day_campaign",
+    "build_conjunction_plan",
+    "build_decay_plan",
     "build_relay_schedule",
+    "build_reroute_schedule",
+    "build_two_burn_phase_plan",
+    "execute_decay_plan",
     "maneuver_item",
 ]

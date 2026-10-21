@@ -174,7 +174,7 @@ class WorkPlanEnv(gym.Env):
                 imaging_sec=self._imaging_sec,
                 imaging_cap_sec=self._imaging_cap_s,
             )
-            if active is not None and active.kind == "imaging" and active.name in self._engine._captured_targets:
+            if active is not None and active.kind == "imaging" and active.name in self._engine.captured_targets():
                 self._done.add(self._required().index(active))
                 completed = True
         dumped = 0.0

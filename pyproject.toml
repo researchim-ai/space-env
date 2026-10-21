@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "space-env"
-version = "0.21.0"
+version = "0.33.0"
 description = "Environment for generating pretraining/SFT/RL data for space industry agents"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -41,6 +41,9 @@ all-industry = [
     "spacepackets>=0.22",
     "orekit-jpype>=13.0",
 ]
+
+[project.entry-points."gymnasium.envs"]
+space_env = "space_env.envs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/space_env"]

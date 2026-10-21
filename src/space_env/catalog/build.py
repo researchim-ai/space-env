@@ -63,6 +63,8 @@ def _stations(key: str) -> list[GroundStation]:
         return list(SENTINEL_STATIONS)
     if key == "landsat-9":
         return list(LANDSAT_STATIONS)
+    if key == "cubesat-6u":
+        return [next(station for station in SENTINEL_STATIONS if station.name == "Svalbard")]
     return []
 
 

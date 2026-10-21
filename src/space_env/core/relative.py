@@ -29,6 +29,24 @@ def eci_to_rtn(vec_eci: np.ndarray, r_m: np.ndarray, v_m_s: np.ndarray) -> np.nd
     return rtn_basis(r_m, v_m_s).T @ np.asarray(vec_eci, dtype=float)
 
 
+def inertial_delta_v_m_s(position: np.ndarray, velocity: np.ndarray, dv_m_s: float, direction: str) -> np.ndarray:
+    """Приращение скорости в ECI. normal — вдоль удельного момента, как команда манёвра движка."""
+    speed = float(np.linalg.norm(velocity))
+    if speed < 1e-6 or dv_m_s == 0.0:
+        return np.zeros(3)
+    if direction == "retrograde":
+        axis = -velocity / speed
+    elif direction == "normal":
+        moment = np.cross(position, velocity)
+        norm = float(np.linalg.norm(moment))
+        axis = moment / norm if norm > 0.0 else velocity / speed
+    elif direction == "radial":
+        axis = np.asarray(position, dtype=float) / np.linalg.norm(position)
+    else:
+        axis = velocity / speed
+    return axis * float(dv_m_s)
+
+
 def cw_stm(n_rad_s: float, t_sec: float) -> np.ndarray:
     """6×6 матрица перехода состояния [x, y, z, vx, vy, vz]."""
     n = float(n_rad_s)
