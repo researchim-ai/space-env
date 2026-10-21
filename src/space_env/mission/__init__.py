@@ -12,6 +12,8 @@ from space_env.mission.scenarios import (
     ScenarioType,
 )
 from space_env.mission.types import MissionProfile, MissionType
+from space_env.mission.fleet_plan import FleetSchedule, build_relay_schedule
+from space_env.mission.workplan import WorkPlan, build_acquisition_plan, maneuver_item
 
 __all__ = [
     "AnomalyInject",
@@ -26,4 +28,9 @@ __all__ = [
     "PlannedEvent",
     "ScenarioConfig",
     "ScenarioType",
+    "WorkPlan",
+    "FleetSchedule",
+    "build_acquisition_plan",
+    "build_relay_schedule",
+    "maneuver_item",
 ]

@@ -11,20 +11,27 @@ import numpy as np
 from space_env.rl.curriculum import load_curriculum
 
 
-def rollout_episode(env: gym.Env, seed: int, policy: Callable[[np.ndarray], int] | None = None) -> list[dict[str, Any]]:
+def _json_action(action: Any) -> int | list[int]:
+    values = np.atleast_1d(np.asarray(action, dtype=int)).ravel()
+    if values.size == 1:
+        return int(values[0])
+    return [int(item) for item in values]
+
+
+def rollout_episode(env: gym.Env, seed: int, policy: Callable[[np.ndarray], Any] | None = None) -> list[dict[str, Any]]:
     """Один эпизод. policy(obs) → действие; по умолчанию равномерная выборка."""
     obs, info = env.reset(seed=seed)
     rows: list[dict[str, Any]] = []
     done = False
     step_index = 0
     while not done:
-        action = int(policy(obs)) if policy is not None else int(env.action_space.sample())
+        action = policy(obs) if policy is not None else env.action_space.sample()
         next_obs, reward, terminated, truncated, info = env.step(action)
         rows.append(
             {
                 "step": step_index,
                 "observation": np.asarray(obs, dtype=float).ravel().tolist(),
-                "action": action,
+                "action": _json_action(action),
                 "reward": float(reward),
                 "next_observation": np.asarray(next_obs, dtype=float).ravel().tolist(),
                 "terminated": bool(terminated),

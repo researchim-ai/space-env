@@ -1,0 +1,5 @@
+Снимок GP-элементов Celestrak, эпоха TLE — день 293 года 2026 (20 октября 2026).
+https://celestrak.org/NORAD/elements/gp.php?CATNR=40697&FORMAT=TLE
+https://celestrak.org/NORAD/elements/gp.php?CATNR=42063&FORMAT=TLE
+https://celestrak.org/NORAD/elements/gp.php?CATNR=49260&FORMAT=TLE
+Живой каталог уходит вперёд. Этот файл — зафиксированное состояние для повторяемых эпизодов.

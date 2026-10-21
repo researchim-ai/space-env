@@ -36,6 +36,10 @@ DEFAULT_REWARDS: dict[str, dict[str, float]] = {
         "collision_risk": 1.0,
         "unnecessary_burn": 0.2,
     },
+    "workplan": {
+        "task_done": 1.0,
+        "soc_failure": 1.0,
+    },
 }
 
 

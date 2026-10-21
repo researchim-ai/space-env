@@ -32,6 +32,8 @@ class ConjunctionAssessmentEnv(gym.Env):
         step_sec: float = 60.0,
         seed: int | None = None,
         render_mode: str | None = None,
+        tracking_arc: bool = False,
+        range_sigma_m: float = 20.0,
     ):
         super().__init__()
         self.max_episode_steps = max_episode_steps
@@ -47,6 +49,8 @@ class ConjunctionAssessmentEnv(gym.Env):
         self._spent = 0.0
         self._weights = load_rewards()["conjunction"]
         self._last_reward = 0.0
+        self.tracking_arc = tracking_arc
+        self.range_sigma_m = range_sigma_m
 
     def _obs(self) -> np.ndarray:
         if self._engine is None:
@@ -98,13 +102,67 @@ class ConjunctionAssessmentEnv(gym.Env):
             scenario=scenario,
             propulsion=PropulsionConfig(delta_v_total_m_s=self._dv_budget, mass_kg=100.0),
         )
+        tracking = None
+        if self.tracking_arc:
+            tracking = self._fit_tracking_arc()
+            self._engine.use_tracking_covariance(tracking.covariance_rtn_m2)
         snap = self._engine.get_state_snapshot()
         self._initial_pc = float(snap.conjunction_probability or 0.0)
-        return self._obs(), {
+        info = {
             "miss_km": snap.conjunction_miss_km,
             "prob": self._initial_pc,
             "above_threshold": self._initial_pc >= PC_THRESHOLD,
         }
+        if tracking is not None:
+            info["tracking_rms_m"] = tracking.rms_m
+            info["cross_sigma_m"] = float(np.sqrt(max(tracking.covariance_rtn_m2[2, 2], 0.0)))
+        return self._obs(), info
+
+    def _fit_tracking_arc(self):
+        from space_env.core.access import subsatellite_latlon
+        from space_env.core.frames import elevation_deg
+        from space_env.estimation.range_arc import fit_two_station_arc, geometric_range_m
+
+        engine = self._engine
+        assert engine is not None
+        epoch = engine.orbit.epoch
+        lat, lon = subsatellite_latlon(engine.orbit.r, epoch)
+        stations = ((lat, lon), (lat + 12.0, lon))
+        ranges = []
+        position, velocity = engine.orbit.r.copy(), engine.orbit.v.copy()
+        elapsed = 0.0
+        while elapsed <= 180.0 + 1e-9:
+            moment = epoch + elapsed
+            for station_lat, station_lon in stations:
+                if elevation_deg(position, station_lat, station_lon, 0.0, moment) < 5.0:
+                    continue
+                truth = geometric_range_m(position, moment, station_lat, station_lon)
+                noise = float(self.np_random.normal(0.0, self.range_sigma_m))
+                ranges.append((elapsed, truth + noise, station_lat, station_lon))
+            if elapsed >= 180.0:
+                break
+            from space_env.core.propagate import propagate_state
+
+            position, velocity, _samples = propagate_state(
+                position,
+                velocity,
+                30.0,
+                mass_kg=engine.spacecraft.config.propulsion.mass_kg,
+                drag_area_m2=0.0,
+                drag_coefficient=0.0,
+                include_drag=False,
+                include_j2=True,
+                include_third_body=False,
+                substep_sec=10.0,
+            )
+            elapsed += 30.0
+        return fit_two_station_arc(
+            engine.orbit.r,
+            engine.orbit.v,
+            epoch,
+            ranges,
+            range_sigma_m=self.range_sigma_m,
+        )
 
     def step(self, action: int | np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
         if self._engine is None:

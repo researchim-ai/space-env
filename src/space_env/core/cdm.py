@@ -14,6 +14,8 @@ import numpy as np
 class CdmObject:
     designator: str = ""
     covariance_km2: np.ndarray = field(default_factory=lambda: np.zeros((3, 3)))
+    # 6×6 в метрах и м/с. None — в сообщении нет блока скоростей, переносить такую матрицу нельзя.
+    state_covariance_si: np.ndarray | None = None
 
 
 @dataclass
@@ -29,6 +31,15 @@ class ConjunctionMessage:
         total = np.zeros((3, 3))
         for obj in self.objects:
             total = total + obj.covariance_km2 * 1.0e6
+        return total
+
+    def combined_state_covariance_si(self) -> np.ndarray | None:
+        """Сумма 6×6, если блок скоростей есть у каждого объекта. Иначе None."""
+        if not self.objects or any(obj.state_covariance_si is None for obj in self.objects):
+            return None
+        total = np.zeros((6, 6))
+        for obj in self.objects:
+            total = total + obj.state_covariance_si
         return total
 
     def combined_sigma_m(self) -> float:
@@ -49,11 +60,55 @@ def _float(value: str) -> float:
     return float(_strip_units(value).replace("D", "E"))
 
 
+# Индексы RTN: R T N Rdot Tdot Ndot. Единицы в KVN — км и км/с.
+_POSITION = {"CR_R": (0, 0), "CT_T": (1, 1), "CN_N": (2, 2), "CT_R": (0, 1), "CN_R": (0, 2), "CN_T": (1, 2)}
+_VELOCITY = {
+    "CRDOT_RDOT": (3, 3),
+    "CTDOT_TDOT": (4, 4),
+    "CNDOT_NDOT": (5, 5),
+    "CTDOT_RDOT": (3, 4),
+    "CNDOT_RDOT": (3, 5),
+    "CNDOT_TDOT": (4, 5),
+}
+_CROSS = {
+    "CRDOT_R": (0, 3),
+    "CRDOT_T": (1, 3),
+    "CRDOT_N": (2, 3),
+    "CTDOT_R": (0, 4),
+    "CTDOT_T": (1, 4),
+    "CTDOT_N": (2, 4),
+    "CNDOT_R": (0, 5),
+    "CNDOT_T": (1, 5),
+    "CNDOT_N": (2, 5),
+}
+
+
+def _to_si(raw: np.ndarray) -> np.ndarray:
+    si = np.array(raw, dtype=float, copy=True)
+    si[:3, :3] *= 1.0e6
+    si[:3, 3:] *= 1.0e3
+    si[3:, :3] *= 1.0e3
+    si[3:, 3:] *= 1.0e6
+    return si
+
+
 def parse_cdm_kvn(text: str) -> ConjunctionMessage:
     """Читает KVN-сообщение. Комментарии с # отбрасываются."""
     message = ConjunctionMessage()
     current: CdmObject | None = None
     cov = np.zeros((3, 3))
+    state = np.zeros((6, 6))
+    saw_velocity = False
+
+    def _close() -> None:
+        nonlocal current, cov, state, saw_velocity
+        if current is None:
+            return
+        current.covariance_km2 = cov
+        if saw_velocity:
+            current.state_covariance_si = _to_si(state)
+        message.objects.append(current)
+
     for raw in text.splitlines():
         line = raw.split("#", 1)[0].strip()
         if not line or "=" not in line:
@@ -75,28 +130,24 @@ def parse_cdm_kvn(text: str) -> ConjunctionMessage:
             if area > 0.0:
                 message.hard_body_radius_m = float(np.sqrt(area / np.pi))
         elif key == "OBJECT":
-            if current is not None:
-                current.covariance_km2 = cov
-                message.objects.append(current)
+            _close()
             current = CdmObject()
             cov = np.zeros((3, 3))
+            state = np.zeros((6, 6))
+            saw_velocity = False
         elif key == "OBJECT_DESIGNATOR" and current is not None:
             current.designator = _strip_units(value)
-        elif key == "CR_R":
-            cov[0, 0] = _float(value)
-        elif key == "CT_T":
-            cov[1, 1] = _float(value)
-        elif key == "CN_N":
-            cov[2, 2] = _float(value)
-        elif key == "CT_R":
-            cov[0, 1] = cov[1, 0] = _float(value)
-        elif key == "CN_R":
-            cov[0, 2] = cov[2, 0] = _float(value)
-        elif key == "CN_T":
-            cov[1, 2] = cov[2, 1] = _float(value)
-    if current is not None:
-        current.covariance_km2 = cov
-        message.objects.append(current)
+        elif key in _POSITION:
+            i, j = _POSITION[key]
+            value_f = _float(value)
+            cov[i, j] = cov[j, i] = value_f
+            state[i, j] = state[j, i] = value_f
+        elif key in _VELOCITY or key in _CROSS:
+            i, j = (_VELOCITY if key in _VELOCITY else _CROSS)[key]
+            value_f = _float(value)
+            state[i, j] = state[j, i] = value_f
+            saw_velocity = True
+    _close()
     if message.miss_distance_m <= 0.0:
         raise ValueError("в CDM нет MISS_DISTANCE")
     return message

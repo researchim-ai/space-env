@@ -1,7 +1,8 @@
 """
 Группировка: несколько полноценных аппаратов на общих часах.
 Каждый ведёт свой SimulationEngine (батарея, тепло, связь, съёмка).
-Между парами считается геометрия RTN и скрининг Pc, если дистанция меньше порога.
+Между парами считается геометрия RTN, межспутниковая линия и скрининг Pc.
+Буфер кадра сбрасывается на станцию или соседу.
 """
 from __future__ import annotations
 
@@ -9,9 +10,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from space_env.core.cdm import ConjunctionMessage
+from space_env.core.link import earth_occults, isl_margin_db, isl_rate_bps, stepped_rate_bps
 from space_env.core.orbit import Orbit
 from space_env.core.probability import bplane_probability
-from space_env.core.relative import eci_to_rtn
+from space_env.core.relative import cw_stm, eci_to_rtn, mean_motion_rad_s
 from space_env.core.spacecraft import Spacecraft, SpacecraftConfig
 from space_env.core.time import Time
 from space_env.mission.scenarios import ScenarioConfig
@@ -27,6 +30,8 @@ class PairGeometry:
     radial_m: float
     along_m: float
     cross_m: float
+    earth_blocked: bool
+    isl_margin_db: float
 
 
 @dataclass(frozen=True)
@@ -37,6 +42,14 @@ class ScreenHit:
     probability: float
 
 
+@dataclass
+class _StoredCdm:
+    position_m2: np.ndarray
+    state_si: np.ndarray | None
+    radius_m: float
+    tca: Time | None
+
+
 class Fleet:
     """Именованные аппараты. Шаг один и тот же для всех."""
 
@@ -44,6 +57,9 @@ class Fleet:
         if len(vehicles) < 2:
             raise ValueError("в группировке минимум два аппарата")
         self.vehicles = dict(vehicles)
+        self._cdm: dict[tuple[str, str], _StoredCdm] = {}
+        self.buffer_mb = {name: 0.0 for name in self.vehicles}
+        self.delivered_mb = 0.0
 
     @classmethod
     def string_of_pearls(
@@ -65,12 +81,79 @@ class Fleet:
         vehicles: dict[str, SimulationEngine] = {}
         for index in range(count):
             name = names[index] if names else f"SC-{index + 1}"
-            orbit = Orbit.from_keplerian(
-                a_m, 0.0, np.deg2rad(inc_deg), 0.0, 0.0, np.deg2rad(separation_deg * index), moment
+            vehicles[name] = _make_vehicle(
+                name, a_m, inc_deg, 0.0, separation_deg * index, moment, template
             )
-            craft = Spacecraft(config=SpacecraftConfig(name=name))
-            craft.reset_state()
-            vehicles[name] = SimulationEngine(orbit, craft, scenario=template.model_copy(deep=True))
+        return cls(vehicles)
+
+    @classmethod
+    def walker(
+        cls,
+        total: int,
+        planes: int,
+        phasing: int,
+        *,
+        epoch: str = "2024-01-01T00:00:00Z",
+        a_m: float = 6800e3,
+        inc_deg: float = 51.6,
+        scenario: ScenarioConfig | None = None,
+    ) -> "Fleet":
+        """
+        Walker-delta T/P/F.
+        T — число аппаратов, P — число плоскостей, F — параметр фазирования.
+        В плоскости j долгота узла 360°·j/P, аномалия i-го аппарата
+        360°·i/(T/P) + 360°·F·j/T.
+        """
+        if planes < 1 or total < 2 or total % planes != 0:
+            raise ValueError("T должно делиться на P, аппаратов не меньше двух")
+        if not 0 <= phasing < planes:
+            raise ValueError("F должен быть в диапазоне 0 … P−1")
+        per_plane = total // planes
+        template = scenario or ScenarioConfig()
+        moment = Time(epoch)
+        vehicles: dict[str, SimulationEngine] = {}
+        for plane in range(planes):
+            raan = 360.0 * plane / planes
+            for slot in range(per_plane):
+                nu = 360.0 * slot / per_plane + 360.0 * phasing * plane / total
+                name = f"P{plane + 1}-S{slot + 1}"
+                vehicles[name] = _make_vehicle(name, a_m, inc_deg, raan, nu, moment, template)
+        return cls(vehicles)
+
+    @classmethod
+    def walker_star(
+        cls,
+        total: int,
+        planes: int,
+        phasing: int,
+        *,
+        epoch: str = "2024-01-01T00:00:00Z",
+        a_m: float = 6800e3,
+        inc_deg: float = 86.4,
+        scenario: ScenarioConfig | None = None,
+        spacecraft: SpacecraftConfig | None = None,
+    ) -> "Fleet":
+        """
+        Walker-star T/P/F: узлы разнесены на 180°, а не на 360°.
+        Так устроена приполярная сетка Iridium: 86.4°:66/6/2.
+        Аномалия та же, что у Walker-delta: 360°·i/(T/P) + 360°·F·j/T.
+        """
+        if planes < 1 or total < 2 or total % planes != 0:
+            raise ValueError("T должно делиться на P, аппаратов не меньше двух")
+        if not 0 <= phasing < planes:
+            raise ValueError("F должен быть в диапазоне 0 … P−1")
+        per_plane = total // planes
+        template = scenario or ScenarioConfig()
+        moment = Time(epoch)
+        vehicles: dict[str, SimulationEngine] = {}
+        for plane in range(planes):
+            raan = 180.0 * plane / planes
+            for slot in range(per_plane):
+                nu = 360.0 * slot / per_plane + 360.0 * phasing * plane / total
+                name = f"P{plane + 1}-S{slot + 1}"
+                vehicles[name] = _make_vehicle(
+                    name, a_m, inc_deg, raan, nu, moment, template, spacecraft
+                )
         return cls(vehicles)
 
     def step(
@@ -110,10 +193,121 @@ class Fleet:
                 distance = float(np.linalg.norm(dr))
                 rate = float(np.dot(dr, dv) / distance) if distance > 1.0 else 0.0
                 rtn = eci_to_rtn(dr, eng_a.orbit.r, eng_a.orbit.v)
+                blocked = earth_occults(eng_a.orbit.r, eng_b.orbit.r)
+                margin = -99.0 if blocked else isl_margin_db(distance)
                 found.append(
-                    PairGeometry(leader, follower, distance, rate, float(rtn[0]), float(rtn[1]), float(rtn[2]))
+                    PairGeometry(
+                        leader,
+                        follower,
+                        distance,
+                        rate,
+                        float(rtn[0]),
+                        float(rtn[1]),
+                        float(rtn[2]),
+                        blocked,
+                        margin,
+                    )
                 )
         return found
+
+    def use_arc_covariance(self, leader: str, follower: str, covariance_rtn_m2: np.ndarray, *, hard_body_radius_m: float = 15.0) -> None:
+        """Ковариация дуги дальностей на текущую эпоху. TCA нет, матрица в скрининг идёт как есть."""
+        if leader not in self.vehicles or follower not in self.vehicles:
+            raise KeyError("оба имени должны быть в группировке")
+        matrix = np.array(covariance_rtn_m2, dtype=float, copy=True)
+        if matrix.shape != (6, 6):
+            raise ValueError("ковариация дуги должна быть 6×6")
+        self._cdm[tuple(sorted((leader, follower)))] = _StoredCdm(
+            matrix[:3, :3].copy(),
+            0.5 * (matrix + matrix.T),
+            hard_body_radius_m,
+            None,
+        )
+
+    def use_cdm(self, leader: str, follower: str, message: ConjunctionMessage) -> None:
+        """Ковариация и радиус твёрдого тела пары берутся из разобранного CDM."""
+        if leader not in self.vehicles or follower not in self.vehicles:
+            raise KeyError("оба имени должны быть в группировке")
+        state = message.combined_state_covariance_si()
+        tca = Time(message.tca) if message.tca else None
+        self._cdm[tuple(sorted((leader, follower)))] = _StoredCdm(
+            np.array(message.combined_covariance_m2(), dtype=float, copy=True),
+            None if state is None else np.array(state, dtype=float, copy=True),
+            message.hard_body_radius_m,
+            tca,
+        )
+
+    def pair_covariance(self, leader: str, follower: str, *, sigma_m: float = 200.0) -> np.ndarray:
+        """
+        6×6 в RTN на текущих часах лидера.
+        Полный CDM с TCA и блоком скоростей переносится матрицей Клохесси–Уилтшира.
+        Позиционный блок без скоростей остаётся на эпохе скрининга: нулевая скорость
+        в сообщении означала бы идеальное знание, а не отсутствие данных.
+        """
+        stored = self._cdm.get(tuple(sorted((leader, follower))))
+        if stored is None:
+            return np.diag([sigma_m**2, (8.0 * sigma_m) ** 2, sigma_m**2, 0.0, 0.0, 0.0])
+        if stored.state_si is not None and stored.tca is not None:
+            primary = self.vehicles[leader]
+            dt = (primary._now().jd - stored.tca.jd) * 86400.0
+            motion = mean_motion_rad_s(float(np.linalg.norm(primary.orbit.r)))
+            phi = cw_stm(motion, dt)
+            mapped = phi @ stored.state_si @ phi.T
+            return 0.5 * (mapped + mapped.T)
+        if stored.state_si is not None:
+            # Дуга дальностей уже приведена к текущей эпохе. Перенос от TCA не нужен.
+            return 0.5 * (stored.state_si + stored.state_si.T)
+        padded = np.zeros((6, 6))
+        padded[:3, :3] = stored.position_m2
+        return padded
+
+    def collect(self, name: str, megabytes: float) -> None:
+        """Кладёт кадр в буфер аппарата. Сброс на Землю и ретрансляция забирают его отсюда."""
+        if name not in self.buffer_mb:
+            raise KeyError(name)
+        if megabytes < 0.0:
+            raise ValueError("объём кадра не отрицательный")
+        self.buffer_mb[name] += float(megabytes)
+
+    def downlink(self, name: str, dt_sec: float) -> float:
+        """Сбрасывает буфер на станцию со скоростью ступеней модема, пока линия закрыта."""
+        engine = self.vehicles[name]
+        snap = engine.get_state_snapshot()
+        if dt_sec <= 0.0 or not snap.link_ok or snap.link_margin_db < 0.0:
+            return 0.0
+        rate = stepped_rate_bps(snap.link_margin_db, engine.spacecraft.config.comms.data_rate_max_bps)
+        moved = min(self.buffer_mb[name], rate * dt_sec / 1.0e6)
+        self.buffer_mb[name] -= moved
+        self.delivered_mb += moved
+        return moved
+
+    def best_neighbor(self, name: str) -> str | None:
+        """Сосед с наибольшим запасом межспутниковой линии. Закрытый Землёй луч не кандидат."""
+        chosen: str | None = None
+        best_margin = -1.0
+        for pair in self.pairs():
+            if name not in (pair.leader, pair.follower) or pair.earth_blocked or pair.isl_margin_db < 0.0:
+                continue
+            other = pair.follower if pair.leader == name else pair.leader
+            if pair.isl_margin_db >= best_margin:
+                best_margin = pair.isl_margin_db
+                chosen = other
+        return chosen
+
+    def relay(self, source: str, destination: str, dt_sec: float) -> float:
+        """Перекладывает буфер на соседа, если луч свободен и запас линии неотрицательный."""
+        if source == destination or dt_sec <= 0.0:
+            return 0.0
+        pair = next(
+            (item for item in self.pairs() if {item.leader, item.follower} == {source, destination}),
+            None,
+        )
+        if pair is None or pair.earth_blocked or pair.isl_margin_db < 0.0:
+            return 0.0
+        moved = min(self.buffer_mb[source], isl_rate_bps(pair.range_m) * dt_sec / 1.0e6)
+        self.buffer_mb[source] -= moved
+        self.buffer_mb[destination] += moved
+        return moved
 
     def screen(
         self,
@@ -123,18 +317,40 @@ class Fleet:
         range_limit_m: float = 50_000.0,
     ) -> list[ScreenHit]:
         """
-        Pc для пар ближе порога. Ковариация диагональная: σ по радиусу и нормали,
-        вдоль трека в 8 раз больше. Это допущение скрининга, не CDM конкретной пары.
+        Pc для пар ближе порога. Без CDM ковариация диагональная: σ по радиусу и нормали,
+        вдоль трека в 8 раз больше. Пара с CDM скринится и за порогом дистанции.
         """
         hits: list[ScreenHit] = []
-        covariance = np.diag([sigma_m**2, (8.0 * sigma_m) ** 2, sigma_m**2, 0.0, 0.0, 0.0])
         for pair in self.pairs():
-            if pair.range_m > range_limit_m:
+            stored = self._cdm.get(tuple(sorted((pair.leader, pair.follower))))
+            if stored is None and pair.range_m > range_limit_m:
                 continue
+            covariance = self.pair_covariance(pair.leader, pair.follower, sigma_m=sigma_m)
+            radius = stored.radius_m if stored is not None else hard_body_radius_m
             leader = self.vehicles[pair.leader]
             follower = self.vehicles[pair.follower]
             dr = eci_to_rtn(follower.orbit.r - leader.orbit.r, leader.orbit.r, leader.orbit.v)
             dv = eci_to_rtn(follower.orbit.v - leader.orbit.v, leader.orbit.r, leader.orbit.v)
-            probability = bplane_probability(dr, dv, covariance, hard_body_radius_m)
+            probability = bplane_probability(dr, dv, covariance, radius)
             hits.append(ScreenHit(pair.leader, pair.follower, pair.range_m, probability))
         return hits
+
+
+def _make_vehicle(
+    name: str,
+    a_m: float,
+    inc_deg: float,
+    raan_deg: float,
+    nu_deg: float,
+    moment: Time,
+    template: ScenarioConfig,
+    spacecraft: SpacecraftConfig | None = None,
+) -> SimulationEngine:
+    orbit = Orbit.from_keplerian(
+        a_m, 0.0, np.deg2rad(inc_deg), np.deg2rad(raan_deg), 0.0, np.deg2rad(nu_deg), moment
+    )
+    config = spacecraft.model_copy(deep=True) if spacecraft is not None else SpacecraftConfig()
+    config.name = name
+    craft = Spacecraft(config=config)
+    craft.reset_state()
+    return SimulationEngine(orbit, craft, scenario=template.model_copy(deep=True))

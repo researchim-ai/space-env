@@ -35,6 +35,23 @@ const sunLight = new THREE.DirectionalLight("#fff4e0", 3.1);
 scene.add(sunLight);
 scene.add(new THREE.AmbientLight("#8aa4c8", 0.22));
 
+const islGeometry = new THREE.BufferGeometry();
+islGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(192), 3));
+islGeometry.setDrawRange(0, 0);
+const islLines = new THREE.LineSegments(
+  islGeometry,
+  new THREE.LineBasicMaterial({ color: "#9fd4ff", transparent: true, opacity: 0.75 }),
+);
+scene.add(islLines);
+const routeGeometry = new THREE.BufferGeometry();
+routeGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(96), 3));
+routeGeometry.setDrawRange(0, 0);
+const routeLines = new THREE.LineSegments(
+  routeGeometry,
+  new THREE.LineBasicMaterial({ color: "#f0c27a", linewidth: 2 }),
+);
+scene.add(routeLines);
+
 const stars = new THREE.BufferGeometry();
 const starPositions = new Float32Array(1800 * 3);
 for (let i = 0; i < 1800; i += 1) {
@@ -177,6 +194,66 @@ function ensureStations(count) {
   }
 }
 
+function drawLinks(frame, lines) {
+  const pairs = frame.pairs || [];
+  const open = pairs.filter(
+    (pair) =>
+      !pair.earth_blocked &&
+      pair.isl_margin_db >= 0 &&
+      frame.vehicles[pair.leader] &&
+      frame.vehicles[pair.follower],
+  );
+  const needed = Math.max(open.length, 1) * 6;
+  let positions = islGeometry.attributes.position.array;
+  if (positions.length < needed) {
+    positions = new Float32Array(needed);
+    islGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  }
+  open.forEach((pair, index) => {
+    const start = eciToWorld(frame.vehicles[pair.leader].r, scale);
+    const end = eciToWorld(frame.vehicles[pair.follower].r, scale);
+    const offset = index * 6;
+    positions[offset] = start.x;
+    positions[offset + 1] = start.y;
+    positions[offset + 2] = start.z;
+    positions[offset + 3] = end.x;
+    positions[offset + 4] = end.y;
+    positions[offset + 5] = end.z;
+  });
+  islGeometry.attributes.position.needsUpdate = true;
+  islGeometry.setDrawRange(0, open.length * 2);
+  lines.push(open.length ? `межспутниковых линий ${open.length}` : "межспутниковых линий нет");
+  drawRoute(frame, lines);
+}
+
+function drawRoute(frame, lines) {
+  const hops = (frame.route || []).filter(
+    (hop) => frame.vehicles[hop["from"]] && frame.vehicles[hop.to],
+  );
+  const needed = Math.max(hops.length, 1) * 6;
+  let positions = routeGeometry.attributes.position.array;
+  if (positions.length < needed) {
+    positions = new Float32Array(needed);
+    routeGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  }
+  hops.forEach((hop, index) => {
+    const start = eciToWorld(frame.vehicles[hop["from"]].r, scale);
+    const end = eciToWorld(frame.vehicles[hop.to].r, scale);
+    const offset = index * 6;
+    positions[offset] = start.x;
+    positions[offset + 1] = start.y;
+    positions[offset + 2] = start.z;
+    positions[offset + 3] = end.x;
+    positions[offset + 4] = end.y;
+    positions[offset + 5] = end.z;
+  });
+  routeGeometry.attributes.position.needsUpdate = true;
+  routeGeometry.setDrawRange(0, hops.length * 2);
+  if (hops.length) {
+    lines.push(`маршрут ${hops.map((hop) => `${hop["from"]} → ${hop.to}`).join(", ")}`);
+  }
+}
+
 function showFrame(index) {
   const frame = episode.frames[index];
   const sun = eciToWorld(frame.sun, scale).normalize();
@@ -189,6 +266,10 @@ function showFrame(index) {
     const world = eciToWorld(station.r, scale);
     stationMeshes[stationIndex].position.copy(earthPivot.worldToLocal(world));
     stationMeshes[stationIndex].visible = true;
+    const inPass = Object.values(frame.vehicles).some(
+      (vehicle) => vehicle.contact && vehicle.station === station.name,
+    );
+    stationMeshes[stationIndex].material.color.set(inPass ? "#f0c27a" : "#f3e2bc");
   });
   for (let extra = frame.stations.length; extra < stationMeshes.length; extra += 1) {
     stationMeshes[extra].visible = false;
@@ -207,8 +288,14 @@ function showFrame(index) {
     }
     sat.userData.body.material.emissiveIntensity = vehicle.eclipse ? 0.05 : 0.28;
     const link = vehicle.contact ? vehicle.station || "связь" : "нет линии";
-    lines.push(`${name}  ${vehicle.altitude_km.toFixed(0)} км  SoC ${(vehicle.soc * 100).toFixed(0)}%  ${vehicle.eclipse ? "тень" : "свет"}  ${link}`);
+    const buffer = Number.isFinite(vehicle.buffer_mb) ? `  буфер ${vehicle.buffer_mb.toFixed(1)} Мбит` : "";
+    const capacity = episode.memory_capacity_bits;
+    const fill = Number.isFinite(vehicle.memory_bits) && capacity > 0
+      ? `  память ${((100 * vehicle.memory_bits) / capacity).toFixed(1)}%`
+      : "";
+    lines.push(`${name}  ${vehicle.altitude_km.toFixed(0)} км  SoC ${(vehicle.soc * 100).toFixed(0)}%  ${vehicle.eclipse ? "тень" : "свет"}  ${link}${buffer}${fill}`);
   });
+  drawLinks(frame, lines);
   readout.innerHTML = lines.join("<br>");
   clock.textContent = formatClock(frame.t);
   scrub.value = String(index);

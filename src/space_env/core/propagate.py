@@ -26,6 +26,7 @@ def _rk4(
     when,
     srp_area_m2: float,
     srp_coefficient: float,
+    include_third_body: bool,
 ) -> tuple[np.ndarray, np.ndarray]:
     def deriv(pos: np.ndarray, vel: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         acc = acceleration_m_s2(
@@ -46,6 +47,7 @@ def _rk4(
             when=when,
             srp_area_m2=srp_area_m2,
             srp_coefficient=srp_coefficient,
+            include_third_body=include_third_body,
         )
         return vel, acc
 
@@ -79,6 +81,7 @@ def propagate_state(
     when=None,
     srp_area_m2: float = 0.0,
     srp_coefficient: float = 1.2,
+    include_third_body: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, list[tuple[float, np.ndarray, np.ndarray]]]:
     """
     Пропагирует состояние на dt_sec.
@@ -112,6 +115,7 @@ def propagate_state(
             when=when,
             srp_area_m2=srp_area_m2,
             srp_coefficient=srp_coefficient,
+            include_third_body=include_third_body,
         )
         elapsed += h
         samples.append((elapsed, r.copy(), v.copy()))

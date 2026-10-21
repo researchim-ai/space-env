@@ -1,0 +1,4 @@
+Снимок IERS finals2000A.daily.csv
+https://datacenter.iers.org/data/csv/finals2000A.daily.csv
+Файл на сервере IERS помечен 2026-10-07. В снимке сутки с 2026-07-16 по 2027-01-12,
+сначала final, дальше prediction. Вне этого окна код принимает UT1 = UTC.

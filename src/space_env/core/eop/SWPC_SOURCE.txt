@@ -1,0 +1,5 @@
+Суточные индексы NOAA SWPC на 22 сентября — 20 октября 2026.
+F10.7: https://services.swpc.noaa.gov/text/daily-solar-indices.txt (выпуск 08:25 UT 21 Oct 2026)
+Планетарный Ap: https://services.swpc.noaa.gov/text/daily-geomagnetic-indices.txt (выпуск 09:30 UT 21 Oct 2026)
+21 октября в геомагнитном файле Ap ещё не закрыт, эта дата в снимок не вошла.
+Среднее F10.7 по этим 29 суткам — не официальный 81-дневный поток.

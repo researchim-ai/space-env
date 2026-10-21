@@ -44,6 +44,23 @@ def test_cdm_combines_covariances_and_hard_body():
     cov = message.combined_covariance_m2()
     assert cov[0, 0] == pytest.approx(0.05 * 1.0e6)
     assert message.combined_sigma_m() == pytest.approx(np.sqrt(0.05e6), rel=0.01)
+    assert message.combined_state_covariance_si() is None
+
+
+def test_cdm_velocity_block_converts_to_metres():
+    message = parse_cdm_kvn(
+        """
+        MISS_DISTANCE = 0.250 [km]
+        TCA = 2024-01-01T00:10:00
+        OBJECT = OBJECT1
+        CT_T = 1.0 [km**2]
+        CTDOT_TDOT = 1.0e-6 [km**2/s**2]
+        """
+    )
+    state = message.combined_state_covariance_si()
+    assert state is not None
+    assert state[1, 1] == pytest.approx(1.0e6)
+    assert state[4, 4] == pytest.approx(1.0)
 
 
 def test_srp_pushes_away_from_the_sun_and_vanishes_in_umbra():
@@ -88,3 +105,31 @@ def test_pass_is_open_at_zenith():
     assert windows
     assert windows[0].aos_sec == pytest.approx(0.0)
     assert windows[0].station == "Equator"
+
+
+def test_aos_bisection_is_earlier_than_the_coarse_sample_and_within_a_second_of_a_fine_grid():
+    epoch = Time("2024-03-01T00:00:00Z")
+    r_ecef = geodetic_to_ecef(0.0, 15.0, 500_000.0)
+    r = ecef_to_eci(r_ecef, epoch)
+    velocity = np.cross(np.array([0.0, 0.0, 1.0]), r)
+    velocity = -velocity / np.linalg.norm(velocity) * 7610.0
+    station = [GroundStation(name="Equator", lat_deg=0.0, lon_deg=0.0, min_elevation_deg=5.0)]
+    common = dict(
+        horizon_sec=900.0,
+        mass_kg=100.0,
+        drag_area_m2=0.9,
+        drag_coefficient=2.2,
+        frequency_hz=2.2e9,
+        tx_power_w=2.0,
+        tx_gain_dbi=6.0,
+        rx_gain_dbi=32.0,
+        system_loss_db=3.0,
+        required_power_dbw=-125.0,
+    )
+    coarse = find_passes(r, velocity, epoch, station, sample_sec=60.0, refine_sec=0.0, **common)
+    refined = find_passes(r, velocity, epoch, station, sample_sec=60.0, refine_sec=1.0, **common)
+    fine = find_passes(r, velocity, epoch, station, sample_sec=5.0, refine_sec=1.0, **common)
+    assert coarse and refined and fine
+    assert refined[0].aos_sec <= coarse[0].aos_sec + 1e-6
+    assert abs(refined[0].aos_sec - fine[0].aos_sec) < 2.0
+    assert coarse[0].aos_sec - refined[0].aos_sec < 60.0

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from space_env.core.access import off_nadir_deg
+from space_env.core.attitude import align_z, slew_step
 from space_env.core.encounter import PropagationContext, secondary_from_geometry
 from space_env.core.environment import in_eclipse, shadow_state, solar_flux_at_satellite_W_m2
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
@@ -87,6 +88,7 @@ class SimulationEngine:
         self._link_margin_db = -99.0
         self._slew_remaining_deg = 0.0
         self._slew_span_deg = 1.0
+        self._attitude = align_z(-self.orbit.r / np.linalg.norm(self.orbit.r))
         self._passes: list[PassWindow] = []
         self.last_command_ok = True
         self._in_umbra = False
@@ -191,9 +193,26 @@ class SimulationEngine:
         cosine = float(np.clip(np.dot(nadir, sun), -1.0, 1.0))
         return float(np.rad2deg(np.arccos(cosine)))
 
+    def _target_boresight(self) -> np.ndarray:
+        if self.spacecraft.state.pointing == "sun":
+            sun = sun_position_m(self._now())
+            return sun / np.linalg.norm(sun)
+        return -self.orbit.r / np.linalg.norm(self.orbit.r)
+
+    def boresight_eci(self) -> np.ndarray:
+        """Куда сейчас смотрит +Z прибора, единичный вектор в ECI."""
+        from space_env.core.attitude import boresight
+
+        return boresight(self._attitude)
+
     def _advance_slew(self, dt_sec: float) -> None:
-        rate = self.spacecraft.config.slew_rate_deg_s
-        self._slew_remaining_deg = max(0.0, self._slew_remaining_deg - rate * dt_sec)
+        target = align_z(self._target_boresight())
+        self._attitude, self._slew_remaining_deg = slew_step(
+            self._attitude,
+            target,
+            self.spacecraft.config.slew_rate_deg_s,
+            dt_sec,
+        )
 
     def _panel_cosine(self) -> float:
         """1 на Солнце, косинус зенита в надире, между ними — доля незаконченного разворота."""
@@ -398,6 +417,7 @@ class SimulationEngine:
             when=self._now().datetime.replace(tzinfo=None),
             srp_area_m2=srp_area_m2,
             srp_coefficient=srp_coefficient,
+            include_third_body=True,
         )
 
     def _primary_context(self) -> PropagationContext:
@@ -430,6 +450,15 @@ class SimulationEngine:
             inj.hard_body_radius_m,
             debris,
         )
+
+    def use_tracking_covariance(self, covariance_rtn_m2: np.ndarray) -> None:
+        """Подменяет ковариацию сближения оценкой дуги. Промах остаётся от геометрии инжекта."""
+        if self._encounter is None:
+            raise RuntimeError("сближение не начато")
+        matrix = np.asarray(covariance_rtn_m2, dtype=float)
+        if matrix.shape != (6, 6):
+            raise ValueError("ковариация дуги должна быть 6×6")
+        self._encounter.covariance = 0.5 * (matrix + matrix.T)
 
     def _advance_encounter(self, dt_sec: float) -> None:
         enc = self._encounter
@@ -598,6 +627,7 @@ class SimulationEngine:
             atmosphere=self.scenario.atmosphere,
             f107=self.scenario.f107,
             density_scale=self.scenario.density_scale,
+            include_third_body=True,
         )
         origin = self._time_sec
         self._passes = [
@@ -733,6 +763,7 @@ class SimulationEngine:
             when=self._now().datetime.replace(tzinfo=None),
             srp_area_m2=prop.srp_area_m2,
             srp_coefficient=prop.srp_coefficient,
+            include_third_body=True,
         )
         self._advance_slew(dt_sec)
         prev_t = self._time_sec

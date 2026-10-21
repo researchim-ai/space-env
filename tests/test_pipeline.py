@@ -19,7 +19,15 @@ def test_rewards_and_curriculum_files():
     rewards = load_rewards()
     assert rewards["mission_planner"]["goal_complete"] == pytest.approx(1.0)
     stages = load_curriculum(ROOT / "configs" / "curriculum.yaml")
-    assert [stage["name"] for stage in stages] == ["resources", "anomaly", "conjunction", "planner"]
+    assert [stage["name"] for stage in stages] == [
+        "resources",
+        "anomaly",
+        "conjunction",
+        "planner",
+        "workplan",
+        "constellation",
+    ]
+    assert rewards["workplan"]["task_done"] == pytest.approx(1.0)
 
 
 def test_scenario_yaml_steps():

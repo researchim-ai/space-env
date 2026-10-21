@@ -96,6 +96,7 @@ def acceleration_m_s2(
     when: datetime | None = None,
     srp_area_m2: float = 0.0,
     srp_coefficient: float = 1.2,
+    include_third_body: bool = False,
 ) -> np.ndarray:
     """Ускорение, м/с². Сопротивление считается относительно атмосферы, вращающейся с Землёй."""
     r = np.asarray(r_m, dtype=float)
@@ -135,6 +136,11 @@ def acceleration_m_s2(
             a = a - 0.5 * drag_coefficient * drag_area_m2 / mass_kg * rho * speed * v_rel
     if srp_area_m2 > 0.0 and mass_kg > 0.0 and srp_coefficient > 0.0 and when is not None:
         a = a + _srp_acceleration_m_s2(r, when, mass_kg, srp_area_m2, srp_coefficient)
+    if include_third_body and when is not None:
+        from space_env.core.bodies import third_body_acceleration_m_s2
+        from space_env.core.time import Time
+
+        a = a + third_body_acceleration_m_s2(r, Time(when))
     return a
 
 

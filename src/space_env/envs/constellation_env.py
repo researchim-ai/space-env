@@ -1,6 +1,7 @@
 """
 ConstellationEnv: один шаг ведёт всю цепочку, действие выбирает аппарат и команду.
-Наблюдение склеивает состояние аппаратов и дистанцию ближайшей пары.
+Кадр кладётся в буфер, если надир доведён и аппарат не в umbra.
+Буфер уходит на Землю в сеансе или соседу по открытой межспутниковой линии.
 """
 from __future__ import annotations
 
@@ -11,13 +12,15 @@ from space_env.envs.base import format_ansi, normalize_altitude_km
 from space_env.mission.scenarios import ScenarioConfig
 from space_env.simulation.fleet import Fleet
 
-_COMMANDS = {0: None, 1: "imaging", 2: "comms", 3: "minimal_power"}
+_COMMANDS = {0: None, 1: "imaging", 2: "comms", 3: "minimal_power", 4: "relay"}
+_FRAME_MB = 8.0
 
 
 class ConstellationEnv(gym.Env):
     """
-    Действие MultiDiscrete([число аппаратов, 4]): кому и что.
-    Команды: ничего, съёмка, связь, минимальная нагрузка.
+    Действие MultiDiscrete([число аппаратов, 5]): кому и что.
+    Команды: ничего, съёмка, связь, минимальная нагрузка, ретрансляция соседу.
+    Шаг цепочки по умолчанию 1.5°: на этой дистанции линия 1 Вт / 6 дБи ещё закрывается.
     """
 
     metadata = {"render_modes": ["ansi"], "render_fps": 1}
@@ -25,7 +28,7 @@ class ConstellationEnv(gym.Env):
     def __init__(
         self,
         count: int = 2,
-        separation_deg: float = 15.0,
+        separation_deg: float = 1.5,
         step_sec: float = 60.0,
         max_episode_steps: int = 20,
         render_mode: str | None = None,
@@ -39,9 +42,9 @@ class ConstellationEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self.render_mode = render_mode
         self.observation_space = gym.spaces.Box(
-            low=0.0, high=1.0, shape=(count * 4 + 1,), dtype=np.float32
+            low=0.0, high=1.0, shape=(count * 5 + 2,), dtype=np.float32
         )
-        self.action_space = gym.spaces.MultiDiscrete([count, 4])
+        self.action_space = gym.spaces.MultiDiscrete([count, 5])
         self._fleet: Fleet | None = None
         self._names: list[str] = []
         self._steps = 0
@@ -58,11 +61,14 @@ class ConstellationEnv(gym.Env):
                     float(snap.in_eclipse),
                     float(snap.in_contact),
                     normalize_altitude_km(snap.altitude_km),
+                    float(np.clip(self._fleet.buffer_mb[name] / 80.0, 0.0, 1.0)),
                 ]
             )
-        ranges = [pair.range_m for pair in self._fleet.pairs()]
-        nearest = min(ranges) if ranges else 0.0
+        pairs = self._fleet.pairs()
+        nearest = min((pair.range_m for pair in pairs), default=0.0)
+        open_margin = max((pair.isl_margin_db for pair in pairs if not pair.earth_blocked), default=-20.0)
         values.append(float(np.clip(nearest / 2_000_000.0, 0.0, 1.0)))
+        values.append(float(np.clip((open_margin + 20.0) / 40.0, 0.0, 1.0)))
         return np.asarray(values, dtype=np.float32)
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
@@ -83,11 +89,25 @@ class ConstellationEnv(gym.Env):
         index = int(action[0])
         command = _COMMANDS.get(int(action[1]))
         name = self._names[index]
-        commands = {name: command} if command else {}
+        engine_command = command if command in {"imaging", "comms", "minimal_power"} else None
+        commands = {name: engine_command} if engine_command else {}
         self._fleet.step(self.step_sec, commands)
         reward = 0.0
-        if command in {"imaging", "comms"} and self._fleet.vehicles[name].last_command_ok:
+        engine = self._fleet.vehicles[name]
+        if command in {"imaging", "comms"} and engine.last_command_ok:
             reward += 0.2
+        if command == "imaging":
+            snap = engine.get_state_snapshot()
+            sunlit_nadir = (not snap.in_eclipse) and snap.pointing == "nadir" and snap.slew_remaining_deg <= 1.0
+            if sunlit_nadir:
+                self._fleet.collect(name, _FRAME_MB)
+                reward += 0.2
+        elif command == "comms":
+            reward += 0.05 * self._fleet.downlink(name, self.step_sec)
+        elif command == "relay":
+            neighbor = self._fleet.best_neighbor(name)
+            moved = 0.0 if neighbor is None else self._fleet.relay(name, neighbor, self.step_sec)
+            reward += 0.02 * moved
         low = []
         for vehicle, engine in self._fleet.vehicles.items():
             soc = engine.get_state_snapshot().battery_soc
@@ -101,6 +121,8 @@ class ConstellationEnv(gym.Env):
         info = {
             "commanded": name,
             "screen": [(hit.leader, hit.follower, hit.probability) for hit in screen],
+            "buffer_mb": dict(self._fleet.buffer_mb),
+            "delivered_mb": self._fleet.delivered_mb,
             "success": truncated and not terminated,
         }
         return self._obs(), float(reward), terminated, truncated, info

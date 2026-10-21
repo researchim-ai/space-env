@@ -51,6 +51,23 @@ def test_conjunction_env():
     env.close()
 
 
+def test_tracking_arc_sets_conjunction_covariance():
+    plain = ConjunctionAssessmentEnv(max_episode_steps=2, seed=4)
+    _obs, plain_info = plain.reset(seed=4)
+    tracked = ConjunctionAssessmentEnv(max_episode_steps=2, seed=4, tracking_arc=True, range_sigma_m=20.0)
+    _obs, info = tracked.reset(seed=4)
+    assert info["cross_sigma_m"] < 5_000.0
+    assert tracked._engine._encounter.covariance[2, 2] == pytest.approx(info["cross_sigma_m"] ** 2)
+    wider = ConjunctionAssessmentEnv(max_episode_steps=2, seed=4, tracking_arc=True, range_sigma_m=80.0)
+    _obs, wide = wider.reset(seed=4)
+    assert wide["cross_sigma_m"] > info["cross_sigma_m"] * 2.0
+    assert np.isfinite(info["prob"])
+    assert plain_info["prob"] >= 0.0
+    plain.close()
+    tracked.close()
+    wider.close()
+
+
 def test_mission_planner_render_and_registry():
     import gymnasium as gym
 

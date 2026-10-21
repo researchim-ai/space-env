@@ -16,3 +16,11 @@ stages:
     env: space_env/MissionPlanner-v0
     episodes: 2
     max_episode_steps: 24
+  - name: workplan
+    env: space_env/WorkPlan-v0
+    episodes: 1
+    max_episode_steps: 8
+  - name: constellation
+    env: space_env/ConstellationOps-v0
+    episodes: 1
+    max_episode_steps: 8

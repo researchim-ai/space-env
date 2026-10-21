@@ -31,6 +31,7 @@ class PropagationContext:
     include_drag: bool = True
     srp_area_m2: float = 0.0
     srp_coefficient: float = 1.2
+    include_third_body: bool = False
 
 
 def _step_state(r: np.ndarray, v: np.ndarray, dt: float, ctx: PropagationContext) -> tuple[np.ndarray, np.ndarray]:
@@ -52,6 +53,7 @@ def _step_state(r: np.ndarray, v: np.ndarray, dt: float, ctx: PropagationContext
         when=ctx.when,
         srp_area_m2=ctx.srp_area_m2,
         srp_coefficient=ctx.srp_coefficient,
+        include_third_body=ctx.include_third_body,
         substep_sec=min(10.0, dt),
     )
     return r_end, v_end

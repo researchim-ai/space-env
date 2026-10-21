@@ -21,6 +21,17 @@ def test_gast_differs_from_gmst_by_nutation_only():
     assert delta < np.deg2rad(20.0 / 3600.0)
 
 
+def test_nutation_at_j2000_follows_the_18_year_term():
+    from space_env.core.frames import nutation_rad
+
+    moment = Time(2451545.0)
+    longitude, _obliquity = nutation_rad(moment)
+    arcsec = np.rad2deg(longitude) * 3600.0
+    omega = np.deg2rad(450160.398036 / 3600.0)
+    expected = -17.1996 * np.sin(omega)
+    assert arcsec == pytest.approx(expected, abs=1.0)
+
+
 def test_link_margin_is_higher_overhead_than_far_away():
     overhead = link_margin_db(
         400e3, frequency_hz=2.2e9, tx_power_w=2.0, tx_gain_dbi=6.0,
@@ -92,6 +103,85 @@ def test_slew_is_not_instant():
     assert engine.get_state_snapshot().slew_remaining_deg > 0.0
     engine.step(400.0, "wait")
     assert engine.get_state_snapshot().slew_remaining_deg == 0.0
+    from space_env.core.sun import sun_position_m
+
+    sun = sun_position_m(engine._now())
+    sun = sun / np.linalg.norm(sun)
+    assert float(np.dot(engine.boresight_eci(), sun)) > 0.999
+
+
+def test_polar_motion_shifts_ecef_by_metres_and_roundtrips():
+    from space_env.core.dut1 import pole_arcsec
+    from space_env.core.frames import _rotate_z, ecef_to_eci, eci_to_ecef
+
+    moment = Time("2026-07-16T00:00:00Z")
+    xp, yp = pole_arcsec(moment)
+    assert xp == pytest.approx(0.212967, abs=1e-4)
+    assert yp == pytest.approx(0.376427, abs=1e-4)
+    vector = np.array([6_500_000.0, 0.0, 0.0])
+    full = eci_to_ecef(vector, moment)
+    spin_only = _rotate_z(vector, gast_rad(moment))
+    shift = float(np.linalg.norm(full - spin_only))
+    assert 1.0 < shift < 40.0
+    assert np.allclose(ecef_to_eci(full, moment), vector, atol=1e-4)
+    quiet = Time("2024-01-01T00:00:00Z")
+    assert float(np.linalg.norm(eci_to_ecef(vector, quiet) - _rotate_z(vector, gast_rad(quiet)))) < 1e-6
+
+
+def test_swpc_snapshot_supplies_flux_on_the_tle_day():
+    from space_env.catalog.build import make_engine
+    from space_env.core.space_weather import indices_for
+
+    observed = indices_for(Time("2026-10-20T12:00:00Z"))
+    assert observed is not None
+    assert observed.f107 == pytest.approx(121.0)
+    assert observed.ap == pytest.approx(8.0)
+    assert observed.f107a == pytest.approx(113.5669, abs=0.01)
+    assert indices_for(Time("2024-01-01T00:00:00Z")) is None
+    engine = make_engine("sentinel-2a", epoch="2026-10-20T00:00:00Z", with_stations=False)
+    assert engine.scenario.f107 == pytest.approx(121.0)
+    assert engine.scenario.ap == pytest.approx(8.0)
+
+
+def test_dut1_from_the_iers_snapshot_shifts_gmst():
+    from space_env.core.constants import OMEGA_EARTH
+    from space_env.core.dut1 import dut1_seconds
+
+    inside = Time("2026-07-16T00:00:00Z")
+    assert dut1_seconds(inside) == pytest.approx(0.0115424, abs=1e-6)
+    assert dut1_seconds(Time("2024-01-01T00:00:00Z")) == 0.0
+    day = inside.jd - 2451545.0
+    manual = ((18.697374558 + 24.06570982441908 * day) % 24.0) / 24.0 * 2.0 * np.pi
+    delta = (gmst_rad(inside) - manual + np.pi) % (2.0 * np.pi) - np.pi
+    assert delta == pytest.approx(OMEGA_EARTH * dut1_seconds(inside), rel=0.01)
+
+
+def test_moon_stays_near_its_orbit_and_the_leo_tide_is_small():
+    from datetime import datetime
+
+    from space_env.core.bodies import moon_position_m
+    from space_env.core.gravity import acceleration_m_s2
+
+    moon = moon_position_m(Time("2024-01-01T00:00:00Z"))
+    assert 340.0e6 < float(np.linalg.norm(moon)) < 430.0e6
+    later = moon_position_m(Time("2024-01-08T00:00:00Z"))
+    cosine = float(np.dot(moon, later) / (np.linalg.norm(moon) * np.linalg.norm(later)))
+    assert cosine < 0.95
+    position = np.array([7.0e6, 0.0, 0.0])
+    velocity = np.array([0.0, 7.5e3, 0.0])
+    when = datetime(2024, 1, 1)
+    common = dict(
+        mass_kg=100.0,
+        drag_area_m2=0.0,
+        drag_coefficient=0.0,
+        include_j2=False,
+        include_drag=False,
+        when=when,
+    )
+    bare = acceleration_m_s2(position, velocity, **common)
+    tide = acceleration_m_s2(position, velocity, include_third_body=True, **common)
+    extra = float(np.linalg.norm(tide - bare))
+    assert 1.0e-7 < extra < 5.0e-6
 
 
 def test_nrlmsise_density_at_400_km():
