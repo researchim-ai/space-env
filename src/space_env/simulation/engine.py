@@ -10,14 +10,16 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from space_env.core.access import off_nadir_deg
+from space_env.core.encounter import PropagationContext, secondary_from_geometry
 from space_env.core.environment import in_eclipse, shadow_state, solar_flux_at_satellite_W_m2
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
 from space_env.core.ground import DEFAULT_GROUND_STATIONS, GroundStation
+from space_env.core.link import link_margin_db, stepped_rate_bps
+from space_env.core.passes import PassWindow, find_passes
 from space_env.core.orbit import Orbit
 from space_env.core.power import solar_generation_w, step_battery_soc
-from space_env.core.probability import collision_probability
 from space_env.core.propagate import propagate_state
-from space_env.core.relative import closest_approach, cw_propagate, eci_to_rtn, mean_motion_rad_s
+from space_env.core.relative import mean_motion_rad_s
 from space_env.core.spacecraft import Spacecraft, SubsystemHealth
 from space_env.core.sun import sun_position_m
 from space_env.core.thermal import environmental_heat_w, step_temperature_c
@@ -34,22 +36,6 @@ _LOAD_FACTOR = {
     "minimal": 0.3,
     "safe": 0.25,
 }
-_NADIR_GENERATION = 0.7
-
-
-@dataclass
-class _Encounter:
-    """Относительное состояние второго объекта в RTN на текущий момент."""
-
-    tca_sec: float
-    rel: np.ndarray
-    n_rad_s: float
-    hard_body_m: float
-    sigma_m: float
-    best_miss_m: float = 1.0e18
-    best_radial_m: float = 0.0
-    best_cross_m: float = 0.0
-    passed: bool = False
 
 
 @dataclass
@@ -86,7 +72,7 @@ class SimulationEngine:
         self._fired_conjunction: set[int] = set()
         self._fired_planned: set[int] = set()
         self._restores: list[_Restore] = []
-        self._encounter: _Encounter | None = None
+        self._encounter = None
         self._active_violations: set[str] = set()
         self._faults: set[str] = set()
         self._radio_recovery_steps = 0
@@ -98,6 +84,10 @@ class SimulationEngine:
         self._station_lat = 0.0
         self._station_lon = 0.0
         self._station_alt = 0.0
+        self._link_margin_db = -99.0
+        self._slew_remaining_deg = 0.0
+        self._slew_span_deg = 1.0
+        self._passes: list[PassWindow] = []
         self.last_command_ok = True
         self._in_umbra = False
         self._shadow_kind = "sun"
@@ -114,6 +104,7 @@ class SimulationEngine:
         self._refresh_environment()
         init_events: list[MissionEvent] = []
         self._prev_soc = self.spacecraft.state.power.battery_soc
+        self._refresh_passes()
         self._fire_injects(0.0, 0.0, init_events, include_zero=True)
         self._log.append((0.0, self._snapshot(), init_events))
 
@@ -148,23 +139,34 @@ class SimulationEngine:
         self._in_umbra = shadow.kind == "umbra"
         self._flux = solar_flux_at_satellite_W_m2(r, r_sun)
         best_el = -90.0
-        best_name = ""
         best_station: GroundStation | None = None
-        in_contact = False
+        best_margin = -99.0
+        contact_station: GroundStation | None = None
+        contact_el = -90.0
+        contact_margin = -99.0
         for station in self.stations:
             el = elevation_deg(r, station.lat_deg, station.lon_deg, station.alt_m, self._now())
-            if el >= station.min_elevation_deg:
-                in_contact = True
+            sat = eci_to_ecef(r, self._now())
+            slant = float(np.linalg.norm(sat - geodetic_to_ecef(station.lat_deg, station.lon_deg, station.alt_m)))
+            margin = self._margin_db(slant)
+            closes = el >= station.min_elevation_deg and margin >= self.spacecraft.config.comms.min_margin_dB
+            if closes and margin > contact_margin:
+                contact_station = station
+                contact_el = el
+                contact_margin = margin
             if el > best_el:
                 best_el = el
-                best_name = station.name
                 best_station = station
-        self._elevation = best_el
-        self._station_name = best_name
-        if best_station is not None:
-            self._station_lat = best_station.lat_deg
-            self._station_lon = best_station.lon_deg
-            self._station_alt = best_station.alt_m
+                best_margin = margin
+        chosen = contact_station or best_station
+        self._elevation = contact_el if contact_station is not None else best_el
+        self._link_margin_db = contact_margin if contact_station is not None else best_margin
+        self._station_name = chosen.name if chosen is not None else ""
+        if chosen is not None:
+            self._station_lat = chosen.lat_deg
+            self._station_lon = chosen.lon_deg
+            self._station_alt = chosen.alt_m
+        in_contact = contact_station is not None and self.radio_ready()
         was_contact = self._in_contact
         self._in_contact = in_contact
         self.spacecraft.state.comms.in_contact = in_contact
@@ -172,6 +174,39 @@ class SimulationEngine:
         if was_contact and not in_contact:
             self.spacecraft.state.comms.data_sent_this_pass_Mb = 0.0
             self._downlink_armed = False
+
+    def _command_pointing(self, mode: str) -> None:
+        if mode == self.spacecraft.state.pointing and self._slew_remaining_deg <= 0.0:
+            return
+        if mode != self.spacecraft.state.pointing:
+            self._slew_span_deg = max(self._boresight_separation_deg(), 1.0)
+            self._slew_remaining_deg = self._slew_span_deg
+        self.spacecraft.state.pointing = mode
+
+    def _boresight_separation_deg(self) -> float:
+        radius = np.linalg.norm(self.orbit.r)
+        nadir = -self.orbit.r / radius
+        sun = sun_position_m(self._now())
+        sun = sun / np.linalg.norm(sun)
+        cosine = float(np.clip(np.dot(nadir, sun), -1.0, 1.0))
+        return float(np.rad2deg(np.arccos(cosine)))
+
+    def _advance_slew(self, dt_sec: float) -> None:
+        rate = self.spacecraft.config.slew_rate_deg_s
+        self._slew_remaining_deg = max(0.0, self._slew_remaining_deg - rate * dt_sec)
+
+    def _panel_cosine(self) -> float:
+        """1 на Солнце, косинус зенита в надире, между ними — доля незаконченного разворота."""
+        sun = sun_position_m(self._now())
+        sun = sun / np.linalg.norm(sun)
+        zenith = self.orbit.r / np.linalg.norm(self.orbit.r)
+        nadir_cos = max(0.0, float(np.dot(zenith, sun)))
+        target_cos = 1.0 if self.spacecraft.state.pointing == "sun" else nadir_cos
+        if self._slew_remaining_deg <= 0.0:
+            return target_cos
+        origin_cos = nadir_cos if self.spacecraft.state.pointing == "sun" else 1.0
+        done = 1.0 - self._slew_remaining_deg / max(self._slew_span_deg, 1.0)
+        return origin_cos + done * (target_cos - origin_cos)
 
     def _event(self, kind: EventKind, payload: dict | None = None) -> MissionEvent:
         return MissionEvent(kind=kind, time=self._now(), time_sec=self._time_sec, payload=payload or {})
@@ -201,21 +236,21 @@ class SimulationEngine:
             return
         if command == "safe_mode":
             self._load_mode = "safe"
-            self.spacecraft.state.pointing = "sun"
+            self._command_pointing("sun")
             self.spacecraft.state.payload_mode = "idle"
             self._faults.discard("overload")
             self._faults.discard("stuck_heater")
             return
         if command == "point_sun":
-            self.spacecraft.state.pointing = "sun"
+            self._command_pointing("sun")
             return
         if command == "point_nadir":
-            self.spacecraft.state.pointing = "nadir"
+            self._command_pointing("nadir")
             return
         if command == "reboot":
             # Перезагрузка БЦВМ и радиолинии занимает несколько шагов и не лечит шину и нагреватель.
             self._radio_recovery_steps = 3
-            self.spacecraft.state.pointing = "nadir"
+            self._command_pointing("nadir")
             events.append(self._event(EventKind.RECOVERY, {"action": "reboot", "steps_remaining": 3}))
             return
         if command == "imaging":
@@ -282,11 +317,11 @@ class SimulationEngine:
         else:
             axis = vhat
         dv_vec = axis * dv_m_s
-        if self._encounter is not None and not self._encounter.passed:
-            self._encounter.rel[3:] -= eci_to_rtn(dv_vec, r, v)
+        # Второе тело численное: импульс меняет только свой аппарат, относительная скорость выходит сама.
         self.orbit = self.orbit.with_delta_v(dv_vec)
         self.spacecraft.state.propulsion.delta_v_remaining_m_s = remaining - dv_m_s
         events.append(self._event(EventKind.MANEUVER, {"dv_m_s": dv_m_s, "direction": direction}))
+        self._refresh_passes()
 
     def _fire_injects(
         self,
@@ -340,6 +375,41 @@ class SimulationEngine:
     def _link_ok(self) -> bool:
         return self.radio_ready() and self._in_contact
 
+    def _propagation_context(
+        self,
+        *,
+        mass_kg: float,
+        drag_area_m2: float,
+        drag_coefficient: float,
+        srp_area_m2: float = 0.0,
+        srp_coefficient: float = 1.2,
+    ) -> PropagationContext:
+        return PropagationContext(
+            mass_kg=mass_kg,
+            drag_area_m2=drag_area_m2,
+            drag_coefficient=drag_coefficient,
+            atmosphere=self.scenario.atmosphere,
+            f107=self.scenario.f107,
+            f107a=self.scenario.f107a,
+            ap=self.scenario.ap,
+            density_scale=self.scenario.density_scale,
+            lat_deg=self._station_lat,
+            lon_deg=self._station_lon,
+            when=self._now().datetime.replace(tzinfo=None),
+            srp_area_m2=srp_area_m2,
+            srp_coefficient=srp_coefficient,
+        )
+
+    def _primary_context(self) -> PropagationContext:
+        prop = self.spacecraft.config.propulsion
+        return self._propagation_context(
+            mass_kg=prop.mass_kg,
+            drag_area_m2=prop.drag_area_m2,
+            drag_coefficient=prop.drag_coefficient,
+            srp_area_m2=prop.srp_area_m2,
+            srp_coefficient=prop.srp_coefficient,
+        )
+
     def _start_conjunction(self, inj: ConjunctionInject) -> None:
         if inj.miss_radial_m is None and inj.miss_cross_m is None:
             radial_m = inj.miss_distance_km * 1000.0
@@ -347,31 +417,26 @@ class SimulationEngine:
         else:
             radial_m = 0.0 if inj.miss_radial_m is None else inj.miss_radial_m
             cross_m = 0.0 if inj.miss_cross_m is None else inj.miss_cross_m
-        n = mean_motion_rad_s(float(np.linalg.norm(self.orbit.r)))
-        at_tca = np.array([radial_m, 0.0, cross_m, 0.0, -inj.approach_m_s, 0.0])
-        rel_now = cw_propagate(at_tca, n, -inj.tca_in_sec)
-        self._encounter = _Encounter(
-            tca_sec=self._time_sec + inj.tca_in_sec,
-            rel=rel_now,
-            n_rad_s=n,
-            hard_body_m=inj.hard_body_radius_m,
-            sigma_m=inj.combined_sigma_m,
+        debris = self._propagation_context(mass_kg=50.0, drag_area_m2=0.2, drag_coefficient=2.2)
+        self._encounter = secondary_from_geometry(
+            self.orbit.r,
+            self.orbit.v,
+            radial_m,
+            cross_m,
+            inj.approach_m_s,
+            inj.tca_in_sec,
+            inj.combined_sigma_m,
+            self._time_sec + inj.tca_in_sec,
+            inj.hard_body_radius_m,
+            debris,
         )
 
     def _advance_encounter(self, dt_sec: float) -> None:
         enc = self._encounter
         if enc is None:
             return
-        remaining = dt_sec
-        while remaining > 1e-9:
-            step = min(1.0, remaining)
-            enc.rel = cw_propagate(enc.rel, enc.n_rad_s, step)
-            distance = float(np.linalg.norm(enc.rel[:3]))
-            if distance < enc.best_miss_m:
-                enc.best_miss_m = distance
-                enc.best_radial_m = float(enc.rel[0])
-                enc.best_cross_m = float(enc.rel[2])
-            remaining -= step
+        n = mean_motion_rad_s(float(np.linalg.norm(self.orbit.r)))
+        enc.advance(dt_sec, n)
         if self._time_sec >= enc.tca_sec + 30.0:
             enc.passed = True
 
@@ -423,12 +488,11 @@ class SimulationEngine:
             st_t.heater_on = False
         consumption = base_w + heater_w + (450.0 if "overload" in self._faults else 0.0)
         st_p.consumption_W = consumption
-        pointing_scale = 1.0 if self.spacecraft.state.pointing == "sun" else _NADIR_GENERATION
         generation = solar_generation_w(
             cfg_p.solar_panel_area_m2,
             flux_w_m2,
             cfg_p.panel_efficiency,
-            self._health_factor("power") * pointing_scale,
+            self._health_factor("power") * self._panel_cosine(),
         )
         st_p.battery_soc = step_battery_soc(
             st_p.battery_soc,
@@ -491,34 +555,83 @@ class SimulationEngine:
         enc = self._encounter
         if enc is None:
             return None, None, False, None, None
-        if enc.passed and enc.best_miss_m < 1.0e17:
-            distance = enc.best_miss_m
-            radial = enc.best_radial_m
-            cross = enc.best_cross_m
-        else:
-            horizon = max(0.0, enc.tca_sec - self._time_sec) + 180.0
-            distance, _t_ca, state = closest_approach(enc.rel, enc.n_rad_s, horizon)
-            radial = float(state[0])
-            cross = float(state[2])
-        probability = collision_probability(distance, enc.hard_body_m, enc.sigma_m)
+        if enc.passed:
+            return (
+                enc.frozen_miss_m / 1000.0,
+                enc.frozen_pc,
+                True,
+                enc.frozen_radial_m,
+                enc.frozen_cross_m,
+            )
+        horizon = max(60.0, enc.tca_sec - self._time_sec + 120.0)
+        distance, probability, radial, cross = enc.predict(self.orbit.r, self.orbit.v, self._primary_context(), horizon)
+        if self._time_sec >= enc.tca_sec:
+            enc.passed = True
+            enc.frozen_miss_m = distance
+            enc.frozen_pc = probability
+            enc.frozen_radial_m = radial
+            enc.frozen_cross_m = cross
         return distance / 1000.0, probability, enc.passed, radial, cross
 
-    def _downlink_factor(self) -> float:
-        """(дальность в зените / наклонная дальность)² — свободное пространство, без претензии на линк-бюджет."""
-        if not self.stations or not self._station_name:
-            return 1.0
-        sat = eci_to_ecef(self.orbit.r, self._now())
-        station = geodetic_to_ecef(self._station_lat, self._station_lon, self._station_alt)
-        slant = float(np.linalg.norm(sat - station))
-        zenith = max(float(np.linalg.norm(self.orbit.r) - 6_378_137.0), 50_000.0)
-        if slant < 1.0:
-            return 1.0
-        return float(np.clip((zenith / slant) ** 2, 0.02, 1.0))
+    def _refresh_passes(self) -> None:
+        if not self.stations:
+            self._passes = []
+            return
+        prop = self.spacecraft.config.propulsion
+        comms = self.spacecraft.config.comms
+        raw = find_passes(
+            self.orbit.r,
+            self.orbit.v,
+            self._now(),
+            self.stations,
+            horizon_sec=6.0 * 3600.0,
+            mass_kg=prop.mass_kg,
+            drag_area_m2=prop.drag_area_m2,
+            drag_coefficient=prop.drag_coefficient,
+            frequency_hz=comms.frequency_Hz,
+            tx_power_w=comms.tx_power_W,
+            tx_gain_dbi=comms.tx_gain_dBi,
+            rx_gain_dbi=comms.rx_gain_dBi,
+            system_loss_db=comms.system_loss_dB,
+            required_power_dbw=comms.required_power_dBW,
+            min_margin_db=comms.min_margin_dB,
+            atmosphere=self.scenario.atmosphere,
+            f107=self.scenario.f107,
+            density_scale=self.scenario.density_scale,
+        )
+        origin = self._time_sec
+        self._passes = [
+            PassWindow(item.station, origin + item.aos_sec, origin + item.los_sec, item.max_elevation_deg)
+            for item in raw
+        ]
+
+    def seconds_to_next_aos(self) -> float | None:
+        """Секунды до следующего AOS. 0, если сеанс уже идёт. None, если окна нет на горизонте 6 ч."""
+        if self._in_contact:
+            return 0.0
+        for window in self._passes:
+            if window.aos_sec <= self._time_sec < window.los_sec:
+                return 0.0
+            if window.aos_sec > self._time_sec:
+                return window.aos_sec - self._time_sec
+        return None
+
+    def _margin_db(self, range_m: float) -> float:
+        cfg = self.spacecraft.config.comms
+        return link_margin_db(
+            range_m,
+            frequency_hz=cfg.frequency_Hz,
+            tx_power_w=cfg.tx_power_W,
+            tx_gain_dbi=cfg.tx_gain_dBi,
+            rx_gain_dbi=cfg.rx_gain_dBi,
+            system_loss_db=cfg.system_loss_dB,
+            required_power_dbw=cfg.required_power_dBW,
+        )
 
     def _accrue_downlink(self, dt_sec: float) -> None:
         if not self._downlink_armed or not self._link_ok():
             return
-        rate = self.spacecraft.config.comms.data_rate_max_bps * self._downlink_factor()
+        rate = stepped_rate_bps(self._link_margin_db, self.spacecraft.config.comms.data_rate_max_bps)
         mbit = rate * dt_sec / 1e6
         self._data_downlink_Mb += mbit
         self.spacecraft.state.comms.data_sent_this_pass_Mb += mbit
@@ -529,6 +642,9 @@ class SimulationEngine:
         self._imaging_requested = False
         fov = self.spacecraft.config.payload.half_fov_deg
         captured_now = False
+        if self.spacecraft.state.pointing != "nadir" or self._slew_remaining_deg > 1.0:
+            self.last_command_ok = False
+            return
         for offset, position, _velocity in samples:
             moment = self._epoch + (t0 + offset)
             sun = sun_position_m(moment)
@@ -549,7 +665,11 @@ class SimulationEngine:
         st = self.spacecraft.state
         miss_km, prob, tca, radial_m, cross_m = self._conjunction_view()
         total_dv = self.spacecraft.config.propulsion.delta_v_total_m_s
-        voltage = 24.0 + 8.0 * st.power.battery_soc - (3.0 if "overload" in self._faults else 0.0)
+        voltage = 24.0 + 8.0 * st.power.battery_soc
+        if "overload" in self._faults:
+            voltage -= 3.0
+        if self._in_umbra:
+            voltage -= 1.5
         return SimulationState(
             time_sec=self._time_sec,
             altitude_km=self.orbit.altitude_km(),
@@ -576,6 +696,9 @@ class SimulationEngine:
             soc_rate_per_s=self._soc_rate,
             miss_radial_m=radial_m,
             miss_cross_m=cross_m,
+            link_margin_db=self._link_margin_db,
+            slew_remaining_deg=self._slew_remaining_deg,
+            seconds_to_aos=self.seconds_to_next_aos(),
         )
 
     def step(
@@ -600,7 +723,18 @@ class SimulationEngine:
             mass_kg=prop.mass_kg,
             drag_area_m2=prop.drag_area_m2,
             drag_coefficient=prop.drag_coefficient,
+            atmosphere=self.scenario.atmosphere,
+            f107=self.scenario.f107,
+            f107a=self.scenario.f107a,
+            ap=self.scenario.ap,
+            density_scale=self.scenario.density_scale,
+            lat_deg=self._station_lat,
+            lon_deg=self._station_lon,
+            when=self._now().datetime.replace(tzinfo=None),
+            srp_area_m2=prop.srp_area_m2,
+            srp_coefficient=prop.srp_coefficient,
         )
+        self._advance_slew(dt_sec)
         prev_t = self._time_sec
         self._time_sec += dt_sec
         self.orbit = Orbit.from_vectors(r_end, v_end, self._epoch + self._time_sec)

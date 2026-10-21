@@ -88,24 +88,40 @@ def generate_sft_from_simulation(seed: int | None = None) -> Iterator[dict]:
     )
     spacecraft.reset_state()
     engine = SimulationEngine(orbit, spacecraft, seed=0)
-    snap = engine.get_state_snapshot()
+    seen: set[str] = set()
+    for _ in range(8):
+        snap = engine.get_state_snapshot()
+        kind = f"{snap.shadow}:{int(snap.in_contact)}:{int(snap.battery_soc < 0.5)}"
+        if kind not in seen:
+            seen.add(kind)
+            yield _sft_from_snapshot(snap)
+        engine.step(120.0)
+
+
+def _sft_from_snapshot(snap) -> dict:
     contact = "есть" if snap.in_contact else "нет"
+    aos = "неизвестно" if snap.seconds_to_aos is None else f"{snap.seconds_to_aos / 60.0:.0f} мин"
     instruction = (
         f"Телеметрия КА: высота {snap.altitude_km:.0f} км, SoC {snap.battery_soc * 100:.0f}%, "
-        f"температура {snap.temp_C:.0f} °C, освещение «{snap.shadow}», контакт со станцией: {contact}. "
-        "Какой режим нагрузки выбрать?"
+        f"температура {snap.temp_C:.0f} °C, освещение «{snap.shadow}», контакт: {contact}, "
+        f"запас линии {snap.link_margin_db:.1f} дБ, до AOS {aos}. Какой режим выбрать?"
     )
     if snap.in_eclipse or snap.battery_soc < 0.4:
         output = (
-            "Снизить нагрузку до минимума, оставить служебные системы и при необходимости включить нагреватели. "
-            "Съёмку не проводить в тени. Связь возможна только при контакте со станцией."
+            "Снизить нагрузку до минимума и не снимать в тени. "
+            "Сеанс открывать только при положительном запасе линии."
+        )
+    elif snap.in_contact and snap.link_margin_db >= 0.0:
+        output = (
+            "Линия закрыта: открыть сеанс и сбросить накопленное. "
+            "Съёмку оставить, если аппарат на свету и в надире."
         )
     else:
         output = (
-            "Держать номинальную нагрузку. Съёмка допустима, пока КА на свету и в надирной ориентации. "
-            "Сеанс связи начинать только при угле места выше порога станции."
+            "Держать номинальную нагрузку. Съёмка допустима на свету в надире. "
+            "Связь ждать до положительного запаса над станцией."
         )
-    yield {
+    return {
         "instruction": instruction,
         "output": output,
         "input": "",

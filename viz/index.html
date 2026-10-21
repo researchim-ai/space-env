@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>space-env</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #e8eef6;
+      --muted: #93a4b8;
+      --line: rgba(232, 238, 246, 0.14);
+      --panel: rgba(7, 10, 16, 0.72);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #05070c; color: var(--ink); font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif; }
+    #view { position: fixed; inset: 0; }
+    header, footer {
+      position: fixed; left: 28px; right: 28px; z-index: 2;
+      display: flex; justify-content: space-between; gap: 24px; align-items: flex-end;
+      pointer-events: none;
+    }
+    header { top: 22px; align-items: flex-start; }
+    footer {
+      bottom: 18px; align-items: center;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      padding: 12px 16px; backdrop-filter: blur(10px); pointer-events: auto;
+    }
+    h1 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: 0.01em; }
+    p { margin: 6px 0 0; color: var(--muted); font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 13px; max-width: 420px; line-height: 1.45; }
+    #readout { font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 13px; line-height: 1.55; text-align: right; }
+    #readout b { font-weight: 600; }
+    button, input[type="range"] { font: inherit; }
+    button {
+      pointer-events: auto; background: transparent; color: var(--ink);
+      border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+    }
+    button:hover { border-color: rgba(232, 238, 246, 0.4); }
+    #scrub { flex: 1; accent-color: #d7e4f2; }
+    .time { font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 12px; color: var(--muted); min-width: 88px; }
+    #legend { display: flex; gap: 14px; font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 12px; color: var(--muted); }
+    .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="view"></div>
+  <header>
+    <div>
+      <h1>space-env</h1>
+      <p>Проигрывание эпизода из интегратора: орбиты, тень, станции и запас линии. Тот же JSON можно снять из цикла обучения.</p>
+    </div>
+    <div id="readout"></div>
+  </header>
+  <footer>
+    <button id="play" type="button">Пауза</button>
+    <span class="time" id="clock">00:00</span>
+    <input id="scrub" type="range" min="0" max="1" step="1" value="0" />
+    <div id="legend"></div>
+  </footer>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

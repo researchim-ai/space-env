@@ -11,15 +11,28 @@ from space_env.core.time import Time
 
 
 def gmst_rad(time: Time) -> float:
-    """Гринвичское среднее звёздное время, рад."""
+    """Гринвичское среднее звёздное время, рад. UT1 принят равным UTC: бюллетеня IERS в репозитории нет."""
     d = time.jd - 2451545.0
     gmst_hours = (18.697374558 + 24.06570982441908 * d) % 24.0
     return float(gmst_hours / 24.0 * 2.0 * np.pi)
 
 
+def gast_rad(time: Time) -> float:
+    """
+    Гринвичское истинное звёздное время: GMST плюс уравнение равноденствий.
+    Уравнение — главный член нутации по долготе (±17″), не полный ряд IAU 2000A.
+    """
+    gmst = gmst_rad(time)
+    centuries = (time.jd - 2451545.0) / 36525.0
+    omega = np.deg2rad(125.044522 - 1934.136261 * centuries)
+    obliquity = np.deg2rad(23.439291 - 0.0130042 * centuries)
+    dpsi = np.deg2rad((-17.20 / 3600.0) * np.sin(omega))
+    return float(gmst + dpsi * np.cos(obliquity))
+
+
 def eci_to_ecef(r_eci_m: np.ndarray, time: Time) -> np.ndarray:
     """Поворот вокруг оси Z на GMST. Вектор в метрах."""
-    theta = gmst_rad(time)
+    theta = gast_rad(time)
     c, s = np.cos(theta), np.sin(theta)
     x, y, z = np.asarray(r_eci_m, dtype=float)
     return np.array([c * x + s * y, -s * x + c * y, z], dtype=float)
@@ -27,7 +40,7 @@ def eci_to_ecef(r_eci_m: np.ndarray, time: Time) -> np.ndarray:
 
 def ecef_to_eci(r_ecef_m: np.ndarray, time: Time) -> np.ndarray:
     """Обратный поворот ECEF → ECI."""
-    theta = gmst_rad(time)
+    theta = gast_rad(time)
     c, s = np.cos(theta), np.sin(theta)
     x, y, z = np.asarray(r_ecef_m, dtype=float)
     return np.array([c * x - s * y, s * x + c * y, z], dtype=float)

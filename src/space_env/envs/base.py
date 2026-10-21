@@ -51,12 +51,15 @@ def make_leo_engine(
     constraints: Constraints | None = None,
     scenario: ScenarioConfig | None = None,
     initial_temp_c: float | None = None,
+    nu_rad: float = 0.0,
+    name: str = "SC",
 ) -> SimulationEngine:
     """Круговая LEO и КА с заданными подсистемами."""
     t0 = Time(epoch)
-    orbit = Orbit.from_keplerian(a_m, 0.0, np.deg2rad(inc_deg), 0.0, 0.0, 0.0, t0)
+    orbit = Orbit.from_keplerian(a_m, 0.0, np.deg2rad(inc_deg), 0.0, 0.0, nu_rad, t0)
     spacecraft = Spacecraft(
         config=SpacecraftConfig(
+            name=name,
             power=power or PowerConfig(),
             thermal=thermal or ThermalConfig(),
             propulsion=propulsion or PropulsionConfig(),

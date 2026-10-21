@@ -7,6 +7,7 @@ from gymnasium.envs.registration import register, registry
 
 from space_env.envs.anomaly_response_env import AnomalyResponseEnv
 from space_env.envs.conjunction_env import ConjunctionAssessmentEnv
+from space_env.envs.constellation_env import ConstellationEnv
 from space_env.envs.mission_planner_env import MissionPlannerEnv
 from space_env.envs.resource_manager_env import ResourceManagerEnv
 
@@ -15,6 +16,7 @@ _SPECS = (
     ("space_env/ResourceManager-v0", "space_env.envs.resource_manager_env:ResourceManagerEnv"),
     ("space_env/AnomalyResponse-v0", "space_env.envs.anomaly_response_env:AnomalyResponseEnv"),
     ("space_env/ConjunctionAssessment-v0", "space_env.envs.conjunction_env:ConjunctionAssessmentEnv"),
+    ("space_env/Constellation-v0", "space_env.envs.constellation_env:ConstellationEnv"),
 )
 
 for _env_id, _entry in _SPECS:
@@ -24,6 +26,7 @@ for _env_id, _entry in _SPECS:
 __all__ = [
     "AnomalyResponseEnv",
     "ConjunctionAssessmentEnv",
+    "ConstellationEnv",
     "MissionPlannerEnv",
     "ResourceManagerEnv",
 ]

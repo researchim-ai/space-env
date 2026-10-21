@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "space-env"
-version = "0.3.0"
+version = "0.6.0"
 description = "Environment for generating pretraining/SFT/RL data for space industry agents"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,6 +22,7 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "sgp4>=2.20",
+    "nrlmsise00>=0.1.0",
 ]
 # Отраслевые библиотеки (см. docs/INDUSTRY_LIBRARIES.md)
 sgp4 = ["sgp4>=2.20"]           # TLE/SGP4 — CelesTrak, Space-Track, NORAD
@@ -30,6 +31,7 @@ spice = ["spiceypy>=4.0"]      # NASA SPICE — эфемериды, навига
 ccsds = ["ccsdspy>=2.0", "spacepackets>=0.22"]  # CCSDS/ECSS — телеметрия и команды
 orekit = ["orekit-jpype>=13.0"] # OreKit — орбиты, время, пропагация (требует JDK 11+ или pip install ".[orekit-jdk]")
 orekit-jdk = ["orekit-jpype[jdk4py]>=13.0"]  # OreKit с подтягиванием JDK через jdk4py
+msis = ["nrlmsise00>=0.1.0"]  # NRLMSISE-00, плотность по F10.7 и Ap
 # pykep (ESA, GPL-3) — см. docs, ставится отдельно
 all-industry = [
     "sgp4>=2.20",

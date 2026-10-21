@@ -16,4 +16,6 @@ class GroundStation(BaseModel):
 
 DEFAULT_GROUND_STATIONS: tuple[GroundStation, ...] = (
     GroundStation(name="Moscow", lat_deg=55.752, lon_deg=37.618, alt_m=150.0, min_elevation_deg=5.0),
+    GroundStation(name="Svalbard", lat_deg=78.229, lon_deg=15.407, alt_m=500.0, min_elevation_deg=5.0),
+    GroundStation(name="Inuvik", lat_deg=68.319, lon_deg=-133.549, alt_m=100.0, min_elevation_deg=5.0),
 )

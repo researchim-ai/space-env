@@ -1,0 +1,2 @@
+Текстуры Земли взяты из примеров three.js r160 (earth_atmos, earth_specular, earth_normal).
+Исходные снимки — NASA Visible Earth, распространяются как работа правительства США.

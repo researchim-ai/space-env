@@ -43,8 +43,9 @@ def write_trajectories(
     *,
     stages: list[dict[str, Any]] | None = None,
     seed: int = 0,
+    use_expert: bool = False,
 ) -> int:
-    """Пишет по строке на шаг. Возвращает число шагов."""
+    """Пишет по строке на шаг. Возвращает число шагов. use_expert берёт эвристику вместо равномерной выборки."""
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plan = stages if stages is not None else load_curriculum()
@@ -54,8 +55,19 @@ def write_trajectories(
             episodes = int(stage.get("episodes", 1))
             for episode in range(episodes):
                 env = gym.make(stage["env"], max_episode_steps=int(stage.get("max_episode_steps", 20)))
+                env_id = env.spec.id if env.spec is not None else str(stage["env"])
+
+                def _expert(obs: np.ndarray, env_name: str = env_id) -> int:
+                    from space_env.rl.expert import expert_action
+
+                    return expert_action(env_name, obs)
+
                 try:
-                    rows = rollout_episode(env, seed=seed + stage_index * 1000 + episode)
+                    rows = rollout_episode(
+                        env,
+                        seed=seed + stage_index * 1000 + episode,
+                        policy=_expert if use_expert else None,
+                    )
                 finally:
                     env.close()
                 for row in rows:

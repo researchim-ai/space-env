@@ -33,3 +33,6 @@ class SimulationState(BaseModel):
     soc_rate_per_s: float = 0.0
     miss_radial_m: float | None = None
     miss_cross_m: float | None = None
+    link_margin_db: float = -99.0
+    slew_remaining_deg: float = 0.0
+    seconds_to_aos: float | None = None

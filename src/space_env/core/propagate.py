@@ -16,6 +16,16 @@ def _rk4(
     drag_coefficient: float,
     include_j2: bool,
     include_drag: bool,
+    atmosphere: str,
+    f107: float,
+    f107a: float,
+    ap: float,
+    density_scale: float,
+    lat_deg: float,
+    lon_deg: float,
+    when,
+    srp_area_m2: float,
+    srp_coefficient: float,
 ) -> tuple[np.ndarray, np.ndarray]:
     def deriv(pos: np.ndarray, vel: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         acc = acceleration_m_s2(
@@ -26,6 +36,16 @@ def _rk4(
             drag_coefficient=drag_coefficient,
             include_j2=include_j2,
             include_drag=include_drag,
+            atmosphere=atmosphere,
+            f107=f107,
+            f107a=f107a,
+            ap=ap,
+            density_scale=density_scale,
+            lat_deg=lat_deg,
+            lon_deg=lon_deg,
+            when=when,
+            srp_area_m2=srp_area_m2,
+            srp_coefficient=srp_coefficient,
         )
         return vel, acc
 
@@ -49,6 +69,16 @@ def propagate_state(
     include_j2: bool = True,
     include_drag: bool = True,
     substep_sec: float = 10.0,
+    atmosphere: str = "table",
+    f107: float = 150.0,
+    f107a: float = 150.0,
+    ap: float = 4.0,
+    density_scale: float = 1.0,
+    lat_deg: float = 0.0,
+    lon_deg: float = 0.0,
+    when=None,
+    srp_area_m2: float = 0.0,
+    srp_coefficient: float = 1.2,
 ) -> tuple[np.ndarray, np.ndarray, list[tuple[float, np.ndarray, np.ndarray]]]:
     """
     Пропагирует состояние на dt_sec.
@@ -72,6 +102,16 @@ def propagate_state(
             drag_coefficient=drag_coefficient,
             include_j2=include_j2,
             include_drag=include_drag,
+            atmosphere=atmosphere,
+            f107=f107,
+            f107a=f107a,
+            ap=ap,
+            density_scale=density_scale,
+            lat_deg=lat_deg,
+            lon_deg=lon_deg,
+            when=when,
+            srp_area_m2=srp_area_m2,
+            srp_coefficient=srp_coefficient,
         )
         elapsed += h
         samples.append((elapsed, r.copy(), v.copy()))

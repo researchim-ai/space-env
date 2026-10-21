@@ -67,3 +67,9 @@ class ScenarioConfig(BaseModel):
     # Ресурсы: начальное состояние (например, пониженный SoC)
     initial_battery_soc: float | None = Field(default=None, ge=0, le=1)
     initial_delta_v_fraction: float | None = Field(default=None, ge=0, le=1)
+    # table — шкала среднего Солнца. nrlmsise — NRLMSISE-00, если пакет установлен.
+    atmosphere: str = "table"
+    f107: float = Field(default=150.0, gt=0)
+    f107a: float = Field(default=150.0, gt=0)
+    ap: float = Field(default=4.0, ge=0)
+    density_scale: float = Field(default=1.0, gt=0)

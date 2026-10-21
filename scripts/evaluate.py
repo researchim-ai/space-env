@@ -3,6 +3,7 @@
 import argparse
 
 from space_env.eval.benchmarks import run_registered_benchmarks
+from space_env.eval.holdout import compare_policies
 from space_env.eval.sft_rubric import term_recall
 
 
@@ -15,6 +16,11 @@ def main():
     parser.add_argument("--terms", default="AOS,eclipse,safe mode", help="Термины через запятую")
     args = parser.parse_args()
     rows = run_registered_benchmarks(episodes=args.episodes, max_episode_steps=args.steps, seed=args.seed)
+    held = compare_policies("space_env/ResourceManager-v0", episodes=args.episodes, max_episode_steps=args.steps, seed=args.seed)
+    print(
+        "holdout ResourceManager: "
+        f"random_success={held['random_success_rate']:.2f} expert_success={held['expert_success_rate']:.2f}"
+    )
     for row in rows:
         print(
             f"{row['env']}: mean_reward={row['mean_reward']:.3f} "

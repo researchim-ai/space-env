@@ -27,7 +27,7 @@ def test_resource_manager_env():
 def test_mission_planner_env():
     env = MissionPlannerEnv(max_episode_steps=15, seed=123)
     obs, info = env.reset(seed=123)
-    assert obs.shape == (7,)
+    assert obs.shape == (9,)
     obs2, reward, term, trunc, info2 = env.step(1)  # imaging
     assert "imaging" in info2
     env.close()
@@ -36,9 +36,9 @@ def test_mission_planner_env():
 def test_anomaly_response_env():
     env = AnomalyResponseEnv(max_episode_steps=10, seed=1)
     obs, info = env.reset(seed=1)
-    assert obs.shape == (5,)
+    assert obs.shape == (6,)
     obs2, reward, term, trunc, info2 = env.step(3)  # reboot
-    assert obs2.shape == (5,)
+    assert obs2.shape == (6,)
     env.close()
 
 
@@ -56,7 +56,7 @@ def test_mission_planner_render_and_registry():
 
     env = gym.make("space_env/MissionPlanner-v0", max_episode_steps=2, render_mode="ansi")
     obs, _info = env.reset(seed=0)
-    assert obs.shape == (7,)
+    assert obs.shape == (9,)
     _obs, _reward, _term, _trunc, info = env.step(0)
     assert "imaging" in info
     text = env.render()

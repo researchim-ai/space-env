@@ -1,9 +1,13 @@
 """
-Ускорение в ECI: центральное поле, J2 (EGM96) и экспоненциальная атмосфера.
-Плотность — кусочно-логарифмическая таблица среднего Солнца, не NRLMSISE.
-J2 — форма Кёртиса: a_J2 = −(3/2) J2 μ Re²/r⁵ · (x(1−5z²/r²), y(1−5z²/r²), z(3−5z²/r²)).
+Ускорение в ECI: центральное поле, J2 (EGM96) и атмосфера.
+По умолчанию плотность — таблица среднего Солнца, умноженная на exp(0.012·(F10.7−150)).
+Если atmosphere='nrlmsise' и установлен пакет nrlmsise00, плотность берётся из NRLMSISE-00
+(полная масса, г/см³ → кг/м³). J2 — форма Кёртиса.
 """
 from __future__ import annotations
+
+import math
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -28,6 +32,51 @@ def atmospheric_density_kg_m3(altitude_m: float) -> float:
     return float(np.exp(log_rho))
 
 
+def density_nrlmsise_kg_m3(
+    altitude_m: float,
+    when: datetime,
+    lat_deg: float,
+    lon_deg: float,
+    *,
+    f107: float = 150.0,
+    f107a: float = 150.0,
+    ap: float = 4.0,
+) -> float:
+    """Полная массовая плотность NRLMSISE-00, кг/м³. Без пакета — ImportError."""
+    try:
+        from nrlmsise00 import msise_flat
+    except ImportError as exc:
+        raise ImportError("Для NRLMSISE установите extra msis: pip install nrlmsise00") from exc
+    if when.tzinfo is not None:
+        when = when.astimezone(timezone.utc).replace(tzinfo=None)
+    densities = msise_flat(when, float(altitude_m) / 1000.0, lat_deg, lon_deg, f107a, f107, ap)
+    # Индекс 5 — полная масса в г/см³.
+    return float(densities[5]) * 1000.0
+
+
+def ambient_density_kg_m3(
+    altitude_m: float,
+    *,
+    atmosphere: str = "table",
+    f107: float = 150.0,
+    f107a: float = 150.0,
+    ap: float = 4.0,
+    density_scale: float = 1.0,
+    lat_deg: float = 0.0,
+    lon_deg: float = 0.0,
+    when: datetime | None = None,
+) -> float:
+    """Таблица среднего Солнца или NRLMSISE-00. density_scale — множитель поверх модели."""
+    if atmosphere == "nrlmsise":
+        moment = when or datetime(2024, 1, 1)
+        rho = density_nrlmsise_kg_m3(
+            altitude_m, moment, lat_deg, lon_deg, f107=f107, f107a=f107a, ap=ap
+        )
+    else:
+        rho = atmospheric_density_kg_m3(altitude_m) * math.exp(0.012 * (float(f107) - 150.0))
+    return float(rho * density_scale)
+
+
 def acceleration_m_s2(
     r_m: np.ndarray,
     v_m_s: np.ndarray,
@@ -37,6 +86,16 @@ def acceleration_m_s2(
     drag_coefficient: float,
     include_j2: bool = True,
     include_drag: bool = True,
+    atmosphere: str = "table",
+    f107: float = 150.0,
+    f107a: float = 150.0,
+    ap: float = 4.0,
+    density_scale: float = 1.0,
+    lat_deg: float = 0.0,
+    lon_deg: float = 0.0,
+    when: datetime | None = None,
+    srp_area_m2: float = 0.0,
+    srp_coefficient: float = 1.2,
 ) -> np.ndarray:
     """Ускорение, м/с². Сопротивление считается относительно атмосферы, вращающейся с Землёй."""
     r = np.asarray(r_m, dtype=float)
@@ -62,6 +121,49 @@ def acceleration_m_s2(
         v_rel = v - np.cross(omega, r)
         speed = float(np.linalg.norm(v_rel))
         if speed > 0.0:
-            rho = atmospheric_density_kg_m3(radius - R_EARTH_EQUATOR)
+            rho = ambient_density_kg_m3(
+                radius - R_EARTH_EQUATOR,
+                atmosphere=atmosphere,
+                f107=f107,
+                f107a=f107a,
+                ap=ap,
+                density_scale=density_scale,
+                lat_deg=lat_deg,
+                lon_deg=lon_deg,
+                when=when,
+            )
             a = a - 0.5 * drag_coefficient * drag_area_m2 / mass_kg * rho * speed * v_rel
+    if srp_area_m2 > 0.0 and mass_kg > 0.0 and srp_coefficient > 0.0 and when is not None:
+        a = a + _srp_acceleration_m_s2(r, when, mass_kg, srp_area_m2, srp_coefficient)
     return a
+
+
+def _srp_acceleration_m_s2(
+    r_m: np.ndarray,
+    when: datetime,
+    mass_kg: float,
+    area_m2: float,
+    coefficient: float,
+) -> np.ndarray:
+    """
+    Пушечное ядро: a = −Cr (A/m) P (1 а.е. / r)² ν · r̂_солнце.
+    ν — доля солнечного диска из конуса тени. В umbra ускорение нулевое.
+    """
+    from space_env.core.environment import shadow_state
+    from space_env.core.sun import sun_position_m
+    from space_env.core.time import Time
+
+    moment = Time(when)
+    r_sun = sun_position_m(moment)
+    fraction = shadow_state(r_m, r_sun).flux_fraction
+    if fraction <= 0.0:
+        return np.zeros(3)
+    distance = float(np.linalg.norm(r_sun))
+    if distance < 1.0:
+        return np.zeros(3)
+    from space_env.core.constants import AU, SOLAR_PRESSURE_1AU_N_M2
+
+    sun_hat = r_sun / distance
+    pressure = SOLAR_PRESSURE_1AU_N_M2 * (AU / distance) ** 2
+    # Минус: фотоны летят от Солнца и толкают аппарат от Солнца.
+    return -coefficient * (area_m2 / mass_kg) * pressure * fraction * sun_hat

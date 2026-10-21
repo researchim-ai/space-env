@@ -51,12 +51,25 @@ class PropulsionConfig(BaseModel):
     mass_kg: float = Field(default=100.0, gt=0, description="Масса КА, кг")
     drag_area_m2: float = Field(default=0.9, ge=0, description="Мидель для сопротивления, м²")
     drag_coefficient: float = Field(default=2.2, ge=0, description="Коэффициент сопротивления")
+    srp_area_m2: float = Field(default=1.2, ge=0, description="Площадь для солнечного давления, м²")
+    srp_coefficient: float = Field(default=1.2, ge=0, le=2, description="Cr пушечного ядра, 1 поглощение … 2 зеркало")
 
 
 class CommsConfig(BaseModel):
-    """Конфиг связи (упрощённо)."""
+    """
+    S-диапазон малого аппарата на станцию с зеркалом около 3 м.
+    2 Вт, усиление борта 6 дБи, станции 32 дБи, требуемый уровень −125 дБВт:
+    в зените запас положительный, у горизонта линия не закрывается.
+    """
     data_rate_max_bps: float = Field(default=1e6, ge=0, description="Макс. скорость передачи, бит/с")
     pass_duration_min: float = Field(ge=0, default=10.0, description="Типовая длительность сессии, мин")
+    frequency_Hz: float = Field(default=2.2e9, gt=0)
+    tx_power_W: float = Field(default=2.0, gt=0)
+    tx_gain_dBi: float = Field(default=6.0)
+    rx_gain_dBi: float = Field(default=32.0)
+    system_loss_dB: float = Field(default=3.0, ge=0)
+    required_power_dBW: float = Field(default=-125.0)
+    min_margin_dB: float = Field(default=0.0)
 
 
 class PayloadConfig(BaseModel):
@@ -69,6 +82,7 @@ class PayloadConfig(BaseModel):
 class SpacecraftConfig(BaseModel):
     """Полная конфигурация КА."""
     name: str = "SC"
+    slew_rate_deg_s: float = Field(default=2.0, gt=0, description="Максимальная угловая скорость разворота, °/с")
     power: PowerConfig = Field(default_factory=PowerConfig)
     thermal: ThermalConfig = Field(default_factory=ThermalConfig)
     propulsion: PropulsionConfig = Field(default_factory=PropulsionConfig)

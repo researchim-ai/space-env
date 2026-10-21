@@ -39,7 +39,7 @@ class AnomalyResponseEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self.step_sec = step_sec
         self.render_mode = render_mode
-        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(5,), dtype=np.float32)
+        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(6,), dtype=np.float32)
         self.action_space = gym.spaces.Discrete(4)
         self._engine: SimulationEngine | None = None
         self._steps = 0
@@ -49,7 +49,7 @@ class AnomalyResponseEnv(gym.Env):
 
     def _obs(self) -> np.ndarray:
         if self._engine is None:
-            return np.zeros(5, dtype=np.float32)
+            return np.zeros(6, dtype=np.float32)
         snap = self._engine.get_state_snapshot()
         voltage_norm = float(np.clip((snap.bus_voltage_V - 22.0) / 12.0, 0.0, 1.0))
         rate_norm = float(np.clip(0.5 + snap.soc_rate_per_s * 400.0, 0.0, 1.0))
@@ -60,6 +60,7 @@ class AnomalyResponseEnv(gym.Env):
                 voltage_norm,
                 1.0 if self._engine.radio_ready() else 0.0,
                 rate_norm,
+                0.0 if snap.in_eclipse else 1.0,
             ],
             dtype=np.float32,
         )
