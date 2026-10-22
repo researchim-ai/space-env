@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from space_env.catalog.geometry import mean_semimajor_axis_m, raan_rad_for_ltdn
-from space_env.catalog.references import LANDSAT_STATIONS, SENTINEL_STATIONS, reference
+from space_env.catalog.references import CUBESAT_STATIONS, LANDSAT_STATIONS, SENTINEL_STATIONS, reference
 from space_env.core.ground import GroundStation
 from space_env.core.orbit import Orbit
 from space_env.core.space_weather import indices_for
@@ -64,7 +64,9 @@ def _stations(key: str) -> list[GroundStation]:
     if key == "landsat-9":
         return list(LANDSAT_STATIONS)
     if key == "cubesat-6u":
-        return [next(station for station in SENTINEL_STATIONS if station.name == "Svalbard")]
+        return list(CUBESAT_STATIONS)
+    if key == "sar-small":
+        return [station for station in SENTINEL_STATIONS if station.name == "Svalbard"]
     return []
 
 

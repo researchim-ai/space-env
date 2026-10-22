@@ -24,6 +24,7 @@ from space_env.catalog.geometry import (
     ASSUMED_HYDRAZINE_ISP_S,
     closure_required_dbw,
     dish_gain_dbi,
+    geosynchronous_altitude_m,
     half_swath_deg,
     radiating_area_m2,
     rocket_delta_v_m_s,
@@ -67,6 +68,8 @@ class ReferenceVehicle:
     max_imaging_s: float | None
     sources: tuple[str, ...]
     assumptions: tuple[str, ...]
+    imaging_power_w: float = 0.0
+    images_in_eclipse: bool = False
 
     def spacecraft_config(self, name: str | None = None) -> SpacecraftConfig:
         efficiency = self.array_power_w / (SOLAR_CONSTANT * self.array_area_m2)
@@ -115,7 +118,11 @@ class ReferenceVehicle:
                 system_loss_dB=3.0,
                 required_power_dBW=self.required_power_dbw,
             ),
-            payload=PayloadConfig(half_fov_deg=half_fov),
+            payload=PayloadConfig(
+                half_fov_deg=half_fov,
+                imaging_power_w=self.imaging_power_w,
+                images_in_eclipse=self.images_in_eclipse,
+            ),
         )
 
 
@@ -291,6 +298,10 @@ LANDSAT_STATIONS: tuple[GroundStation, ...] = (
     SIOUX_FALLS,
     next(station for station in DEFAULT_GROUND_STATIONS if station.name == "Svalbard"),
 )
+# 51.6° не достаёт до Шпицбергена. Москва, 55.75° с.ш., в пределах радиогоризонта с 500 км.
+CUBESAT_STATIONS: tuple[GroundStation, ...] = (
+    next(station for station in DEFAULT_GROUND_STATIONS if station.name == "Moscow"),
+)
 
 
 REFERENCES["sentinel-2b"] = replace(
@@ -333,6 +344,7 @@ REFERENCES["cubesat-6u"] = ReferenceVehicle(
         "Класс 6U около 12 кг на 500 км и 51.6°, как у аппаратов, уходящих с МКС. Это не паспорт названной миссии и не NORAD.",
         "СБ 0.2 м² и 30 Вт, батарея 80 Вт·ч, шина 15/40 Вт — порядок кубсата, не измерение.",
         "S-band 2 Вт, 6 дБи, порог −125 дБВт и зеркало 32 дБи — то же инженерное замыкание, что у опорного малого аппарата в spacecraft.py.",
+        "Станция — Москва, 55.75° с.ш., из набора стенда. Шпицберген при наклонении 51.6° за горизонтом.",
         "Память 32 Гбит и запись 20 Мбит/с — допущение для задачи выбора цели. В карточке 6U этого нет.",
         "0.3 кг рабочего тела и импульс Циолковского при 220 с — допущение, гидразин на 6U обычно не ставят.",
     ),
@@ -370,6 +382,81 @@ REFERENCES["debris-fragment"] = ReferenceVehicle(
     assumptions=(
         "Неманеврирующий фрагмент 8 кг. Топлива нет, бюджет Δv равен нулю, команда импульса не исполняется.",
         "Радиолинии нет. Объект только цель скрининга.",
+    ),
+)
+
+
+REFERENCES["sar-small"] = ReferenceVehicle(
+    key="sar-small",
+    title="Малый радар",
+    norad_id=None,
+    launch_mass_kg=150.0,
+    propellant_kg=2.0,
+    altitude_m=550_000.0,
+    inclination_deg=97.4,
+    ltdn_hours=10.5,
+    swath_m=20_000.0,
+    array_area_m2=2.0,
+    array_area_published=False,
+    array_power_w=200.0,
+    battery_wh=400.0,
+    battery_published=False,
+    consumption_nominal_w=80.0,
+    consumption_peak_w=900.0,
+    consumption_published=False,
+    downlink_bps=50.0e6,
+    downlink_hz=8.2e9,
+    tx_power_w=10.0,
+    tx_gain_dbi=0.0,
+    rx_gain_dbi=32.0,
+    required_power_dbw=-140.0,
+    crosslink_hz=None,
+    store_rate_bps=200.0e6,
+    memory_bits=64.0e9,
+    max_imaging_s=600.0,
+    sources=(),
+    assumptions=(
+        "Класс малого радара, не паспорт миссии. Съёмка идёт и в тени: прибору не нужен солнечный свет.",
+        "800 Вт в режиме съёмки — порядок импульсного режима, не измерение конкретного борта.",
+        "Орбита 550 км и 97.4° — типовая солнечно-синхронная для такого класса.",
+        "Станция суток — Шпицберген из сети стенда. Фаза — аномалия 180° тех же суток, не паспорт борта.",
+    ),
+    imaging_power_w=800.0,
+    images_in_eclipse=True,
+)
+
+REFERENCES["geo-comms"] = ReferenceVehicle(
+    key="geo-comms",
+    title="Геостационарный ретранслятор",
+    norad_id=None,
+    launch_mass_kg=2500.0,
+    propellant_kg=50.0,
+    altitude_m=geosynchronous_altitude_m(),
+    inclination_deg=0.05,
+    ltdn_hours=None,
+    swath_m=None,
+    array_area_m2=20.0,
+    array_area_published=False,
+    array_power_w=3000.0,
+    battery_wh=8000.0,
+    battery_published=False,
+    consumption_nominal_w=1500.0,
+    consumption_peak_w=2500.0,
+    consumption_published=False,
+    downlink_bps=10.0e6,
+    downlink_hz=12.0e9,
+    tx_power_w=20.0,
+    tx_gain_dbi=30.0,
+    rx_gain_dbi=40.0,
+    required_power_dbw=-140.0,
+    crosslink_hz=None,
+    store_rate_bps=None,
+    memory_bits=None,
+    max_imaging_s=None,
+    sources=(),
+    assumptions=(
+        "Класс геостационарного аппарата связи, не паспорт борта. Высота — круговая орбита звёздных суток.",
+        "Задача — удержание большой полуоси. Сеансов низкой орбиты у этой карточки нет.",
     ),
 )
 

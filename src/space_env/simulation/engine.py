@@ -527,7 +527,10 @@ class SimulationEngine:
             st_t.heater_on = True
         else:
             st_t.heater_on = False
-        consumption = base_w + heater_w + (450.0 if "overload" in self._faults else 0.0)
+        payload_w = 0.0
+        if self.spacecraft.state.payload_mode == "imaging":
+            payload_w = self.spacecraft.config.payload.imaging_power_w
+        consumption = base_w + heater_w + payload_w + (450.0 if "overload" in self._faults else 0.0)
         st_p.consumption_W = consumption
         generation = solar_generation_w(
             cfg_p.solar_panel_area_m2,
@@ -690,7 +693,7 @@ class SimulationEngine:
         for offset, position, _velocity in samples:
             moment = self._epoch + (t0 + offset)
             sun = sun_position_m(moment)
-            if in_eclipse(position, sun):
+            if in_eclipse(position, sun) and not self.spacecraft.config.payload.images_in_eclipse:
                 continue
             for target in self.scenario.ground_targets:
                 if target.name in self._captured_targets:

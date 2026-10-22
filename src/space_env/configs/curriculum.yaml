@@ -84,3 +84,24 @@ stages:
     env: space_env/DayMission-v0
     episodes: 1
     max_episode_steps: 1
+  - name: day_shift
+    env: space_env/DayShift-v0
+    episodes: 1
+    max_episode_steps: 80
+  - name: dish_award
+    env: space_env/DishAward-v0
+    episodes: 1
+    max_episode_steps: 24
+  - name: operator_shift
+    env: space_env/OperatorShift-v0
+    episodes: 1
+    max_episode_steps: 24
+    until: award
+  - name: radar
+    env: space_env/RadarPass-v0
+    episodes: 1
+    max_episode_steps: 1
+  - name: longitude
+    env: space_env/LongitudeKeep-v0
+    episodes: 1
+    max_episode_steps: 1

@@ -61,7 +61,12 @@ def write_trajectories(
         for stage_index, stage in enumerate(plan):
             episodes = int(stage.get("episodes", 1))
             for episode in range(episodes):
-                env = gym.make(stage["env"], max_episode_steps=int(stage.get("max_episode_steps", 20)))
+                reserved = {"name", "env", "episodes", "max_episode_steps"}
+                env = gym.make(
+                    stage["env"],
+                    max_episode_steps=int(stage.get("max_episode_steps", 20)),
+                    **{key: value for key, value in stage.items() if key not in reserved},
+                )
                 env_id = env.spec.id if env.spec is not None else str(stage["env"])
 
                 def _expert(obs: np.ndarray, env_name: str = env_id) -> int:

@@ -77,6 +77,8 @@ class PayloadConfig(BaseModel):
     modes: list[str] = Field(default_factory=lambda: ["idle", "imaging"], description="Режимы работы")
     default_mode: str = Field(default="idle", description="Режим по умолчанию")
     half_fov_deg: float = Field(default=30.0, gt=0, le=70, description="Половина поля зрения надирного прибора, °")
+    imaging_power_w: float = Field(default=0.0, ge=0, description="Дополнительная мощность в режиме съёмки, Вт")
+    images_in_eclipse: bool = Field(default=False, description="Съёмка возможна в тени. У радара да, у оптики нет")
 
 
 class SpacecraftConfig(BaseModel):

@@ -13,7 +13,7 @@ from dataclasses import dataclass, replace
 import numpy as np
 
 from space_env.catalog.build import mean_orbit, spacecraft_config
-from space_env.catalog.references import LANDSAT_STATIONS, SENTINEL_STATIONS, reference
+from space_env.catalog.references import CUBESAT_STATIONS, LANDSAT_STATIONS, SENTINEL_STATIONS, reference
 from space_env.core.access import ground_track_latlon, off_nadir_deg, subsatellite_latlon
 from space_env.core.environment import in_eclipse
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
@@ -334,6 +334,8 @@ def _stations_for(key: str) -> list[GroundStation]:
     if key == "landsat-9":
         return list(LANDSAT_STATIONS)
     if key == "cubesat-6u":
+        return list(CUBESAT_STATIONS)
+    if key == "sar-small":
         return [station for station in SENTINEL_STATIONS if station.name == "Svalbard"]
     return []
 
@@ -343,6 +345,8 @@ def _target_prefix(key: str) -> str:
         return "L9"
     if key == "cubesat-6u":
         return "C6"
+    if key == "sar-small":
+        return "RS"
     return "S2"
 
 

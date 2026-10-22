@@ -43,6 +43,11 @@ def test_rewards_and_curriculum_files():
         "orders",
         "sentinel_fault",
         "day_mission",
+        "day_shift",
+        "dish_award",
+        "operator_shift",
+        "radar",
+        "longitude",
     ]
     assert rewards["workplan"]["task_done"] == pytest.approx(1.0)
 

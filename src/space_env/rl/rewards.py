@@ -68,6 +68,11 @@ DEFAULT_REWARDS: dict[str, dict[str, float]] = {
     "station_contention": {"scheduled": 1.0, "conflict": 1.0},
     "order_book": {"filled": 1.0, "wasted": 1.0},
     "day_mission": {"accepted": 1.0, "rejected": 1.0},
+    "day_shift": {"task_done": 1.0, "missed": 1.0},
+    "dish_award": {"awarded": 1.0, "missed": 1.0},
+    "operator_shift": {"task_done": 1.0, "step_done": 0.1, "missed": 1.0},
+    "radar_pass": {"scene": 1.0, "missed": 1.0},
+    "longitude_keep": {"held": 1.0, "drift": 1.0},
 }
 
 

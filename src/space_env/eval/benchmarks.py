@@ -33,6 +33,11 @@ _SUITE_STEPS = {
     "space_env/SentinelPassFault-v0": 8,
     "space_env/CubesatAcquisition-v0": 2,
     "space_env/DayMission-v0": 1,
+    "space_env/DayShift-v0": 4,
+    "space_env/DishAward-v0": 1,
+    "space_env/OperatorShift-v0": 4,
+    "space_env/RadarPass-v0": 1,
+    "space_env/LongitudeKeep-v0": 1,
 }
 
 

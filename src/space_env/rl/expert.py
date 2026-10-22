@@ -77,6 +77,47 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         if contact and comms < 1.0:
             return 2
         return 0
+    if "RadarPass" in env_id:
+        return 1 if obs[0] > 0.5 and obs[1] > 0.4 else 0
+    if "LongitudeKeep" in env_id:
+        return 1
+    if "OperatorShift" in env_id:
+        if obs[0] < 0.5:
+            count = (obs.size - 6) // 3
+            shares = obs[1 : 1 + count]
+            inside = obs[1 + count : 1 + 2 * count]
+            early = obs[1 + 2 * count : 1 + 3 * count]
+            candidates = [index for index in range(count) if inside[index] > 0.5]
+            if not candidates:
+                return 0
+            keeper = min(candidates, key=lambda index: (-float(shares[index]), -float(early[index]), index))
+            return 4 + keeper
+        kind = obs[-5]
+        if kind > 0.8:
+            return 2
+        if kind > 0.6:
+            return 3
+        if kind > 0.3:
+            return 1
+        return 0
+    if "DishAward" in env_id:
+        count = obs.size // 3
+        shares = obs[:count]
+        inside = obs[count : 2 * count]
+        early = obs[2 * count :]
+        candidates = [index for index in range(count) if inside[index] > 0.5]
+        if not candidates:
+            return 0
+        return min(candidates, key=lambda index: (-float(shares[index]), -float(early[index]), index))
+    if "DayShift" in env_id:
+        kind = obs[0]
+        if kind > 0.8:
+            return 2
+        if kind > 0.6:
+            return 3
+        if kind > 0.3:
+            return 1
+        return 0
     if "WorkPlan" in env_id:
         kind = obs[5] if obs.size > 6 else 0.0
         in_window = obs[6] > 0.5 if obs.size > 6 else False

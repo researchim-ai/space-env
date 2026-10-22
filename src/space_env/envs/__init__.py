@@ -34,7 +34,8 @@ from space_env.envs.horizon_envs import (
     PhaseBurnEnv,
     RerouteEnv,
 )
-from space_env.envs.campaign_env import DayMissionEnv
+from space_env.envs.campaign_env import DayMissionEnv, DayShiftEnv, DishAwardEnv, OperatorShiftEnv
+from space_env.envs.regime_envs import LongitudeKeepEnv, RadarPassEnv
 from space_env.envs.workplan_env import WorkPlanEnv
 
 _SPECS = (
@@ -64,6 +65,11 @@ _SPECS = (
     ("space_env/SentinelPassFault-v0", "space_env.envs.sentinel_env:SentinelPassFaultEnv"),
     ("space_env/CubesatAcquisition-v0", "space_env.envs.sentinel_env:CubesatAcquisitionEnv"),
     ("space_env/DayMission-v0", "space_env.envs.campaign_env:DayMissionEnv"),
+    ("space_env/DayShift-v0", "space_env.envs.campaign_env:DayShiftEnv"),
+    ("space_env/DishAward-v0", "space_env.envs.campaign_env:DishAwardEnv"),
+    ("space_env/OperatorShift-v0", "space_env.envs.campaign_env:OperatorShiftEnv"),
+    ("space_env/RadarPass-v0", "space_env.envs.regime_envs:RadarPassEnv"),
+    ("space_env/LongitudeKeep-v0", "space_env.envs.regime_envs:LongitudeKeepEnv"),
 )
 
 def registered_env_ids() -> tuple[str, ...]:
@@ -81,6 +87,9 @@ __all__ = [
     "ConjunctionQueueEnv",
     "DebrisAvoidEnv",
     "DayMissionEnv",
+    "DayShiftEnv",
+    "DishAwardEnv",
+    "OperatorShiftEnv",
     "DecayWatchEnv",
     "DisposalEnv",
     "DecayWatchHighEnv",
@@ -89,12 +98,14 @@ __all__ = [
     "CubesatAcquisitionEnv",
     "ConstellationOpsEnv",
     "LandsatAcquisitionEnv",
+    "LongitudeKeepEnv",
     "MissionPlannerEnv",
     "OrderBookEnv",
     "PassFaultEnv",
     "PriorityCoverageEnv",
     "RendezvousHoldEnv",
     "PhaseBurnEnv",
+    "RadarPassEnv",
     "RerouteEnv",
     "ResourceManagerEnv",
     "registered_env_ids",

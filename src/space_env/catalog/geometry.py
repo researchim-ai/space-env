@@ -40,6 +40,17 @@ def sun_sync_inclination_rad(semimajor_m: float, eccentricity: float = 0.0) -> f
     return math.acos(cosine)
 
 
+def geosynchronous_semimajor_axis_m() -> float:
+    """Большая полуось круговой орбиты с периодом звёздных суток, м."""
+    sidereal_sec = 86164.0905
+    return (MU_EARTH * sidereal_sec**2 / (4.0 * math.pi**2)) ** (1.0 / 3.0)
+
+
+def geosynchronous_altitude_m() -> float:
+    """Высота над сферой равного объёма для геосинхронной круговой орбиты, м."""
+    return geosynchronous_semimajor_axis_m() - R_EARTH_MEAN
+
+
 def mean_semimajor_axis_m(altitude_m: float) -> float:
     """Средняя высота над сферой равного объёма, не над экватором."""
     return R_EARTH_MEAN + float(altitude_m)
