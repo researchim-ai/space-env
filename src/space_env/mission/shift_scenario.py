@@ -10,7 +10,7 @@ import yaml
 from space_env.mission.campaign import DAY_SEC, MISSION_KEYS
 
 _FIELDS = {"version", "keys", "horizon_sec", "epoch", "nu_deg", "dv_budget_m_s", "until", "demand"}
-_DEMAND_FIELDS = {"name", "place", "lat_deg", "lon_deg", "deadline_sec", "deliver_to"}
+_DEMAND_FIELDS = {"name", "place", "lat_deg", "lon_deg", "deadline_sec", "deliver_to", "size_bits"}
 
 
 def _default_path() -> Path:
@@ -50,6 +50,14 @@ def _demand(raw: Any) -> dict[str, Any] | None:
     deliver = str(raw.get("deliver_to", "overhead"))
     if not deliver:
         raise ValueError("у заявки должна быть станция сдачи")
+    size_bits = None
+    if "size_bits" in raw:
+        try:
+            size_bits = float(raw["size_bits"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("размер заявки должен быть числом бит") from exc
+        if not math.isfinite(size_bits) or size_bits <= 0.0:
+            raise ValueError("размер заявки должен быть положительным")
     return {
         "name": str(raw.get("name", "request")),
         "place": place,
@@ -57,6 +65,7 @@ def _demand(raw: Any) -> dict[str, Any] | None:
         "lon_deg": lon,
         "deadline_sec": deadline,
         "deliver_to": deliver,
+        "size_bits": size_bits,
     }
 
 

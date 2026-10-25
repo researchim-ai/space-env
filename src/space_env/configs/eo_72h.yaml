@@ -1,0 +1,38 @@
+# Четыре аппарата на 72 часа. Оптика снимает Кируну. Радар снимает точку своего следа; сдача идёт на станцию, чья линия закрылась.
+version: 2
+epoch: "2026-10-20T10:00:00Z"
+horizon_sec: 259200
+instances:
+  - id: sentinel-a
+    model: sentinel-2a
+    nu_deg: 80
+  - id: sentinel-b
+    model: sentinel-2a
+    nu_deg: 180
+  - id: landsat
+    model: landsat-9
+    nu_deg: 90
+  - id: radar
+    model: sar-small
+    nu_deg: 45
+stations:
+  - Kiruna
+  - Svalbard
+  - Matera
+requests:
+  - id: kiruna-day
+    lat_deg: 67.85712777777778
+    lon_deg: 20.964325
+    release_sec: 0
+    deadline_sec: 86400
+    size_bits: 8000000
+    priority: 2
+    payload: optical
+  - id: svalbard-radar
+    lat_deg: 78.912776
+    lon_deg: 41.395619
+    release_sec: 0
+    deadline_sec: 86400
+    size_bits: 8000000
+    priority: 1
+    payload: sar

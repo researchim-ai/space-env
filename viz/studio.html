@@ -124,6 +124,8 @@
     <aside id="brief">
       <h2>Что видно</h2>
       <p id="explain">Считаем дугу…</p>
+      <h2>Заявки на 72 часа</h2>
+      <ul id="tasking-requests"></ul>
       <div id="summary"></div>
       <h2 id="approach-title">Сближения</h2>
       <table id="approaches">
@@ -174,6 +176,21 @@
   </section>
   <script type="module">
     import { mountStudio } from "/viz/studio.js?v=23";
+
+    const taskingRequests = document.querySelector("#tasking-requests");
+    fetch("/api/tasking")
+      .then((response) => response.json())
+      .then((data) => {
+        taskingRequests.replaceChildren();
+        for (const ident of data.requests || []) {
+          const item = document.createElement("li");
+          item.textContent = ident;
+          taskingRequests.appendChild(item);
+        }
+      })
+      .catch(() => {
+        taskingRequests.replaceChildren();
+      });
 
     const explain = document.querySelector("#explain");
     const facts = document.querySelector("#facts");

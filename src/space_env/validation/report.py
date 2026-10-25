@@ -139,6 +139,32 @@ def core_report() -> dict[str, Any]:
     }
 
 
+def applicability_limits() -> list[dict[str, str]]:
+    """Граница профиля. Эти пункты не выдаются за проверенный эталон."""
+    return [
+        {
+            "name": "pc",
+            "status": "not_independently_validated",
+            "note": "Pc считается в коде и не сверен с независимым эталоном. Это не эксплуатационная оценка.",
+        },
+        {
+            "name": "rk4_stage_epoch",
+            "status": "shared_substep_epoch",
+            "note": "Четыре стадии RK4 внутри одного подынтервала делят один момент и одну широту.",
+        },
+        {
+            "name": "teme_to_gcrf",
+            "status": "not_implemented",
+            "note": "Перехода TEME в численный кадр нет. Движок принимает только GCRF.",
+        },
+        {
+            "name": "iau_2000a",
+            "status": "not_implemented",
+            "note": "Звёздное время — десять членов IAU 1980. Ряд IAU 2000A не считается.",
+        },
+    ]
+
+
 def main() -> None:
     print(json.dumps(core_report(), ensure_ascii=False, indent=2))
 

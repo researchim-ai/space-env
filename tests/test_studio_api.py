@@ -33,6 +33,14 @@ def test_api_serves_scenario_fleet_and_studio():
     _status, body, _kind = handle_get("/api/scenario", {})
     scenario = json.loads(body)
     assert scenario["keys"][0] == "sentinel-2a"
+    status, body, _kind = handle_get("/api/tasking", {})
+    tasking = json.loads(body)
+    assert status == 200
+    assert tasking["requests"] == ["kiruna-day", "svalbard-radar"]
+    assert tasking["stations"] == ["Kiruna", "Svalbard", "Matera"]
+    _status, page, kind = handle_get("/studio", {})
+    assert b"tasking-requests" in page
+    assert kind.startswith("text/html")
     assert scenario["until"] == "full"
     status, body, _kind = handle_get("/api/fleet", {"count": ["6"], "layout": ["chain"]})
     assert status == 200 and json.loads(body)["count"] == 6

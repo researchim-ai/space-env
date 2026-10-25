@@ -55,3 +55,23 @@ FAIRBANKS = GroundStation(
     alt_m=0.0,
     min_elevation_deg=5.0,
 )
+
+_BY_NAME = {
+    station.name: station
+    for station in (
+        *DEFAULT_GROUND_STATIONS,
+        KIRUNA,
+        MATERA,
+        SIOUX_FALLS,
+        TEMPE,
+        FAIRBANKS,
+    )
+}
+
+
+def station_by_name(name: str) -> GroundStation:
+    """Станция каталога по имени. Неизвестное имя не подменяется координатами."""
+    try:
+        return _BY_NAME[name]
+    except KeyError as exc:
+        raise KeyError(f"станция не из каталога: {name}") from exc

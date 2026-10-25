@@ -1,5 +1,5 @@
 """Эталоны с измеренной ошибкой. Профиль, который не сошёлся, остаётся experimental."""
 
-from space_env.validation.report import core_report
+from space_env.validation.report import applicability_limits, core_report
 
-__all__ = ["core_report"]
+__all__ = ["applicability_limits", "core_report"]

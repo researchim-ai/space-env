@@ -183,6 +183,7 @@ def train_multidiscrete_reinforce(
     seed: int = 0,
     lr: float = 0.05,
     gamma: float = 0.99,
+    env: gym.Env | None = None,
     weights: list[np.ndarray] | None = None,
     bias: list[np.ndarray] | None = None,
     baseline: float = 0.0,
@@ -193,10 +194,13 @@ def train_multidiscrete_reinforce(
     Независимые softmax на каждую компоненту MultiDiscrete.
     Baseline тот же: среднее прошлых возвратов, без вычитания среднего текущего эпизода.
     """
-    env = gym.make(env_id, max_episode_steps=max_episode_steps)
+    owns_env = env is None
+    if env is None:
+        env = gym.make(env_id, max_episode_steps=max_episode_steps)
     if not isinstance(env.action_space, gym.spaces.MultiDiscrete):
         kind = type(env.action_space).__name__
-        env.close()
+        if owns_env:
+            env.close()
         raise TypeError(f"тренер нескольких чисел ждёт MultiDiscrete, у {env_id} пространство {kind}.")
     obs_n = int(np.prod(env.observation_space.shape))
     factors = [int(item) for item in np.asarray(env.action_space.nvec).ravel()]
@@ -211,10 +215,11 @@ def train_multidiscrete_reinforce(
         bias = [np.zeros(count) for count in factors] if bias is None else [np.array(item, dtype=float, copy=True) for item in bias]
     running = float(baseline)
     seen = int(baseline_count)
+    trained_before = seen
     returns: list[float] = []
     try:
         for episode in range(episodes):
-            obs, _info = env.reset(seed=seed + episode)
+            obs, _info = env.reset(seed=seed + trained_before + episode)
             step_grads: list[list[tuple[np.ndarray, np.ndarray]]] = []
             rewards: list[float] = []
             done = False
@@ -249,7 +254,8 @@ def train_multidiscrete_reinforce(
             seen += 1
             running += (episode_return - running) / seen
     finally:
-        env.close()
+        if owns_env:
+            env.close()
     return _artifact(
         returns=returns,
         weights=weights,

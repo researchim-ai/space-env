@@ -71,5 +71,5 @@ def training_report(
         "trained_mean_last": trained_tail,
         "trained_success_rate": held_out,
         "held_out_success_rate": held_out,
-        "learned": held_out >= float(held["expert_success_rate"]),
+        "learned": held_out > 0.0 and held_out >= float(held["expert_success_rate"]),
     }

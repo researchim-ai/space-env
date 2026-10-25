@@ -7,7 +7,7 @@ import yaml
 
 import space_env.envs  # регистрация сред
 from space_env.mission.shift_scenario import load_mission_scenario
-from space_env.validation.report import core_report
+from space_env.validation.report import applicability_limits, core_report
 
 _EO = Path(__file__).resolve().parents[1] / "configs" / "scenarios" / "eo_pass.yaml"
 
@@ -24,6 +24,13 @@ def test_core_report_records_measured_error_against_a_prior_tolerance():
     drag = next(item for item in report["cases"] if item["name"] == "drag_lowers_radius")
     assert drag["measured"] > 0.0
     assert drag["status"] == "approximate"
+
+
+def test_applicability_names_what_has_no_independent_reference():
+    names = {item["name"]: item["status"] for item in applicability_limits()}
+    assert names["pc"] == "not_independently_validated"
+    assert names["iau_2000a"] == "not_implemented"
+    assert names["teme_to_gcrf"] == "not_implemented"
 
 
 def test_mission_file_builds_a_different_shift_and_rejects_a_bad_field(tmp_path):

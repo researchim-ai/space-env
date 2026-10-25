@@ -7,19 +7,21 @@ import numpy as np
 from space_env.rl.expert import expert_action
 
 
-def _episode(env: gym.Env, seed: int, use_expert: bool) -> tuple[float, bool]:
+def _episode(env: gym.Env, seed: int, use_expert: bool) -> tuple[float, bool, bool]:
     obs, _info = env.reset(seed=seed)
     done = False
     total = 0.0
     success = False
+    mission = False
     env_id = env.spec.id if env.spec is not None else ""
     while not done:
         action = expert_action(env_id, obs) if use_expert else env.action_space.sample()
         obs, reward, terminated, truncated, info = env.step(action)
         total += float(reward)
         success = bool(info.get("success", False))
+        mission = bool(info["mission_succeeded"]) if "mission_succeeded" in info else success
         done = bool(terminated or truncated)
-    return total, success
+    return total, success, mission
 
 
 def compare_policies(
@@ -32,23 +34,28 @@ def compare_policies(
     """Доля успехов и средняя награда случайного агента и эвристики."""
     random_success = []
     expert_success = []
+    random_mission = []
+    expert_mission = []
     random_reward = []
     expert_reward = []
     for episode in range(episodes):
-        for use_expert, success_box, reward_box in (
-            (False, random_success, random_reward),
-            (True, expert_success, expert_reward),
+        for use_expert, success_box, mission_box, reward_box in (
+            (False, random_success, random_mission, random_reward),
+            (True, expert_success, expert_mission, expert_reward),
         ):
             env = gym.make(env_id, max_episode_steps=max_episode_steps)
             try:
-                reward, success = _episode(env, seed + episode, use_expert)
+                reward, success, mission = _episode(env, seed + episode, use_expert)
             finally:
                 env.close()
             success_box.append(success)
+            mission_box.append(mission)
             reward_box.append(reward)
     return {
         "random_success_rate": float(np.mean(random_success)),
         "expert_success_rate": float(np.mean(expert_success)),
+        "random_mission_success_rate": float(np.mean(random_mission)),
+        "expert_mission_success_rate": float(np.mean(expert_mission)),
         "random_mean_reward": float(np.mean(random_reward)),
         "expert_mean_reward": float(np.mean(expert_reward)),
     }

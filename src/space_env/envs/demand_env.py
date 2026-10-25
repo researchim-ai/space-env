@@ -14,15 +14,7 @@ from space_env.catalog.build import mean_orbit, spacecraft_config
 from space_env.core.space_weather import indices_for
 from space_env.core.access import subsatellite_latlon, target_access
 from space_env.core.environment import in_eclipse
-from space_env.core.ground import (
-    DEFAULT_GROUND_STATIONS,
-    FAIRBANKS,
-    KIRUNA,
-    MATERA,
-    SIOUX_FALLS,
-    TEMPE,
-    GroundStation,
-)
+from space_env.core.ground import GroundStation, station_by_name
 from space_env.core.spacecraft import Spacecraft
 from space_env.core.sun import sun_position_m
 from space_env.mission.scenarios import GroundTarget, ScenarioConfig
@@ -31,17 +23,6 @@ from space_env.rl.rewards import load_rewards
 from space_env.simulation.engine import SimulationEngine
 
 _STEP_SEC = 30.0
-_CATALOG_STATIONS = {
-    station.name: station
-    for station in (
-        *DEFAULT_GROUND_STATIONS,
-        KIRUNA,
-        MATERA,
-        SIOUX_FALLS,
-        TEMPE,
-        FAIRBANKS,
-    )
-}
 
 
 class DemandShiftEnv(gym.Env):
@@ -104,9 +85,11 @@ class DemandShiftEnv(gym.Env):
     def _success(self) -> bool:
         engine, demand = self._require()
         snap = engine.get_state_snapshot()
+        size = demand.get("size_bits")
+        enough = snap.delivered_bits > 0.0 if size is None else snap.delivered_bits + 1e-6 >= float(size)
         return bool(
             snap.generated_bits > 0.0
-            and snap.delivered_bits > 0.0
+            and enough
             and engine.time_sec <= float(demand["deadline_sec"]) + 1e-6
         )
 
@@ -157,10 +140,8 @@ class DemandShiftEnv(gym.Env):
         return self._obs(), reward, finished, False, self._info(success)
 
     def _delivery_station(self, demand: dict) -> GroundStation:
-        named = _CATALOG_STATIONS.get(str(demand["deliver_to"]))
-        if named is not None:
-            return named
-        if demand["deliver_to"] == "overhead":
+        deliver = str(demand["deliver_to"])
+        if deliver == "overhead":
             return GroundStation(
                 name="overhead",
                 lat_deg=float(demand["lat_deg"]),
@@ -168,7 +149,10 @@ class DemandShiftEnv(gym.Env):
                 alt_m=0.0,
                 min_elevation_deg=5.0,
             )
-        raise ValueError(f"станция сдачи не из каталога: {demand['deliver_to']}")
+        try:
+            return station_by_name(deliver)
+        except KeyError as exc:
+            raise ValueError(f"станция сдачи не из каталога: {deliver}") from exc
 
     def _info(self, success: bool) -> dict:
         engine, demand = self._require()

@@ -9,8 +9,6 @@ import numpy as np
 
 from space_env.catalog.build import make_engine
 from space_env.catalog.references import reference
-from space_env.catalog.traffic import dump_bits, store_bits
-from space_env.core.link import stepped_rate_bps
 from space_env.envs.base import format_ansi
 from space_env.mission.scenarios import GroundTarget
 from space_env.mission.workplan import WorkItem, WorkPlan, build_acquisition_plan
@@ -51,7 +49,6 @@ class WorkPlanEnv(gym.Env):
         self._engine: SimulationEngine | None = None
         self._plan: WorkPlan | None = None
         self._done: set[int] = set()
-        self._buffer_bits = 0.0
         self._delivered_bits = 0.0
         self._imaging_sec = 0.0
         self._steps = 0
@@ -101,7 +98,7 @@ class WorkPlanEnv(gym.Env):
                 snap.battery_soc,
                 float(snap.in_eclipse),
                 float(snap.in_contact),
-                float(np.clip(self._buffer_bits / max(self._plan.memory_bits, 1.0), 0.0, 1.0)),
+                float(np.clip(self._engine.stored_bits / max(self._plan.memory_bits, 1.0), 0.0, 1.0)),
                 done_frac,
                 kind,
                 in_window,
@@ -114,7 +111,6 @@ class WorkPlanEnv(gym.Env):
         super().reset(seed=seed)
         self._steps = 0
         self._done = set()
-        self._buffer_bits = self.initial_bits
         self._delivered_bits = 0.0
         self._imaging_sec = 0.0
         horizon = self.max_episode_steps * self.step_sec
@@ -128,6 +124,8 @@ class WorkPlanEnv(gym.Env):
             GroundTarget(name=name, lat_deg=lat, lon_deg=lon) for name, lat, lon in self._plan.targets
         ]
         self._engine = make_engine(self.vehicle, nu_deg=180.0, with_stations=True, ground_targets=targets)
+        if self.initial_bits > 0.0:
+            self._engine.preload_bits(self.initial_bits)
         return self._obs(), self._info(0.0)
 
     def _info(self, dumped: float) -> dict:
@@ -161,27 +159,20 @@ class WorkPlanEnv(gym.Env):
         command = _COMMANDS.get(action, "wait")
         now = self._steps * self.step_sec
         active = self._active(now)
-        before = self._engine.get_state_snapshot().imaging_count
+        if command == "imaging" and self._store_rate_bps > 0.0 and self._engine.produced_bits / self._store_rate_bps >= self._imaging_cap_s:
+            command = "wait"
+        before_delivered = self._engine.delivered_bits
         _snap, _events = self._engine.step(self.step_sec, None if command == "wait" else command)
         snap = self._engine.get_state_snapshot()
+        self._imaging_sec = 0.0 if self._store_rate_bps <= 0.0 else snap.produced_bits / self._store_rate_bps
         completed = False
-        if command == "imaging" and snap.imaging_count > before:
-            self._buffer_bits, self._imaging_sec, _stored = store_bits(
-                self._buffer_bits,
-                self.step_sec,
-                rate_bps=self._store_rate_bps,
-                memory_bits=self._plan.memory_bits,
-                imaging_sec=self._imaging_sec,
-                imaging_cap_sec=self._imaging_cap_s,
-            )
-            if active is not None and active.kind == "imaging" and active.name in self._engine.captured_targets():
-                self._done.add(self._required().index(active))
-                completed = True
+        if command == "imaging" and active is not None and active.kind == "imaging" and active.name in self._engine.captured_targets():
+            self._done.add(self._required().index(active))
+            completed = True
         dumped = 0.0
         if command == "comms" and snap.link_ok and snap.link_margin_db >= 0.0:
-            rate = stepped_rate_bps(snap.link_margin_db, self._engine.spacecraft.config.comms.data_rate_max_bps)
-            self._buffer_bits, dumped = dump_bits(self._buffer_bits, self.step_sec, rate)
-            self._delivered_bits += dumped
+            dumped = snap.delivered_bits - before_delivered
+            self._delivered_bits = snap.delivered_bits
             if dumped > 0.0 and active is not None and active.kind == "comms":
                 self._done.add(self._required().index(active))
                 completed = True

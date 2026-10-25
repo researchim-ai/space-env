@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urlparse
 
 from space_env import __version__
 from space_env.api.console import open_shift, step_shift
+from space_env.mission.scenario_v2 import scenario_manifest
 from space_env.mission.shift_scenario import load_shift_scenario
 from space_env.simulation.fleet_view import describe_fleet, fleet_episode
 
@@ -27,6 +28,11 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
         return _json_bytes({"status": "ok", "version": __version__})
     if path == "/api/scenario":
         return _json_bytes(load_shift_scenario())
+    if path == "/api/tasking":
+        root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "eo_72h.yaml"
+        if not root.is_file():
+            root = Path(__file__).resolve().parents[1] / "configs" / "eo_72h.yaml"
+        return _json_bytes(scenario_manifest(root))
     if path == "/api/fleet":
         try:
             count = int(query.get("count", ["6"])[0])

@@ -70,6 +70,149 @@ def test_streaming_duration_matches_six_short_steps():
     _balance(fine)
 
 
+def test_imaging_energy_follows_the_window_not_the_step():
+    epoch = Time("2026-10-20T12:00:00Z")
+    sun = sun_position_m(epoch)
+    position = sun / np.linalg.norm(sun) * 7.0e6
+    from space_env.mission.events import EventKind, PlannedEvent
+
+    def make() -> SimulationEngine:
+        engine = _engine_at(
+            position,
+            epoch,
+            scenario=ScenarioConfig(
+                ground_stations=[],
+                planned_events=[PlannedEvent(kind=EventKind.IMAGING, scheduled_at_sec=30.0, duration_sec=10.0)],
+            ),
+        )
+        engine.spacecraft.config.payload.imaging_power_w = 800.0
+        return engine
+
+    coarse = make()
+    coarse.step(60.0, "wait")
+    fine = make()
+    for _ in range(6):
+        fine.step(10.0, "wait")
+    assert coarse._payload_energy_j == pytest.approx(800.0 * 10.0)
+    assert fine._payload_energy_j == pytest.approx(coarse._payload_energy_j)
+
+
+def test_receipt_names_the_request_and_the_station():
+    epoch = Time("2026-10-20T12:00:00Z")
+    engine = _engine_at(
+        ecef_to_eci(geodetic_to_ecef(0.0, 0.0, 400_000.0), epoch),
+        epoch,
+        scenario=ScenarioConfig(
+            ground_stations=[GroundStation(name="Equator", lat_deg=0.0, lon_deg=0.0, min_elevation_deg=5.0)]
+        ),
+    )
+    engine.accept_bits(2.0e6, origin="imaging", request_id="request-X")
+    engine._in_contact = True
+    engine._link_margin_db = 10.0
+    engine._station_name = "Equator"
+    moved = engine.transmit_downlink(1.0)
+    report = engine.request_report("request-X", deadline_sec=10.0, destination="Equator")
+    assert moved > 0.0
+    assert report["receipts"][0]["request_id"] == "request-X"
+    assert report["receipts"][0]["destination"] == "Equator"
+    assert report["delivered_bits"] == pytest.approx(moved * 1.0e6)
+    assert report["on_time"] is True
+
+
+def test_cancel_stops_the_rest_of_the_imaging_window():
+    epoch = Time("2026-10-20T12:00:00Z")
+    sun = sun_position_m(epoch)
+    position = sun / np.linalg.norm(sun) * 7.0e6
+    from space_env.core.access import subsatellite_latlon
+    from space_env.mission.events import EventKind, PlannedEvent
+
+    lat, lon = subsatellite_latlon(position, epoch)
+    engine = _engine_at(
+        position,
+        epoch,
+        scenario=ScenarioConfig(
+            ground_stations=[],
+            ground_targets=[GroundTarget(name="scene", lat_deg=lat, lon_deg=lon)],
+            planned_events=[PlannedEvent(kind=EventKind.IMAGING, scheduled_at_sec=0.0, duration_sec=30.0)],
+        ),
+    )
+    engine.spacecraft.config.payload.store_rate_bps = 1000.0
+    engine.spacecraft.config.payload.half_fov_deg = 70.0
+    engine.step(5.0, "wait")
+    engine.cancel_imaging()
+    engine.step(10.0, "wait")
+    assert engine.produced_bits == pytest.approx(5000.0, rel=0.05)
+
+
+def test_planned_imaging_window_does_not_depend_on_the_step_size():
+    epoch = Time("2026-10-20T12:00:00Z")
+    sun = sun_position_m(epoch)
+    position = sun / np.linalg.norm(sun) * 7.0e6
+    from space_env.core.access import subsatellite_latlon
+    from space_env.mission.events import EventKind, PlannedEvent
+
+    lat, lon = subsatellite_latlon(position, epoch)
+
+    def make(planned: bool) -> SimulationEngine:
+        scene = ScenarioConfig(
+            ground_stations=[],
+            ground_targets=[GroundTarget(name="scene", lat_deg=lat, lon_deg=lon)],
+            planned_events=[
+                PlannedEvent(kind=EventKind.IMAGING, scheduled_at_sec=30.0, duration_sec=10.0)
+            ]
+            if planned
+            else [],
+        )
+        engine = _engine_at(position, epoch, scenario=scene)
+        engine.spacecraft.config.payload.store_rate_bps = 1000.0
+        engine.spacecraft.config.payload.memory_bits = 0.0
+        return engine
+
+    manual = make(False)
+    manual.step(30.0, "wait")
+    manual.step(10.0, "imaging")
+    manual.step(20.0, "wait")
+    planned = make(True)
+    snap, events = planned.step(60.0, "wait")
+    short = make(True)
+    for _ in range(6):
+        short.step(10.0, "wait")
+    assert manual.get_state_snapshot().produced_bits == pytest.approx(10_000.0, rel=0.02)
+    assert snap.produced_bits == pytest.approx(manual.get_state_snapshot().produced_bits, rel=0.02)
+    assert short.get_state_snapshot().produced_bits == pytest.approx(manual.get_state_snapshot().produced_bits, rel=0.02)
+    assert [event.time_sec for event in events if event.kind == EventKind.IMAGING] == pytest.approx([30.0], abs=1.0)
+
+
+def test_terminal_time_is_not_spent_twice_on_the_same_clock():
+    epoch = Time("2026-10-20T12:00:00Z")
+    engine = _engine_at(
+        ecef_to_eci(geodetic_to_ecef(0.0, 0.0, 400_000.0), epoch),
+        epoch,
+        scenario=ScenarioConfig(
+            ground_stations=[GroundStation(name="Equator", lat_deg=0.0, lon_deg=0.0, min_elevation_deg=5.0)]
+        ),
+    )
+    engine.preload_bits(1.0e9)
+    engine._in_contact = True
+    engine._link_margin_db = 10.0
+    first = engine.transmit_downlink(5.0)
+    second = engine.transmit_downlink(10.0)
+    assert first == pytest.approx(5.0)
+    assert second == pytest.approx(5.0)
+    assert engine.time_sec == pytest.approx(0.0)
+    assert engine.delivered_bits == pytest.approx(10.0e6)
+
+
+def test_relay_keeps_the_request_identity():
+    fleet = Fleet.string_of_pearls(2, separation_deg=1.0, scenario=ScenarioConfig(ground_stations=[]))
+    fleet.vehicles["SC-1"].accept_bits(5.0e6, origin="imaging", request_id="request-X")
+    moved = fleet.relay("SC-1", "SC-2", 60.0)
+    assert moved > 0.0
+    received = fleet.vehicles["SC-2"]._products[-1]
+    assert received["request_id"] == "request-X"
+    assert received["product_id"] == fleet.vehicles["SC-1"]._products[0]["product_id"]
+
+
 def test_downlink_stops_at_the_end_of_contact_and_a_repeat_adds_nothing():
     epoch = Time("2024-03-01T00:00:00Z")
     engine = _engine_at(

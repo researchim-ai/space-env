@@ -10,9 +10,7 @@ import numpy as np
 
 from space_env.catalog.build import make_engine, mean_orbit, spacecraft_config
 from space_env.catalog.references import reference
-from space_env.catalog.traffic import dump_bits, store_bits
 from space_env.core.access import ground_track_latlon, subsatellite_latlon, target_access
-from space_env.core.link import stepped_rate_bps
 from space_env.envs.base import format_ansi
 from space_env.mission.scenarios import GroundTarget
 from space_env.simulation.engine import SimulationEngine
@@ -58,7 +56,6 @@ class CatalogAcquisitionEnv(gym.Env):
         self._imaging_cap_s = float(spec.max_imaging_s) if spec.max_imaging_s is not None else _OPEN_CAP_S
         self._downlink_bps = spec.downlink_bps
         self._engine: SimulationEngine | None = None
-        self._buffer_bits = 0.0
         self._delivered_bits = 0.0
         self._imaging_sec = 0.0
         self._steps = 0
@@ -94,7 +91,6 @@ class CatalogAcquisitionEnv(gym.Env):
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
         super().reset(seed=seed)
         self._steps = 0
-        self._buffer_bits = 0.0
         self._delivered_bits = 0.0
         self._imaging_sec = 0.0
         self._engine = make_engine(
@@ -150,7 +146,7 @@ class CatalogAcquisitionEnv(gym.Env):
             snap.battery_soc,
             float(snap.in_eclipse),
             float(snap.in_contact),
-            float(np.clip(self._buffer_bits / self._memory_bits, 0.0, 1.0)),
+            float(np.clip(self._engine.stored_bits / self._memory_bits, 0.0, 1.0)),
             imaging,
             aos,
             self._nearest_off_nadir_fraction(),
@@ -161,24 +157,18 @@ class CatalogAcquisitionEnv(gym.Env):
         if self._engine is None:
             raise RuntimeError("Сначала вызовите reset()")
         command = _COMMANDS.get(int(action), "wait")
-        before = self._engine.get_state_snapshot().imaging_count
+        if command == "imaging" and self._imaging_sec >= self._imaging_cap_s:
+            command = "wait"
+        before_produced = self._engine.produced_bits
+        before_delivered = self._engine.delivered_bits
         _state, _events = self._engine.step(self.step_sec, None if command == "wait" else command)
         snap = self._engine.get_state_snapshot()
-        stored = 0.0
-        if command == "imaging" and snap.imaging_count > before:
-            self._buffer_bits, self._imaging_sec, stored = store_bits(
-                self._buffer_bits,
-                self.step_sec,
-                rate_bps=self._rate_bps,
-                memory_bits=self._memory_bits,
-                imaging_sec=self._imaging_sec,
-                imaging_cap_sec=self._imaging_cap_s,
-            )
+        stored = snap.produced_bits - before_produced
+        self._imaging_sec = 0.0 if self._rate_bps <= 0.0 else snap.produced_bits / self._rate_bps
         dumped = 0.0
         if command == "comms" and snap.link_ok and snap.link_margin_db >= 0.0:
-            rate = stepped_rate_bps(snap.link_margin_db, self._downlink_bps)
-            self._buffer_bits, dumped = dump_bits(self._buffer_bits, self.step_sec, rate)
-            self._delivered_bits += dumped
+            dumped = snap.delivered_bits - before_delivered
+            self._delivered_bits = snap.delivered_bits
         reward = dumped / self._memory_bits
         if snap.battery_soc < 0.2:
             reward -= 1.0
@@ -186,7 +176,7 @@ class CatalogAcquisitionEnv(gym.Env):
         terminated = snap.battery_soc < 0.2
         truncated = self._steps >= self.max_episode_steps
         info = {
-            "buffer_bits": self._buffer_bits,
+            "buffer_bits": self._engine.stored_bits,
             "delivered_bits": self._delivered_bits,
             "stored_bits": stored,
             "imaging_count": snap.imaging_count,
@@ -201,7 +191,7 @@ class CatalogAcquisitionEnv(gym.Env):
         snap = self._engine.get_state_snapshot()
         rows = [
             ("SoC", f"{snap.battery_soc:.2f}"),
-            ("память, Гбит", f"{self._buffer_bits / 1e9:.1f}"),
+            ("память, Гбит", f"{self._engine.stored_bits / 1e9:.1f}"),
             ("сдано, Гбит", f"{self._delivered_bits / 1e9:.1f}"),
             ("кадры", str(snap.imaging_count)),
         ]
@@ -295,7 +285,7 @@ class SentinelPassFaultEnv(CatalogAcquisitionEnv):
         assert self._engine is not None
         self._engine.arm_fault("radio_latch")
         self._rebooted = False
-        self._buffer_bits = 8.0e9
+        self._engine.preload_bits(8.0e9)
         info["fault"] = "radio_latch"
         return self._fault_obs(), info
 
@@ -306,12 +296,11 @@ class SentinelPassFaultEnv(CatalogAcquisitionEnv):
         command = {1: "comms", 2: "reboot"}.get(choice)
         if choice == 2:
             self._rebooted = True
+        before_delivered = self._engine.delivered_bits
         self._engine.step(self.step_sec, command)
         snap = self._engine.get_state_snapshot()
         if choice == 1 and snap.link_ok and snap.link_margin_db >= 0.0:
-            rate = stepped_rate_bps(snap.link_margin_db, self._downlink_bps)
-            self._buffer_bits, dumped = dump_bits(self._buffer_bits, self.step_sec, rate)
-            self._delivered_bits += dumped
+            self._delivered_bits += snap.delivered_bits - before_delivered
         self._steps += 1
         truncated = self._steps >= self.max_episode_steps
         success = truncated and self._delivered_bits > 0.0 and self._engine.radio_ready()

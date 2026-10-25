@@ -37,7 +37,7 @@ def transfer_dump_report(*, max_episode_steps: int = 8, seed: int = 0) -> list[d
         try:
             obs, _info = env.reset(seed=seed)
             # В памяти уже есть данные: сравнивается сдача, а не удача съёмки до сеанса.
-            env.unwrapped._buffer_bits = 1.0e9
+            env.unwrapped._engine.preload_bits(1.0e9)
             obs = env.unwrapped._obs()
             done = False
             last = {}

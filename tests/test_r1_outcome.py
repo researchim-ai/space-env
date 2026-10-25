@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from space_env.core.cdm import parse_cdm_kvn
-from space_env.rl.reinforce import evaluate_linear_policy, train_linear_reinforce
+from space_env.rl.reinforce import evaluate_linear_policy, train_linear_reinforce, train_multidiscrete_reinforce
 
 
 class _GapBandit(gym.Env):
@@ -94,6 +94,39 @@ def _preferred(weights: np.ndarray, bias: np.ndarray) -> float:
     probs = np.exp(shifted)
     probs = probs / np.sum(probs)
     return float(probs[1])
+
+
+def test_multidiscrete_resume_continues_the_seed_stream():
+    seen: list[int] = []
+
+    class _SeedBandit(gym.Env):
+        def __init__(self):
+            super().__init__()
+            self.observation_space = gym.spaces.Box(0.0, 1.0, shape=(1,), dtype=np.float32)
+            self.action_space = gym.spaces.MultiDiscrete([2, 2])
+
+        def reset(self, seed=None, options=None):
+            super().reset(seed=seed)
+            seen.append(int(seed or 0))
+            return np.ones(1, dtype=np.float32), {}
+
+        def step(self, action):
+            return np.ones(1, dtype=np.float32), 0.0, True, False, {"success": False}
+
+    first = train_multidiscrete_reinforce("seed-bandit", episodes=3, seed=0, env=_SeedBandit())
+    seen.clear()
+    train_multidiscrete_reinforce(
+        "seed-bandit",
+        episodes=3,
+        seed=0,
+        env=_SeedBandit(),
+        weights=first["weights"],
+        bias=first["bias"],
+        baseline=first["baseline"],
+        baseline_count=first["baseline_count"],
+        rng_state=first["rng_state"],
+    )
+    assert seen == [3, 4, 5]
 
 
 def test_one_step_bandit_moves_the_weights_and_resume_repeats():

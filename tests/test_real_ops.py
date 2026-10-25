@@ -91,7 +91,8 @@ def test_sentinel_acquisition_stores_a_scene_on_the_descending_node():
     assert env.unwrapped._engine.get_state_snapshot().in_eclipse is False
     _obs, reward, terminated, _trunc, step_info = env.step(1)
     assert step_info["imaging_count"] == 1
-    assert step_info["stored_bits"] == pytest.approx(450e6 * 60.0)
+    assert 0.0 < step_info["stored_bits"] <= 450e6 * 60.0 + 1.0
+    assert step_info["stored_bits"] == pytest.approx(env.unwrapped._engine.produced_bits)
     assert step_info["delivered_bits"] == 0.0
     assert reward == 0.0
     assert terminated is False
@@ -101,7 +102,7 @@ def test_sentinel_acquisition_stores_a_scene_on_the_descending_node():
 def test_sentinel_dump_is_rewarded_only_inside_the_pass():
     env = gym.make("space_env/SentinelAcquisition-v0", max_episode_steps=12, step_sec=60.0)
     env.reset(seed=0)
-    env.unwrapped._buffer_bits = 2.0e11
+    env.unwrapped._engine.preload_bits(2.0e11)
     delivered = 0.0
     reward = 0.0
     obs, _reward, _term, _trunc, _info = env.step(0)
@@ -126,7 +127,8 @@ def test_landsat_recorder_is_the_handbook_figure():
     env.reset(seed=0)
     _obs, reward, _term, _trunc, info = env.step(1)
     assert env.unwrapped._memory_bits == pytest.approx(3.14e12)
-    assert info["stored_bits"] == pytest.approx(384e6 * 60.0)
+    assert 0.0 < info["stored_bits"] <= 384e6 * 60.0 + 1.0
+    assert info["stored_bits"] == pytest.approx(env.unwrapped._engine.produced_bits)
     assert reward == 0.0
     env.close()
 

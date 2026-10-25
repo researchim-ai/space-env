@@ -79,11 +79,11 @@ class SimulationEngine:
         self._received_bits = 0.0
         self._relayed_out_bits = 0.0
         self._products: list[dict] = []
-        self._imaging_until = -1.0
-        self._imaging_from = 0.0
-        self._imaging_cover: float | None = None
-        self._settled_until = -1.0
-        self._settled_span = 0.0
+        self._imaging_cuts: list[float] = []
+        self._product_seq = 0
+        self._terminal_used: list[tuple[float, float]] = []
+        self._receipts: list[dict] = []
+        self._payload_energy_j = 0.0
         self._load_mode = "nominal"
         self._fired_anomaly: set[int] = set()
         self._fired_conjunction: set[int] = set()
@@ -262,8 +262,8 @@ class SimulationEngine:
         return MissionEvent(kind=kind, time=self._epoch + time_sec, time_sec=time_sec, payload=payload or {})
 
     def cancel_imaging(self) -> None:
-        """Прерывает длящуюся съёмку. Уже записанный продукт остаётся."""
-        self._imaging_until = self._time_sec
+        """Обрывает съёмку, которая уже идёт. Уже записанный продукт остаётся."""
+        self._imaging_cuts.append(self._time_sec)
         self._imaging_requested = False
 
     def _apply_command(
@@ -329,8 +329,6 @@ class SimulationEngine:
             self.last_command_ok = False
             return
         self._imaging_requested = True
-        self._imaging_from = self._time_sec if self._imaging_cover is None else self._imaging_cover
-        self._imaging_cover = None
         self.spacecraft.state.payload_mode = "imaging"
 
     def _command_comms(self, events: list[MissionEvent], dt_sec: float) -> None:
@@ -521,11 +519,7 @@ class SimulationEngine:
                 continue
             self._fired_planned.add(index)
             if planned.kind == EventKind.IMAGING:
-                self._imaging_until = max(
-                    self._imaging_until,
-                    planned.scheduled_at_sec + planned.duration_sec,
-                )
-                self._imaging_cover = t0 if planned.scheduled_at_sec >= t1 - 1e-6 else planned.scheduled_at_sec
+                continue
             before = len(events)
             self._execute_planned(planned, events, max(dt_sec, 0.0))
             if len(events) > before:
@@ -550,7 +544,7 @@ class SimulationEngine:
             self.spacecraft.state.health[item.subsystem] = SubsystemHealth.NOMINAL
             events.append(self._event_at(EventKind.RECOVERY, item.at_sec, {"subsystem": item.subsystem}))
 
-    def _update_subsystems(self, dt_sec: float, flux_w_m2: float) -> None:
+    def _update_subsystems(self, dt_sec: float, flux_w_m2: float, *, imaging_sec: float = 0.0) -> None:
         cfg_p = self.spacecraft.config.power
         st_p = self.spacecraft.state.power
         cfg_t = self.spacecraft.config.thermal
@@ -569,9 +563,11 @@ class SimulationEngine:
             st_t.heater_on = True
         else:
             st_t.heater_on = False
+        imaging_sec = min(max(float(imaging_sec), 0.0), dt_sec)
         payload_w = 0.0
-        if self.spacecraft.state.payload_mode == "imaging":
-            payload_w = self.spacecraft.config.payload.imaging_power_w
+        if dt_sec > 0.0:
+            payload_w = self.spacecraft.config.payload.imaging_power_w * imaging_sec / dt_sec
+        self._payload_energy_j += self.spacecraft.config.payload.imaging_power_w * imaging_sec
         payload_heat = payload_w
         overload_w = 450.0 if "overload" in self._faults else 0.0
         dissipation = base_w + payload_heat + overload_w
@@ -622,19 +618,22 @@ class SimulationEngine:
         origin: float,
     ) -> None:
         contact_at = self._time_sec
+        contact_name = self._station_name
         for offset, position, _velocity in samples:
-            opened, _margin = self._link_sample(position, origin + offset)
+            opened, _margin, station = self._link_sample(position, origin + offset)
             if opened != was_contact:
                 contact_at = origin + offset
+                if station:
+                    contact_name = station
                 break
         if not was_umbra and self._in_umbra:
             events.append(self._event_at(EventKind.ECLIPSE_START, self._time_sec))
         elif was_umbra and not self._in_umbra:
             events.append(self._event_at(EventKind.ECLIPSE_END, self._time_sec))
         if not was_contact and self._in_contact:
-            events.append(self._event_at(EventKind.AOS, contact_at, {"station": self._station_name, "elevation_deg": self._elevation}))
+            events.append(self._event_at(EventKind.AOS, contact_at, {"station": contact_name, "elevation_deg": self._elevation}))
         elif was_contact and not self._in_contact:
-            events.append(self._event_at(EventKind.LOS, contact_at, {"station": self._station_name}))
+            events.append(self._event_at(EventKind.LOS, contact_at, {"station": contact_name}))
 
     def _check_constraints(self, events: list[MissionEvent]) -> None:
         st = self.spacecraft.state
@@ -743,14 +742,61 @@ class SimulationEngine:
         """Принимает биты от группировки: collect или relay. Съёмкой не считается."""
         return self._credit(bits, origin=origin, request_id=request_id)
 
-    def release_bits(self, bits: float) -> float:
-        """Отдаёт биты соседу. Наземная сдача от этого не растёт."""
+    def release_bits(self, bits: float, *, destination: str = "") -> list[dict]:
+        """Отдаёт куски продуктов соседу. Идентификатор заявки у куска не меняется."""
         if bits <= 0.0 or not math.isfinite(bits):
+            return []
+        left = bits
+        handed: list[dict] = []
+        for product in self._products:
+            if left <= 1e-9:
+                break
+            if product.get("delivered_to") or product.get("custodian") != self.spacecraft.config.name:
+                continue
+            onboard = float(product["onboard_bits"])
+            if onboard <= 1e-9:
+                continue
+            take = min(onboard, left)
+            if take + 1e-9 < onboard:
+                moved = dict(product)
+                moved["offset_bits"] = float(product["offset_bits"]) + onboard - take
+                moved["size_bits"] = take
+                moved["onboard_bits"] = take
+                moved["accepted_bits"] = take
+                product["size_bits"] = float(product["size_bits"]) - take
+                product["onboard_bits"] = onboard - take
+                product["accepted_bits"] = product["onboard_bits"]
+            else:
+                moved = dict(product)
+                product["onboard_bits"] = 0.0
+                product["delivered_to"] = destination or "relay"
+            moved["custodian"] = destination or moved["custodian"]
+            moved["delivered_to"] = ""
+            moved["origin"] = "relay"
+            handed.append(moved)
+            left -= take
+        moved_bits = bits - left
+        self._stored_bits -= moved_bits
+        self._relayed_out_bits += moved_bits
+        return handed
+
+    def accept_custody(self, records: list[dict]) -> float:
+        """Принимает те же куски продуктов. Новая заявка не создаётся."""
+        total = 0.0
+        owner = self.spacecraft.config.name
+        for record in records:
+            piece = dict(record)
+            piece["custodian"] = owner
+            piece["delivered_to"] = ""
+            piece["onboard_bits"] = float(piece.get("onboard_bits", piece.get("accepted_bits", 0.0)))
+            self._products.append(piece)
+            total += piece["onboard_bits"]
+        if total <= 0.0:
             return 0.0
-        moved = min(self._stored_bits, bits)
-        self._stored_bits -= moved
-        self._relayed_out_bits += moved
-        return moved
+        self._received_bits += total
+        self._generated_bits += total
+        self._stored_bits += total
+        return total
 
     def _room_bits(self) -> float:
         memory = self.spacecraft.config.payload.memory_bits
@@ -777,15 +823,21 @@ class SimulationEngine:
         self._generated_bits += bits
         self._stored_bits += added
         self._lost_bits += lost
+        owner = self.spacecraft.config.name
+        self._product_seq += 1
         self._products.append(
             {
-                "product_id": f"{origin}-{len(self._products) + 1}",
+                "product_id": f"{owner}-{self._product_seq}",
                 "request_id": request_id,
+                "offset_bits": 0.0,
                 "generated_time_sec": self._time_sec,
                 "size_bits": bits,
                 "accepted_bits": added,
+                "onboard_bits": added,
                 "quality": "full" if lost <= 1e-9 else "partial",
-                "owner": self.spacecraft.config.name if hasattr(self.spacecraft.config, "name") else origin,
+                "custodian": owner,
+                "delivered_to": "",
+                "owner": owner,
                 "origin": origin,
             }
         )
@@ -819,24 +871,31 @@ class SimulationEngine:
         if existing is None:
             self._captured_targets.add(request_id)
             self._imaging_count += 1
+            owner = self.spacecraft.config.name
+            self._product_seq += 1
             self._products.append(
                 {
-                    "product_id": f"imaging-{len(self._products) + 1}",
+                    "product_id": f"{owner}-{self._product_seq}",
                     "request_id": request_id,
+                    "offset_bits": 0.0,
                     "generated_time_sec": when_sec,
                     "size_bits": bits,
                     "accepted_bits": added,
+                    "onboard_bits": added,
                     "quality": "full" if lost <= 1e-9 else "partial",
-                    "owner": request_id,
+                    "custodian": owner,
+                    "delivered_to": "",
+                    "owner": owner,
                     "origin": "imaging",
                 }
             )
             return
         existing["size_bits"] += bits
         existing["accepted_bits"] += added
+        existing["onboard_bits"] = float(existing.get("onboard_bits", 0.0)) + added
         existing["quality"] = "full" if existing["accepted_bits"] + 1e-6 >= existing["size_bits"] else "partial"
 
-    def _move_downlink(self, open_sec: float, margin_db: float) -> float:
+    def _move_downlink(self, open_sec: float, margin_db: float, station: str = "") -> float:
         if open_sec <= 0.0 or self._stored_bits <= 0.0 or margin_db < 0.0:
             return 0.0
         rate = stepped_rate_bps(margin_db, self.spacecraft.config.comms.data_rate_max_bps)
@@ -847,19 +906,60 @@ class SimulationEngine:
         self._delivered_bits += moved
         self._data_downlink_Mb = self._delivered_bits / 1.0e6
         self.spacecraft.state.comms.data_sent_this_pass_Mb += moved / 1.0e6
+        self._mark_delivered(moved, station or self._station_name or "ground")
         return moved
 
+    def _mark_delivered(self, bits: float, station: str) -> None:
+        left = bits
+        for product in self._products:
+            if left <= 1e-9:
+                return
+            if product.get("delivered_to") or product.get("custodian") != self.spacecraft.config.name:
+                continue
+            onboard = float(product.get("onboard_bits", 0.0))
+            if onboard <= 1e-9:
+                continue
+            take = min(onboard, left)
+            offset = float(product.get("offset_bits", 0.0)) + float(product.get("size_bits", onboard)) - onboard
+            product["onboard_bits"] = onboard - take
+            if product["onboard_bits"] <= 1e-9:
+                product["delivered_to"] = station
+            self._receipts.append(
+                {
+                    "product_id": product["product_id"],
+                    "request_id": product["request_id"],
+                    "destination": station,
+                    "time_sec": self._time_sec,
+                    "offset_bits": offset,
+                    "bits": take,
+                }
+            )
+            left -= take
+
+    def _terminal_free(self, start: float, end: float) -> float:
+        span = end - start
+        if span <= 0.0:
+            return 0.0
+        for used_start, used_end in self._terminal_used:
+            span -= max(0.0, min(end, used_end) - max(start, used_start))
+        return max(0.0, span)
+
+    def _terminal_reserve(self, start: float, end: float) -> None:
+        if end <= start:
+            return
+        self._terminal_used.append((start, end))
+        self._terminal_used = _merge_intervals(self._terminal_used)
+
     def transmit_downlink(self, dt_sec: float) -> float:
-        """Сдача за dt без второго прохода по уже закрытому интервалу. Возвращает мегабиты."""
-        if dt_sec <= 0.0 or not math.isfinite(dt_sec):
+        """Сдача за ещё не занятый интервал терминала. Повтор того же времени возвращает 0."""
+        if dt_sec <= 0.0 or not math.isfinite(dt_sec) or not self._link_ok():
             return 0.0
-        if self._settled_until + 1e-9 >= self._time_sec and self._settled_span + 1e-9 >= dt_sec:
+        start = self._time_sec
+        free = self._terminal_free(start, start + dt_sec)
+        if free <= 0.0:
             return 0.0
-        if not self._link_ok():
-            return 0.0
-        moved = self._move_downlink(dt_sec, self._link_margin_db)
-        self._settled_until = self._time_sec
-        self._settled_span = dt_sec
+        self._terminal_reserve(start, start + dt_sec)
+        moved = self._move_downlink(free, self._link_margin_db)
         return moved / 1.0e6
 
     def _accrue_downlink(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float) -> None:
@@ -867,24 +967,27 @@ class SimulationEngine:
             return
         moved = 0.0
         for left, right in zip(samples, samples[1:]):
-            open_left, margin_left = self._link_sample(left[1], t0 + left[0])
-            open_right, margin_right = self._link_sample(right[1], t0 + right[0])
+            open_left, margin_left, name_left = self._link_sample(left[1], t0 + left[0])
+            open_right, margin_right, name_right = self._link_sample(right[1], t0 + right[0])
             span = right[0] - left[0]
-            if open_left and open_right:
-                moved += self._move_downlink(span, min(margin_left, margin_right))
-            elif open_left or open_right:
-                margin = margin_left if open_left else margin_right
-                moved += self._move_downlink(0.5 * span, margin)
-        self._settled_until = self._time_sec
-        self._settled_span = self._time_sec - t0
+            if open_left and open_right and name_left == name_right:
+                moved += self._move_downlink(span, min(margin_left, margin_right), name_left)
+            else:
+                if open_left:
+                    moved += self._move_downlink(0.5 * span, margin_left, name_left)
+                if open_right:
+                    moved += self._move_downlink(0.5 * span, margin_right, name_right)
+        if self._time_sec > t0:
+            self._terminal_reserve(t0, self._time_sec)
         del moved
 
-    def _link_sample(self, position: np.ndarray, time_sec: float) -> tuple[bool, float]:
-        moment = self._epoch + time_sec
-        best_margin = -99.0
-        open_link = False
+    def contact_at(self, position: np.ndarray, moment: Time) -> tuple[str, float]:
+        """Станция с лучшим запасом в этот момент. Пустое имя — линия закрыта."""
         if not self.radio_ready():
-            return False, best_margin
+            return "", -99.0
+        best_margin = -99.0
+        best = ""
+        floor = self.spacecraft.config.comms.min_margin_dB
         for station in self.stations:
             elevation = elevation_deg(position, station.lat_deg, station.lon_deg, station.alt_m, moment)
             slant = float(
@@ -893,10 +996,35 @@ class SimulationEngine:
                 )
             )
             margin = self._margin_db(slant)
-            if elevation >= station.min_elevation_deg and margin >= self.spacecraft.config.comms.min_margin_dB:
-                open_link = True
-                best_margin = max(best_margin, margin)
-        return open_link, best_margin
+            if elevation >= station.min_elevation_deg and margin >= floor and margin > best_margin:
+                best_margin = margin
+                best = station.name
+        return best, best_margin
+
+    def _link_sample(self, position: np.ndarray, time_sec: float) -> tuple[bool, float, str]:
+        name, margin = self.contact_at(position, self._epoch + time_sec)
+        return bool(name), margin, name
+
+    def _imaging_windows(self, origin: float, end: float, *, agent: bool) -> list[tuple[float, float]]:
+        windows: list[tuple[float, float]] = []
+        if agent:
+            windows.append((origin, end))
+        for planned in self.scenario.planned_events:
+            if planned.kind != EventKind.IMAGING:
+                continue
+            start = float(planned.scheduled_at_sec)
+            stop = start + float(planned.duration_sec)
+            for cut in self._imaging_cuts:
+                if start < cut <= stop:
+                    stop = cut
+            if planned.duration_sec <= 0.0:
+                if origin - 1e-9 <= start <= end + 1e-9 and not any(cut <= start for cut in self._imaging_cuts):
+                    windows.append((start, start))
+                continue
+            if stop <= origin or start >= end or stop <= start:
+                continue
+            windows.append((max(start, origin), min(stop, end)))
+        return _merge_intervals(windows)
 
     def _visible_seconds(
         self,
@@ -904,49 +1032,67 @@ class SimulationEngine:
         t0: float,
         lat_deg: float,
         lon_deg: float,
-    ) -> tuple[float, float | None]:
+        windows: list[tuple[float, float]],
+    ) -> tuple[float, bool, float | None]:
         fov = self.spacecraft.config.payload.half_fov_deg
         images_in_eclipse = self.spacecraft.config.payload.images_in_eclipse
         duration = 0.0
+        point = False
         opened_at: float | None = None
-        for left, right in zip(samples, samples[1:]):
-            if left[0] + t0 + 1e-9 < self._imaging_from:
-                continue
-            span = right[0] - left[0]
-            visible = []
-            for offset, position, _velocity in (left, right):
-                access = target_access(
-                    position,
-                    lat_deg,
-                    lon_deg,
-                    self._epoch + (t0 + offset),
-                    half_fov_deg=fov,
-                    frame=self.orbit.frame,
-                    images_in_eclipse=images_in_eclipse,
-                )
-                visible.append(access.visible)
-            if visible[0] and visible[1]:
-                duration += span
-            elif visible[0] or visible[1]:
-                duration += 0.5 * span
-            if opened_at is None and any(visible):
-                opened_at = t0 + (left[0] if visible[0] else right[0])
-        return duration, opened_at
 
-    def _resolve_imaging(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float, events: list[MissionEvent]) -> None:
-        if not self._imaging_requested:
-            return
+        def seen(position: np.ndarray, moment_sec: float) -> bool:
+            return target_access(
+                position,
+                lat_deg,
+                lon_deg,
+                self._epoch + moment_sec,
+                half_fov_deg=fov,
+                frame=self.orbit.frame,
+                images_in_eclipse=images_in_eclipse,
+            ).visible
+
+        for left, right in zip(samples, samples[1:]):
+            left_t = t0 + left[0]
+            right_t = t0 + right[0]
+            visible = [seen(left[1], left_t), seen(right[1], right_t)]
+            overlap = _covered_seconds(left_t, right_t, windows)
+            if visible[0] and visible[1]:
+                duration += overlap
+            elif visible[0] or visible[1]:
+                duration += 0.5 * overlap
+            if opened_at is None and overlap > 0.0 and any(visible):
+                opened_at = left_t if visible[0] else right_t
+            for mark, flag, position in ((left_t, visible[0], left[1]), (right_t, visible[1], right[1])):
+                if flag and any(abs(mark - start) <= 1e-6 and abs(stop - start) <= 1e-6 for start, stop in windows):
+                    point = True
+                    if opened_at is None:
+                        opened_at = mark
+                    del position
+        return duration, point, opened_at
+
+    def _resolve_imaging(
+        self,
+        samples: list[tuple[float, np.ndarray, np.ndarray]],
+        t0: float,
+        events: list[MissionEvent],
+        windows: list[tuple[float, float]],
+        *,
+        agent: bool,
+    ) -> None:
         self._imaging_requested = False
+        if not windows:
+            return
         if self.spacecraft.state.pointing != "nadir" or self._slew_remaining_deg > 1.0:
-            self.last_command_ok = False
+            if agent:
+                self.last_command_ok = False
             return
         captured_now = False
         for target in self.scenario.ground_targets:
-            duration, opened_at = self._visible_seconds(samples, t0, target.lat_deg, target.lon_deg)
-            if duration <= 0.0:
+            duration, point, opened_at = self._visible_seconds(samples, t0, target.lat_deg, target.lon_deg, windows)
+            if duration <= 0.0 and not point:
                 continue
             before = self._imaging_count
-            self._store_capture(target.name, opened_at if opened_at is not None else t0, duration)
+            self._store_capture(target.name, opened_at if opened_at is not None else t0, duration if duration > 0.0 else 0.0)
             if self._imaging_count > before:
                 captured_now = True
                 events.append(
@@ -958,7 +1104,7 @@ class SimulationEngine:
                 )
             elif duration > 0.0 and target.name in self._captured_targets:
                 captured_now = True
-        if not captured_now:
+        if agent and not captured_now:
             self.last_command_ok = False
 
     def _snapshot(self) -> SimulationState:
@@ -1014,6 +1160,9 @@ class SimulationEngine:
         for planned in self.scenario.planned_events:
             if t0 < planned.scheduled_at_sec < t1:
                 marks.append(planned.scheduled_at_sec)
+            stop = planned.scheduled_at_sec + planned.duration_sec
+            if planned.duration_sec > 0.0 and t0 < stop < t1:
+                marks.append(stop)
         for inj in self.scenario.anomaly_injects:
             if t0 < inj.at_sec < t1:
                 marks.append(inj.at_sec)
@@ -1021,6 +1170,33 @@ class SimulationEngine:
             if t0 < inj.at_sec < t1:
                 marks.append(inj.at_sec)
         return sorted(set(marks))
+
+    def preview_positions(self, dt_sec: float) -> list[tuple[float, np.ndarray]]:
+        """Положения на будущем интервале. Часы и орбита остаются на месте."""
+        if dt_sec <= 0.0:
+            return [(0.0, self.orbit.r.copy())]
+        prop = self.spacecraft.config.propulsion
+        lat, lon = self._body_latlon()
+        _end_r, _end_v, samples = propagate_state(
+            self.orbit.r,
+            self.orbit.v,
+            dt_sec,
+            mass_kg=prop.mass_kg,
+            drag_area_m2=prop.drag_area_m2,
+            drag_coefficient=prop.drag_coefficient,
+            atmosphere=self.scenario.atmosphere,
+            f107=self.scenario.f107,
+            f107a=self.scenario.f107a,
+            ap=self.scenario.ap,
+            density_scale=self.scenario.density_scale,
+            lat_deg=lat,
+            lon_deg=lon,
+            when=self._now().datetime.replace(tzinfo=None),
+            srp_area_m2=prop.srp_area_m2,
+            srp_coefficient=prop.srp_coefficient,
+            include_third_body=True,
+        )
+        return [(float(offset), position) for offset, position, _velocity in samples]
 
     def _propagate_segment(self, dt_sec: float) -> list[tuple[float, np.ndarray, np.ndarray]]:
         prop = self.spacecraft.config.propulsion
@@ -1065,12 +1241,9 @@ class SimulationEngine:
         events: list[MissionEvent] = []
         was_umbra = self._in_umbra
         was_contact = self._in_contact
-        flux_start = self._flux
         origin = self._time_sec
-        if self._imaging_until > self._time_sec:
-            self._imaging_requested = True
-            self._imaging_from = self._time_sec
         self._apply_command(command, command_payload or {}, events, dt_sec)
+        windows = self._imaging_windows(origin, origin + dt_sec, agent=command == "imaging")
         if origin == 0.0:
             self._fire_injects(0.0, 0.0, events, include_zero=True)
             self._run_planned(0.0, 0.0, events, 0.0)
@@ -1088,16 +1261,17 @@ class SimulationEngine:
                     combined.append((base + offset, position, velocity))
             self._fire_injects(cursor, mark, events, include_zero=False)
             self._run_planned(cursor, mark, events, seg)
+            if seg > 1e-8:
+                self._update_subsystems(seg, self._flux, imaging_sec=_covered_seconds(cursor, mark, windows))
             cursor = mark
         self._advance_slew(dt_sec)
         self._advance_encounter(dt_sec)
-        self._resolve_imaging(combined, origin, events)
+        self._resolve_imaging(combined, origin, events, windows, agent=command == "imaging")
         self._restore_anomalies(events)
         if self._radio_recovery_steps > 0:
             self._radio_recovery_steps -= 1
             if self._radio_recovery_steps == 0:
                 self._faults.discard("radio_latch")
-        self._update_subsystems(dt_sec, 0.5 * (flux_start + self._flux))
         self._accrue_downlink(combined, origin)
         self._soc_rate = (self.spacecraft.state.power.battery_soc - self._prev_soc) / dt_sec
         self._prev_soc = self.spacecraft.state.power.battery_soc
@@ -1124,8 +1298,120 @@ class SimulationEngine:
         return self._delivered_bits
 
     @property
+    def produced_bits(self) -> float:
+        return self._produced_bits
+
+    @property
+    def receipts(self) -> tuple[dict, ...]:
+        return tuple(self._receipts)
+
+    def request_report(self, request_id: str, *, deadline_sec: float | None = None, destination: str | None = None) -> dict:
+        """Полнота заявки по квитанциям, а не по общей сумме регистратора."""
+        produced = [
+            item
+            for item in self._products
+            if item["request_id"] == request_id and item["origin"] == "imaging"
+        ]
+        size = sum(float(item["size_bits"]) for item in produced)
+        slips = [
+            item
+            for item in self._receipts
+            if item["request_id"] == request_id and (destination is None or item["destination"] == destination)
+        ]
+        delivered = sum(float(item["bits"]) for item in slips)
+        on_time = deadline_sec is None or all(float(item["time_sec"]) <= deadline_sec + 1e-6 for item in slips)
+        complete = size > 0.0 and delivered + 1e-6 >= size and on_time and bool(slips)
+        return {
+            "request_id": request_id,
+            "size_bits": size,
+            "delivered_bits": delivered,
+            "on_time": on_time,
+            "complete": complete,
+            "receipts": slips,
+        }
+
+    @property
     def log(self) -> list[tuple[float, SimulationState, list[MissionEvent]]]:
         return self._log
+
+    def capture(self) -> dict:
+        """Снимок, с которого шаг можно продолжить."""
+        import copy
+
+        return {
+            "time_sec": self.time_sec,
+            "r": self.orbit.r.copy(),
+            "v": self.orbit.v.copy(),
+            "stored_bits": self._stored_bits,
+            "produced_bits": self._produced_bits,
+            "delivered_bits": self._delivered_bits,
+            "lost_bits": self._lost_bits,
+            "initial_bits": self._initial_bits,
+            "received_bits": self._received_bits,
+            "relayed_out_bits": self._relayed_out_bits,
+            "generated_bits": self._generated_bits,
+            "soc": self.spacecraft.state.power.battery_soc,
+            "temp_c": self.spacecraft.state.thermal.temp_C,
+            "products": copy.deepcopy(self._products),
+            "receipts": copy.deepcopy(self._receipts),
+            "terminal_used": list(self._terminal_used),
+            "imaging_cuts": list(self._imaging_cuts),
+            "captured": set(self._captured_targets),
+            "imaging_count": self._imaging_count,
+            "payload_energy_j": self._payload_energy_j,
+            "downlink_armed": self._downlink_armed,
+        }
+
+    def restore(self, payload: dict) -> None:
+        """Возвращает снимок capture(). Дальнейший шаг совпадает с непрерывным прогоном."""
+        import copy
+
+        self._time_sec = float(payload["time_sec"])
+        self.orbit = self.orbit.with_state(payload["r"], payload["v"], self._epoch + self._time_sec)
+        self._stored_bits = float(payload["stored_bits"])
+        self._produced_bits = float(payload["produced_bits"])
+        self._delivered_bits = float(payload["delivered_bits"])
+        self._lost_bits = float(payload["lost_bits"])
+        self._initial_bits = float(payload["initial_bits"])
+        self._received_bits = float(payload["received_bits"])
+        self._relayed_out_bits = float(payload["relayed_out_bits"])
+        self._generated_bits = float(payload["generated_bits"])
+        self.spacecraft.state.power.battery_soc = float(payload["soc"])
+        self.spacecraft.state.thermal.temp_C = float(payload["temp_c"])
+        self._products = copy.deepcopy(payload["products"])
+        self._receipts = copy.deepcopy(payload["receipts"])
+        self._terminal_used = list(payload["terminal_used"])
+        self._imaging_cuts = list(payload["imaging_cuts"])
+        self._captured_targets = set(payload["captured"])
+        self._imaging_count = int(payload["imaging_count"])
+        self._payload_energy_j = float(payload["payload_energy_j"])
+        self._downlink_armed = bool(payload["downlink_armed"])
+        self._prev_soc = self.spacecraft.state.power.battery_soc
+        self._refresh_environment()
+
+
+def _merge_intervals(windows: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    points = [(start, stop) for start, stop in windows if abs(stop - start) <= 1e-9]
+    spans = sorted((start, stop) for start, stop in windows if stop > start + 1e-9)
+    merged: list[tuple[float, float]] = []
+    for start, stop in spans:
+        if merged and start <= merged[-1][1] + 1e-9:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], stop))
+        else:
+            merged.append((start, stop))
+    return merged + points
+
+
+def _covered_seconds(start: float, stop: float, windows: list[tuple[float, float]]) -> float:
+    covered = 0.0
+    for window_start, window_stop in windows:
+        if window_stop <= window_start:
+            continue
+        lo = max(start, window_start)
+        hi = min(stop, window_stop)
+        if hi > lo:
+            covered += hi - lo
+    return covered
 
 
 def _is_due(at_sec: float, t0: float, t1: float, *, include_zero: bool) -> bool:

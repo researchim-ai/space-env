@@ -20,7 +20,7 @@ from space_env.core.relative import cw_stm, eci_to_rtn, mean_motion_rad_s
 from space_env.core.spacecraft import Spacecraft, SpacecraftConfig
 from space_env.core.time import Time
 from space_env.mission.scenarios import ScenarioConfig
-from space_env.simulation.engine import SimulationEngine
+from space_env.simulation.engine import SimulationEngine, _covered_seconds, _merge_intervals
 
 
 @dataclass(frozen=True)
@@ -60,7 +60,7 @@ class Fleet:
             raise ValueError("в группировке минимум два аппарата")
         self.vehicles = dict(vehicles)
         self._cdm: dict[tuple[str, str], _StoredCdm] = {}
-        self._relay_until = {name: -1.0 for name in self.vehicles}
+        self._relay_used = {name: [] for name in self.vehicles}
 
     @classmethod
     def string_of_pearls(
@@ -312,20 +312,22 @@ class Fleet:
         if pair is None or pair.earth_blocked or pair.isl_margin_db < 0.0:
             return 0.0
         now = self.vehicles[source].time_sec
-        if now < self._relay_until[source] - 1e-9 or now < self._relay_until[destination] - 1e-9:
+        free = dt_sec - _covered_seconds(now, now + dt_sec, self._relay_used[source])
+        free = min(free, dt_sec - _covered_seconds(now, now + dt_sec, self._relay_used[destination]))
+        if free <= 1e-9:
             return 0.0
         source_engine = self.vehicles[source]
         destination_engine = self.vehicles[destination]
         room = destination_engine._room_bits()
-        offered = min(source_engine.stored_bits, isl_rate_bps(pair.range_m) * dt_sec)
+        offered = min(source_engine.stored_bits, isl_rate_bps(pair.range_m) * free)
         moved_bits = offered if math.isinf(room) else min(offered, room)
         if moved_bits <= 0.0:
             return 0.0
-        released = source_engine.release_bits(moved_bits)
-        destination_engine.accept_bits(released, origin="relay", request_id=source)
-        self._relay_until[source] = now + dt_sec
-        self._relay_until[destination] = now + dt_sec
-        return released / 1.0e6
+        records = source_engine.release_bits(moved_bits, destination=destination)
+        destination_engine.accept_custody(records)
+        self._relay_used[source] = _merge_intervals([*self._relay_used[source], (now, now + dt_sec)])
+        self._relay_used[destination] = _merge_intervals([*self._relay_used[destination], (now, now + dt_sec)])
+        return sum(float(item["onboard_bits"]) for item in records) / 1.0e6
 
     def screen(
         self,
