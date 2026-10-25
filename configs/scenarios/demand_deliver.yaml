@@ -1,14 +1,16 @@
-# Заявка успевает: снять подспутниковое место и сдать на станцию под аппаратом.
+# Светлый проход Sentinel-2A над Кируной: снять станцию и сдать на неё же.
 version: 1
 keys:
   - sentinel-2a
-horizon_sec: 600
-epoch: "2026-06-21T00:00:00Z"
-nu_deg: 90
+horizon_sec: 900
+epoch: "2026-10-20T10:00:00Z"
+nu_deg: 80
 dv_budget_m_s: 0
 until: full
 demand:
-  name: nadir-noon
-  place: subsatellite
-  deadline_sec: 600
-  deliver_to: overhead
+  name: kiruna-pass
+  place: coordinates
+  lat_deg: 67.85712777777778
+  lon_deg: 20.964325
+  deadline_sec: 720
+  deliver_to: Kiruna

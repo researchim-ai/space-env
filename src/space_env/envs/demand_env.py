@@ -14,7 +14,15 @@ from space_env.catalog.build import mean_orbit, spacecraft_config
 from space_env.core.space_weather import indices_for
 from space_env.core.access import off_nadir_deg, subsatellite_latlon
 from space_env.core.environment import in_eclipse
-from space_env.core.ground import GroundStation
+from space_env.core.ground import (
+    DEFAULT_GROUND_STATIONS,
+    FAIRBANKS,
+    KIRUNA,
+    MATERA,
+    SIOUX_FALLS,
+    TEMPE,
+    GroundStation,
+)
 from space_env.core.spacecraft import Spacecraft
 from space_env.core.sun import sun_position_m
 from space_env.mission.scenarios import GroundTarget, ScenarioConfig
@@ -23,6 +31,17 @@ from space_env.rl.rewards import load_rewards
 from space_env.simulation.engine import SimulationEngine
 
 _STEP_SEC = 30.0
+_CATALOG_STATIONS = {
+    station.name: station
+    for station in (
+        *DEFAULT_GROUND_STATIONS,
+        KIRUNA,
+        MATERA,
+        SIOUX_FALLS,
+        TEMPE,
+        FAIRBANKS,
+    )
+}
 
 
 class DemandShiftEnv(gym.Env):
@@ -96,19 +115,13 @@ class DemandShiftEnv(gym.Env):
             raise ValueError("заявка этой среды ведёт один аппарат")
         key = loaded["keys"][0]
         orbit = mean_orbit(key, loaded["epoch"], nu_deg=float(loaded["nu_deg"]))
+        demand = dict(demand)
         if demand["place"] == "subsatellite":
             lat, lon = subsatellite_latlon(orbit.r, orbit.epoch)
-            demand = dict(demand)
             demand["lat_deg"] = lat
             demand["lon_deg"] = lon
         weather = indices_for(orbit.epoch)
-        station = GroundStation(
-            name=str(demand["deliver_to"]),
-            lat_deg=float(demand["lat_deg"]),
-            lon_deg=float(demand["lon_deg"]),
-            alt_m=0.0,
-            min_elevation_deg=5.0,
-        )
+        station = self._delivery_station(demand)
         target = GroundTarget(name=str(demand["name"]), lat_deg=float(demand["lat_deg"]), lon_deg=float(demand["lon_deg"]))
         craft = Spacecraft(config=spacecraft_config(key))
         craft.reset_state()
@@ -135,6 +148,20 @@ class DemandShiftEnv(gym.Env):
         finished = success or engine.time_sec + 1e-6 >= float(demand["deadline_sec"])
         reward = float(self._weights["task_done"]) if success else 0.0
         return self._obs(), reward, finished, False, self._info(success)
+
+    def _delivery_station(self, demand: dict) -> GroundStation:
+        named = _CATALOG_STATIONS.get(str(demand["deliver_to"]))
+        if named is not None:
+            return named
+        if demand["deliver_to"] == "overhead":
+            return GroundStation(
+                name="overhead",
+                lat_deg=float(demand["lat_deg"]),
+                lon_deg=float(demand["lon_deg"]),
+                alt_m=0.0,
+                min_elevation_deg=5.0,
+            )
+        raise ValueError(f"станция сдачи не из каталога: {demand['deliver_to']}")
 
     def _info(self, success: bool) -> dict:
         engine, demand = self._require()
