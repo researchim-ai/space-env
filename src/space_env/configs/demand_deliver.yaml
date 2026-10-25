@@ -1,0 +1,14 @@
+# Заявка успевает: снять подспутниковое место и сдать на станцию под аппаратом.
+version: 1
+keys:
+  - sentinel-2a
+horizon_sec: 600
+epoch: "2026-06-21T00:00:00Z"
+nu_deg: 90
+dv_budget_m_s: 0
+until: full
+demand:
+  name: nadir-noon
+  place: subsatellite
+  deadline_sec: 600
+  deliver_to: overhead

@@ -79,6 +79,13 @@ class PayloadConfig(BaseModel):
     half_fov_deg: float = Field(default=30.0, gt=0, le=70, description="Половина поля зрения надирного прибора, °")
     imaging_power_w: float = Field(default=0.0, ge=0, description="Дополнительная мощность в режиме съёмки, Вт")
     images_in_eclipse: bool = Field(default=False, description="Съёмка возможна в тени. У радара да, у оптики нет")
+    memory_bits: float = Field(default=0.0, ge=0, description="Ёмкость регистратора, бит. 0 — предел не задан")
+    store_rate_bps: float = Field(default=0.0, ge=0, description="Поток в память, бит/с. 0 — один кадр image_bits")
+    image_bits: float = Field(
+        default=8.0e6,
+        ge=0,
+        description="Биты одного кадра, если поток в память не задан. Допущение, не паспорт",
+    )
 
 
 class SpacecraftConfig(BaseModel):

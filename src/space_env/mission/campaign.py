@@ -537,15 +537,26 @@ def shared_windows(drafts: tuple[_Draft, ...]) -> tuple[SharedWindow, ...]:
     return tuple(found)
 
 
-def award_window(drafts: tuple[_Draft, ...], window: SharedWindow) -> tuple[WorkPlan, ...]:
+def award_window(
+    drafts: tuple[_Draft, ...],
+    window: SharedWindow,
+    *,
+    holder: str | None = None,
+) -> tuple[WorkPlan, ...]:
     """
     Отдаёт одно окно выбранному аппарату.
     Чужие сеансы той же станции, которые его пересекают, из плана выпадают.
+    holder=None оставляет зеркало у большего буфера.
     """
-    keeper = window.keeper_index()
-    holder = window.vehicles[keeper]
-    keep_start = window.starts[keeper]
-    keep_end = window.ends[keeper]
+    if holder is None:
+        slot = window.keeper_index()
+        holder = window.vehicles[slot]
+    elif holder not in window.vehicles:
+        raise ValueError("зеркало можно отдать только аппарату из этого окна")
+    else:
+        slot = window.vehicles.index(holder)
+    keep_start = window.starts[slot]
+    keep_end = window.ends[slot]
     assigned: list[WorkPlan] = []
     for draft in drafts:
         if draft.plan.vehicle == holder or draft.plan.vehicle not in window.vehicles:
@@ -600,13 +611,21 @@ def award_window(drafts: tuple[_Draft, ...], window: SharedWindow) -> tuple[Work
     return tuple(assigned)
 
 
-def commit_award(drafts: tuple[_Draft, ...], window: SharedWindow) -> tuple[_Draft, ...]:
-    """Закрепляет окно за победителем и убирает его из чужих сеансов."""
-    plans = award_window(drafts, window)
-    keeper = window.keeper_index()
-    holder = window.vehicles[keeper]
-    keep_start = window.starts[keeper]
-    keep_end = window.ends[keeper]
+def commit_award(
+    drafts: tuple[_Draft, ...],
+    window: SharedWindow,
+    *,
+    holder: str | None = None,
+) -> tuple[_Draft, ...]:
+    """Закрепляет окно за аппаратом и убирает его из чужих сеансов. holder=None — больший буфер."""
+    if holder is None:
+        holder = window.vehicles[window.keeper_index()]
+    elif holder not in window.vehicles:
+        raise ValueError("зеркало можно отдать только аппарату из этого окна")
+    plans = award_window(drafts, window, holder=holder)
+    slot = window.vehicles.index(holder)
+    keep_start = window.starts[slot]
+    keep_end = window.ends[slot]
     updated: list[_Draft] = []
     for draft, plan in zip(drafts, plans):
         if draft.plan.vehicle == holder or draft.plan.vehicle not in window.vehicles:

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>space-env studio</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "/viz/vendor/three.module.js"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #e8eef6;
+      --muted: #9aafc3;
+      --line: rgba(232, 238, 246, 0.16);
+      --panel: #10161f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #070b12; color: var(--ink); font-family: "Avenir Next", "Segoe UI", sans-serif; }
+    body { display: grid; grid-template-rows: auto minmax(220px, 1fr) minmax(140px, 22vh) auto auto; }
+    header {
+      display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 12px 18px; align-items: end;
+      padding: 12px 18px 10px; border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0; font-family: Palatino, Georgia, serif; font-size: 26px; font-weight: 500; }
+    h2 { margin: 0 0 8px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    #lead, #explain, #frame-note { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    #facts { display: flex; flex-wrap: wrap; gap: 8px; align-content: end; }
+    .chip { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; font-size: 12px; color: var(--ink); }
+    .controls { display: flex; gap: 8px; align-items: center; }
+    button {
+      font: inherit; color: var(--ink); background: transparent;
+      border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; cursor: pointer;
+    }
+    button[aria-pressed="true"] { border-color: #d7e6f5; }
+    #views { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr); min-height: 0; }
+    #stage { min-height: 0; position: relative; }
+    #stage canvas { display: block; }
+    #brief {
+      min-height: 0; overflow: auto; border-left: 1px solid var(--line);
+      padding: 14px 16px 18px; background: var(--panel);
+    }
+    #summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 14px; }
+    #summary div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
+    #summary b { display: block; font-size: 16px; font-weight: 600; }
+    #summary span { color: var(--muted); font-size: 12px; }
+    #approaches { width: 100%; border-collapse: collapse; font-size: 12px; margin: 0 0 14px; }
+    #approaches th, #approaches td { padding: 4px 6px; }
+    #approaches tbody tr { cursor: pointer; }
+    #approaches td[data-live="true"] { color: #ffb15a; }
+    #approach-note { margin: 0 0 8px; color: #d7c4a8; font-size: 13px; }
+    #neighborhood { width: 100%; height: 168px; display: block; border: 1px solid var(--line); border-radius: 12px; background: #0b121c; }
+    #neighborhood-caption { margin: 6px 0 12px; color: var(--muted); font-size: 12px; }
+    #log-tools { display: flex; gap: 8px; margin-top: 12px; }
+    #log { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+    #log button { display: block; width: 100%; text-align: left; border-radius: 12px; }
+    #log button b { display: block; font-weight: 600; }
+    #log button span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    #log button[data-active="true"] { border-color: #d7e6f5; }
+    #log button[data-status="skipped"] b { color: #ffb15a; }
+    #log button[data-status="done"] b { color: #8ef0c8; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--panel); }
+    #mapboard { min-height: 0; border-top: 1px solid var(--line); background: #050910; position: relative; }
+    #groundmap { width: 100%; height: 100%; display: block; }
+    #roster {
+      display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px;
+      padding: 8px 18px 4px; border-top: 1px solid var(--line); background: var(--panel);
+    }
+    #roster .table-wrap { max-height: 230px; overflow: auto; }
+    #console {
+      border-top: 1px solid var(--line);
+      padding: 12px 18px 18px;
+      background: #0c121b;
+    }
+    #console-queue, #console-plan { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+    #console-queue td, #console-plan td { cursor: pointer; }
+    #console-queue tr[data-current="true"] td, #console-plan tr[data-current="true"] td { color: #f4f7fb; }
+    #console-ledger { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    #console-log { max-height: 180px; overflow: auto; margin: 8px 0 0; padding-left: 18px; font-size: 13px; }
+    #console-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    #console-actions button[data-blocked="true"] { color: var(--muted); }
+    #console-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
+    #console-board div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
+    #console-board b { display: block; font-weight: 600; }
+    #frame-note { margin: 0; }
+    #transport {
+      grid-column: 1 / -1; display: flex; gap: 12px; align-items: center;
+    }
+    #clock { min-width: 72px; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); }
+    #scrub { flex: 1; accent-color: #d7e4f2; }
+    @media (max-width: 900px) {
+      header, #views, #roster { grid-template-columns: 1fr; }
+      body { height: auto; }
+      #stage { height: 42vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Студия смены</h1>
+      <p id="lead">Глобус — орбита за сутки и соседи скрининга HOT и WARM. Карта — трасса текущего витка. Журнал открывается на сеансах и импульсе, «Все дела» добавляет съёмку.</p>
+    </div>
+    <div id="facts"></div>
+    <div class="controls">
+      <button type="button" id="shift" aria-pressed="true">Смена суток</button>
+      <button type="button" id="chain" aria-pressed="false">Цепочка из 6</button>
+      <button type="button" id="star" aria-pressed="false">Звезда 66/6/2</button>
+    </div>
+    <div id="transport">
+      <button id="play" type="button">Пауза</button>
+      <span id="clock">00:00:00</span>
+      <input id="scrub" type="range" min="0" max="1" step="1" value="0" />
+    </div>
+  </header>
+  <section id="views">
+    <div id="stage"></div>
+    <aside id="brief">
+      <h2>Что видно</h2>
+      <p id="explain">Считаем дугу…</p>
+      <div id="summary"></div>
+      <h2 id="approach-title">Сближения</h2>
+      <table id="approaches">
+        <thead>
+          <tr><th>Объект</th><th>Минимум</th><th>Pc без</th><th>Pc после</th><th>В бюджете</th><th>Сейчас, км</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="approach-note"></p>
+      <canvas id="neighborhood" aria-label="Окрестность пары, ±250 км"></canvas>
+      <p id="neighborhood-caption">Окрестность ±250 км: по горизонтали вдоль трека, по вертикали по нормали. Центр — Sentinel-2A. Дальше 250 км точка остаётся на краю.</p>
+      <h2 id="log-title">Журнал дуги</h2>
+      <div id="log-tools">
+        <button type="button" id="log-passes" aria-pressed="true">Сеансы</button>
+        <button type="button" id="log-all" aria-pressed="false">Все дела</button>
+      </div>
+      <ul id="log"></ul>
+    </aside>
+  </section>
+  <section id="mapboard"><canvas id="groundmap"></canvas></section>
+  <section id="roster">
+    <div>
+      <h2>Аппараты в этом кадре</h2>
+      <p id="frame-note"></p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Аппарат</th><th>Высота</th><th>Освещение</th><th>Линия на Землю</th></tr>
+        </thead>
+        <tbody id="vehicles"></tbody>
+      </table>
+    </div>
+  </section>
+  <section id="console">
+    <h2>Пульт смены</h2>
+    <p id="console-status">Смена закрыта. Открытие считает те же сутки, что и обучение.</p>
+    <button type="button" id="console-open">Открыть смену</button>
+    <button type="button" id="console-finish">Довести смену</button>
+    <div id="console-board"></div>
+    <table id="console-queue"></table>
+    <p id="console-imaging"></p>
+    <table id="console-plan"></table>
+    <p id="console-ledger"></p>
+    <ol id="console-log"></ol>
+    <p id="console-notes"></p>
+    <div id="console-actions"></div>
+  </section>
+  <script type="module">
+    import { mountStudio } from "/viz/studio.js?v=23";
+
+    const explain = document.querySelector("#explain");
+    const facts = document.querySelector("#facts");
+    const summary = document.querySelector("#summary");
+    const frameNote = document.querySelector("#frame-note");
+    const vehicles = document.querySelector("#vehicles");
+    const approachTitle = document.querySelector("#approach-title");
+    const approaches = document.querySelector("#approaches");
+    const approachNote = document.querySelector("#approach-note");
+    const neighborhood = document.querySelector("#neighborhood");
+    const neighborhoodCaption = document.querySelector("#neighborhood-caption");
+    let episodeSummary = null;
+    let lastNeighbors = [];
+    const logTitle = document.querySelector("#log-title");
+    const logTools = document.querySelector("#log-tools");
+    const logPasses = document.querySelector("#log-passes");
+    const logAll = document.querySelector("#log-all");
+    const log = document.querySelector("#log");
+    const KIND = { imaging: "съёмка", comms: "сдача", maneuver: "импульс" };
+    let tape = [];
+    let logMode = "passes";
+    let frameTime = 0;
+
+    function shownTape() {
+      if (logMode !== "passes") return tape;
+      return tape.filter((item) => item.kind === "comms" || item.kind === "maneuver");
+    }
+
+    function clockText(seconds) {
+      const whole = Math.max(0, Math.round(seconds));
+      const hh = String(Math.floor(whole / 3600)).padStart(2, "0");
+      const mm = String(Math.floor((whole % 3600) / 60)).padStart(2, "0");
+      const ss = String(whole % 60).padStart(2, "0");
+      return `${hh}:${mm}:${ss}`;
+    }
+
+    function jobActive(item, time) {
+      if (item.kind === "maneuver") return Math.abs(time - item.start_sec) < 1;
+      return time + 1e-9 >= item.start_sec && time <= item.end_sec + 1e-9;
+    }
+
+    function rowLabel(item) {
+      if (item.status === "skipped") return "пропуск";
+      if (!item.required) return "не сдавать";
+      const name = KIND[item.kind] || item.kind;
+      if (item.status === "done") return `${name}, сделано`;
+      return name;
+    }
+
+    function buildLog() {
+      const rows = shownTape();
+      log.innerHTML = rows.map((item) => {
+        const label = rowLabel(item);
+        return `<li><button type="button" data-start="${item.start_sec}" data-kind="${item.kind}" data-status="${item.status || ""}">
+          <b>${clockText(item.start_sec)} · ${item.vehicle}</b>
+          <span>${label}: ${item.name}. ${item.note}</span>
+        </button></li>`;
+      }).join("");
+      if (!rows.length && tape.length) {
+        log.innerHTML = "<li><span>В этой дуге нет сеансов и импульса.</span></li>";
+      }
+    }
+
+    function paintShiftCounts() {
+      const dumps = tape.filter((item) => item.kind === "comms" && item.required).length;
+      const denied = tape.filter((item) => item.kind === "comms" && !item.required).length;
+      const dumpNode = summary.querySelector('[data-count="dumps"] b');
+      const deniedNode = summary.querySelector('[data-count="denied"] b');
+      if (dumpNode) dumpNode.textContent = String(dumps);
+      if (deniedNode) deniedNode.textContent = String(denied);
+    }
+
+    function applyFlight(flight) {
+      if (studio.setFlight) studio.setFlight(flight);
+      if (!flight || !flight.clocks || !Object.keys(flight.clocks).length) return;
+      const clocks = Object.entries(flight.clocks).map(([name, time]) => `${name} ${clockText(time)}`).join(", ");
+      const suffix = ` Полёт смены: ${clocks}. Дальше этого часа картина — расчётная дуга.`;
+      if (!approachNote.textContent.includes("Полёт смены:")) {
+        approachNote.textContent = `${approachNote.textContent}${suffix}`.trim();
+      }
+    }
+
+    function applyJournal(journal) {
+      if (!journal || !episodeSummary || episodeSummary.layout !== "shift") return;
+      tape = journal.map((item) => ({
+        vehicle: item.vehicle,
+        kind: item.kind,
+        name: item.name,
+        start_sec: item.start_sec,
+        end_sec: item.end_sec,
+        required: item.required,
+        note: item.note,
+        status: item.status || "",
+      }));
+      logTitle.textContent = "Журнал смены";
+      buildLog();
+      markLog(frameTime);
+      paintShiftCounts();
+    }
+
+    function markLog(time) {
+      const rows = shownTape();
+      log.querySelectorAll("button").forEach((button, index) => {
+        const item = rows[index];
+        button.dataset.active = item && jobActive(item, time) ? "true" : "false";
+      });
+    }
+
+    function setLogMode(mode) {
+      logMode = mode;
+      logPasses.setAttribute("aria-pressed", mode === "passes" ? "true" : "false");
+      logAll.setAttribute("aria-pressed", mode === "all" ? "true" : "false");
+      buildLog();
+      markLog(frameTime);
+      const active = log.querySelector('[data-active="true"]');
+      if (active) active.scrollIntoView({ block: "nearest" });
+    }
+    const shift = document.querySelector("#shift");
+    const chain = document.querySelector("#chain");
+    const star = document.querySelector("#star");
+    const play = document.querySelector("#play");
+    const studio = mountStudio(
+      document.querySelector("#stage"),
+      null,
+      document.querySelector("#clock"),
+      document.querySelector("#scrub"),
+      document.querySelector("#groundmap"),
+      (frame) => {
+        frameTime = frame.time;
+        markLog(frame.time);
+        const activeJobs = tape.filter((item) => jobActive(item, frame.time)).map((item) => {
+          return `${item.vehicle}: ${rowLabel(item)}`;
+        });
+        const jobLine = activeJobs.length ? activeJobs.join(", ") : (tape.length ? "в журнале на эту секунду дел нет" : "");
+        frameNote.textContent = jobLine
+          ? `Время дуги ${document.querySelector("#clock").textContent}. ${jobLine}. Открытых межспутниковых линий: ${frame.openLinks}.`
+          : `Время дуги ${document.querySelector("#clock").textContent}. Открытых межспутниковых линий: ${frame.openLinks}.`;
+        vehicles.innerHTML = frame.vehicles.map((item) => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.altitudeKm.toFixed(0)} км</td>
+            <td>${item.eclipse ? "тень" : "свет"}</td>
+            <td>${item.contact ? (item.station || "есть") : "нет"}</td>
+          </tr>
+        `).join("");
+        paintRanges(frame.neighbors || []);
+      },
+    );
+
+    function fillApproaches(data, screening) {
+      const shiftLayout = data.layout === "shift";
+      const rows = screening && screening.rows && screening.rows.length
+        ? screening.rows
+        : (shiftLayout ? (data.conjunctions || []) : []);
+      const arc = screening ? screening.arc : "";
+      approachTitle.hidden = !shiftLayout;
+      approaches.hidden = !shiftLayout;
+      approachNote.hidden = !shiftLayout;
+      approachNote.textContent = screening && screening.note
+        ? screening.note
+        : (shiftLayout ? "Смена закрыта. На картинке дуга с импульсом из плана." : "");
+      approaches.querySelector("tbody").innerHTML = rows.map((item) => `
+        <tr data-start="${item.t_sec}">
+          <td>${item.name}</td>
+          <td>${clockText(item.t_sec)}</td>
+          <td data-live="${arc === "coast"}">${Number(item.coast_pc).toExponential(2)}</td>
+          <td data-live="${arc === "flown"}">${Number(item.flown_pc).toExponential(2)}</td>
+          <td>${item.required ? "да" : "нет"}</td>
+          <td data-range="${item.name}">—</td>
+        </tr>
+      `).join("");
+      paintRanges(lastNeighbors);
+    }
+
+    function paintRanges(neighbors) {
+      lastNeighbors = neighbors || [];
+      lastNeighbors.forEach((item) => {
+        const cell = approaches.querySelector(`td[data-range="${item.name}"]`);
+        if (cell) cell.textContent = item.label;
+      });
+      drawNeighborhood(lastNeighbors);
+    }
+
+    function drawNeighborhood(neighbors) {
+      const shiftLayout = episodeSummary && episodeSummary.layout === "shift";
+      neighborhood.hidden = !shiftLayout;
+      neighborhoodCaption.hidden = !shiftLayout;
+      if (!shiftLayout) return;
+      const width = Math.max(neighborhood.clientWidth || 280, 220);
+      const height = 168;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      neighborhood.width = Math.floor(width * ratio);
+      neighborhood.height = Math.floor(height * ratio);
+      const context = neighborhood.getContext("2d");
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#0b121c";
+      context.fillRect(0, 0, width, height);
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const limitKm = 250;
+      const scale = Math.min(width, height) * 0.42 / limitKm;
+      context.strokeStyle = "rgba(232, 238, 246, 0.28)";
+      context.lineWidth = 1;
+      [10, 250].forEach((ring) => {
+        context.beginPath();
+        context.arc(centerX, centerY, ring * scale, 0, Math.PI * 2);
+        context.stroke();
+        if (ring < 40) return;
+        context.fillStyle = "#9aa8b8";
+        context.font = "11px sans-serif";
+        context.fillText(`${ring} км`, centerX + 4, centerY - ring * scale - 2);
+      });
+      context.fillStyle = "#9fd4ff";
+      context.beginPath();
+      context.arc(centerX, centerY, 3.5, 0, Math.PI * 2);
+      context.fill();
+      neighbors.forEach((item) => {
+        const xKm = item.alongKm;
+        const yKm = -item.normalKm;
+        const radius = Math.hypot(xKm, yKm);
+        const clamped = radius > limitKm ? limitKm / radius : 1;
+        const x = centerX + xKm * clamped * scale;
+        const y = centerY + yKm * clamped * scale;
+        context.fillStyle = item.name === "HOT" ? "#ffb15a" : "#e4d3bc";
+        context.beginPath();
+        context.arc(x, y, 4, 0, Math.PI * 2);
+        context.fill();
+      });
+      context.font = "12px sans-serif";
+      const legend = ["Sentinel-2A", ...neighbors.map((item) => `${item.name} ${item.label}`)];
+      legend.forEach((line, index) => {
+        context.fillStyle = index === 0 ? "#9fd4ff" : (line.startsWith("HOT") ? "#ffb15a" : "#e4d3bc");
+        context.fillText(line, 10, 16 + index * 15);
+      });
+    }
+
+    function applyScreening(screening) {
+      if (!screening || !episodeSummary || episodeSummary.layout !== "shift") return;
+      studio.setArc(screening.arc);
+      fillApproaches(episodeSummary, screening);
+    }
+
+    function fillSummary(data) {
+      episodeSummary = data;
+      tape = data.layout === "shift" ? (data.events || []) : [];
+      logTitle.textContent = "Журнал дуги";
+      fillApproaches(data);
+      logTitle.hidden = data.layout !== "shift";
+      logTools.hidden = data.layout !== "shift";
+      log.hidden = data.layout !== "shift";
+      buildLog();
+      if (data.layout === "shift") {
+        const dumps = tape.filter((item) => item.kind === "comms" && item.required).length;
+        const denied = tape.filter((item) => item.kind === "comms" && !item.required).length;
+        summary.innerHTML = [
+          [String(data.count), "аппарата смены", ""],
+          [data.minutes % 60 === 0 ? `${data.minutes / 60} ч` : `${data.minutes} мин`, "дуга на экране", ""],
+          [String(dumps), "назначенных сдач", "dumps"],
+          [String(denied), "окон без зеркала", "denied"],
+        ].map(([value, label, key]) => `<div${key ? ` data-count="${key}"` : ""}><b>${value}</b><span>${label}</span></div>`).join("");
+        explain.textContent = data.brief;
+        return;
+      }
+      const cells = [
+        [String(data.count), "аппаратов"],
+        [`${data.neighbor_km.toFixed(0)} км`, "до соседа"],
+        [`${data.nearest_km.toFixed(0)} км`, "ближайшая пара"],
+        [`${data.nearest_margin_db.toFixed(1)} дБ`, "запас линии"],
+      ];
+      summary.innerHTML = cells.map(([value, label]) => `<div><b>${value}</b><span>${label}</span></div>`).join("");
+      explain.textContent = data.closed_links === 0
+        ? "Сосед слишком далеко для линии 1 Вт и 6 дБи: запас отрицательный, луч на карте и на глобусе не рисуется как открытый."
+        : "Соседи достаточно близко: линия 1 Вт замыкается, на глобусе это светлые отрезки между аппаратами.";
+    }
+
+    async function show(layout) {
+      shift.setAttribute("aria-pressed", layout === "shift" ? "true" : "false");
+      chain.setAttribute("aria-pressed", layout === "chain" ? "true" : "false");
+      star.setAttribute("aria-pressed", layout === "star" ? "true" : "false");
+      explain.textContent = "Считаем дугу…";
+      const episode = await fetch(`/api/episode?layout=${layout}`).then((response) => response.json());
+      if (episode.error) {
+        explain.textContent = episode.error;
+        return;
+      }
+      fillSummary(episode.summary);
+      studio.load(episode);
+      if (consoleState && consoleState.screening) applyScreening(consoleState.screening);
+      if (consoleState && consoleState.journal) applyJournal(consoleState.journal);
+      if (consoleState && consoleState.flight) applyFlight(consoleState.flight);
+      if (consoleFocus) {
+        studio.setFocus(consoleFocus.seconds, consoleFocus.station);
+        play.textContent = "Пуск";
+      } else {
+        play.textContent = "Пауза";
+      }
+    }
+
+    play.addEventListener("click", () => {
+      const playing = studio.setPlaying(!studio.playing);
+      play.textContent = playing ? "Пауза" : "Пуск";
+    });
+    log.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button || button.dataset.start === undefined) return;
+      studio.seekTime(Number(button.dataset.start));
+      play.textContent = "Пуск";
+    });
+    logPasses.addEventListener("click", () => setLogMode("passes"));
+    logAll.addEventListener("click", () => setLogMode("all"));
+    approaches.addEventListener("click", (event) => {
+      const row = event.target.closest("tr");
+      if (!row || row.dataset.start === undefined) return;
+      studio.seekTime(Number(row.dataset.start));
+      play.textContent = "Пуск";
+    });
+    shift.addEventListener("click", () => show("shift"));
+    chain.addEventListener("click", () => show("chain"));
+    star.addEventListener("click", () => show("star"));
+
+    fetch("/api/scenario")
+      .then((response) => response.json())
+      .then((data) => {
+        const chips = [
+          data.epoch,
+          `${data.horizon_sec / 3600} ч`,
+          `Δv ${data.dv_budget_m_s} м/с`,
+          data.until,
+          ...data.keys,
+        ];
+        facts.innerHTML = chips.map((item) => `<span class="chip">${item}</span>`).join("");
+      })
+      .catch(() => { facts.textContent = "Сценарий не прочитан."; });
+    show("shift");
+
+    const consoleStatus = document.querySelector("#console-status");
+    const consoleOpen = document.querySelector("#console-open");
+    const consoleFinish = document.querySelector("#console-finish");
+    const consoleBoard = document.querySelector("#console-board");
+    const consoleQueue = document.querySelector("#console-queue");
+    const consoleImaging = document.querySelector("#console-imaging");
+    const consolePlan = document.querySelector("#console-plan");
+    const consoleLedger = document.querySelector("#console-ledger");
+    const consoleLog = document.querySelector("#console-log");
+    const consoleNotes = document.querySelector("#console-notes");
+    const consoleActions = document.querySelector("#console-actions");
+    let consoleFocus = null;
+    let consoleState = null;
+
+    function admittedAction(state) {
+      if (!state || state.terminated || state.error) return null;
+      if (state.phase === "award" && state.window) {
+        const rows = state.window.rows;
+        let best = 0;
+        for (let index = 1; index < rows.length; index += 1) {
+          const left = rows[best];
+          const right = rows[index];
+          const larger = right.ready_bits > left.ready_bits + 1e-9;
+          const earlier = Math.abs(right.ready_bits - left.ready_bits) <= 1e-9 && right.start_sec < left.start_sec;
+          if (larger || earlier) best = index;
+        }
+        const label = `Зеркало ${rows[best].vehicle}`;
+        const action = (state.actions || []).find((item) => item.label === label);
+        return action ? action.id : null;
+      }
+      const byKind = { imaging: 1, comms: 2, maneuver: 3 };
+      return state.job ? byKind[state.job.kind] : null;
+    }
+
+    async function postAction(action) {
+      const state = await fetch("/api/shift/step", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      }).then((response) => response.json());
+      renderConsole(state);
+      return state;
+    }
+
+    function followConsole(state) {
+      if (!state || state.error || state.focus_sec === null || state.focus_sec === undefined) return;
+      consoleFocus = {
+        seconds: state.focus_sec,
+        station: state.window ? state.window.station : "",
+      };
+      studio.setFocus(consoleFocus.seconds, consoleFocus.station);
+      play.textContent = "Пуск";
+    }
+
+    function renderConsole(state) {
+      consoleState = state;
+      if (state.error) {
+        consoleStatus.textContent = state.error;
+        return;
+      }
+      if (state.screening) applyScreening(state.screening);
+      if (state.journal) applyJournal(state.journal);
+      if (state.flight) applyFlight(state.flight);
+      const phase = state.phase === "award" ? "раздача зеркал" : "исполнение дел";
+      const ending = state.terminated
+        ? (state.success ? " Смена закрыта успешно." : " Смена закрыта без успеха.")
+        : "";
+      const violation = (state.violations || []).join(" ");
+      consoleStatus.textContent = violation
+        ? `${phase}. Команда отвергнута: ${violation}.${ending}`
+        : `${phase}. Окон в споре: ${state.remaining_windows}. Отдано зеркал: ${state.awards}, из них не по буферу: ${state.wrong_awards}. Дел закрыто: ${state.done} из ${state.jobs}.${ending}`;
+      const cards = [];
+      if (state.window) {
+        state.window.rows.forEach((row) => {
+          cards.push(`<div><b>${row.vehicle}</b><span>${state.window.station}, буфер ${row.ready_bits.toExponential(2)} бит, старт ${clockText(row.start_sec)}</span></div>`);
+        });
+      }
+      if (state.job) {
+        const flags = [
+          state.job.burn_due ? "окно импульса" : "",
+          state.job.link_open ? "линия открыта" : "",
+          state.job.target_lit ? "цель на свету" : "",
+        ].filter(Boolean).join(", ");
+        cards.push(`<div><b>${state.job.vehicle}: ${state.job.kind_label}</b><span>${state.job.name}, ${clockText(state.job.start_sec)}. ${flags}</span></div>`);
+      }
+      if (state.reward !== null && state.reward !== undefined) {
+        cards.push(`<div><b>${state.reward}</b><span>награда шага</span></div>`);
+      }
+      consoleBoard.innerHTML = cards.join("");
+      consoleQueue.innerHTML = (state.queue || []).map((item) => {
+        const who = item.vehicles.map((row) => `${row.vehicle} ${row.ready_bits.toExponential(2)}`).join(", ");
+        return `<tr data-start="${item.start_sec}" data-station="${item.station}" data-current="${item.current ? "true" : "false"}">
+          <td>${clockText(item.start_sec)}</td>
+          <td>${item.station}</td>
+          <td>${who}</td>
+        </tr>`;
+      }).join("");
+      consoleImaging.textContent = "Съёмки в плане: " + (state.imaging_planned || []).map((row) => `${row.vehicle} ${row.count}`).join(", ");
+      consolePlan.innerHTML = (state.plan || []).map((item) => `
+        <tr data-start="${item.start_sec}" data-station="${item.kind === "comms" ? item.name : ""}" data-current="${item.current ? "true" : "false"}">
+          <td>${clockText(item.start_sec)}</td>
+          <td>${item.kind_label}</td>
+          <td>${item.vehicle}</td>
+          <td>${item.name}</td>
+        </tr>
+      `).join("");
+      consoleLedger.textContent = "Уже исполнено: " + (state.ledger || []).map((row) => {
+        const dv = row.dv_left_m_s == null ? "" : `, Δv ${row.dv_left_m_s.toFixed(1)} м/с`;
+        return `${row.vehicle}: ${row.images} кадр., ${row.downlink_mb.toFixed(1)} Мбит${dv}`;
+      }).join(" · ");
+      consoleNotes.textContent = (state.notes || []).join(" ");
+      consoleLog.innerHTML = (state.log || []).map((item) => `<li>${item.summary}</li>`).join("");
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+      followConsole(state);
+      consoleActions.innerHTML = (state.actions || []).map((item) => `
+        <button type="button" data-action="${item.id}" data-blocked="${item.blocked ? "true" : "false"}" ${state.terminated ? "disabled" : ""} title="${item.blocked || ""}">${item.label}</button>
+      `).join("");
+    }
+
+    consoleOpen.addEventListener("click", async () => {
+      consoleOpen.disabled = true;
+      consoleStatus.textContent = "Считаем сутки смены…";
+      consoleActions.innerHTML = "";
+      try {
+        const state = await fetch("/api/shift/reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        }).then((response) => response.json());
+        renderConsole(state);
+      } finally {
+        consoleOpen.disabled = false;
+      }
+    });
+    function previewRow(event) {
+      const row = event.target.closest("tr");
+      if (!row || row.dataset.start === undefined) return;
+      studio.setFocus(Number(row.dataset.start), row.dataset.station || "");
+      play.textContent = "Пуск";
+    }
+    consoleQueue.addEventListener("click", previewRow);
+    consolePlan.addEventListener("click", previewRow);
+    consoleActions.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button || button.dataset.action === undefined) return;
+      consoleActions.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+      await postAction(Number(button.dataset.action));
+    });
+    consoleFinish.addEventListener("click", async () => {
+      if (!consoleState || consoleState.terminated) return;
+      consoleFinish.disabled = true;
+      consoleOpen.disabled = true;
+      try {
+        for (let step = 0; step < 2000 && consoleState && !consoleState.terminated; step += 1) {
+          const action = admittedAction(consoleState);
+          if (action === null || action === undefined) break;
+          const state = await postAction(action);
+          if (state.error || state.unsafe) break;
+        }
+      } finally {
+        consoleFinish.disabled = false;
+        consoleOpen.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

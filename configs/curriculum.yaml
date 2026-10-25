@@ -95,8 +95,8 @@ stages:
   - name: operator_shift
     env: space_env/OperatorShift-v0
     episodes: 1
-    max_episode_steps: 24
-    until: award
+    max_episode_steps: 2000
+    until: full
   - name: radar
     env: space_env/RadarPass-v0
     episodes: 1

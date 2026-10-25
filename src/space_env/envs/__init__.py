@@ -35,6 +35,7 @@ from space_env.envs.horizon_envs import (
     RerouteEnv,
 )
 from space_env.envs.campaign_env import DayMissionEnv, DayShiftEnv, DishAwardEnv, OperatorShiftEnv
+from space_env.envs.demand_env import DemandShiftEnv
 from space_env.envs.regime_envs import LongitudeKeepEnv, RadarPassEnv
 from space_env.envs.workplan_env import WorkPlanEnv
 
@@ -68,6 +69,7 @@ _SPECS = (
     ("space_env/DayShift-v0", "space_env.envs.campaign_env:DayShiftEnv"),
     ("space_env/DishAward-v0", "space_env.envs.campaign_env:DishAwardEnv"),
     ("space_env/OperatorShift-v0", "space_env.envs.campaign_env:OperatorShiftEnv"),
+    ("space_env/DemandShift-v0", "space_env.envs.demand_env:DemandShiftEnv"),
     ("space_env/RadarPass-v0", "space_env.envs.regime_envs:RadarPassEnv"),
     ("space_env/LongitudeKeep-v0", "space_env.envs.regime_envs:LongitudeKeepEnv"),
 )
@@ -87,6 +89,7 @@ __all__ = [
     "ConjunctionQueueEnv",
     "DebrisAvoidEnv",
     "DayMissionEnv",
+    "DemandShiftEnv",
     "DayShiftEnv",
     "DishAwardEnv",
     "OperatorShiftEnv",

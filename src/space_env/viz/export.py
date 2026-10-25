@@ -106,25 +106,54 @@ def export_trajectory(
     route: list[dict] | None = None,
     memory_bits: dict[str, float] | None = None,
     memory_capacity_bits: float | None = None,
+    commands: list[tuple[dict[str, str], dict[str, dict]]] | None = None,
+    companions: dict | None = None,
+    coast: dict | None = None,
 ) -> dict:
-    """Пишет кадры t=0…steps включительно. Группировка продвигается на dt_sec."""
+    """Пишет кадры t=0…steps включительно. Группировка продвигается на dt_sec.
+
+    commands[i] — команды и их параметры на шаге после кадра i. Нет списка — все ждут.
+    coast — те же аппараты без импульса: в кадр пишутся r_coast и v_coast.
+    """
     if steps < 0 or dt_sec <= 0.0:
         raise ValueError("steps >= 0 и dt_sec > 0")
+    if commands is not None and len(commands) != steps:
+        raise ValueError("команд должно быть столько же, сколько шагов")
     start = next(iter(fleet.vehicles.values())).orbit.epoch
     frames = []
     for index in range(steps + 1):
-        frames.append(
-            _capture(
-                fleet.vehicles,
-                pairs=fleet.pairs(),
-                buffer_mb=fleet.buffer_mb,
-                delivered_mb=fleet.delivered_mb,
-                route=route,
-                memory_bits=memory_bits,
-            )
+        frame = _capture(
+            fleet.vehicles,
+            pairs=fleet.pairs(),
+            buffer_mb=fleet.buffer_mb,
+            delivered_mb=fleet.delivered_mb,
+            route=route,
+            memory_bits=memory_bits,
         )
+        if companions:
+            frame["companions"] = {
+                name: {"r": _vec(engine.orbit.r), "v": _vec(engine.orbit.v)}
+                for name, engine in companions.items()
+            }
+        for name, engine in (coast or {}).items():
+            vehicle = frame["vehicles"].get(name)
+            if vehicle is None:
+                continue
+            snap = engine.get_state_snapshot()
+            vehicle["r_coast"] = _vec(engine.orbit.r)
+            vehicle["v_coast"] = _vec(engine.orbit.v)
+            vehicle["altitude_km_coast"] = float(snap.altitude_km)
+        frames.append(frame)
         if index < steps:
-            fleet.step(dt_sec)
+            if commands is None:
+                fleet.step(dt_sec)
+            else:
+                command, payload = commands[index]
+                fleet.step(dt_sec, command, payload)
+            for engine in (companions or {}).values():
+                engine.step(dt_sec, "wait")
+            for engine in (coast or {}).values():
+                engine.step(dt_sec, "wait")
     return _write(_document(frames, start, dt_sec, memory_capacity_bits), path)
 
 

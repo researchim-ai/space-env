@@ -19,6 +19,10 @@ class SimulationState(BaseModel):
     imaging_count: int = Field(default=0, ge=0)
     comms_sessions: int = Field(default=0, ge=0)
     data_downlink_Mb: float = Field(default=0.0, ge=0)
+    stored_bits: float = Field(default=0.0, ge=0)
+    generated_bits: float = Field(default=0.0, ge=0)
+    delivered_bits: float = Field(default=0.0, ge=0)
+    lost_bits: float = Field(default=0.0, ge=0)
     delta_v_used_m_s: float = Field(default=0.0, ge=0)
     in_contact: bool = False
     elevation_deg: float = -90.0

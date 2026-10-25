@@ -1,0 +1,14 @@
+# Та же постановка, другая аномалия и срок в один шаг. Сдать уже некогда.
+version: 1
+keys:
+  - sentinel-2a
+horizon_sec: 30
+epoch: "2026-06-21T00:00:00Z"
+nu_deg: 270
+dv_budget_m_s: 0
+until: full
+demand:
+  name: nadir-quarter
+  place: subsatellite
+  deadline_sec: 30
+  deliver_to: overhead

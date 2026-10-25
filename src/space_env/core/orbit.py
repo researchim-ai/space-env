@@ -45,11 +45,12 @@ class Orbit:
     Пропагация — двухтелая модель через boinor.
     """
 
-    __slots__ = ("_orb", "_epoch")
+    __slots__ = ("_orb", "_epoch", "_frame")
 
-    def __init__(self, boinor_orbit: BoinorOrbit, epoch: Time) -> None:
+    def __init__(self, boinor_orbit: BoinorOrbit, epoch: Time, frame: str = "GCRF") -> None:
         self._orb = boinor_orbit
         self._epoch = epoch
+        self._frame = frame
 
     @classmethod
     def from_keplerian(
@@ -78,17 +79,28 @@ class Orbit:
         return cls(orb, epoch)
 
     @classmethod
-    def from_vectors(cls, r_m: np.ndarray, v_m_s: np.ndarray, epoch: Time) -> "Orbit":
-        """Орбита из векторов положения и скорости (м, м/с) в инерциальной СК."""
+    def from_vectors(
+        cls,
+        r_m: np.ndarray,
+        v_m_s: np.ndarray,
+        epoch: Time,
+        frame: str = "GCRF",
+    ) -> "Orbit":
+        """Орбита из векторов (м, м/с). frame — подпись системы, по умолчанию GCRF."""
         r_km = (np.asarray(r_m, dtype=float) / 1000.0) * u.km
         v_km_s = (np.asarray(v_m_s, dtype=float) / 1000.0) * u.km / u.s
         epoch_ap = _to_astropy_time(epoch)
         orb = BoinorOrbit.from_vectors(Earth, r_km, v_km_s, epoch=epoch_ap)
-        return cls(orb, epoch)
+        return cls(orb, epoch, frame)
 
     @property
     def epoch(self) -> Time:
         return self._epoch
+
+    @property
+    def frame(self) -> str:
+        """Подпись системы координат векторов. SGP4 — TEME, численная дуга — GCRF."""
+        return self._frame
 
     @property
     def r(self) -> np.ndarray:

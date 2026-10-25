@@ -1,9 +1,13 @@
 """Численная пропагация Кауэлла, RK4. Шаг по умолчанию 10 с."""
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+
 import numpy as np
 
+from space_env.core.frames import ecef_to_geodetic, eci_to_ecef
 from space_env.core.gravity import acceleration_m_s2
+from space_env.core.time import Time
 
 
 def _rk4(
@@ -94,8 +98,12 @@ def propagate_state(
     samples: list[tuple[float, np.ndarray, np.ndarray]] = [(0.0, r.copy(), v.copy())]
     elapsed = 0.0
     step = max(substep_sec, 1e-3)
+    moment = when
     while elapsed < dt_sec - 1e-9:
         h = min(step, dt_sec - elapsed)
+        step_lat, step_lon = lat_deg, lon_deg
+        if isinstance(moment, datetime):
+            step_lat, step_lon, _alt = ecef_to_geodetic(eci_to_ecef(r, Time(moment)))
         r, v = _rk4(
             r,
             v,
@@ -110,13 +118,15 @@ def propagate_state(
             f107a=f107a,
             ap=ap,
             density_scale=density_scale,
-            lat_deg=lat_deg,
-            lon_deg=lon_deg,
-            when=when,
+            lat_deg=step_lat,
+            lon_deg=step_lon,
+            when=moment,
             srp_area_m2=srp_area_m2,
             srp_coefficient=srp_coefficient,
             include_third_body=include_third_body,
         )
         elapsed += h
+        if isinstance(moment, datetime):
+            moment = moment + timedelta(seconds=h)
         samples.append((elapsed, r.copy(), v.copy()))
     return r, v, samples

@@ -11,7 +11,6 @@ import numpy as np
 
 from space_env.catalog.build import make_engine
 from space_env.mission.campaign import (
-    DAY_SEC,
     MISSION_KEYS,
     DayCampaign,
     SharedWindow,
@@ -22,6 +21,7 @@ from space_env.mission.campaign import (
 )
 from space_env.mission.horizon import PC_THRESHOLD
 from space_env.mission.scenarios import GroundTarget
+from space_env.mission.shift_scenario import load_shift_scenario
 from space_env.rl.rewards import load_rewards
 from space_env.simulation.engine import SimulationEngine
 
@@ -229,11 +229,9 @@ class DayShiftEnv(gym.Env):
             span = max(1.0, min(60.0, job.end_sec - max(job.start_sec, engine.time_sec)))
             engine.step(span, "imaging")
             return job.name in engine.captured_targets()
-        before_mb = engine.get_state_snapshot().data_downlink_Mb
         span = max(1.0, min(60.0, job.end_sec - max(job.start_sec, engine.time_sec)))
         engine.step(span, "comms")
-        after_mb = engine.get_state_snapshot().data_downlink_Mb
-        return bool(engine.last_command_ok and after_mb > before_mb)
+        return bool(engine.last_command_ok)
 
     def step(self, action: int | np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
         if self._campaign is None:
@@ -348,11 +346,16 @@ class DishAwardEnv(gym.Env):
         campaign = self._campaign
         if campaign is None:
             raise RuntimeError("сначала reset")
-        spans: dict[str, list[tuple[float, float, str]]] = {}
+        spans: dict[str, list[tuple[float, float, str, float]]] = {}
         for window in self._awards:
             keeper = window.keeper_index()
             spans.setdefault(window.vehicles[keeper], []).append(
-                (window.starts[keeper], window.ends[keeper], window.station)
+                (
+                    window.starts[keeper],
+                    window.ends[keeper],
+                    window.station,
+                    float(window.ready_bits[keeper]),
+                )
             )
         downlink: dict[str, float] = {}
         for vehicle, rows in spans.items():
@@ -363,9 +366,15 @@ class DishAwardEnv(gym.Env):
                 while engine.time_sec + 0.5 < campaign.burn_at_sec:
                     engine.step(min(60.0, campaign.burn_at_sec - engine.time_sec), "wait")
                 engine.step(1.0, "maneuver", {"dv_m_s": burn.dv_m_s, "direction": burn.direction or "prograde"})
-            for start, end, station in rows:
+            for start, end, station, ready in rows:
                 while engine.time_sec + 0.5 < start:
                     engine.step(min(60.0, start - engine.time_sec), "wait")
+                capacity = engine.spacecraft.config.payload.memory_bits
+                room = ready if capacity <= 0.0 else min(ready, max(0.0, capacity - engine._stored_bits))
+                if room > engine._stored_bits:
+                    extra = room - engine._stored_bits
+                    engine._stored_bits += extra
+                    engine._generated_bits += extra
                 before = engine.get_state_snapshot().data_downlink_Mb
                 span = max(1.0, min(60.0, end - max(start, engine.time_sec)))
                 engine.step(span, "comms")
@@ -433,31 +442,37 @@ class OperatorShiftEnv(gym.Env):
     keys, horizon_sec, epoch, nu_deg и dv_budget_m_s задают сутки.
     until="award" кончает эпизод после раздачи окон, until="full" доводит ещё и дела.
     За каждый верный шаг есть отдельная награда, в конце — награда за всю смену.
+    Аппарат из окна, но не с большим буфером, получает зеркало: смена идёт по этому плану,
+    шаг штрафуется, успех суток не ставится.
+    Ожидание вместо текущего дела пропускает дело и оставляет смену открытой.
     """
 
     metadata = {"render_modes": []}
 
     def __init__(
         self,
-        keys: tuple[str, ...] = MISSION_KEYS,
-        horizon_sec: float = DAY_SEC,
-        epoch: str = "2026-10-20T00:00:00Z",
-        nu_deg: float = 180.0,
-        dv_budget_m_s: float = 1.0,
-        until: str = "full",
+        keys: tuple[str, ...] | None = None,
+        horizon_sec: float | None = None,
+        epoch: str | None = None,
+        nu_deg: float | None = None,
+        dv_budget_m_s: float | None = None,
+        until: str | None = None,
+        scenario: str | None = None,
         max_episode_steps: int = 1600,
     ):
         super().__init__()
-        if until not in {"award", "full"}:
+        cfg = load_shift_scenario(scenario)
+        chosen_until = cfg["until"] if until is None else until
+        if chosen_until not in {"award", "full"}:
             raise ValueError("until должен быть award или full")
-        self._until = until
-        self._keys = tuple(keys)
+        self._until = chosen_until
+        self._keys = tuple(cfg["keys"] if keys is None else keys)
         if len(self._keys) < 1:
             raise ValueError("в смене нужен хотя бы один аппарат")
-        self._horizon_sec = float(horizon_sec)
-        self._epoch = epoch
-        self._nu_deg = float(nu_deg)
-        self._dv_budget_m_s = float(dv_budget_m_s)
+        self._horizon_sec = float(cfg["horizon_sec"] if horizon_sec is None else horizon_sec)
+        self._epoch = cfg["epoch"] if epoch is None else epoch
+        self._nu_deg = float(cfg["nu_deg"] if nu_deg is None else nu_deg)
+        self._dv_budget_m_s = float(cfg["dv_budget_m_s"] if dv_budget_m_s is None else dv_budget_m_s)
         self.max_episode_steps = max_episode_steps
         width = 1 + 3 * len(self._keys) + 5
         self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(width,), dtype=np.float32)
@@ -466,11 +481,14 @@ class OperatorShiftEnv(gym.Env):
         self._drafts = ()
         self._window: SharedWindow | None = None
         self._awards: list[SharedWindow] = []
+        self._wrong_awards = 0
         self._phase = "award"
         self._jobs: tuple[_Job, ...] = ()
         self._index = 0
         self._done = 0
         self._burned = False
+        self._outcomes: dict[tuple[str, str, str, int], str] = {}
+        self._flight: dict[str, list[dict]] = {}
         self._engines: dict[str, SimulationEngine] = {}
         self._weights = load_rewards()["operator_shift"]
 
@@ -496,14 +514,72 @@ class OperatorShiftEnv(gym.Env):
             current = self._jobs[self._index]
             budget = self._campaign.dv_budget_m_s
             spent = 0.0 if budget <= 0.0 else min(1.0, self._campaign.dv_spent_m_s / budget)
+            burn_due, link_open, target_lit = self._opportunity(current)
             job[:] = (
-                _KIND_CODE[current.kind],
-                1.0,
+                burn_due,
+                link_open,
+                target_lit,
                 0.0 if not self._jobs else self._done / len(self._jobs),
-                1.0 if current.kind == "maneuver" else 0.0,
                 spent,
             )
         return np.concatenate((phase, share, inside, early, job)).astype(np.float32)
+
+    def _opportunity(self, job: _Job) -> tuple[float, float, float]:
+        """Окно импульса, открытая линия и цель на свету. Кода команды здесь нет."""
+        campaign = self._campaign
+        if campaign is None:
+            return 0.0, 0.0, 0.0
+        burn_due = 0.0
+        if (
+            not self._burned
+            and campaign.burn_at_sec is not None
+            and abs(job.start_sec - campaign.burn_at_sec) <= 1.0
+            and dict(campaign.coast_pc).get("HOT", 0.0) >= PC_THRESHOLD
+        ):
+            burn_due = 1.0
+        link_open = 0.0
+        target_lit = 0.0
+        for plan in campaign.plans:
+            if plan.vehicle != job.vehicle:
+                continue
+            for item in plan.required_items():
+                if item.end_sec + 1e-6 < job.start_sec or job.start_sec + 1e-6 < item.start_sec:
+                    continue
+                if item.kind == "comms":
+                    link_open = 1.0
+                elif item.kind == "imaging":
+                    target_lit = 1.0
+        if burn_due:
+            return 1.0, 0.0, 0.0
+        if link_open:
+            return 0.0, 1.0, 0.0
+        if target_lit or job.kind == "imaging":
+            return 0.0, 0.0, 1.0
+        return burn_due, link_open, target_lit
+
+    def _shield(self, choice: int) -> str | None:
+        """Запрет команды, которую состояние не допускает. Это не штраф награды."""
+        if self._phase == "award":
+            window = self._window
+            if window is None:
+                return None
+            if choice < _COMMANDS or choice >= _COMMANDS + len(self._keys):
+                return "в споре за зеркало нужна команда назначения"
+            if self._keys[choice - _COMMANDS] not in window.vehicles:
+                return "аппарат не в этом окне"
+            return None
+        if self._index >= len(self._jobs):
+            return None
+        if choice >= _COMMANDS:
+            return "назначение зеркала вне спора"
+        burn_due, link_open, target_lit = self._opportunity(self._jobs[self._index])
+        if choice == 3 and burn_due < 0.5:
+            return "импульс вне окна сближения"
+        if choice == 2 and link_open < 0.5:
+            return "сдача без открытой линии"
+        if choice == 1 and target_lit < 0.5:
+            return "съёмка без цели на свету"
+        return None
 
     def _open_shift(self) -> None:
         if self._campaign is None:
@@ -514,6 +590,7 @@ class OperatorShiftEnv(gym.Env):
         self._index = 0
         self._done = 0
         self._burned = False
+        self._outcomes = {}
         self._phase = "execute"
         self._window = None
         self._engines = {}
@@ -526,6 +603,55 @@ class OperatorShiftEnv(gym.Env):
                 with_stations=True,
                 ground_targets=targets,
             )
+        self._flight = {}
+        for name in self._engines:
+            self._append_flight(name)
+
+    def _append_flight(self, name: str) -> None:
+        engine = self._engines[name]
+        snap = engine.get_state_snapshot()
+        row = {
+            "t": float(engine.time_sec),
+            "r": [float(item) for item in np.asarray(engine.orbit.r, dtype=float).reshape(3)],
+            "v": [float(item) for item in np.asarray(engine.orbit.v, dtype=float).reshape(3)],
+            "altitude_km": float(snap.altitude_km),
+            "eclipse": bool(snap.in_eclipse),
+            "contact": bool(snap.in_contact),
+            "station": str(snap.contact_station or ""),
+        }
+        track = self._flight.setdefault(name, [])
+        if track and abs(track[-1]["t"] - row["t"]) < 0.25:
+            track[-1] = row
+        else:
+            track.append(row)
+
+    def _advance_vehicle(self, name: str, until_sec: float, releasing: _Job | None) -> None:
+        """Доводит аппарат ожиданием, не проскакивая его следующее дело."""
+        engine = self._engines[name]
+        cap = float(until_sec)
+        for job in self._jobs[self._index :]:
+            if (
+                releasing is not None
+                and job.vehicle == name
+                and job.kind == releasing.kind
+                and job.name == releasing.name
+                and abs(job.start_sec - releasing.start_sec) < 0.5
+            ):
+                continue
+            if job.vehicle == name and job.end_sec > engine.time_sec + 0.5:
+                cap = min(cap, max(engine.time_sec, float(job.start_sec)))
+                break
+        while engine.time_sec + 0.5 < cap:
+            engine.step(min(60.0, cap - engine.time_sec), "wait")
+            self._append_flight(name)
+        self._append_flight(name)
+
+    def _advance_fleet(self, until_sec: float, releasing: _Job | None = None) -> None:
+        for name in self._engines:
+            self._advance_vehicle(name, until_sec, releasing)
+
+    def _remember_job(self, job: _Job, status: str) -> None:
+        self._outcomes[(job.vehicle, job.kind, job.name, round(job.start_sec))] = status
 
     def _engine_accepts(self, job: _Job) -> bool:
         engine = self._engines[job.vehicle]
@@ -545,13 +671,11 @@ class OperatorShiftEnv(gym.Env):
             span = max(1.0, min(60.0, job.end_sec - max(job.start_sec, engine.time_sec)))
             engine.step(span, "imaging")
             return job.name in engine.captured_targets()
-        before_mb = engine.get_state_snapshot().data_downlink_Mb
         span = max(1.0, min(60.0, job.end_sec - max(job.start_sec, engine.time_sec)))
         engine.step(span, "comms")
-        after_mb = engine.get_state_snapshot().data_downlink_Mb
-        return bool(engine.last_command_ok and after_mb > before_mb)
+        return bool(engine.last_command_ok)
 
-    def _info(self, success: bool, missed: int) -> dict:
+    def _info(self, success: bool, missed: int, violation: str | None = None) -> dict:
         images = {name: engine.get_state_snapshot().imaging_count for name, engine in self._engines.items()}
         downlink = {name: engine.get_state_snapshot().data_downlink_Mb for name, engine in self._engines.items()}
         return {
@@ -562,9 +686,12 @@ class OperatorShiftEnv(gym.Env):
             "done": self._done,
             "burned": self._burned,
             "missed": missed,
+            "wrong_awards": self._wrong_awards,
             "vehicles": list(self._keys),
             "horizon_sec": self._horizon_sec,
             "until": self._until,
+            "unsafe": violation is not None,
+            "violations": [] if violation is None else [violation],
             "engine_images": images,
             "engine_downlink_mb": downlink,
         }
@@ -580,10 +707,13 @@ class OperatorShiftEnv(gym.Env):
         )
         self._drafts = campaign_drafts(self._campaign)
         self._awards = []
+        self._wrong_awards = 0
         self._jobs = ()
         self._index = 0
         self._done = 0
         self._burned = False
+        self._outcomes = {}
+        self._flight = {}
         self._engines = {}
         windows = shared_windows(self._drafts)
         if windows:
@@ -613,35 +743,65 @@ class OperatorShiftEnv(gym.Env):
                 if self._until == "award":
                     return self._obs(), float(self._weights["task_done"]), True, False, self._info(True, 0)
                 raise RuntimeError("окно смены не собрано")
-            keeper = self._keys.index(window.vehicles[window.keeper_index()])
-            if choice != _COMMANDS + keeper:
-                return self._obs(), -float(self._weights["missed"]), True, False, self._info(False, 1)
+            keeper_name = window.vehicles[window.keeper_index()]
+            violation = self._shield(choice)
+            if violation is not None:
+                return self._obs(), 0.0, True, False, self._info(False, 0, violation)
+            chosen = self._keys[choice - _COMMANDS]
+            correct = chosen == keeper_name
             self._awards.append(window)
-            self._drafts = commit_award(self._drafts, window)
+            self._drafts = commit_award(self._drafts, window, holder=chosen)
+            if not correct:
+                self._wrong_awards += 1
             remaining = shared_windows(self._drafts)
-            step_reward = float(self._weights["step_done"])
+            step_reward = float(self._weights["step_done"] if correct else -self._weights["missed"])
+            missed = 0 if correct else 1
             if remaining:
                 self._window = remaining[0]
-                return self._obs(), step_reward, False, False, self._info(False, 0)
+                return self._obs(), step_reward, False, False, self._info(False, missed)
             if self._until == "award":
                 self._window = None
-                return self._obs(), step_reward + float(self._weights["task_done"]), True, False, self._info(True, 0)
+                success = self._wrong_awards == 0
+                reward = step_reward + (float(self._weights["task_done"]) if success else 0.0)
+                return self._obs(), reward, True, False, self._info(success, 0 if success else 1)
             self._open_shift()
             if not self._jobs:
-                return self._obs(), step_reward + float(self._weights["task_done"]), True, False, self._info(True, 0)
-            return self._obs(), step_reward, False, False, self._info(False, 0)
+                success = self._wrong_awards == 0
+                reward = step_reward + (float(self._weights["task_done"]) if success else 0.0)
+                return self._obs(), reward, True, False, self._info(success, 0 if success else 1)
+            return self._obs(), step_reward, False, False, self._info(False, missed)
         if self._index >= len(self._jobs):
             return self._obs(), -float(self._weights["missed"]), True, False, self._info(False, 1)
         job = self._jobs[self._index]
-        if _ACTION_KIND.get(choice) != job.kind or not self._engine_accepts(job):
-            return self._obs(), -float(self._weights["missed"]), True, False, self._info(False, 1)
+        violation = self._shield(choice)
+        if violation is not None:
+            return self._obs(), 0.0, True, False, self._info(False, 0, violation)
+        if _ACTION_KIND.get(choice) != job.kind:
+            self._advance_fleet(job.start_sec, releasing=job)
+            self._remember_job(job, "skipped")
+            self._index += 1
+            finished = self._index >= len(self._jobs)
+            return self._obs(), -float(self._weights["missed"]), finished, False, self._info(False, 1)
+        if not self._engine_accepts(job):
+            self._advance_fleet(self._engines[job.vehicle].time_sec, releasing=job)
+            self._remember_job(job, "skipped")
+            self._index += 1
+            finished = self._index >= len(self._jobs)
+            return self._obs(), -float(self._weights["missed"]), finished, False, self._info(False, 1)
+        self._advance_fleet(self._engines[job.vehicle].time_sec, releasing=job)
         if job.kind == "maneuver":
             self._burned = True
+        self._remember_job(job, "done")
         self._done += 1
         self._index += 1
         finished = self._index >= len(self._jobs)
         needs_burn = self._campaign.burn_at_sec is not None
-        success = finished and self._done == len(self._jobs) and (self._burned or not needs_burn)
+        success = (
+            finished
+            and self._done == len(self._jobs)
+            and (self._burned or not needs_burn)
+            and self._wrong_awards == 0
+        )
         reward = float(self._weights["step_done"])
         if success:
             reward += float(self._weights["task_done"])

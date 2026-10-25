@@ -298,9 +298,50 @@ def test_operator_shift_awards_the_dishes_and_flies_them():
     env.close()
     refused = gym.make("space_env/OperatorShift-v0")
     refused.reset(seed=0)
-    _obs, _reward, terminated, _truncated, step = refused.step(0)
+    _obs, reward, terminated, _truncated, step = refused.step(0)
     assert terminated and step["success"] is False and step["phase"] == "award"
+    assert step["unsafe"] is True and step["violations"]
+    assert reward == 0.0
     refused.close()
+
+
+def test_operator_shift_continues_after_a_worse_dish():
+    env = gym.make("space_env/OperatorShift-v0", until="award", max_episode_steps=64)
+    obs, info = env.reset(seed=0)
+    assert info["remaining"] >= 2
+    count = (obs.size - 6) // 3
+    shares = obs[1 : 1 + count]
+    inside = obs[1 + count : 1 + 2 * count]
+    early = obs[1 + 2 * count : 1 + 3 * count]
+    candidates = [index for index in range(count) if inside[index] > 0.5]
+    keeper = min(candidates, key=lambda index: (-float(shares[index]), -float(early[index]), index))
+    loser = next(index for index in candidates if index != keeper)
+    holder = env.unwrapped._keys[loser]
+    obs, reward, terminated, _truncated, step = env.step(4 + loser)
+    weights = load_rewards()["operator_shift"]
+    assert step["unsafe"] is False and step["violations"] == []
+    assert step["wrong_awards"] == 1
+    assert step["success"] is False
+    assert reward == pytest.approx(-weights["missed"])
+    notes = [
+        item.reason
+        for draft in env.unwrapped._drafts
+        for item in draft.plan.items
+        if "занято" in item.reason and f"аппаратом {holder}" in item.reason
+    ]
+    assert notes
+    assert terminated is False
+    done = False
+    for _ in range(64):
+        obs, reward, terminated, truncated, step = env.step(expert_action("space_env/OperatorShift-v0", obs))
+        done = bool(terminated or truncated)
+        if done:
+            break
+    assert done and step["success"] is False
+    assert step["wrong_awards"] >= 1
+    assert step["phase"] == "award"
+    assert step["until"] == "award"
+    env.close()
 
 
 def test_operator_shift_accepts_a_shorter_fleet():
@@ -340,3 +381,19 @@ def test_operator_shift_can_stop_after_the_awards():
     env.close()
     with pytest.raises(ValueError):
         gym.make("space_env/OperatorShift-v0", until="coast")
+    loaded = gym.make("space_env/OperatorShift-v0")
+    assert loaded.unwrapped._until == "full"
+    assert loaded.unwrapped._horizon_sec == 86_400.0
+    assert loaded.unwrapped._keys == ("sentinel-2a", "landsat-9", "sar-small", "cubesat-6u")
+    loaded.close()
+
+
+def test_operator_shift_report_keeps_holdout_separate_from_learned():
+    from space_env.eval.operator_report import operator_shift_report
+
+    report = operator_shift_report(train_seed=0, holdout_seed=1)
+    assert "learned" not in report
+    assert report["until"] == "full"
+    heuristic = [row for row in report["rows"] if row["policy"] == "heuristic"]
+    assert {row["split"] for row in heuristic} == {"train", "holdout"}
+    assert all(row["success"] for row in heuristic)

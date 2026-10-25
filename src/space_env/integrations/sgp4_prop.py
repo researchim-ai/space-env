@@ -9,7 +9,8 @@ from space_env.core.time import Time
 
 def orbit_from_tle(line1: str, line2: str, epoch: Time | None = None) -> Orbit:
     """
-    Состояние SGP4 в метрах и м/с, обёрнутое в Orbit.
+    Состояние SGP4 в метрах и м/с. Векторы подписаны как TEME.
+    Без отдельного перехода в GCRF их нельзя считать одной системой с численной дугой.
     Без epoch берётся эпоха TLE.
     """
     try:
@@ -23,4 +24,9 @@ def orbit_from_tle(line1: str, line2: str, epoch: Time | None = None) -> Orbit:
     error, r_km, v_km_s = satellite.sgp4_tsince(minutes)
     if error != 0:
         raise RuntimeError(f"sgp4 вернул код ошибки {error}")
-    return Orbit.from_vectors(np.asarray(r_km, dtype=float) * 1000.0, np.asarray(v_km_s, dtype=float) * 1000.0, epoch)
+    return Orbit.from_vectors(
+        np.asarray(r_km, dtype=float) * 1000.0,
+        np.asarray(v_km_s, dtype=float) * 1000.0,
+        epoch,
+        frame="TEME",
+    )

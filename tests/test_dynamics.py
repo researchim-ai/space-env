@@ -135,6 +135,53 @@ def test_planned_imaging_runs_when_lit():
     assert any(event.kind == EventKind.IMAGING for event in events)
 
 
+def test_downlink_does_not_invent_bits_and_the_recorder_balances():
+    epoch = Time("2024-03-01T00:00:00Z")
+    r_ecef = geodetic_to_ecef(0.0, 0.0, 400_000.0)
+    from space_env.core.ground import GroundStation
+
+    engine = _engine_at(
+        ecef_to_eci(r_ecef, epoch),
+        epoch,
+        scenario=ScenarioConfig(
+            ground_stations=[GroundStation(name="Equator", lat_deg=0.0, lon_deg=0.0, min_elevation_deg=5.0)]
+        ),
+    )
+    engine.step(5.0, "comms")
+    empty = engine.get_state_snapshot()
+    assert empty.data_downlink_Mb == 0.0
+    assert empty.delivered_bits == 0.0
+    engine._stored_bits = 2.0e6
+    engine._generated_bits = 2.0e6
+    engine.step(5.0, "comms")
+    filled = engine.get_state_snapshot()
+    assert filled.delivered_bits > 0.0
+    assert filled.generated_bits == pytest.approx(
+        filled.stored_bits + filled.delivered_bits + filled.lost_bits
+    )
+
+
+def test_drag_context_uses_the_spacecraft_not_the_station():
+    epoch = Time("2024-06-01T00:00:00Z")
+    r_ecef = geodetic_to_ecef(10.0, 20.0, 500_000.0)
+    from space_env.core.frames import ecef_to_geodetic, eci_to_ecef
+    from space_env.core.ground import GroundStation
+
+    engine = _engine_at(
+        ecef_to_eci(r_ecef, epoch),
+        epoch,
+        scenario=ScenarioConfig(
+            ground_stations=[GroundStation(name="Far", lat_deg=-40.0, lon_deg=140.0, min_elevation_deg=5.0)]
+        ),
+    )
+    engine.step(1.0, "wait")
+    lat, lon = engine._body_latlon()
+    body_lat, body_lon, _alt = ecef_to_geodetic(eci_to_ecef(engine.orbit.r, engine._now()))
+    assert lat == pytest.approx(body_lat)
+    assert lon == pytest.approx(body_lon)
+    assert abs(lat - (-40.0)) > 20.0
+
+
 def test_failed_comms_blocks_downlink():
     epoch = Time("2024-03-01T00:00:00Z")
     r_ecef = geodetic_to_ecef(0.0, 0.0, 400_000.0)

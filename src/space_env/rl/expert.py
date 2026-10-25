@@ -81,6 +81,15 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         return 1 if obs[0] > 0.5 and obs[1] > 0.4 else 0
     if "LongitudeKeep" in env_id:
         return 1
+    if "DemandShift" in env_id:
+        stored, link, target, delivered = obs[1], obs[2], obs[3], obs[4]
+        if delivered > 0.5:
+            return 0
+        if stored > 0.0 and link > 0.5:
+            return 2
+        if target > 0.5:
+            return 1
+        return 0
     if "OperatorShift" in env_id:
         if obs[0] < 0.5:
             count = (obs.size - 6) // 3
@@ -92,12 +101,12 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
                 return 0
             keeper = min(candidates, key=lambda index: (-float(shares[index]), -float(early[index]), index))
             return 4 + keeper
-        kind = obs[-5]
-        if kind > 0.8:
-            return 2
-        if kind > 0.6:
+        burn_due, link_open, target_lit = obs[-5], obs[-4], obs[-3]
+        if burn_due > 0.5:
             return 3
-        if kind > 0.3:
+        if link_open > 0.5:
+            return 2
+        if target_lit > 0.5:
             return 1
         return 0
     if "DishAward" in env_id:

@@ -122,6 +122,8 @@ class ReferenceVehicle:
                 half_fov_deg=half_fov,
                 imaging_power_w=self.imaging_power_w,
                 images_in_eclipse=self.images_in_eclipse,
+                memory_bits=0.0 if self.memory_bits is None else float(self.memory_bits),
+                store_rate_bps=0.0 if self.store_rate_bps is None else float(self.store_rate_bps),
             ),
         )
 

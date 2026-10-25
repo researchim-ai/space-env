@@ -13,7 +13,7 @@ from space_env.core.access import off_nadir_deg
 from space_env.core.attitude import align_z, slew_step
 from space_env.core.encounter import PropagationContext, secondary_from_geometry
 from space_env.core.environment import in_eclipse, shadow_state, solar_flux_at_satellite_W_m2
-from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
+from space_env.core.frames import ecef_to_geodetic, eci_to_ecef, elevation_deg, geodetic_to_ecef
 from space_env.core.ground import DEFAULT_GROUND_STATIONS, GroundStation
 from space_env.core.link import link_margin_db, stepped_rate_bps
 from space_env.core.passes import PassWindow, find_passes
@@ -68,6 +68,10 @@ class SimulationEngine:
         self._imaging_count = 0
         self._comms_sessions = 0
         self._data_downlink_Mb = 0.0
+        self._stored_bits = 0.0
+        self._generated_bits = 0.0
+        self._delivered_bits = 0.0
+        self._lost_bits = 0.0
         self._load_mode = "nominal"
         self._fired_anomaly: set[int] = set()
         self._fired_conjunction: set[int] = set()
@@ -406,6 +410,11 @@ class SimulationEngine:
     def _link_ok(self) -> bool:
         return self.radio_ready() and self._in_contact
 
+    def _body_latlon(self) -> tuple[float, float]:
+        """Геодезическая точка аппарата. Для атмосферы, не координаты станции."""
+        lat, lon, _alt = ecef_to_geodetic(eci_to_ecef(self.orbit.r, self._now()))
+        return lat, lon
+
     def _propagation_context(
         self,
         *,
@@ -415,6 +424,7 @@ class SimulationEngine:
         srp_area_m2: float = 0.0,
         srp_coefficient: float = 1.2,
     ) -> PropagationContext:
+        lat, lon = self._body_latlon()
         return PropagationContext(
             mass_kg=mass_kg,
             drag_area_m2=drag_area_m2,
@@ -424,8 +434,8 @@ class SimulationEngine:
             f107a=self.scenario.f107a,
             ap=self.scenario.ap,
             density_scale=self.scenario.density_scale,
-            lat_deg=self._station_lat,
-            lon_deg=self._station_lon,
+            lat_deg=lat,
+            lon_deg=lon,
             when=self._now().datetime.replace(tzinfo=None),
             srp_area_m2=srp_area_m2,
             srp_coefficient=srp_coefficient,
@@ -673,13 +683,29 @@ class SimulationEngine:
             required_power_dbw=cfg.required_power_dBW,
         )
 
+    def _store_capture(self) -> None:
+        """Один успешный кадр пишет биты в регистратор. Сверх ёмкости теряется явно."""
+        payload = self.spacecraft.config.payload
+        bits = payload.store_rate_bps if payload.store_rate_bps > 0.0 else payload.image_bits
+        if bits <= 0.0:
+            return
+        room = bits if payload.memory_bits <= 0.0 else max(0.0, payload.memory_bits - self._stored_bits)
+        added = min(bits, room)
+        self._stored_bits += added
+        self._generated_bits += added
+        self._lost_bits += bits - added
+
     def _accrue_downlink(self, dt_sec: float) -> None:
-        if not self._downlink_armed or not self._link_ok():
+        if not self._downlink_armed or not self._link_ok() or self._stored_bits <= 0.0:
             return
         rate = stepped_rate_bps(self._link_margin_db, self.spacecraft.config.comms.data_rate_max_bps)
-        mbit = rate * dt_sec / 1e6
-        self._data_downlink_Mb += mbit
-        self.spacecraft.state.comms.data_sent_this_pass_Mb += mbit
+        moved = min(self._stored_bits, rate * dt_sec)
+        if moved <= 0.0:
+            return
+        self._stored_bits -= moved
+        self._delivered_bits += moved
+        self._data_downlink_Mb = self._delivered_bits / 1.0e6
+        self.spacecraft.state.comms.data_sent_this_pass_Mb += moved / 1.0e6
 
     def _resolve_imaging(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float, events: list[MissionEvent]) -> None:
         if not self._imaging_requested:
@@ -701,6 +727,7 @@ class SimulationEngine:
                 if off_nadir_deg(position, target.lat_deg, target.lon_deg, moment) <= fov:
                     self._captured_targets.add(target.name)
                     self._imaging_count += 1
+                    self._store_capture()
                     captured_now = True
                     events.append(self._event(EventKind.IMAGING, {"target": target.name, "count": self._imaging_count}))
         if not captured_now:
@@ -727,6 +754,10 @@ class SimulationEngine:
             imaging_count=self._imaging_count,
             comms_sessions=self._comms_sessions,
             data_downlink_Mb=self._data_downlink_Mb,
+            stored_bits=self._stored_bits,
+            generated_bits=self._generated_bits,
+            delivered_bits=self._delivered_bits,
+            lost_bits=self._lost_bits,
             delta_v_used_m_s=total_dv - st.propulsion.delta_v_remaining_m_s,
             in_contact=self._in_contact,
             elevation_deg=self._elevation,
@@ -773,8 +804,8 @@ class SimulationEngine:
             f107a=self.scenario.f107a,
             ap=self.scenario.ap,
             density_scale=self.scenario.density_scale,
-            lat_deg=self._station_lat,
-            lon_deg=self._station_lon,
+            lat_deg=self._body_latlon()[0],
+            lon_deg=self._body_latlon()[1],
             when=self._now().datetime.replace(tzinfo=None),
             srp_area_m2=prop.srp_area_m2,
             srp_coefficient=prop.srp_coefficient,

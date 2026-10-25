@@ -49,6 +49,21 @@ def test_rewards_and_curriculum_files():
         "radar",
         "longitude",
     ]
+    shift = next(stage for stage in stages if stage["name"] == "operator_shift")
+    assert shift["until"] == "full"
+    assert shift["max_episode_steps"] == 2000
+    assert shift["episodes"] == 1
+    env = gym.make(shift["env"], max_episode_steps=shift["max_episode_steps"], until=shift["until"])
+    try:
+        assert env.unwrapped._until == "full"
+        assert env.spec.max_episode_steps == 2000
+    finally:
+        env.close()
+    short = gym.make("space_env/OperatorShift-v0", until="award", max_episode_steps=24)
+    try:
+        assert short.unwrapped._until == "award"
+    finally:
+        short.close()
     assert rewards["workplan"]["task_done"] == pytest.approx(1.0)
 
 
@@ -126,6 +141,7 @@ def test_tle_optional():
     line1 = "1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753"
     line2 = "2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667"
     orbit = orbit_from_tle(line1, line2)
+    assert orbit.frame == "TEME"
     assert np_isfinite_altitude(orbit)
 
 

@@ -36,6 +36,7 @@ _SUITE_STEPS = {
     "space_env/DayShift-v0": 4,
     "space_env/DishAward-v0": 1,
     "space_env/OperatorShift-v0": 4,
+    "space_env/DemandShift-v0": 2,
     "space_env/RadarPass-v0": 1,
     "space_env/LongitudeKeep-v0": 1,
 }

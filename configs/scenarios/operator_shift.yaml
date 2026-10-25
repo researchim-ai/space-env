@@ -1,0 +1,12 @@
+# Сутки смены оператора. Допущения аппаратов лежат в карточках каталога.
+version: 1
+keys:
+  - sentinel-2a
+  - landsat-9
+  - sar-small
+  - cubesat-6u
+horizon_sec: 86400
+epoch: "2026-10-20T00:00:00Z"
+nu_deg: 180
+dv_budget_m_s: 1.0
+until: full
