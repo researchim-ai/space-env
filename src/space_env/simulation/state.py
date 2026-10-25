@@ -23,6 +23,10 @@ class SimulationState(BaseModel):
     generated_bits: float = Field(default=0.0, ge=0)
     delivered_bits: float = Field(default=0.0, ge=0)
     lost_bits: float = Field(default=0.0, ge=0)
+    produced_bits: float = Field(default=0.0, ge=0)
+    initial_bits: float = Field(default=0.0, ge=0)
+    received_bits: float = Field(default=0.0, ge=0)
+    relayed_out_bits: float = Field(default=0.0, ge=0)
     delta_v_used_m_s: float = Field(default=0.0, ge=0)
     in_contact: bool = False
     elevation_deg: float = -90.0

@@ -17,7 +17,7 @@ TRACKS: tuple[tuple[str, str, int, bool], ...] = (
 def run_benchmark_tracks(*, seed: int = 0, held_out_seed: int = 100) -> list[dict]:
     """
     На каждой дорожке эвристика и случайная политика на сиде обучения и на отложенном.
-    У группировки дополнительно хвост короткого обучения. learned — хвост выше случайной награды.
+    У группировки дополнительно короткий отчёт обучения. learned берётся с отложенной оценки, не с хвоста.
     """
     rows = []
     for name, env_id, steps, learn in TRACKS:

@@ -11,7 +11,7 @@ import numpy as np
 from space_env.catalog.build import make_engine, mean_orbit, spacecraft_config
 from space_env.catalog.references import reference
 from space_env.catalog.traffic import dump_bits, store_bits
-from space_env.core.access import ground_track_latlon, off_nadir_deg, subsatellite_latlon
+from space_env.core.access import ground_track_latlon, subsatellite_latlon, target_access
 from space_env.core.link import stepped_rate_bps
 from space_env.envs.base import format_ansi
 from space_env.mission.scenarios import GroundTarget
@@ -116,11 +116,22 @@ class CatalogAcquisitionEnv(gym.Env):
             return 1.0
         moment = engine.now()
         captured = engine.captured_targets()
-        angles = [
-            off_nadir_deg(engine.orbit.r, target.lat_deg, target.lon_deg, moment)
-            for target in engine.scenario.ground_targets
-            if target.name not in captured
-        ]
+        # Доля угла — геометрия полосы. Цель за лимбом не выглядит центром кадра.
+        angles = []
+        for target in engine.scenario.ground_targets:
+            if target.name in captured:
+                continue
+            access = target_access(
+                engine.orbit.r,
+                target.lat_deg,
+                target.lon_deg,
+                moment,
+                half_fov_deg=half,
+                frame=engine.orbit.frame,
+                images_in_eclipse=True,
+            )
+            if access.line_of_sight:
+                angles.append(access.off_nadir_deg)
         if not angles:
             return 0.0
         return float(np.clip(min(angles) / half, 0.0, 1.0))

@@ -6,7 +6,8 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import datetime, timedelta
 
 import numpy as np
 
@@ -34,7 +35,14 @@ class PropagationContext:
     include_third_body: bool = False
 
 
-def _step_state(r: np.ndarray, v: np.ndarray, dt: float, ctx: PropagationContext) -> tuple[np.ndarray, np.ndarray]:
+def _advanced(ctx: PropagationContext, dt_sec: float) -> PropagationContext:
+    """Следующий вызов не повторяет исходный when."""
+    if isinstance(ctx.when, datetime):
+        return replace(ctx, when=ctx.when + timedelta(seconds=dt_sec))
+    return ctx
+
+
+def _step_state(r: np.ndarray, v: np.ndarray, dt: float, ctx: PropagationContext) -> tuple[np.ndarray, np.ndarray, PropagationContext]:
     r_end, v_end, _samples = propagate_state(
         r,
         v,
@@ -56,7 +64,7 @@ def _step_state(r: np.ndarray, v: np.ndarray, dt: float, ctx: PropagationContext
         include_third_body=ctx.include_third_body,
         substep_sec=min(10.0, dt),
     )
-    return r_end, v_end
+    return r_end, v_end, _advanced(ctx, dt)
 
 
 def process_noise(dt_sec: float) -> np.ndarray:
@@ -100,7 +108,7 @@ class NumericalEncounter:
         self.frozen_cross_m = 0.0
 
     def advance(self, dt_sec: float, n_rad_s: float) -> None:
-        self.r, self.v = _step_state(self.r, self.v, dt_sec, self.debris)
+        self.r, self.v, self.debris = _step_state(self.r, self.v, dt_sec, self.debris)
         stm = cw_stm(n_rad_s, dt_sec)
         updated = stm @ self.covariance @ stm.T + process_noise(dt_sec)
         self.covariance = 0.5 * (updated + updated.T)
@@ -125,10 +133,12 @@ class NumericalEncounter:
         best = (r1.copy(), v1.copy(), r2.copy(), v2.copy())
         coarse = 20.0
         t = 0.0
+        primary_ctx = primary
+        debris_ctx = self.debris
         while t < horizon - 1e-6:
             h = min(coarse, horizon - t)
-            r1, v1 = _step_state(r1, v1, h, primary)
-            r2, v2 = _step_state(r2, v2, h, self.debris)
+            r1, v1, primary_ctx = _step_state(r1, v1, h, primary_ctx)
+            r2, v2, debris_ctx = _step_state(r2, v2, h, debris_ctx)
             t += h
             distance = float(np.linalg.norm(r2 - r1))
             if distance < best_d:
@@ -136,13 +146,15 @@ class NumericalEncounter:
                 best_t = t
                 best = (r1.copy(), v1.copy(), r2.copy(), v2.copy())
         # Уточнение вокруг грубого минимума шагом 0.5 с.
-        r1, v1, r2, v2 = self._state_at(np.asarray(r_primary), np.asarray(v_primary), primary, max(0.0, best_t - 20.0))
+        r1, v1, r2, v2, primary_ctx, debris_ctx = self._state_at(
+            np.asarray(r_primary), np.asarray(v_primary), primary, max(0.0, best_t - 20.0)
+        )
         t = max(0.0, best_t - 20.0)
         end = min(horizon, best_t + 20.0)
         while t < end - 1e-6:
             h = min(0.5, end - t)
-            r1, v1 = _step_state(r1, v1, h, primary)
-            r2, v2 = _step_state(r2, v2, h, self.debris)
+            r1, v1, primary_ctx = _step_state(r1, v1, h, primary_ctx)
+            r2, v2, debris_ctx = _step_state(r2, v2, h, debris_ctx)
             t += h
             distance = float(np.linalg.norm(r2 - r1))
             if distance < best_d:
@@ -165,11 +177,12 @@ class NumericalEncounter:
         dt: float,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         r2, v2 = self.r.copy(), self.v.copy()
+        debris_ctx = self.debris
         if dt <= 1e-6:
-            return r1.copy(), v1.copy(), r2, v2
-        r1, v1 = _step_state(r1, v1, dt, primary)
-        r2, v2 = _step_state(r2, v2, dt, self.debris)
-        return r1, v1, r2, v2
+            return r1.copy(), v1.copy(), r2, v2, primary, debris_ctx
+        r1, v1, primary = _step_state(r1, v1, dt, primary)
+        r2, v2, debris_ctx = _step_state(r2, v2, dt, debris_ctx)
+        return r1, v1, r2, v2, primary, debris_ctx
 
 
 def secondary_from_geometry(

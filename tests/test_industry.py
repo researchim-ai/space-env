@@ -37,7 +37,11 @@ def test_rendezvous_disposal_and_coverage_follow_the_expert():
 
 def test_pass_fault_recovers_inside_the_window():
     done = _run("space_env/PassFault-v0", 6)
-    assert done["success"] and done["delivered"] and done["radio_ready"]
+    assert done["success"] and done["operation_completed"] and done["radio_ready"]
+    assert done["delivered"] is False
+    assert done["request_delivered"] is False
+    assert done["mission_succeeded"] is False
+    assert done["command_accepted"] is False
 
 
 def test_debris_burn_is_rejected_and_own_burn_lowers_pc():

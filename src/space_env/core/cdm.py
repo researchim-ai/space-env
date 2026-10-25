@@ -1,10 +1,13 @@
 """
 Разбор CCSDS Conjunction Data Message в KVN (ключевые слова, не XML).
 Берутся TCA, промах, скорость сближения, площадь столкновения и RTN-ковариации обоих объектов.
-Суммарная ковариация — сумма независимых блоков. Pc из сообщения сохраняется, но не подменяет расчёт.
+Единица в скобках читается. Без скобок остаётся договорённость CCSDS: км, км/с и км².
+Суммарная ковариация — сумма независимых блоков одной системы и одной эпохи.
+Pc из сообщения сохраняется, но не подменяет расчёт и не является эксплуатационной оценкой.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -13,6 +16,8 @@ import numpy as np
 @dataclass
 class CdmObject:
     designator: str = ""
+    frame: str = ""
+    epoch: str = ""
     covariance_km2: np.ndarray = field(default_factory=lambda: np.zeros((3, 3)))
     # 6×6 в метрах и м/с. None — в сообщении нет блока скоростей, переносить такую матрицу нельзя.
     state_covariance_si: np.ndarray | None = None
@@ -26,6 +31,7 @@ class ConjunctionMessage:
     hard_body_radius_m: float = 15.0
     reported_probability: float | None = None
     objects: list[CdmObject] = field(default_factory=list)
+    diagnostics: tuple[str, ...] = ()
 
     def combined_covariance_m2(self) -> np.ndarray:
         total = np.zeros((3, 3))
@@ -35,7 +41,7 @@ class ConjunctionMessage:
 
     def combined_state_covariance_si(self) -> np.ndarray | None:
         """Сумма 6×6, если блок скоростей есть у каждого объекта. Иначе None."""
-        if not self.objects or any(obj.state_covariance_si is None for obj in self.objects):
+        if self.diagnostics or not self.objects or any(obj.state_covariance_si is None for obj in self.objects):
             return None
         total = np.zeros((6, 6))
         for obj in self.objects:
@@ -50,14 +56,36 @@ class ConjunctionMessage:
         return float(np.sqrt(0.5 * (radial + normal)))
 
 
+_UNIT = re.compile(r"\[([^\]]+)\]")
+
+
 def _strip_units(value: str) -> str:
     if "[" in value:
         value = value.split("[", 1)[0]
     return value.strip()
 
 
-def _float(value: str) -> float:
-    return float(_strip_units(value).replace("D", "E"))
+def _number_and_unit(value: str) -> tuple[float, str | None]:
+    match = _UNIT.search(value)
+    number = _strip_units(value).replace("D", "E")
+    unit = None if match is None else match.group(1).strip().lower().replace(" ", "").replace("**", "").replace("^", "")
+    return float(number), unit
+
+
+def _scale(unit: str | None, default: str, accepted: dict[str, float], key: str) -> float:
+    chosen = default if unit is None else unit
+    if chosen not in accepted:
+        known = ", ".join(sorted(accepted))
+        raise ValueError(f"единица [{chosen}] у {key} не поддерживается, допустимы {known}")
+    return accepted[chosen]
+
+
+_LENGTH = {"m": 1.0, "km": 1000.0}
+_SPEED = {"m/s": 1.0, "km/s": 1000.0}
+_AREA = {"m2": 1.0, "km2": 1.0e6}
+_POS2 = {"m2": 1.0, "km2": 1.0e6}
+_VEL2 = {"m2/s2": 1.0, "km2/s2": 1.0e6}
+_CROSS_SCALE = {"m2/s": 1.0, "km2/s": 1.0e6}
 
 
 # Индексы RTN: R T N Rdot Tdot Ndot. Единицы в KVN — км и км/с.
@@ -83,13 +111,14 @@ _CROSS = {
 }
 
 
-def _to_si(raw: np.ndarray) -> np.ndarray:
-    si = np.array(raw, dtype=float, copy=True)
-    si[:3, :3] *= 1.0e6
-    si[:3, 3:] *= 1.0e3
-    si[3:, :3] *= 1.0e3
-    si[3:, 3:] *= 1.0e6
-    return si
+def _write_symmetric(matrix: np.ndarray, i: int, j: int, value: float) -> None:
+    matrix[i, j] = matrix[j, i] = value
+
+
+def _psd(matrix: np.ndarray) -> bool:
+    symmetric = 0.5 * (matrix + matrix.T)
+    scale = max(1.0, float(np.max(np.abs(symmetric))))
+    return bool(np.all(np.linalg.eigvalsh(symmetric) >= -1.0e-8 * scale))
 
 
 def parse_cdm_kvn(text: str) -> ConjunctionMessage:
@@ -99,6 +128,7 @@ def parse_cdm_kvn(text: str) -> ConjunctionMessage:
     cov = np.zeros((3, 3))
     state = np.zeros((6, 6))
     saw_velocity = False
+    notes: list[str] = []
 
     def _close() -> None:
         nonlocal current, cov, state, saw_velocity
@@ -106,7 +136,9 @@ def parse_cdm_kvn(text: str) -> ConjunctionMessage:
             return
         current.covariance_km2 = cov
         if saw_velocity:
-            current.state_covariance_si = _to_si(state)
+            current.state_covariance_si = state.copy()
+            if not _psd(state):
+                notes.append(f"ковариация {current.designator or 'объекта'} не положительно полуопределена")
         message.objects.append(current)
 
     for raw in text.splitlines():
@@ -119,14 +151,17 @@ def parse_cdm_kvn(text: str) -> ConjunctionMessage:
         if key == "TCA":
             message.tca = _strip_units(value)
         elif key == "MISS_DISTANCE":
-            # В стандарте обычно километры.
-            message.miss_distance_m = _float(value) * 1000.0
+            number, unit = _number_and_unit(value)
+            message.miss_distance_m = number * _scale(unit, "km", _LENGTH, key)
         elif key == "RELATIVE_SPEED":
-            message.relative_speed_m_s = _float(value) * 1000.0
+            number, unit = _number_and_unit(value)
+            message.relative_speed_m_s = number * _scale(unit, "km/s", _SPEED, key)
         elif key == "COLLISION_PROBABILITY":
-            message.reported_probability = _float(value)
+            number, _unit = _number_and_unit(value)
+            message.reported_probability = number
         elif key == "AREA_PC":
-            area = _float(value)
+            number, unit = _number_and_unit(value)
+            area = number * _scale(unit, "m2", _AREA, key)
             if area > 0.0:
                 message.hard_body_radius_m = float(np.sqrt(area / np.pi))
         elif key == "OBJECT":
@@ -137,17 +172,34 @@ def parse_cdm_kvn(text: str) -> ConjunctionMessage:
             saw_velocity = False
         elif key == "OBJECT_DESIGNATOR" and current is not None:
             current.designator = _strip_units(value)
-        elif key in _POSITION:
+        elif key == "COV_REF_FRAME" and current is not None:
+            current.frame = _strip_units(value)
+        elif key == "REF_FRAME_EPOCH" and current is not None:
+            current.epoch = _strip_units(value)
+        elif key in _POSITION and current is not None:
+            number, unit = _number_and_unit(value)
+            metres2 = number * _scale(unit, "km2", _POS2, key)
             i, j = _POSITION[key]
-            value_f = _float(value)
-            cov[i, j] = cov[j, i] = value_f
-            state[i, j] = state[j, i] = value_f
-        elif key in _VELOCITY or key in _CROSS:
-            i, j = (_VELOCITY if key in _VELOCITY else _CROSS)[key]
-            value_f = _float(value)
-            state[i, j] = state[j, i] = value_f
+            _write_symmetric(cov, i, j, metres2 / 1.0e6)
+            _write_symmetric(state, i, j, metres2)
+        elif key in _VELOCITY and current is not None:
+            number, unit = _number_and_unit(value)
+            i, j = _VELOCITY[key]
+            _write_symmetric(state, i, j, number * _scale(unit, "km2/s2", _VEL2, key))
+            saw_velocity = True
+        elif key in _CROSS and current is not None:
+            number, unit = _number_and_unit(value)
+            i, j = _CROSS[key]
+            _write_symmetric(state, i, j, number * _scale(unit, "km2/s", _CROSS_SCALE, key))
             saw_velocity = True
     _close()
+    frames = {item.frame for item in message.objects if item.frame}
+    if len(frames) > 1:
+        raise ValueError("ковариации объектов в разных системах не складываются")
+    epochs = {item.epoch for item in message.objects if item.epoch}
+    if len(epochs) > 1:
+        notes.append("эпохи ковариаций не совпадают")
+    message.diagnostics = tuple(notes)
     if message.miss_distance_m <= 0.0:
         raise ValueError("в CDM нет MISS_DISTANCE")
     return message

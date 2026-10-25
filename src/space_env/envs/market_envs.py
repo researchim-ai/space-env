@@ -8,7 +8,7 @@ import gymnasium as gym
 import numpy as np
 
 from space_env.catalog.references import reference
-from space_env.core.access import off_nadir_deg, subsatellite_latlon
+from space_env.core.access import subsatellite_latlon, target_access
 from space_env.core.environment import in_eclipse
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
 from space_env.core.link import link_margin_db
@@ -141,7 +141,16 @@ class OrderBookEnv(gym.Env):
         return self._obs(), {"orders": [item[0] for item in self._orders], "sunlit": self._sunlit, "count": self.count}
 
     def _fits(self, engine, lat: float, lon: float) -> bool:
-        return off_nadir_deg(engine.orbit.r, lat, lon, engine.now()) <= _HALF_FOV_DEG
+        access = target_access(
+            engine.orbit.r,
+            lat,
+            lon,
+            engine.now(),
+            half_fov_deg=_HALF_FOV_DEG,
+            frame=engine.orbit.frame,
+            images_in_eclipse=True,
+        )
+        return access.line_of_sight and access.in_fov
 
     def _assign(self, by_priority: bool) -> set[str]:
         orders = list(self._orders)

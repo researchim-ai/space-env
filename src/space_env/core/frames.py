@@ -1,6 +1,11 @@
 """
-Переходы ECI ↔ ECEF и угол места над станцией.
-GMST — приближение USNO, достаточное для окон связи в учебной среде.
+Переходы численной инерциальной системы ↔ ECEF и угол места над станцией.
+
+Орбита хранит подпись GCRF или TEME. GCRF здесь — система численного Кауэлла:
+GAST по десяти членам IAU 1980 и полярное движение без локатора TIO. Это не
+сертифицированный GCRF и не полный переход IAU 2000A. TEME — подпись SGP4.
+EME2000 и ITRF как состояние орбиты не принимаются: отдельного проверенного
+перехода нет, векторы и ковариация молча не переписываются.
 """
 from __future__ import annotations
 
@@ -107,8 +112,67 @@ def _undo_polar_motion(vector: np.ndarray, xp_rad: float, yp_rad: float) -> np.n
     return np.array([x1, cosine_y * y - sine_y * z1, sine_y * y + cosine_y * z1], dtype=float)
 
 
+NUMERICAL_FRAME = "GCRF"
+SGP4_FRAME = "TEME"
+ORBIT_FRAMES = frozenset({NUMERICAL_FRAME, SGP4_FRAME})
+
+
+class FrameError(ValueError):
+    """Система координат не из контракта или смешивается без перехода."""
+
+
+def require_orbit_frame(frame: str) -> str:
+    """GCRF и TEME можно хранить. Любая другая подпись — ошибка, не молчаливый GCRF."""
+    if frame not in ORBIT_FRAMES:
+        known = ", ".join(sorted(ORBIT_FRAMES))
+        raise FrameError(f"система {frame!r} не хранится. Допустимы {known}; EME2000 и ITRF без перехода не принимаются")
+    return frame
+
+
+def require_numerical_frame(frame: str) -> str:
+    """Земные координаты и силы движка определены только для численной дуги."""
+    require_orbit_frame(frame)
+    if frame != NUMERICAL_FRAME:
+        raise FrameError(
+            f"переход в земную систему есть только для {NUMERICAL_FRAME}. "
+            f"{frame} без проверенного перехода не принимается"
+        )
+    return frame
+
+
+def require_same_frame(left: str, right: str) -> str:
+    """Два состояния можно складывать только в одной подписи."""
+    require_orbit_frame(left)
+    require_orbit_frame(right)
+    if left != right:
+        raise FrameError(f"системы {left} и {right} не совпадают, перехода между ними нет")
+    return left
+
+
+def copy_state(r_m: np.ndarray, v_m_s: np.ndarray, frame: str, covariance: np.ndarray | None = None):
+    """Копия r, v и 6×6 без смены системы. Несовпадение системы ловит require_same_frame снаружи."""
+    require_orbit_frame(frame)
+    position = np.asarray(r_m, dtype=float)
+    velocity = np.asarray(v_m_s, dtype=float)
+    if position.shape != (3,) or velocity.shape != (3,) or not np.all(np.isfinite(position)) or not np.all(np.isfinite(velocity)):
+        raise FrameError("r и v должны быть конечными векторами из трёх чисел")
+    copied = None
+    if covariance is not None:
+        copied = np.asarray(covariance, dtype=float)
+        if copied.shape != (6, 6) or not np.all(np.isfinite(copied)):
+            raise FrameError("ковариация должна быть конечной матрицей 6×6 в той же системе")
+        copied = copied.copy()
+    return position.copy(), velocity.copy(), copied
+
+
+def geocentric_latitude_deg(r_ecef_m: np.ndarray) -> float:
+    """Геоцентрическая широта, градусы. Это не геодезическая широта WGS84."""
+    x, y, z = np.asarray(r_ecef_m, dtype=float)
+    return float(np.rad2deg(np.arctan2(z, np.hypot(x, y))))
+
+
 def eci_to_ecef(r_eci_m: np.ndarray, time: Time) -> np.ndarray:
-    """Сначала звёздное время, затем полярное движение. Вектор в метрах."""
+    """Сначала звёздное время, затем полярное движение. Вектор — численная инерциальная система, метры."""
     spun = _rotate_z(np.asarray(r_eci_m, dtype=float), gast_rad(time))
     xp, yp = pole_arcsec(time)
     arcsec = np.pi / (180.0 * 3600.0)

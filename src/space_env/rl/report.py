@@ -40,8 +40,8 @@ def training_report(
 ) -> dict[str, float | bool]:
     """
     Учит политику и кладёт рядом числа эвристики и случайной политики.
-    learned — средняя награда хвоста обучения выше средней награды случайной политики.
-    Это сравнение бюджета, а не заявление, что задача выучена до конца.
+    learned сравнивает жадный успех на отложенных эпизодах с успехом эвристики.
+    Хвост обучения со случайной наградой не сравнивается.
     """
     trained = train_multidiscrete_reinforce(
         env_id,
@@ -64,10 +64,12 @@ def training_report(
         greedy_success.append(success)
     random_mean = float(held["random_mean_reward"])
     trained_tail = float(trained["mean_last"])
+    held_out = float(np.mean(greedy_success))
     return {
         "expert_success_rate": float(held["expert_success_rate"]),
         "random_mean_reward": random_mean,
         "trained_mean_last": trained_tail,
-        "trained_success_rate": float(np.mean(greedy_success)),
-        "learned": trained_tail > random_mean,
+        "trained_success_rate": held_out,
+        "held_out_success_rate": held_out,
+        "learned": held_out >= float(held["expert_success_rate"]),
     }

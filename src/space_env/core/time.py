@@ -1,10 +1,16 @@
 """
 Время и эпоха миссии (UTC).
-Поддержка JD и ISO 8601; при установленном astropy — расширенная шкала (TAI, UT1).
+Поддержка JD и ISO 8601.
+
+Это календарный UTC datetime: високосные секунды не вставляются, шкала не равна TAI.
+JD хранится как float64. Около 2026 года младший бит — около 50 мкс, поэтому
+сравнение моментов в этом модуле обещает 1 мс, не наносекунды.
+Проверенные фикстуры лежат в 1970–2100, григорианский календарь.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+import math
+from datetime import datetime, timedelta, timezone
 from typing import Union
 
 import numpy as np
@@ -13,6 +19,8 @@ import numpy as np
 # JD(2000-01-01 12:00 UTC) = 2451545.0
 JD_EPOCH_2000: float = 2451545.0
 SEC_PER_DAY: float = 86400.0
+# Допуск календарного roundtrip: float64 JD не держит наносекунды.
+TIME_TOLERANCE_SEC: float = 1.0e-3
 
 
 def datetime_to_jd(dt: datetime) -> float:
@@ -32,28 +40,32 @@ def datetime_to_jd(dt: datetime) -> float:
 
 
 def jd_to_datetime(jd: float) -> datetime:
-    """Юлианская дата → datetime UTC."""
-    jd = float(jd)
-    z = int(jd)
-    f = jd - z
+    """Юлианская дата → datetime UTC.
+
+    Целая часть JD исторически начинается в полдень. Сдвиг +0.5 переносит её
+    на календарные сутки. Прежняя формула брала int(jd) без сдвига и для
+    полуночи 2026-10-20 возвращала предыдущий полдень, минус 12 часов.
+    """
+    if not math.isfinite(jd):
+        raise ValueError("юлианская дата должна быть конечной")
+    shifted = float(jd) + 0.5
+    z = math.floor(shifted)
+    frac_day = shifted - z
     if z >= 2299161:
-        a = (z - 1867216.25) // 36524.25
-        z += 1 + a - a // 4
-    b = z + 1524
-    c = int((b - 122.1) / 365.25)
-    d = int(365.25 * c)
-    e = int((b - d) / 30.6001)
-    day = int(b - d - int(30.6001 * e))
+        alpha = math.floor((z - 1867216.25) / 36524.25)
+        a = z + 1 + alpha - math.floor(alpha / 4.0)
+    else:
+        a = z
+    b = a + 1524
+    c = math.floor((b - 122.1) / 365.25)
+    d = math.floor(365.25 * c)
+    e = math.floor((b - d) / 30.6001)
+    day_float = b - d - math.floor(30.6001 * e) + frac_day
+    day = int(math.floor(day_float))
     month = int(e - 1 if e < 14 else e - 13)
     year = int(c - 4716 if month > 2 else c - 4715)
-    frac = f * 24.0
-    hour = int(frac)
-    frac = (frac - hour) * 60.0
-    minute = int(frac)
-    frac = (frac - minute) * 60.0
-    second = int(frac)
-    micro = int((frac - second) * 1e6)
-    return datetime(year, month, day, hour, minute, second, micro, tzinfo=timezone.utc)
+    microseconds = int(round((day_float - day) * SEC_PER_DAY * 1.0e6))
+    return datetime(year, month, day, tzinfo=timezone.utc) + timedelta(microseconds=microseconds)
 
 
 class Time:

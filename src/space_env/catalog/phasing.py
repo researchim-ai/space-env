@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from space_env.core.orbit import Orbit
 from space_env.simulation.engine import SimulationEngine
 
 
@@ -35,4 +34,4 @@ def add_prograde_dv(engine: SimulationEngine, dv_m_s: float) -> None:
     if speed < 1e-6:
         raise ValueError("скорость нулевая")
     updated = velocity + velocity / speed * float(dv_m_s)
-    engine.orbit = Orbit.from_vectors(engine.orbit.r, updated, engine.orbit.epoch)
+    engine.orbit = engine.orbit.with_state(engine.orbit.r, updated)

@@ -8,6 +8,7 @@ import numpy as np
 from space_env.catalog.geometry import mean_semimajor_axis_m, raan_rad_for_ltdn
 from space_env.catalog.references import CUBESAT_STATIONS, LANDSAT_STATIONS, SENTINEL_STATIONS, reference
 from space_env.core.ground import GroundStation
+from space_env.core.frames import FrameError
 from space_env.core.orbit import Orbit
 from space_env.core.space_weather import indices_for
 from space_env.core.spacecraft import Spacecraft, SpacecraftConfig
@@ -91,8 +92,14 @@ def make_engine(
     with_stations: bool = True,
     ground_targets: list | None = None,
 ) -> SimulationEngine:
-    """Один аппарат. Со станциями поиск окон идёт на 6 ч, как у обычного движка."""
-    orbit = tle_orbit(key) if use_tle else mean_orbit(key, epoch, nu_deg=nu_deg)
+    """Один аппарат. Со станциями поиск окон идёт на 6 ч, как у обычного движка.
+
+    use_tle не собирает движок: SGP4 даёт TEME, а силы и земные координаты
+    определены для GCRF. Состояние TLE по-прежнему возвращает tle_orbit.
+    """
+    if use_tle:
+        raise FrameError("TLE даёт TEME. Движок не принимает его без проверенного перехода в GCRF")
+    orbit = mean_orbit(key, epoch, nu_deg=nu_deg)
     craft = Spacecraft(config=spacecraft_config(key))
     craft.reset_state()
     return SimulationEngine(

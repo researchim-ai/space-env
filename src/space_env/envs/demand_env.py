@@ -12,7 +12,7 @@ import numpy as np
 
 from space_env.catalog.build import mean_orbit, spacecraft_config
 from space_env.core.space_weather import indices_for
-from space_env.core.access import off_nadir_deg, subsatellite_latlon
+from space_env.core.access import subsatellite_latlon, target_access
 from space_env.core.environment import in_eclipse
 from space_env.core.ground import (
     DEFAULT_GROUND_STATIONS,
@@ -68,10 +68,17 @@ class DemandShiftEnv(gym.Env):
         if engine._slew_remaining_deg > 1.0 or engine.spacecraft.state.pointing != "nadir":
             return False
         moment = engine.now()
-        if in_eclipse(engine.orbit.r, sun_position_m(moment)) and not engine.spacecraft.config.payload.images_in_eclipse:
-            return False
-        angle = off_nadir_deg(engine.orbit.r, float(demand["lat_deg"]), float(demand["lon_deg"]), moment)
-        return angle <= engine.spacecraft.config.payload.half_fov_deg
+        access = target_access(
+            engine.orbit.r,
+            float(demand["lat_deg"]),
+            float(demand["lon_deg"]),
+            moment,
+            half_fov_deg=engine.spacecraft.config.payload.half_fov_deg,
+            frame=engine.orbit.frame,
+            images_in_eclipse=engine.spacecraft.config.payload.images_in_eclipse,
+            satellite_in_umbra=in_eclipse(engine.orbit.r, sun_position_m(moment)),
+        )
+        return access.visible
 
     def _linked(self, engine: SimulationEngine, demand: dict) -> bool:
         snap = engine.get_state_snapshot()

@@ -10,7 +10,6 @@ import numpy as np
 
 from space_env.core.frames import elevation_deg
 from space_env.core.ground import FAIRBANKS
-from space_env.core.orbit import Orbit
 from space_env.core.relative import rtn_basis
 from space_env.envs.base import format_ansi
 from space_env.mission.horizon import PC_THRESHOLD
@@ -104,7 +103,7 @@ class FleetShiftEnv(gym.Env):
             host.orbit.epoch,
             ScenarioConfig(ground_stations=[]),
         )
-        cold.orbit = Orbit.from_vectors(position, host.orbit.v.copy(), host.orbit.epoch)
+        cold.orbit = cold.orbit.with_state(position, host.orbit.v.copy(), host.orbit.epoch)
         vehicles = dict(fleet.vehicles)
         vehicles["COLD"] = cold
         return Fleet(vehicles)

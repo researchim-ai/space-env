@@ -1,11 +1,28 @@
-"""Подспутниковая точка, угол от надира и точки трассы для сценария съёмки."""
+"""Подспутниковая точка, угол от надира и доступность цели.
+
+off_nadir_deg — только угол между надиром и направлением на точку. У цели на
+обратной стороне этот угол тоже нулевой: луч смотрит сквозь Землю. Продукт
+создаёт target_access, где есть линия визирования.
+"""
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 import numpy as np
 
-from space_env.core.frames import ecef_to_eci, ecef_to_geodetic, eci_to_ecef, geodetic_to_ecef
+from space_env.core.environment import in_eclipse
+from space_env.core.frames import (
+    NUMERICAL_FRAME,
+    ecef_to_eci,
+    ecef_to_geodetic,
+    eci_to_ecef,
+    elevation_deg,
+    geodetic_to_ecef,
+    require_numerical_frame,
+)
 from space_env.core.orbit import Orbit
 from space_env.core.propagate import propagate_state
+from space_env.core.sun import sun_position_m
 from space_env.core.time import Time
 
 
@@ -29,6 +46,63 @@ def off_nadir_deg(r_eci_m: np.ndarray, lat_deg: float, lon_deg: float, time: Tim
         return 180.0
     cosine = float(np.clip(np.dot(look, nadir) / denom, -1.0, 1.0))
     return float(np.rad2deg(np.arccos(cosine)))
+
+
+@dataclass(frozen=True)
+class TargetAccess:
+    """Геометрия цели. visible уже учитывает лимб и правило освещения прибора."""
+
+    off_nadir_deg: float
+    elevation_deg: float
+    line_of_sight: bool
+    in_fov: bool
+    target_lit: bool
+    satellite_in_umbra: bool
+    illumination_required: bool
+
+    @property
+    def visible(self) -> bool:
+        if not self.line_of_sight or not self.in_fov:
+            return False
+        if self.illumination_required and (not self.target_lit or self.satellite_in_umbra):
+            return False
+        return True
+
+
+def target_access(
+    r_eci_m: np.ndarray,
+    lat_deg: float,
+    lon_deg: float,
+    time: Time,
+    *,
+    half_fov_deg: float,
+    alt_m: float = 0.0,
+    frame: str = NUMERICAL_FRAME,
+    images_in_eclipse: bool = False,
+    satellite_in_umbra: bool | None = None,
+) -> TargetAccess:
+    """Доступность наземной цели для надирного прибора.
+
+    Линия визирования — угол места цели не ниже горизонта эллипсоида. Оптика
+    дополнительно требует освещённую цель и аппарат вне umbra. Радар с
+    images_in_eclipse это правило освещения не наследует.
+    """
+    require_numerical_frame(frame)
+    position = np.asarray(r_eci_m, dtype=float)
+    angle = off_nadir_deg(position, lat_deg, lon_deg, time)
+    elevation = elevation_deg(position, lat_deg, lon_deg, alt_m, time)
+    sun = sun_position_m(time)
+    lit = elevation_deg(sun, lat_deg, lon_deg, 0.0, time) >= 0.0
+    umbra = in_eclipse(position, sun) if satellite_in_umbra is None else bool(satellite_in_umbra)
+    return TargetAccess(
+        off_nadir_deg=angle,
+        elevation_deg=elevation,
+        line_of_sight=elevation >= -1.0e-8,
+        in_fov=angle <= float(half_fov_deg),
+        target_lit=lit,
+        satellite_in_umbra=umbra,
+        illumination_required=not images_in_eclipse,
+    )
 
 
 def ground_track_latlon(

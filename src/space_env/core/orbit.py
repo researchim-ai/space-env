@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, NamedTuple
 import numpy as np
 
 from space_env.core.constants import MU_EARTH, R_EARTH_EQUATOR
+from space_env.core.frames import NUMERICAL_FRAME, require_orbit_frame
 from space_env.core.time import Time
 
 if TYPE_CHECKING:
@@ -47,10 +48,10 @@ class Orbit:
 
     __slots__ = ("_orb", "_epoch", "_frame")
 
-    def __init__(self, boinor_orbit: BoinorOrbit, epoch: Time, frame: str = "GCRF") -> None:
+    def __init__(self, boinor_orbit: BoinorOrbit, epoch: Time, frame: str = NUMERICAL_FRAME) -> None:
         self._orb = boinor_orbit
         self._epoch = epoch
-        self._frame = frame
+        self._frame = require_orbit_frame(frame)
 
     @classmethod
     def from_keplerian(
@@ -76,7 +77,7 @@ class Orbit:
             nu_rad * u.rad,
             epoch=epoch_ap,
         )
-        return cls(orb, epoch)
+        return cls(orb, epoch, NUMERICAL_FRAME)
 
     @classmethod
     def from_vectors(
@@ -84,9 +85,9 @@ class Orbit:
         r_m: np.ndarray,
         v_m_s: np.ndarray,
         epoch: Time,
-        frame: str = "GCRF",
+        frame: str = NUMERICAL_FRAME,
     ) -> "Orbit":
-        """Орбита из векторов (м, м/с). frame — подпись системы, по умолчанию GCRF."""
+        """Орбита из векторов (м, м/с). Подпись сохраняется и не заменяется преобразованием."""
         r_km = (np.asarray(r_m, dtype=float) / 1000.0) * u.km
         v_km_s = (np.asarray(v_m_s, dtype=float) / 1000.0) * u.km / u.s
         epoch_ap = _to_astropy_time(epoch)
@@ -130,18 +131,22 @@ class Orbit:
         )
 
     def propagate(self, delta_seconds: float) -> "Orbit":
-        """Пропагация на delta_seconds секунд (двухтелая)."""
+        """Двухтелый шаг на delta_seconds. Подпись системы сохраняется; это не шаг SGP4 и не переход кадров."""
         delta = TimeDelta(delta_seconds, format="sec")
         new_orb = self._orb.propagate(delta)
         new_epoch = self._epoch + delta_seconds
-        return Orbit(new_orb, new_epoch)
+        return Orbit(new_orb, new_epoch, self._frame)
 
     def altitude_km(self) -> float:
         """Высота над сферой R_EARTH_EQUATOR, км."""
         r_norm = np.linalg.norm(self.r)
         return (r_norm - R_EARTH_EQUATOR) / 1000.0
 
+    def with_state(self, r_m: np.ndarray, v_m_s: np.ndarray, epoch: Time | None = None) -> "Orbit":
+        """Новые векторы в той же системе. Подпись не меняется и векторы не переводятся."""
+        return Orbit.from_vectors(r_m, v_m_s, self.epoch if epoch is None else epoch, frame=self._frame)
+
     def with_delta_v(self, dv_m_s: np.ndarray) -> "Orbit":
-        """Импульс в инерциальной СК: новое состояние с той же эпохой."""
+        """Импульс в той же системе: новая скорость, та же эпоха и та же подпись."""
         dv = np.asarray(dv_m_s, dtype=float)
-        return Orbit.from_vectors(self.r, self.v + dv, self.epoch)
+        return self.with_state(self.r, self.v + dv)

@@ -18,6 +18,9 @@ def test_time_jd_roundtrip():
     dt = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
     t = Time(dt)
     assert t.datetime.year == 2024
+    assert t.datetime.month == 6
+    assert t.datetime.day == 15
+    assert t.datetime.hour == 12
     t2 = Time(t.jd)
     assert abs(t2.jd - t.jd) < 1e-9
 

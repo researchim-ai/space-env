@@ -14,7 +14,7 @@ import numpy as np
 
 from space_env.catalog.build import mean_orbit, spacecraft_config
 from space_env.catalog.references import CUBESAT_STATIONS, LANDSAT_STATIONS, SENTINEL_STATIONS, reference
-from space_env.core.access import ground_track_latlon, off_nadir_deg, subsatellite_latlon
+from space_env.core.access import ground_track_latlon, subsatellite_latlon, target_access
 from space_env.core.environment import in_eclipse
 from space_env.core.frames import eci_to_ecef, elevation_deg, geodetic_to_ecef
 from space_env.core.relative import inertial_delta_v_m_s
@@ -442,15 +442,23 @@ def collect_opportunities(
             name = f"{prefix}-{len(targets) + 1}"
             targets.append(GroundTarget(name=name, lat_deg=lat, lon_deg=lon))
             imaging_hits[name] = []
-        if sunlit:
-            visible = [
-                (off_nadir_deg(position, item.lat_deg, item.lon_deg, moment), item.name)
-                for item in targets
-            ]
-            if visible:
-                angle, name = min(visible)
-                if angle <= half_fov:
-                    imaging_hits[name].append(elapsed)
+        visible = []
+        for item in targets:
+            access = target_access(
+                position,
+                item.lat_deg,
+                item.lon_deg,
+                moment,
+                half_fov_deg=half_fov,
+                frame=orbit.frame,
+                images_in_eclipse=craft.payload.images_in_eclipse,
+                satellite_in_umbra=not sunlit,
+            )
+            if access.visible:
+                visible.append((access.off_nadir_deg, item.name))
+        if visible:
+            _angle, name = min(visible)
+            imaging_hits[name].append(elapsed)
         for station in stations:
             elevation = elevation_deg(position, station.lat_deg, station.lon_deg, station.alt_m, moment)
             if elevation < station.min_elevation_deg:

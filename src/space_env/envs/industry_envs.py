@@ -19,6 +19,7 @@ from space_env.core.relative import eci_to_rtn, rtn_basis
 from space_env.core.sun import sun_position_m
 from space_env.core.time import Time
 from space_env.mission.horizon import PC_THRESHOLD
+from space_env.mission.outcome import classify_outcome
 from space_env.mission.scenarios import ScenarioConfig
 from space_env.rl.rewards import load_rewards
 from space_env.simulation.fleet import Fleet, _make_vehicle
@@ -160,6 +161,8 @@ class PassFaultEnv(gym.Env):
         self._steps = 0
         self._rebooted = False
         self._delivered = False
+        self._procedure = False
+        self._command_ok = False
         self._weights = load_rewards()["pass_fault"]
 
     def _obs(self) -> np.ndarray:
@@ -172,6 +175,8 @@ class PassFaultEnv(gym.Env):
         self._steps = 0
         self._rebooted = False
         self._delivered = False
+        self._procedure = False
+        self._command_ok = False
         self._engine = make_engine("cubesat-6u", with_stations=False)
         self._engine.arm_fault("radio_latch")
         return self._obs(), {"fault": "radio_latch", "window_steps": self.max_episode_steps}
@@ -183,19 +188,31 @@ class PassFaultEnv(gym.Env):
         command = {1: "comms", 2: "reboot"}.get(choice)
         if choice == 2:
             self._rebooted = True
+        before_bits = self._engine.delivered_bits
         self._engine.step(self.step_sec, command)
+        snap = self._engine.get_state_snapshot()
         if choice == 1 and self._engine.radio_ready() and self._steps < self.max_episode_steps:
-            self._delivered = True
+            self._procedure = True
+            self._command_ok = bool(self._engine.last_command_ok)
+            if snap.in_contact and snap.link_ok and snap.delivered_bits > before_bits:
+                self._delivered = True
         self._steps += 1
         truncated = self._steps >= self.max_episode_steps
-        success = self._delivered and self._engine.radio_ready()
-        reward = self._weights["recovered"] if success and truncated else 0.0
-        if truncated and not success:
+        outcome = classify_outcome(
+            command_accepted=self._command_ok,
+            operation_completed=self._procedure and self._engine.radio_ready(),
+            request_delivered=self._delivered,
+            safe=True,
+        )
+        procedure = bool(outcome["operation_completed"])
+        reward = self._weights["recovered"] if procedure and truncated else 0.0
+        if truncated and not procedure:
             reward = -self._weights["lost_pass"]
         info = {
             "radio_ready": self._engine.radio_ready(),
-            "delivered": self._delivered,
-            "success": success and truncated,
+            "delivered": bool(outcome["request_delivered"]),
+            "success": procedure and truncated,
+            **outcome,
         }
         return self._obs(), float(reward), False, truncated, info
 
@@ -225,7 +242,7 @@ class DebrisAvoidEnv(gym.Env):
         basis = rtn_basis(own.orbit.r, own.orbit.v)
         position = own.orbit.r + basis @ np.array([0.0, 0.0, 40.0])
         velocity = own.orbit.v + basis @ np.array([0.0, -5.0, 0.0])
-        debris.orbit = Orbit.from_vectors(position, velocity, moment)
+        debris.orbit = debris.orbit.with_state(position, velocity, moment)
         return Fleet({"OWN": own, "DEBRIS": debris})
 
     def _pc(self, fleet: Fleet) -> float:

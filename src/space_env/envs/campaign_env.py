@@ -20,6 +20,7 @@ from space_env.mission.campaign import (
     shared_windows,
 )
 from space_env.mission.horizon import PC_THRESHOLD
+from space_env.mission.outcome import classify_outcome
 from space_env.mission.scenarios import GroundTarget
 from space_env.mission.shift_scenario import load_shift_scenario
 from space_env.rl.rewards import load_rewards
@@ -370,11 +371,9 @@ class DishAwardEnv(gym.Env):
                 while engine.time_sec + 0.5 < start:
                     engine.step(min(60.0, start - engine.time_sec), "wait")
                 capacity = engine.spacecraft.config.payload.memory_bits
-                room = ready if capacity <= 0.0 else min(ready, max(0.0, capacity - engine._stored_bits))
-                if room > engine._stored_bits:
-                    extra = room - engine._stored_bits
-                    engine._stored_bits += extra
-                    engine._generated_bits += extra
+                room = ready if capacity <= 0.0 else min(ready, max(0.0, capacity - engine.stored_bits))
+                if room > engine.stored_bits:
+                    engine.preload_bits(room - engine.stored_bits)
                 before = engine.get_state_snapshot().data_downlink_Mb
                 span = max(1.0, min(60.0, end - max(start, engine.time_sec)))
                 engine.step(span, "comms")
@@ -678,6 +677,13 @@ class OperatorShiftEnv(gym.Env):
     def _info(self, success: bool, missed: int, violation: str | None = None) -> dict:
         images = {name: engine.get_state_snapshot().imaging_count for name, engine in self._engines.items()}
         downlink = {name: engine.get_state_snapshot().data_downlink_Mb for name, engine in self._engines.items()}
+        delivered = bool(self._engines) and all(engine.delivered_bits > 0.0 for engine in self._engines.values())
+        outcome = classify_outcome(
+            command_accepted=violation is None,
+            operation_completed=success,
+            request_delivered=delivered,
+            safe=violation is None,
+        )
         return {
             "success": success,
             "phase": self._phase,
@@ -694,6 +700,7 @@ class OperatorShiftEnv(gym.Env):
             "violations": [] if violation is None else [violation],
             "engine_images": images,
             "engine_downlink_mb": downlink,
+            **outcome,
         }
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:

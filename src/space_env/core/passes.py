@@ -47,6 +47,10 @@ def find_passes(
     density_scale: float = 1.0,
     include_third_body: bool = False,
     refine_sec: float = 1.0,
+    f107a: float = 150.0,
+    ap: float = 4.0,
+    srp_area_m2: float = 0.0,
+    srp_coefficient: float = 1.2,
 ) -> list[PassWindow]:
     """Список сеансов на горизонте. aos_sec и los_sec — секунды от эпохи `epoch`."""
     if horizon_sec <= 0.0 or not stations:
@@ -80,9 +84,13 @@ def find_passes(
             drag_coefficient=drag_coefficient,
             atmosphere=atmosphere,
             f107=f107,
+            f107a=f107a,
+            ap=ap,
             density_scale=density_scale,
             when=moment.datetime.replace(tzinfo=None),
             include_third_body=include_third_body,
+            srp_area_m2=srp_area_m2,
+            srp_coefficient=srp_coefficient,
         )
 
     def _refine(
@@ -144,9 +152,13 @@ def find_passes(
             drag_coefficient=drag_coefficient,
             atmosphere=atmosphere,
             f107=f107,
+            f107a=f107a,
+            ap=ap,
             density_scale=density_scale,
             when=moment.datetime.replace(tzinfo=None),
             include_third_body=include_third_body,
+            srp_area_m2=srp_area_m2,
+            srp_coefficient=srp_coefficient,
         )
         elapsed += step
     for name, (aos, max_el) in open_pass.items():

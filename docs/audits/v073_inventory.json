@@ -1,0 +1,2219 @@
+{
+  "version": "0.73.0",
+  "head": "fcab948fb3546776ac89be61ace8ac9b4f6a3f1b",
+  "scope": "All authored Python/JS/HTML/config inputs enumerated; vendor assets excluded. Inventory is not a claim of independent validation of each line.",
+  "files": [
+    {
+      "path": "src/space_env/__init__.py",
+      "lines": 42,
+      "sha256": "24e50ed6ac59f9369e12d229e7ba749cdbdcf9ce117fff1fef60559c6554b0d4",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/api/__init__.py",
+      "lines": 11,
+      "sha256": "fbe7a1cf5de770373048f44d40e2c66d2230cfe5adbfe4bdb4e6b22c5f83de6e",
+      "classes": [],
+      "functions": [
+        "__getattr__"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/api/console.py",
+      "lines": 433,
+      "sha256": "3a08ba3a71b9f0b7b5b00c6c6fc2d0fceb13101dde9d21e9d9d98e83a64004f1",
+      "classes": [],
+      "functions": [
+        "_close",
+        "_action_label",
+        "_remember",
+        "_actions",
+        "_window",
+        "_job",
+        "_queue",
+        "_ledger",
+        "_burn_note",
+        "_job_status",
+        "_journal",
+        "_plan",
+        "_notes",
+        "_burn_decision",
+        "_screening",
+        "_flight",
+        "_focus_sec",
+        "_view",
+        "open_shift",
+        "step_shift",
+        "shift_is_open"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/api/server.py",
+      "lines": 134,
+      "sha256": "13e5edd88044bd71713247d59352d7044352c5e5d5ca1222d00c1e5e52dfd623",
+      "classes": [
+        "_Handler"
+      ],
+      "functions": [
+        "_json_bytes",
+        "handle_get",
+        "handle_post",
+        "_file",
+        "serve"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/bundled_data/glossary.yaml",
+      "lines": 21,
+      "sha256": "3eb301d98add07edced1f10bbc8ff8a4ca7ae26646c6fa51dac9e794c129382e",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/bundled_data/pretraining_templates.yaml",
+      "lines": 20,
+      "sha256": "bd2f30f29513487d111ca10cc29fea5b8a091409ba588ea257ecf1e7d1b930b1",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/bundled_data/sft_pairs.yaml",
+      "lines": 32,
+      "sha256": "f90dc5d8eecfc2a90ba443bd69e67de395ff5f508e43f6a175d012b603bdfce7",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/__init__.py",
+      "lines": 24,
+      "sha256": "29177e0534783768c863eb82f61e99c3523087f5c1ec4f5e07fe23b2f0ea1ffd",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/catalog/build.py",
+      "lines": 147,
+      "sha256": "f53666ff36e36be44976c8af08857654e469ea44a0b921231796e321cb1cfa4a",
+      "classes": [],
+      "functions": [
+        "read_tle",
+        "spacecraft_config",
+        "mean_orbit",
+        "tle_orbit",
+        "_stations",
+        "_scenario",
+        "make_engine",
+        "sentinel2_design_fleet",
+        "iridium_next_fleet"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/drag.py",
+      "lines": 50,
+      "sha256": "9dee679ed639e4091a7f885e5e9804cda4b93438ed49cff46abfad2df7b028ab",
+      "classes": [
+        "DragComparison"
+      ],
+      "functions": [
+        "bstar_per_er",
+        "cd_area_per_kg_from_bstar",
+        "drag_comparison"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/geometry.py",
+      "lines": 126,
+      "sha256": "ba5bf161072a20e26f39aa440daea56f0c3fb8187c0922a40bc56e42bf65b681",
+      "classes": [],
+      "functions": [
+        "j2_nodal_rate_rad_s",
+        "sun_sync_inclination_rad",
+        "geosynchronous_semimajor_axis_m",
+        "geosynchronous_altitude_m",
+        "mean_semimajor_axis_m",
+        "half_swath_deg",
+        "slant_range_m",
+        "dish_gain_dbi",
+        "rocket_delta_v_m_s",
+        "radiating_area_m2",
+        "raan_rad_for_ltdn",
+        "closure_required_dbw"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/live.py",
+      "lines": 46,
+      "sha256": "987a8924453315a25da186d05d61ac627018e60539fe77d199ffe748c45fe5f2",
+      "classes": [],
+      "functions": [
+        "celestrak_url",
+        "parse_tle_text",
+        "fetch_tle",
+        "save_live_tle"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/mesh.py",
+      "lines": 184,
+      "sha256": "3d7f08f67cbaf5098e183818817ee6fc9354424da156965b0701e0845ef9d627",
+      "classes": [
+        "ShellSlot"
+      ],
+      "functions": [
+        "shell_slots",
+        "_slot",
+        "designed_neighbors",
+        "circular_position_m",
+        "link_open",
+        "route",
+        "slots_above",
+        "route_to_gateway",
+        "iridium_shell"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/phasing.py",
+      "lines": 38,
+      "sha256": "2b54e8f9dcd3317a1bdbeb4fa207cb5d9089b3b3faf54af7566b5dd0c6f319d3",
+      "classes": [],
+      "functions": [
+        "phase_error_m",
+        "add_prograde_dv"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/references.py",
+      "lines": 471,
+      "sha256": "d40efe550ba1bf90e9ffacab723d2eab16e06b034c41c66231479a065a61455f",
+      "classes": [
+        "ReferenceVehicle"
+      ],
+      "functions": [
+        "_xband_closure",
+        "reference"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/catalog/traffic.py",
+      "lines": 32,
+      "sha256": "cc6d6263d088325afd2739b8e99c6e7065f3a0024b0c5fbe75b0d16beff8f61c",
+      "classes": [],
+      "functions": [
+        "store_bits",
+        "dump_bits"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/curriculum.yaml",
+      "lines": 107,
+      "sha256": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/demand_deliver.yaml",
+      "lines": 16,
+      "sha256": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/demand_late.yaml",
+      "lines": 16,
+      "sha256": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/eo_pass.yaml",
+      "lines": 9,
+      "sha256": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/operator_shift.yaml",
+      "lines": 12,
+      "sha256": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/configs/rewards.yaml",
+      "lines": 83,
+      "sha256": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4",
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/__init__.py",
+      "lines": 84,
+      "sha256": "a6471fdf17e8d4e24cf9f62936259d58ae32377b8ffdb8de31687f9f9797a9d1",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/core/access.py",
+      "lines": 61,
+      "sha256": "db3494c2c5cb9a0886e942d4e10002ae3193d0c586d2836b4da5f58fca8cb12a",
+      "classes": [],
+      "functions": [
+        "subsatellite_latlon",
+        "off_nadir_deg",
+        "ground_track_latlon"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/attitude.py",
+      "lines": 78,
+      "sha256": "5808bd5cf4882ef548777617e0dcdf4f2c503d123592250f1e37294fd488a474",
+      "classes": [],
+      "functions": [
+        "_normalize",
+        "align_z",
+        "boresight",
+        "_slerp",
+        "slew_step"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/bodies.py",
+      "lines": 71,
+      "sha256": "d7eddf7e5e32946df0122937c2640f5df7402ab16fbdda1fda3b0163ed4d55ff",
+      "classes": [],
+      "functions": [
+        "moon_position_m",
+        "tidal_acceleration_m_s2",
+        "third_body_acceleration_m_s2"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/cdm.py",
+      "lines": 153,
+      "sha256": "7d709d3d5b1b42cc43833e8f7610862bc7d2d2a88ef60f8579255d514f39262a",
+      "classes": [
+        "CdmObject",
+        "ConjunctionMessage"
+      ],
+      "functions": [
+        "_strip_units",
+        "_float",
+        "_to_si",
+        "parse_cdm_kvn"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/constants.py",
+      "lines": 53,
+      "sha256": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/dut1.py",
+      "lines": 83,
+      "sha256": "ee055bfc4bae745a68690d4ee53dfcfc558262cddfe1715e82c953e554fb2e1d",
+      "classes": [
+        "EarthOrientation"
+      ],
+      "functions": [
+        "_series",
+        "bulletin_bounds",
+        "_interpolate",
+        "dut1_seconds",
+        "pole_arcsec"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/encounter.py",
+      "lines": 203,
+      "sha256": "c23bbff0007655409aa41184225307f00b24a7b216c40cf7a1084c99c7680ed1",
+      "classes": [
+        "PropagationContext",
+        "NumericalEncounter"
+      ],
+      "functions": [
+        "_step_state",
+        "process_noise",
+        "secondary_from_geometry",
+        "miss_of_relative_state"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/environment.py",
+      "lines": 89,
+      "sha256": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+      "classes": [
+        "ShadowState"
+      ],
+      "functions": [
+        "_shadow_radii",
+        "shadow_state",
+        "in_eclipse",
+        "solar_flux_at_satellite_W_m2",
+        "altitude_from_position_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/frames.py",
+      "lines": 183,
+      "sha256": "78e70609b9c01b48707f1df545e974be2664722716d6fcac9b437f424ee23e5d",
+      "classes": [],
+      "functions": [
+        "gmst_rad",
+        "_delaunay_rad",
+        "nutation_rad",
+        "gast_rad",
+        "_rotate_z",
+        "_polar_motion",
+        "_undo_polar_motion",
+        "eci_to_ecef",
+        "ecef_to_eci",
+        "geodetic_to_ecef",
+        "ecef_to_geodetic",
+        "elevation_deg"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/gravity.py",
+      "lines": 175,
+      "sha256": "ab82ecfe261d2b644b00a93a720b90bedca6b4bc132856e721500ed8ee71562a",
+      "classes": [],
+      "functions": [
+        "atmospheric_density_kg_m3",
+        "density_nrlmsise_kg_m3",
+        "ambient_density_kg_m3",
+        "acceleration_m_s2",
+        "_srp_acceleration_m_s2"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/ground.py",
+      "lines": 57,
+      "sha256": "8f510d892abdabd0cd92e6d2f8da4e69a374a5f71170a5dfc6948dcb5e160241",
+      "classes": [
+        "GroundStation"
+      ],
+      "functions": [
+        "_dms"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/link.py",
+      "lines": 85,
+      "sha256": "ac6b4f810c00e84d8369a23ffc96bc1fa5a8ea058f7255c2db9e18602b40284b",
+      "classes": [],
+      "functions": [
+        "free_space_path_loss_db",
+        "link_margin_db",
+        "earth_occults",
+        "isl_rate_bps",
+        "isl_margin_db",
+        "stepped_rate_bps"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/orbit.py",
+      "lines": 147,
+      "sha256": "66c31d5650eb4fd53a3a6c8df266f3471da4b182707314e4c031859a250bb0d7",
+      "classes": [
+        "KeplerianElements",
+        "Orbit"
+      ],
+      "functions": [
+        "_to_astropy_time",
+        "_from_astropy_time"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/packets.py",
+      "lines": 51,
+      "sha256": "1b6bd936716b6ab52dde0c71c8a15fdd0a52b769b47ced608aa4905983d1df2b",
+      "classes": [],
+      "functions": [
+        "encode_space_packet",
+        "decode_space_packet_header"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/passes.py",
+      "lines": 155,
+      "sha256": "08f895f9d2c637236946fa3ef3c77481c850785460cdd67f6630bd0df3745228",
+      "classes": [
+        "PassWindow"
+      ],
+      "functions": [
+        "find_passes"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/power.py",
+      "lines": 21,
+      "sha256": "806aecd4d3b96c53d03517fc82fbc9eeadd82501872174d29f2ca4c221417466",
+      "classes": [],
+      "functions": [
+        "solar_generation_w",
+        "step_battery_soc"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/probability.py",
+      "lines": 92,
+      "sha256": "4750a4c6f293eef8c01fec9652cc73a92c90cf8561ba3fc9886c8beb920bdde1",
+      "classes": [],
+      "functions": [
+        "collision_probability",
+        "collision_probability_integral",
+        "bplane_probability"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/propagate.py",
+      "lines": 132,
+      "sha256": "5402fef01c0877eec6c35007893953d2bf79989ede9830837f3be6eb264acb64",
+      "classes": [],
+      "functions": [
+        "_rk4",
+        "propagate_state"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/relative.py",
+      "lines": 114,
+      "sha256": "dc2430f6e320cba952b4d7fc7e2d63fe976383b0b9e22e5318d1345fd50ef996",
+      "classes": [],
+      "functions": [
+        "mean_motion_rad_s",
+        "rtn_basis",
+        "eci_to_rtn",
+        "inertial_delta_v_m_s",
+        "cw_stm",
+        "cw_propagate",
+        "closest_approach"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/space_weather.py",
+      "lines": 78,
+      "sha256": "79b64fbc62f5a7198277268d530d75df71c640ea8f0ddf2c6fbf6931a86190cd",
+      "classes": [
+        "SolarIndices"
+      ],
+      "functions": [
+        "_rows",
+        "_flux",
+        "trailing_f107a",
+        "indices_for"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/spacecraft.py",
+      "lines": 173,
+      "sha256": "c7f7b1ec52a18780bacb623e8e941350e91ad8631d9b22b2693714319f2fae17",
+      "classes": [
+        "SubsystemHealth",
+        "PowerConfig",
+        "ThermalConfig",
+        "PropulsionConfig",
+        "CommsConfig",
+        "PayloadConfig",
+        "SpacecraftConfig",
+        "PowerState",
+        "ThermalState",
+        "PropulsionState",
+        "CommsState",
+        "SpacecraftState",
+        "Spacecraft"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/sun.py",
+      "lines": 29,
+      "sha256": "aa86ea50eec0d9c5df83363ae910fe05ec0fd321c2a4f67c0c4df96539dea59c",
+      "classes": [],
+      "functions": [
+        "sun_position_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/thermal.py",
+      "lines": 63,
+      "sha256": "bf70f9098cac12bdc606b95e001bf2ccf66702f5a943be0a3337878827ba5262",
+      "classes": [],
+      "functions": [
+        "environmental_heat_w",
+        "step_temperature_c"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/core/time.py",
+      "lines": 116,
+      "sha256": "0684c220d75db25ba97e480772ea5fe59dad22317f1e43b18952a0be8c246a2f",
+      "classes": [
+        "Time"
+      ],
+      "functions": [
+        "datetime_to_jd",
+        "jd_to_datetime"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/data_generators/__init__.py",
+      "lines": 7,
+      "sha256": "6da41dfedddedf3073adeb892f155ccd34d06fadb957b57f28005cda50bd85b1",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/data_generators/pretraining.py",
+      "lines": 150,
+      "sha256": "f65075e3f4960b633764933df931a9548782651a596823a23b0b7a2c1ed9fbe1",
+      "classes": [],
+      "functions": [
+        "_load_yaml",
+        "_get_data_dir",
+        "generate_from_templates",
+        "generate_from_simulation",
+        "generate_glossary_entries",
+        "generate_pretraining_chunks"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/data_generators/sft.py",
+      "lines": 339,
+      "sha256": "b8efc9e48d911b4fcf2a49394871d9e1f7018ff42353f0e161a103441d21ac0c",
+      "classes": [],
+      "functions": [
+        "generate_sft_from_yaml",
+        "generate_sft_scenario_pairs",
+        "generate_sft_from_simulation",
+        "_sft_from_snapshot",
+        "generate_sft_from_constellation",
+        "generate_sft_from_operations",
+        "generate_sft_from_workplan",
+        "generate_sft_from_fleet_plan",
+        "generate_sft_from_horizon",
+        "generate_sft_records"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/__init__.py",
+      "lines": 120,
+      "sha256": "04fa181a96d3ff5fa34a9dccabe770487edcc63f5733833472ef044a4c24029a",
+      "classes": [],
+      "functions": [
+        "registered_env_ids"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/envs/anomaly_response_env.py",
+      "lines": 142,
+      "sha256": "bef0bfb0efb07c1c99ea2d8528034a7770f6f5471c8a44ecea1442825b770217",
+      "classes": [
+        "AnomalyResponseEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/base.py",
+      "lines": 86,
+      "sha256": "2f39d88fd5f699dbb22ade982f223dd8d3bdb5b9c0384adbdb5b824ba661cbc6",
+      "classes": [],
+      "functions": [
+        "make_box_obs",
+        "normalize_altitude_km",
+        "normalize_temp",
+        "make_leo_engine",
+        "format_ansi"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/campaign_env.py",
+      "lines": 808,
+      "sha256": "7e9b4c54dcc9f9abcffe771f65e4d89d76dc5c5d3ba31e3592e07aa6f2f41b4a",
+      "classes": [
+        "_Job",
+        "DayMissionEnv",
+        "DayShiftEnv",
+        "DishAwardEnv",
+        "OperatorShiftEnv"
+      ],
+      "functions": [
+        "_shift_jobs"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/cards.py",
+      "lines": 283,
+      "sha256": "d90c12f63bcb5a063b2b76a1b711e6056e4a18f7fb5ff46d9bfce4d0c1c918bb",
+      "classes": [
+        "EnvCard"
+      ],
+      "functions": [
+        "observation_index",
+        "_per_vehicle"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/conjunction_env.py",
+      "lines": 225,
+      "sha256": "1440d4c299e698460d0ad4a0aad20f86992313d39ecbe74bd12480eb05c77fb4",
+      "classes": [
+        "ConjunctionAssessmentEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/constellation_env.py",
+      "lines": 136,
+      "sha256": "09282de6cd0861e72a8e845191da13895ed500473abec540c7c6361f5e9bf182",
+      "classes": [
+        "ConstellationEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/constellation_ops_env.py",
+      "lines": 179,
+      "sha256": "fd71dc49957b8ccc1099d96484e662c994648c5c05109753e476a3b60b16643d",
+      "classes": [
+        "ConstellationOpsEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/demand_env.py",
+      "lines": 187,
+      "sha256": "cdba90e9b9d543b1604910c0bb837d94f15cdc18f970c889de09f46d6959973f",
+      "classes": [
+        "DemandShiftEnv"
+      ],
+      "functions": [
+        "packaged_demand"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/horizon_envs.py",
+      "lines": 204,
+      "sha256": "1bb2899861faeb16c3b4f0ac960c1575c64f0b7e13ebcf2f902b0575c5116315",
+      "classes": [
+        "ConjunctionQueueEnv",
+        "DecayWatchEnv",
+        "PhaseBurnEnv",
+        "RerouteEnv",
+        "DecayWatchHighEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/industry_envs.py",
+      "lines": 298,
+      "sha256": "92f7fb31ee166ce4a0a1e16896df761594e0c5ef1e32b12e74ff954121f1b484",
+      "classes": [
+        "RendezvousHoldEnv",
+        "PriorityCoverageEnv",
+        "PassFaultEnv",
+        "DebrisAvoidEnv",
+        "DisposalEnv"
+      ],
+      "functions": [
+        "_along_m",
+        "_sma_m",
+        "_coast_sma_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/market_envs.py",
+      "lines": 173,
+      "sha256": "718bc48789daff4a122c9df92069fad2d9e776c59e79617a9aaeffc0748315ac",
+      "classes": [
+        "StationContentionEnv",
+        "OrderBookEnv"
+      ],
+      "functions": [
+        "_visible"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/mission_planner_env.py",
+      "lines": 172,
+      "sha256": "894c19a5851f40631cfea1357564d0b002823347de99624512f3db1bdc4bbc69",
+      "classes": [
+        "MissionPlannerEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/phasing_env.py",
+      "lines": 111,
+      "sha256": "53a586922eb29f363f5d4423f32c03b81380d9f22bfca57cf88b3c977a69452c",
+      "classes": [
+        "SentinelPhasingEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/regime_envs.py",
+      "lines": 141,
+      "sha256": "3835460c46668cfbba9918bcefe72e2a69af27def16e612387ca8b9b52a052b6",
+      "classes": [
+        "RadarPassEnv",
+        "LongitudeKeepEnv"
+      ],
+      "functions": [
+        "_semimajor_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/resource_manager_env.py",
+      "lines": 128,
+      "sha256": "09153e83d1752ffa879a9508f8f5e4234207a17485e0083e379051f576beef5a",
+      "classes": [
+        "ResourceManagerEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/sentinel_env.py",
+      "lines": 336,
+      "sha256": "1a4bca90ed20b61770dbd08c8f64841a52823ef50ae5e59335e60a8849abc571",
+      "classes": [
+        "CatalogAcquisitionEnv",
+        "SentinelAcquisitionEnv",
+        "CubesatAcquisitionEnv",
+        "SentinelPassFaultEnv",
+        "LandsatAcquisitionEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/shift_env.py",
+      "lines": 233,
+      "sha256": "0bf8e3d58048ae885c5fd9672e1f53241f2a0744d7586e17d435da1e0a2d0518",
+      "classes": [
+        "FleetShiftEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/envs/workplan_env.py",
+      "lines": 207,
+      "sha256": "cc9d43b651c7b52df5283ca899a366d047f5f5005c7f7f21286473696bee678b",
+      "classes": [
+        "WorkPlanEnv"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/estimation/__init__.py",
+      "lines": 1,
+      "sha256": "e4922f5879ff9033b4c04eb2731d9f3f438d7821f4dea59b5511fdb73d965c18",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/estimation/range_arc.py",
+      "lines": 331,
+      "sha256": "c921dfe62e9a71a26f0418ccc14171997876082083e5002bd36c3bb7c6837ac1",
+      "classes": [
+        "RangeFix",
+        "ArcStateFix"
+      ],
+      "functions": [
+        "geometric_range_m",
+        "_shifted",
+        "_range_at",
+        "fit_along_track_m",
+        "_apply_rtn",
+        "_range_rtn",
+        "fit_rtn_arc",
+        "_apply_cross",
+        "fit_two_station_arc"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/__init__.py",
+      "lines": 5,
+      "sha256": "a98991f1eff176510d07fb897da3673962ee664a408da11f9dee3e0489999897",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/eval/benchmarks.py",
+      "lines": 101,
+      "sha256": "bcd137d65b586a12e8db505859f061b5c1ea6af0cd39037abc4326edc456db16",
+      "classes": [],
+      "functions": [
+        "run_benchmark",
+        "run_registered_benchmarks"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/demand_report.py",
+      "lines": 38,
+      "sha256": "da1a54c7d93b6f458e47e485917750b8a778b250ec50a51cecf4b3220196b19f",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "demand_shift_report"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/holdout.py",
+      "lines": 54,
+      "sha256": "57791e2cb7b1ce85d232c68bcc67f8eebd857fb029eaefbcb6f9dd6795e01e12",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "compare_policies"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/operator_report.py",
+      "lines": 38,
+      "sha256": "3a0b761b9d17a771bcb13c2ed79161d53fa4b2be0106ff5e01081baa48ab1ee9",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "operator_shift_report"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/scale.py",
+      "lines": 38,
+      "sha256": "248272c3957b25ad914ae4e18b120b94d90fcd49d9ee3122527625ce02d33e5b",
+      "classes": [],
+      "functions": [
+        "_success",
+        "scale_report"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/sft_rubric.py",
+      "lines": 19,
+      "sha256": "8342740dda4e0aa46d27f0f73b13e14b2500bae8f92ba9571a9368ca0934638d",
+      "classes": [],
+      "functions": [
+        "term_recall",
+        "score_prediction"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/tracks.py",
+      "lines": 45,
+      "sha256": "bb7c95be2a97160e6c6d55cd1906495064d4e3a7421ec5a4982c018dce44a7c4",
+      "classes": [],
+      "functions": [
+        "run_benchmark_tracks"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/eval/transfer.py",
+      "lines": 57,
+      "sha256": "153129e1e4f1d3acf6804e4984a65609514362b28ab986812ce7239a1482ec6e",
+      "classes": [],
+      "functions": [
+        "acquisition_action",
+        "transfer_dump_report"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/integrations/__init__.py",
+      "lines": 11,
+      "sha256": "fd2e06b6d3783304bf152500dc0ee17ba05c5830e0e3372dfa22d8461ca8fd79",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/integrations/ccsds_backend.py",
+      "lines": 31,
+      "sha256": "1b137311e39ddb645260b10f3e92f8861067e223f4de28c9f05b554801545c38",
+      "classes": [],
+      "functions": [
+        "require_ccsdspy",
+        "variable_length_definition",
+        "parse_packet_file"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/integrations/orekit_prop.py",
+      "lines": 80,
+      "sha256": "9bcadf3cd969a927c71b74262d0391dcce67b285b589a9c6f3da95f30c9b19a8",
+      "classes": [],
+      "functions": [
+        "_start_vm",
+        "propagate_keplerian_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/integrations/sgp4_prop.py",
+      "lines": 32,
+      "sha256": "a974c6e806ebcdc106ee6703abe3d256fdff55b82a029f05126655a7681be4e7",
+      "classes": [],
+      "functions": [
+        "orbit_from_tle"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/integrations/spice_ephem.py",
+      "lines": 29,
+      "sha256": "fa3be0eec4db702e49b1ab318642508700ade889c3ac97e7e6146345bcdb3039",
+      "classes": [],
+      "functions": [
+        "load_spice_kernels",
+        "sun_position_spice_m"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/__init__.py",
+      "lines": 53,
+      "sha256": "97d65da09c8acb995cbaa8768dcbe6114ea76fc4a159b6be9f1e69a81776805c",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/mission/campaign.py",
+      "lines": 810,
+      "sha256": "f1ee4350448bb956491a400fcbf723ad712738db1e468e6e54d7dfad74dce0fc",
+      "classes": [
+        "DayCampaign",
+        "EncounterPeak",
+        "_Draft",
+        "SharedWindow"
+      ],
+      "functions": [
+        "orbital_period_s",
+        "_force",
+        "_screen_covariance",
+        "_grid",
+        "_closest",
+        "_track_from_keplerian",
+        "_with_burn",
+        "_mission_arc",
+        "_ready_bits",
+        "_share_stations",
+        "_same_pass",
+        "_assign_dishes",
+        "campaign_drafts",
+        "shared_windows",
+        "award_window",
+        "commit_award",
+        "award_day",
+        "_day_plans",
+        "build_day_campaign"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/constraints.py",
+      "lines": 16,
+      "sha256": "30a0fe8fdf403e0ac6302b1c5b6f37756a4df3fccf4fd8437b0feb2c03561a15",
+      "classes": [
+        "Constraints"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/events.py",
+      "lines": 45,
+      "sha256": "ef523a47d895d4a26d78378efd2497a9feaf2269b70b408bf86f08e368e41e1b",
+      "classes": [
+        "EventKind",
+        "MissionEvent",
+        "PlannedEvent"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/fleet_plan.py",
+      "lines": 192,
+      "sha256": "c6509821ea0213fc9443fa75d4eab21b98e7e58251d2b7d686da8ad647299900",
+      "classes": [
+        "FleetTask",
+        "FleetSchedule"
+      ],
+      "functions": [
+        "_elevations",
+        "_pair",
+        "build_relay_schedule"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/goals.py",
+      "lines": 42,
+      "sha256": "171085cad082039425dc019af8605545c4cf201d970d674c1c5cf22239c8adbd",
+      "classes": [
+        "MissionGoal"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/horizon.py",
+      "lines": 521,
+      "sha256": "593832a10fc3aec965c4227b7bba8124eb427a1e7fe5c4426225acc7793204bb",
+      "classes": [
+        "HorizonTask",
+        "HorizonPlan"
+      ],
+      "functions": [
+        "_direction",
+        "schedule_conjunctions",
+        "_secondary",
+        "_conjunction_fleet",
+        "_own_rows",
+        "_pc_against_own",
+        "build_conjunction_plan",
+        "coast_conjunction",
+        "execute_conjunction_plan",
+        "build_two_burn_phase_plan",
+        "_sma_m",
+        "_coast_sma_m",
+        "build_decay_plan",
+        "_decay_orbit",
+        "execute_decay_plan",
+        "_open_neighbors",
+        "_path",
+        "build_reroute_schedule"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/loader.py",
+      "lines": 53,
+      "sha256": "cf2e9109ef7b90ba4639c22d3a4fed405ca480d8fab1340da0dc936c2a1c8b57",
+      "classes": [],
+      "functions": [
+        "load_engine"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/scenarios.py",
+      "lines": 75,
+      "sha256": "d8b22b1fb54c3370587cf84fb3a8af81f3a5a6d1b22f2b852d680305e696d8e5",
+      "classes": [
+        "GroundTarget",
+        "ScenarioType",
+        "AnomalyInject",
+        "ConjunctionInject",
+        "ScenarioConfig"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/shift_scenario.py",
+      "lines": 116,
+      "sha256": "24a42b5b25d4c4c313d0a7dfece58198fa45df8b083e260ca26ea9bd91afd048",
+      "classes": [],
+      "functions": [
+        "_default_path",
+        "_demand",
+        "_checked",
+        "load_mission_scenario",
+        "load_shift_scenario"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/types.py",
+      "lines": 25,
+      "sha256": "b3582570cd1e5a5f441b5297ea482164fe19d2a13d735638a6de4a78063f36a1",
+      "classes": [
+        "MissionType",
+        "MissionProfile"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/mission/workplan.py",
+      "lines": 564,
+      "sha256": "d6f53b87be7e4a73a60fecdf6045b4a6fef0de8bdf8b7468d95115cd291bec7b",
+      "classes": [
+        "Opportunity",
+        "WorkItem",
+        "WorkPlan"
+      ],
+      "functions": [
+        "maneuver_item",
+        "_bits_text",
+        "_span",
+        "_cut_out",
+        "_wanted_bits",
+        "schedule_acquisition",
+        "_stations_for",
+        "_target_prefix",
+        "_group_open",
+        "_block_to_opportunity",
+        "collect_opportunities",
+        "build_acquisition_plan"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/__init__.py",
+      "lines": 15,
+      "sha256": "2cabf080a0171f639722d20d86b3fdd8f942ec1c91028f2eee7a57d6e63e2591",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/rl/curriculum.py",
+      "lines": 43,
+      "sha256": "028a23f6b35b0162595b83927f0fb9e41b8027b4410017d247bb9d35bf73e451",
+      "classes": [],
+      "functions": [
+        "_config_path",
+        "load_curriculum"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/expert.py",
+      "lines": 162,
+      "sha256": "f2e0992537568e2d8e2eeac30846d78a242a92ac1aafc961bbca5a201ed76ff0",
+      "classes": [],
+      "functions": [
+        "expert_action"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/reinforce.py",
+      "lines": 144,
+      "sha256": "8f74f3007231b2b3794bb2f60fd03e12700760fed878b801c991845f9e187e8b",
+      "classes": [],
+      "functions": [
+        "train_linear_reinforce",
+        "train_multidiscrete_reinforce"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/report.py",
+      "lines": 73,
+      "sha256": "85287302a5104fa5fe8889a76675ef38203ec2cb02eaddad2a0663f83ba8e909",
+      "classes": [],
+      "functions": [
+        "_greedy_return",
+        "training_report"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/rewards.py",
+      "lines": 100,
+      "sha256": "aef265db4775e0766b88fbca861d7d4cab7f1179d227091adf624cc6ca5810f7",
+      "classes": [],
+      "functions": [
+        "_config_path",
+        "load_rewards"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/rl/trajectories.py",
+      "lines": 91,
+      "sha256": "5318fb567dbad614165df32d4474151a151236ce74c07b21f1d6d66697a23ded",
+      "classes": [],
+      "functions": [
+        "_json_action",
+        "rollout_episode",
+        "write_trajectories"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/simulation/__init__.py",
+      "lines": 8,
+      "sha256": "c7d7dd310e44d473154f3dcd7a2e352c774f27faa5d0f5580da1d00fff930ac0",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/simulation/engine.py",
+      "lines": 854,
+      "sha256": "e88332e107d9b62a8ab5a99d3b3b594e0bbddb76ddea443af9559b6805d21a31",
+      "classes": [
+        "_Restore",
+        "SimulationEngine"
+      ],
+      "functions": [
+        "_is_due"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/simulation/fleet.py",
+      "lines": 356,
+      "sha256": "41dc74218303e3f65ca95b7081b5a00e277118646f64ad456e60c50f66a463ed",
+      "classes": [
+        "PairGeometry",
+        "ScreenHit",
+        "_StoredCdm",
+        "Fleet"
+      ],
+      "functions": [
+        "_make_vehicle"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/simulation/fleet_view.py",
+      "lines": 430,
+      "sha256": "351ba690a20c1831545b6461180645fb0e7c9180a747d738baddcfd31238677a",
+      "classes": [],
+      "functions": [
+        "describe_fleet",
+        "_mark_neighbors",
+        "_arc_events",
+        "_conjunction_rows",
+        "_screening_companions",
+        "_shift_span",
+        "_shift_brief",
+        "_shift_episode",
+        "fleet_episode"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/simulation/state.py",
+      "lines": 42,
+      "sha256": "0a643e4b343774d4b93c676056def81e846e9288622bf22db80d18dc4531f2a1",
+      "classes": [
+        "SimulationState"
+      ],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/validation/__init__.py",
+      "lines": 5,
+      "sha256": "e677e476e0e13cf2b39cedbd0d714bd722ddf17ac225b0d54b642ede1ba0f83e",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/validation/report.py",
+      "lines": 147,
+      "sha256": "98c9c65019f78c704caf64c469e752a7acf454396fb7418f3b0efac532887b8a",
+      "classes": [],
+      "functions": [
+        "_energy",
+        "_momentum",
+        "_raan_deg",
+        "_case",
+        "core_report",
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "src/space_env/viz/__init__.py",
+      "lines": 4,
+      "sha256": "35a661ed597d5ba4982a4dbc9a7928410e89de36e32adfe9dd2afa963aa1cb00",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "src/space_env/viz/export.py",
+      "lines": 227,
+      "sha256": "4188890a994e047eb7e201ba443ce8dc2d41294c757aa94f9a3ef50e3ee9627b",
+      "classes": [],
+      "functions": [
+        "_vec",
+        "_capture",
+        "_document",
+        "_write",
+        "export_trajectory",
+        "export_constellation_ops",
+        "export_engine"
+      ],
+      "test_functions": 0,
+      "review_scope": "subsystem review; see report for specific evidence, not line-by-line proof"
+    },
+    {
+      "path": "tests/__init__.py",
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classes": [],
+      "functions": [],
+      "test_functions": 0,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_astrodynamics.py",
+      "lines": 131,
+      "sha256": "7215ff51ca077a8637b817e955a8150780372958e6ff002499ab88fd5d7057f7",
+      "classes": [],
+      "functions": [
+        "_raan_deg",
+        "test_geodetic_roundtrip",
+        "test_j2_off_matches_kepler_short_arc",
+        "test_j2_regresses_node_westward",
+        "test_cw_roundtrip_recovers_miss",
+        "test_along_track_burn_changes_miss_without_a_fixed_gain",
+        "test_chan_probability_falls_as_miss_grows",
+        "test_one_comms_session_per_contact"
+      ],
+      "test_functions": 7,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_benchmark_tracks.py",
+      "lines": 52,
+      "sha256": "2fdb39569e30c1541d8402d766132714d23978794f541fa8ba83fde8ba78fee4",
+      "classes": [],
+      "functions": [
+        "_run",
+        "test_station_order_and_sentinel_fault",
+        "test_five_tracks_split_train_and_held_out_seeds",
+        "test_one_dump_policy_runs_on_three_buses"
+      ],
+      "test_functions": 3,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_campaign.py",
+      "lines": 399,
+      "sha256": "b52b17c3ca9153d1a78599a2a8afd2fb1bc9b32067f141c5dc8fc45787e12410",
+      "classes": [],
+      "functions": [
+        "_passes_do_not_overlap",
+        "test_day_campaign_schedules_three_buses_under_one_budget",
+        "test_empty_budget_burns_nobody",
+        "test_day_mission_expert_accepts_the_plan",
+        "test_three_days_keep_the_same_budget",
+        "test_shared_dish_keeps_the_busier_pass",
+        "test_lost_dish_drops_the_image_that_needed_the_dump",
+        "test_lost_svalbard_moves_the_dump_to_the_free_station",
+        "test_day_shift_executes_every_required_job",
+        "test_dish_award_walks_every_shared_window",
+        "test_operator_shift_awards_the_dishes_and_flies_them",
+        "test_operator_shift_continues_after_a_worse_dish",
+        "test_operator_shift_accepts_a_shorter_fleet",
+        "test_operator_shift_can_stop_after_the_awards",
+        "test_operator_shift_report_keeps_holdout_separate_from_learned"
+      ],
+      "test_functions": 14,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_cards.py",
+      "lines": 78,
+      "sha256": "c3025e286523490e0c9e3ec79629a937e4737d2a2866ece0ef8b14c8513a95d1",
+      "classes": [],
+      "functions": [
+        "_roll",
+        "test_every_env_has_a_card_matching_its_vector",
+        "test_same_seed_repeats_the_observation",
+        "test_public_package_lists_plans_and_cards",
+        "test_multidiscrete_trainer_runs_on_the_chain",
+        "test_phase_burn_and_reroute_experts"
+      ],
+      "test_functions": 5,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_catalog.py",
+      "lines": 135,
+      "sha256": "bf6dbd0619ad1fab326dd6f2bf42e0ebed8eca39fbc8f86741714482eb8875db",
+      "classes": [],
+      "functions": [
+        "test_landsat_and_iridium_keep_their_published_mass_and_rate",
+        "test_mean_sentinel_steps_near_786_km",
+        "test_sentinel_uses_published_mass_power_and_swath",
+        "test_descending_node_local_time_is_the_published_ltdn",
+        "test_xband_margin_is_zero_at_the_mask_and_positive_at_zenith",
+        "test_sentinel_pair_is_opposite_in_one_plane",
+        "test_tle_snapshot_sits_near_the_mission_altitude",
+        "test_iridium_star_spans_half_the_equator_and_the_neighbor_link_clears_earth"
+      ],
+      "test_functions": 8,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_constellation_ops.py",
+      "lines": 50,
+      "sha256": "82aa09fe69904a1b0cc82a5526f05291d62e276b514d0101c8bdcdadc0211842",
+      "classes": [],
+      "functions": [
+        "test_packet_reaches_the_gateway_slot_one_hop_at_a_time",
+        "test_expert_rollout_and_episode_frames_carry_the_hop"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_core.py",
+      "lines": 106,
+      "sha256": "e4d69845c81e7f49945fdff7ee3bb7dfcab74f0441bfafa0545f6ebb92321ba5",
+      "classes": [],
+      "functions": [
+        "test_time_jd_roundtrip",
+        "test_time_add_seconds",
+        "test_orbit_from_keplerian",
+        "test_orbit_propagate",
+        "test_orbit_from_vectors",
+        "test_eclipse_behind_earth",
+        "test_eclipse_sunward_axis_is_lit",
+        "test_eclipse_night_side_outside_cone",
+        "test_eclipse_in_sun",
+        "test_spacecraft_config_and_reset"
+      ],
+      "test_functions": 10,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_data_generators.py",
+      "lines": 64,
+      "sha256": "b39fc2a552c7274c38bc2320f1b96058b7d94feba1688e59bbef160a8eb6fa24",
+      "classes": [],
+      "functions": [
+        "test_pretraining_templates",
+        "test_pretraining_simulation",
+        "test_glossary",
+        "test_pretraining_jsonl",
+        "test_sft_yaml",
+        "test_sft_jsonl"
+      ],
+      "test_functions": 6,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_demand.py",
+      "lines": 52,
+      "sha256": "917e21c6a1ad2001ba6670328cd550f80f13c59e72591c97d215113ecbd293f6",
+      "classes": [],
+      "functions": [
+        "_run",
+        "test_two_request_files_do_not_share_one_baked_day",
+        "test_demand_report_keeps_the_two_files_and_skips_learned"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_dynamics.py",
+      "lines": 212,
+      "sha256": "d33b5f17c5fafcdd5cd55fb8a749e19cd25e97e70abacf9395719c3d7a390ee8",
+      "classes": [],
+      "functions": [
+        "_engine_at",
+        "test_sun_distance_and_season",
+        "test_temperature_responds_to_flux",
+        "test_zenith_pass_has_high_elevation",
+        "test_umbra_discharges_battery_and_sunlight_does_not",
+        "test_prograde_burn_increases_speed_and_spends_delta_v",
+        "test_low_soc_emits_constraint_once",
+        "test_planned_imaging_runs_when_lit",
+        "test_downlink_does_not_invent_bits_and_the_recorder_balances",
+        "test_drag_context_uses_the_spacecraft_not_the_station",
+        "test_failed_comms_blocks_downlink",
+        "test_space_packet_roundtrip"
+      ],
+      "test_functions": 11,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_envs.py",
+      "lines": 92,
+      "sha256": "0c20922be7a2275141a39afb4100004245a7544a63d83cd28e6a74101f2db04c",
+      "classes": [],
+      "functions": [
+        "test_resource_manager_env",
+        "test_mission_planner_env",
+        "test_anomaly_response_env",
+        "test_conjunction_env",
+        "test_tracking_arc_sets_conjunction_covariance",
+        "test_mission_planner_render_and_registry",
+        "test_resource_manager_run_episode"
+      ],
+      "test_functions": 7,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_fleet.py",
+      "lines": 152,
+      "sha256": "1f4bdd039376370f0f9ae742250b18e0486a7637229f38810b98ecfc481968f6",
+      "classes": [],
+      "functions": [
+        "_quiet",
+        "test_string_of_pearls_range_matches_chord",
+        "test_fleet_step_keeps_one_clock_and_isolates_maneuver",
+        "test_screen_only_reports_the_close_pair",
+        "test_walker_splits_nodes_between_two_planes",
+        "test_in_plane_link_is_clear_and_opposite_side_is_blocked",
+        "test_cdm_covariance_replaces_the_default_screen",
+        "test_constellation_env_steps_every_vehicle",
+        "test_relay_moves_buffer_and_stops_when_earth_blocks_the_path",
+        "test_downlink_drains_the_buffer_only_while_the_station_link_is_up",
+        "test_cdm_with_velocity_is_mapped_from_tca_and_position_only_stays_put",
+        "test_constellation_stores_a_frame_outside_umbra"
+      ],
+      "test_functions": 11,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_fleet_plan.py",
+      "lines": 50,
+      "sha256": "25224cb41aa1210d02cd0143f2075fbc299592eb9c94f258d49718a9d33a2391",
+      "classes": [],
+      "functions": [
+        "test_relay_schedule_only_keeps_hops_the_link_accepts",
+        "test_wide_spacing_records_a_blocked_hop",
+        "test_sft_and_rl_rows_carry_the_chain"
+      ],
+      "test_functions": 3,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_flight_products.py",
+      "lines": 135,
+      "sha256": "403f1b87a8c8d4e6b79acde171e2251332c9d6ecb36ab58801c1d74e619638a9",
+      "classes": [],
+      "functions": [
+        "test_cdm_combines_covariances_and_hard_body",
+        "test_cdm_velocity_block_converts_to_metres",
+        "test_srp_pushes_away_from_the_sun_and_vanishes_in_umbra",
+        "test_pass_is_open_at_zenith",
+        "test_aos_bisection_is_earlier_than_the_coarse_sample_and_within_a_second_of_a_fine_grid"
+      ],
+      "test_functions": 5,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_horizon.py",
+      "lines": 100,
+      "sha256": "006c7b39e2f00c28f74681d5425e99074f8febabe5f8edf9cdceff7c4f146674",
+      "classes": [],
+      "functions": [
+        "test_queue_spends_the_only_metre_on_the_hottest_pair",
+        "test_screened_queue_matches_the_threshold",
+        "test_second_burn_stops_the_phase_rate",
+        "test_decay_burn_follows_the_altitude",
+        "test_burn_drops_hot_pair_below_the_threshold",
+        "test_perigee_raise_finishes_above_the_coast",
+        "test_queue_and_decay_experts_meet_the_same_criterion",
+        "test_closed_direct_link_uses_the_open_detour"
+      ],
+      "test_functions": 8,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_industry.py",
+      "lines": 51,
+      "sha256": "aeba93ca835959293d646837944274671958f6d4180073b1f527ae870b34c38e",
+      "classes": [],
+      "functions": [
+        "_run",
+        "test_new_classes_are_labeled_as_assumptions",
+        "test_rendezvous_disposal_and_coverage_follow_the_expert",
+        "test_pass_fault_recovers_inside_the_window",
+        "test_debris_burn_is_rejected_and_own_burn_lowers_pc"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_live_tle.py",
+      "lines": 24,
+      "sha256": "312ab45d128efbb0210724a8445c5910d8b8c6249aadcdbe037c92427acb2680",
+      "classes": [],
+      "functions": [
+        "test_live_save_does_not_replace_the_october_snapshot"
+      ],
+      "test_functions": 1,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_mission.py",
+      "lines": 50,
+      "sha256": "57f9903263d0955db1a11dd5b7a3b0256713c3a63d08ad6ef30c9dbfa5d38cb8",
+      "classes": [],
+      "functions": [
+        "test_mission_goal_check",
+        "test_mission_event",
+        "test_scenario_config_nominal",
+        "test_scenario_config_with_injects"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_operations.py",
+      "lines": 199,
+      "sha256": "f76c108302844572b76606a85a97ed2e15ff151b8ede5b6f934f04f01561ed89",
+      "classes": [],
+      "functions": [
+        "test_gast_differs_from_gmst_by_nutation_only",
+        "test_nutation_at_j2000_follows_the_18_year_term",
+        "test_link_margin_is_higher_overhead_than_far_away",
+        "test_integral_matches_chan_at_the_origin_and_falls_with_miss",
+        "test_drag_lowers_sma_over_a_day",
+        "test_covariance_grows_and_burn_moves_the_miss",
+        "test_slew_is_not_instant",
+        "test_polar_motion_shifts_ecef_by_metres_and_roundtrips",
+        "test_swpc_snapshot_supplies_flux_on_the_tle_day",
+        "test_dut1_from_the_iers_snapshot_shifts_gmst",
+        "test_moon_stays_near_its_orbit_and_the_leo_tide_is_small",
+        "test_nrlmsise_density_at_400_km",
+        "test_expert_beats_waiting_on_radio_fault"
+      ],
+      "test_functions": 13,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_operator_console.py",
+      "lines": 205,
+      "sha256": "e57c3ee0593422aa525e8c5027387adea8da568697c17c23007d89da97271a03",
+      "classes": [],
+      "functions": [
+        "_post",
+        "test_console_rejects_a_command_the_window_does_not_allow_and_keeps_a_worse_award",
+        "_next_action",
+        "_hot",
+        "_keeper_action",
+        "test_console_burn_reduces_the_delta_v_left_on_the_ledger",
+        "test_console_skips_a_job_and_keeps_the_shift_open",
+        "test_console_closes_the_shift_when_dishes_follow_the_buffer"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_pipeline.py",
+      "lines": 168,
+      "sha256": "dadb25a9544effaac6a477c3d45deba352d1599d2415a8e3e731a650f51764f6",
+      "classes": [],
+      "functions": [
+        "test_rewards_and_curriculum_files",
+        "test_reinforce_refuses_a_multi_discrete_action",
+        "test_package_contains_configs_and_training_texts",
+        "test_scenario_yaml_steps",
+        "test_short_benchmark_and_rubric",
+        "test_trajectory_writer_and_reinforce",
+        "test_gym_make_all_ids",
+        "test_tle_optional",
+        "np_isfinite_altitude",
+        "test_optional_imports_fail_clearly_when_missing"
+      ],
+      "test_functions": 9,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_range_arc.py",
+      "lines": 142,
+      "sha256": "9ce62dcd3cea1cd2a6894f81a0edbd54711e66a703bb3d7cbed2542b5485f92a",
+      "classes": [],
+      "functions": [
+        "test_along_track_offset_is_recovered_from_ranges",
+        "test_radius_and_along_track_rate_come_back_with_a_blind_cross_track",
+        "test_second_station_recovers_cross_track_with_range_noise"
+      ],
+      "test_functions": 3,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_real_ops.py",
+      "lines": 198,
+      "sha256": "627b32c65738dcddd77b61761d1c7a2b239e039d1725466fbee2c120db74c657",
+      "classes": [],
+      "functions": [
+        "test_published_inclinations_match_sun_synchronous_j2",
+        "test_scene_store_respects_memory_and_the_forty_minute_cap",
+        "test_iridium_in_plane_neighbor_is_open_and_five_hops_reach_the_far_slot",
+        "test_sentinel_acquisition_stores_a_scene_on_the_descending_node",
+        "test_sentinel_dump_is_rewarded_only_inside_the_pass",
+        "test_landsat_recorder_is_the_handbook_figure",
+        "test_retrograde_burns_stop_the_sentinel_pair_drift",
+        "test_tle_bstar_does_not_replace_the_sentinel_face",
+        "test_iridium_routes_to_a_slot_above_fairbanks",
+        "test_operations_sft_mentions_hops_and_bstar"
+      ],
+      "test_functions": 10,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_regimes.py",
+      "lines": 47,
+      "sha256": "f3ddc53c6f7a0fbde17296f8a85557264e825b0a42f9f1ab25d2a979bb7070b3",
+      "classes": [],
+      "functions": [
+        "test_radar_captures_in_eclipse_and_optical_does_not",
+        "test_geo_burn_pulls_the_semimajor_axis_back"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_scale.py",
+      "lines": 17,
+      "sha256": "097f4a8fa9de120716bc93396954b6d56f4b19f226d8b6f7d6fe9933f69558d5",
+      "classes": [],
+      "functions": [
+        "test_expert_succeeds_as_the_fleet_grows"
+      ],
+      "test_functions": 1,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_shift.py",
+      "lines": 57,
+      "sha256": "8e1593bf769c306db48a83f31a739344781e544fb3015c2e4cdccc6431dd8239",
+      "classes": [],
+      "functions": [
+        "test_expert_reads_packet_and_hot_pc_from_the_card",
+        "test_shift_delivers_without_burning_the_cold_pair",
+        "test_burn_on_the_cold_pair_fails_the_shift",
+        "test_training_report_keeps_expert_and_random_numbers"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_simulation.py",
+      "lines": 59,
+      "sha256": "1d46a8d7a03d11a68c1d6fd88c71bd07e4d8ffd726f46bce2f5231d6fa4acf7a",
+      "classes": [],
+      "functions": [
+        "test_engine_nominal_run",
+        "test_engine_anomaly_inject"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_studio_api.py",
+      "lines": 164,
+      "sha256": "113cf39efd4bf1a8de1c4997cfea8c954c25b0ab3272dba6253e736ed8edcdc3",
+      "classes": [],
+      "functions": [
+        "test_star_shell_does_not_close_the_one_watt_link",
+        "test_chain_of_six_reports_neighbors",
+        "test_api_serves_scenario_fleet_and_studio",
+        "test_http_server_answers_health"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_suite.py",
+      "lines": 43,
+      "sha256": "76093309a11d7e6d86bca51d43ef84c4ef6d69e20685859b0f60c8e5af4593b6",
+      "classes": [],
+      "functions": [
+        "test_suite_covers_every_registered_env",
+        "test_holdout_rolls_a_multi_discrete_env",
+        "test_entry_point_imports_the_registry"
+      ],
+      "test_functions": 3,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_validation.py",
+      "lines": 55,
+      "sha256": "ef19dc4af1e292b88438ae72a93c19c4e2e0c7b00f2d929322a219b98c3fadeb",
+      "classes": [],
+      "functions": [
+        "test_core_report_records_measured_error_against_a_prior_tolerance",
+        "test_mission_file_builds_a_different_shift_and_rejects_a_bad_field"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_version.py",
+      "lines": 5,
+      "sha256": "8ccc2420e615b43b1b443608a4cbfc7ddc2ef5c3f2359d0fbd714a0cd4c2449f",
+      "classes": [],
+      "functions": [
+        "test_version"
+      ],
+      "test_functions": 1,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_viz.py",
+      "lines": 40,
+      "sha256": "f7173dc98f04a0f12189216cb62eeb7c2e107403e772e66eedfcc89eb3f5828d",
+      "classes": [],
+      "functions": [
+        "test_export_trajectory_has_two_vehicles_and_finite_positions",
+        "test_export_keeps_route_and_memory_fill"
+      ],
+      "test_functions": 2,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "tests/test_workplan.py",
+      "lines": 80,
+      "sha256": "a5f0c0ad5af39f4a2f1e8338a6f247621236ba851f758e71c2c75721e7517d54",
+      "classes": [],
+      "functions": [
+        "_opp",
+        "test_weak_pass_is_left_for_a_faster_window",
+        "test_full_store_keeps_the_early_pass",
+        "test_maneuver_is_attached_by_the_caller",
+        "test_sentinel_plan_names_tasks_and_expert_follows_them"
+      ],
+      "test_functions": 4,
+      "review_scope": "collected and full suite launched; selected regression assertions reviewed"
+    },
+    {
+      "path": "scripts/evaluate.py",
+      "lines": 35,
+      "sha256": "ccc9011cf575bc16377de50dba4b24acb8d4f47ce508391e0d8631a93d803928",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "scripts/export_viz.py",
+      "lines": 29,
+      "sha256": "659536a2c69bfa066f94cd5036601e4813983ab0a6c8b60e5dfc08e22eb6c959",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "scripts/generate_pretraining_data.py",
+      "lines": 28,
+      "sha256": "689eae5a7a029aad0056d7fb638db55a38e0133582b8f836c7993f2666c895c8",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "scripts/generate_rl_data.py",
+      "lines": 19,
+      "sha256": "7199b35dce5f8f76c04a0707b9fc2f80424af29e6f651b4e0bec5db4009f3170",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "scripts/generate_sft_data.py",
+      "lines": 28,
+      "sha256": "5e4fd0af70c7516e1b3c468c064abda27fee691293bc07bce5cd0ea0a4835f46",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "scripts/train_reinforce.py",
+      "lines": 28,
+      "sha256": "eee2327067945803a23b924de841f5cc2f0968f4699b74b00ae562b97bf45caf",
+      "classes": [],
+      "functions": [
+        "main"
+      ],
+      "test_functions": 0,
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/curriculum.yaml",
+      "lines": 107,
+      "sha256": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/rewards.yaml",
+      "lines": 83,
+      "sha256": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/scenarios/demand_deliver.yaml",
+      "lines": 16,
+      "sha256": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/scenarios/demand_late.yaml",
+      "lines": 16,
+      "sha256": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/scenarios/eo_pass.yaml",
+      "lines": 9,
+      "sha256": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/scenarios/leo_nominal.yaml",
+      "lines": 28,
+      "sha256": "34414fa91fa3a07a0a9ddd479d388b7caaf5f1845f3c0d629d27321bcd924b4a",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "configs/scenarios/operator_shift.yaml",
+      "lines": 12,
+      "sha256": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "data/glossary.yaml",
+      "lines": 21,
+      "sha256": "3eb301d98add07edced1f10bbc8ff8a4ca7ae26646c6fa51dac9e794c129382e",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "data/pretraining_templates.yaml",
+      "lines": 20,
+      "sha256": "bd2f30f29513487d111ca10cc29fea5b8a091409ba588ea257ecf1e7d1b930b1",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "data/sft_pairs.yaml",
+      "lines": 32,
+      "sha256": "f90dc5d8eecfc2a90ba443bd69e67de395ff5f508e43f6a175d012b603bdfce7",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "lines": 21,
+      "sha256": "cffd2e8def3a7d0c2c6cadc6659c378467db61e0d27762787a23331f8147d65e",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "viz/app.js",
+      "lines": 342,
+      "sha256": "88efcde2ac6376b801a13a70c89047f647534c35251ac2e06b91909c29d34753",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "viz/index.html",
+      "lines": 69,
+      "sha256": "123330ea8e63c5407b93e535600427ad11997a7b33306d2de13210641cc4d302",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "viz/studio.html",
+      "lines": 679,
+      "sha256": "983484bb3067085bcf98521ffbc7132fbc3f7d3497830eb26337691ddfac301a",
+      "review_scope": "static inventory"
+    },
+    {
+      "path": "viz/studio.js",
+      "lines": 652,
+      "sha256": "3e24b9d43ea1faf161d0734447d8cbf7cd328239c9c55eeef2dd866d6b3210c9",
+      "review_scope": "static inventory"
+    }
+  ],
+  "checks": {
+    "pytest_collect": 175,
+    "pytest_full": {
+      "passed": 174,
+      "failed": 1,
+      "warnings": 39,
+      "seconds": 390.22,
+      "failure": "test_http_server_answers_health: sandbox denied socket"
+    },
+    "http_test_outside_sandbox": {
+      "passed": 1,
+      "seconds": 1.26
+    },
+    "wheel_no_isolation": "blocked: hatchling not installed",
+    "core_validation_cases": 4,
+    "runtime_probe_groups": 9
+  }
+}

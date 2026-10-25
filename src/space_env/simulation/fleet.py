@@ -8,10 +8,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import math
+
 import numpy as np
 
 from space_env.core.cdm import ConjunctionMessage
-from space_env.core.link import earth_occults, isl_margin_db, isl_rate_bps, stepped_rate_bps
+from space_env.core.link import earth_occults, isl_margin_db, isl_rate_bps
 from space_env.core.orbit import Orbit
 from space_env.core.probability import bplane_probability
 from space_env.core.relative import cw_stm, eci_to_rtn, mean_motion_rad_s
@@ -58,8 +60,7 @@ class Fleet:
             raise ValueError("в группировке минимум два аппарата")
         self.vehicles = dict(vehicles)
         self._cdm: dict[tuple[str, str], _StoredCdm] = {}
-        self.buffer_mb = {name: 0.0 for name in self.vehicles}
-        self.delivered_mb = 0.0
+        self._relay_until = {name: -1.0 for name in self.vehicles}
 
     @classmethod
     def string_of_pearls(
@@ -261,25 +262,31 @@ class Fleet:
         padded[:3, :3] = stored.position_m2
         return padded
 
-    def collect(self, name: str, megabytes: float) -> None:
-        """Кладёт кадр в буфер аппарата. Сброс на Землю и ретрансляция забирают его отсюда."""
-        if name not in self.buffer_mb:
+    @property
+    def buffer_mb(self) -> dict[str, float]:
+        """Мегабиты в регистраторе движка. Отдельного буфера группировки нет."""
+        return {name: engine.stored_bits / 1.0e6 for name, engine in self.vehicles.items()}
+
+    @property
+    def delivered_mb(self) -> float:
+        """Мегабиты, сданные на Землю регистраторами аппаратов."""
+        return sum(engine.delivered_bits for engine in self.vehicles.values()) / 1.0e6
+
+    def collect(self, name: str, megabits: float) -> None:
+        """Кладёт кадр в регистратор аппарата. Сброс на Землю и ретрансляция забирают его оттуда."""
+        if name not in self.vehicles:
             raise KeyError(name)
-        if megabytes < 0.0:
+        if megabits < 0.0:
             raise ValueError("объём кадра не отрицательный")
-        self.buffer_mb[name] += float(megabytes)
+        if megabits == 0.0:
+            return
+        self.vehicles[name].accept_bits(megabits * 1.0e6, origin="collect", request_id=name)
 
     def downlink(self, name: str, dt_sec: float) -> float:
-        """Сбрасывает буфер на станцию со скоростью ступеней модема, пока линия закрыта."""
-        engine = self.vehicles[name]
-        snap = engine.get_state_snapshot()
-        if dt_sec <= 0.0 or not snap.link_ok or snap.link_margin_db < 0.0:
-            return 0.0
-        rate = stepped_rate_bps(snap.link_margin_db, engine.spacecraft.config.comms.data_rate_max_bps)
-        moved = min(self.buffer_mb[name], rate * dt_sec / 1.0e6)
-        self.buffer_mb[name] -= moved
-        self.delivered_mb += moved
-        return moved
+        """Сбрасывает регистратор на станцию. Повтор того же интервала биты не двигает."""
+        if name not in self.vehicles:
+            raise KeyError(name)
+        return self.vehicles[name].transmit_downlink(dt_sec)
 
     def best_neighbor(self, name: str) -> str | None:
         """Сосед с наибольшим запасом межспутниковой линии. Закрытый Землёй луч не кандидат."""
@@ -304,10 +311,21 @@ class Fleet:
         )
         if pair is None or pair.earth_blocked or pair.isl_margin_db < 0.0:
             return 0.0
-        moved = min(self.buffer_mb[source], isl_rate_bps(pair.range_m) * dt_sec / 1.0e6)
-        self.buffer_mb[source] -= moved
-        self.buffer_mb[destination] += moved
-        return moved
+        now = self.vehicles[source].time_sec
+        if now < self._relay_until[source] - 1e-9 or now < self._relay_until[destination] - 1e-9:
+            return 0.0
+        source_engine = self.vehicles[source]
+        destination_engine = self.vehicles[destination]
+        room = destination_engine._room_bits()
+        offered = min(source_engine.stored_bits, isl_rate_bps(pair.range_m) * dt_sec)
+        moved_bits = offered if math.isinf(room) else min(offered, room)
+        if moved_bits <= 0.0:
+            return 0.0
+        released = source_engine.release_bits(moved_bits)
+        destination_engine.accept_bits(released, origin="relay", request_id=source)
+        self._relay_until[source] = now + dt_sec
+        self._relay_until[destination] = now + dt_sec
+        return released / 1.0e6
 
     def screen(
         self,

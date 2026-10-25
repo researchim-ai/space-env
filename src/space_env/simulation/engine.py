@@ -4,16 +4,17 @@
 """
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass, field
 
 import numpy as np
 
-from space_env.core.access import off_nadir_deg
+from space_env.core.access import target_access
 from space_env.core.attitude import align_z, slew_step
 from space_env.core.encounter import PropagationContext, secondary_from_geometry
 from space_env.core.environment import in_eclipse, shadow_state, solar_flux_at_satellite_W_m2
-from space_env.core.frames import ecef_to_geodetic, eci_to_ecef, elevation_deg, geodetic_to_ecef
+from space_env.core.frames import ecef_to_geodetic, eci_to_ecef, elevation_deg, geodetic_to_ecef, require_numerical_frame
 from space_env.core.ground import DEFAULT_GROUND_STATIONS, GroundStation
 from space_env.core.link import link_margin_db, stepped_rate_bps
 from space_env.core.passes import PassWindow, find_passes
@@ -61,6 +62,7 @@ class SimulationEngine:
     seed: int | None = None
 
     def __post_init__(self) -> None:
+        require_numerical_frame(self.orbit.frame)
         self._rng = random.Random(self.seed)
         self._time_sec = 0.0
         self._epoch = self.orbit.epoch
@@ -72,6 +74,16 @@ class SimulationEngine:
         self._generated_bits = 0.0
         self._delivered_bits = 0.0
         self._lost_bits = 0.0
+        self._produced_bits = 0.0
+        self._initial_bits = 0.0
+        self._received_bits = 0.0
+        self._relayed_out_bits = 0.0
+        self._products: list[dict] = []
+        self._imaging_until = -1.0
+        self._imaging_from = 0.0
+        self._imaging_cover: float | None = None
+        self._settled_until = -1.0
+        self._settled_span = 0.0
         self._load_mode = "nominal"
         self._fired_anomaly: set[int] = set()
         self._fired_conjunction: set[int] = set()
@@ -244,7 +256,15 @@ class SimulationEngine:
         return origin_cos + done * (target_cos - origin_cos)
 
     def _event(self, kind: EventKind, payload: dict | None = None) -> MissionEvent:
-        return MissionEvent(kind=kind, time=self._now(), time_sec=self._time_sec, payload=payload or {})
+        return self._event_at(kind, self._time_sec, payload)
+
+    def _event_at(self, kind: EventKind, time_sec: float, payload: dict | None = None) -> MissionEvent:
+        return MissionEvent(kind=kind, time=self._epoch + time_sec, time_sec=time_sec, payload=payload or {})
+
+    def cancel_imaging(self) -> None:
+        """Прерывает длящуюся съёмку. Уже записанный продукт остаётся."""
+        self._imaging_until = self._time_sec
+        self._imaging_requested = False
 
     def _apply_command(
         self,
@@ -309,6 +329,8 @@ class SimulationEngine:
             self.last_command_ok = False
             return
         self._imaging_requested = True
+        self._imaging_from = self._time_sec if self._imaging_cover is None else self._imaging_cover
+        self._imaging_cover = None
         self.spacecraft.state.payload_mode = "imaging"
 
     def _command_comms(self, events: list[MissionEvent], dt_sec: float) -> None:
@@ -495,10 +517,20 @@ class SimulationEngine:
         for index, planned in enumerate(self.scenario.planned_events):
             if index in self._fired_planned:
                 continue
-            if not (t0 < planned.scheduled_at_sec <= t1):
+            if not _is_due(planned.scheduled_at_sec, t0, t1, include_zero=(t0 == 0.0 and t1 == t0)):
                 continue
             self._fired_planned.add(index)
-            self._execute_planned(planned, events, dt_sec)
+            if planned.kind == EventKind.IMAGING:
+                self._imaging_until = max(
+                    self._imaging_until,
+                    planned.scheduled_at_sec + planned.duration_sec,
+                )
+                self._imaging_cover = t0 if planned.scheduled_at_sec >= t1 - 1e-6 else planned.scheduled_at_sec
+            before = len(events)
+            self._execute_planned(planned, events, max(dt_sec, 0.0))
+            if len(events) > before:
+                stamped = events[-1]
+                events[-1] = self._event_at(stamped.kind, planned.scheduled_at_sec, stamped.payload)
 
     def _execute_planned(self, planned: PlannedEvent, events: list[MissionEvent], dt_sec: float) -> None:
         if planned.kind == EventKind.IMAGING:
@@ -516,7 +548,7 @@ class SimulationEngine:
                 continue
             item.done = True
             self.spacecraft.state.health[item.subsystem] = SubsystemHealth.NOMINAL
-            events.append(self._event(EventKind.RECOVERY, {"subsystem": item.subsystem}))
+            events.append(self._event_at(EventKind.RECOVERY, item.at_sec, {"subsystem": item.subsystem}))
 
     def _update_subsystems(self, dt_sec: float, flux_w_m2: float) -> None:
         cfg_p = self.spacecraft.config.power
@@ -540,7 +572,10 @@ class SimulationEngine:
         payload_w = 0.0
         if self.spacecraft.state.payload_mode == "imaging":
             payload_w = self.spacecraft.config.payload.imaging_power_w
-        consumption = base_w + heater_w + payload_w + (450.0 if "overload" in self._faults else 0.0)
+        payload_heat = payload_w
+        overload_w = 450.0 if "overload" in self._faults else 0.0
+        dissipation = base_w + payload_heat + overload_w
+        consumption = dissipation + heater_w
         st_p.consumption_W = consumption
         generation = solar_generation_w(
             cfg_p.solar_panel_area_m2,
@@ -571,22 +606,35 @@ class SimulationEngine:
             st_t.temp_C,
             dt_sec,
             q_sun_w=q_solar + q_albedo + q_ir,
-            q_diss_w=consumption + q_fault,
+            q_diss_w=dissipation + q_fault,
             q_heater_w=heater_w,
             radiating_area_m2=cfg_t.radiating_area_m2,
             emissivity=cfg_t.emissivity,
             heat_capacity_j_k=cfg_t.heat_capacity_J_K,
         )
 
-    def _emit_edges(self, was_umbra: bool, was_contact: bool, events: list[MissionEvent]) -> None:
+    def _emit_edges(
+        self,
+        was_umbra: bool,
+        was_contact: bool,
+        events: list[MissionEvent],
+        samples: list[tuple[float, np.ndarray, np.ndarray]],
+        origin: float,
+    ) -> None:
+        contact_at = self._time_sec
+        for offset, position, _velocity in samples:
+            opened, _margin = self._link_sample(position, origin + offset)
+            if opened != was_contact:
+                contact_at = origin + offset
+                break
         if not was_umbra and self._in_umbra:
-            events.append(self._event(EventKind.ECLIPSE_START))
+            events.append(self._event_at(EventKind.ECLIPSE_START, self._time_sec))
         elif was_umbra and not self._in_umbra:
-            events.append(self._event(EventKind.ECLIPSE_END))
+            events.append(self._event_at(EventKind.ECLIPSE_END, self._time_sec))
         if not was_contact and self._in_contact:
-            events.append(self._event(EventKind.AOS, {"station": self._station_name, "elevation_deg": self._elevation}))
+            events.append(self._event_at(EventKind.AOS, contact_at, {"station": self._station_name, "elevation_deg": self._elevation}))
         elif was_contact and not self._in_contact:
-            events.append(self._event(EventKind.LOS, {"station": self._station_name}))
+            events.append(self._event_at(EventKind.LOS, contact_at, {"station": self._station_name}))
 
     def _check_constraints(self, events: list[MissionEvent]) -> None:
         st = self.spacecraft.state
@@ -651,8 +699,12 @@ class SimulationEngine:
             min_margin_db=comms.min_margin_dB,
             atmosphere=self.scenario.atmosphere,
             f107=self.scenario.f107,
+            f107a=self.scenario.f107a,
+            ap=self.scenario.ap,
             density_scale=self.scenario.density_scale,
             include_third_body=True,
+            srp_area_m2=prop.srp_area_m2,
+            srp_coefficient=prop.srp_coefficient,
         )
         origin = self._time_sec
         self._passes = [
@@ -683,53 +735,229 @@ class SimulationEngine:
             required_power_dbw=cfg.required_power_dBW,
         )
 
-    def _store_capture(self) -> None:
-        """Один успешный кадр пишет биты в регистратор. Сверх ёмкости теряется явно."""
+    def preload_bits(self, bits: float) -> float:
+        """Кладёт уже существующий объём. Это не новая съёмка и не увеличивает число кадров."""
+        return self._credit(bits, origin="preload", request_id="preload")
+
+    def accept_bits(self, bits: float, *, origin: str, request_id: str) -> float:
+        """Принимает биты от группировки: collect или relay. Съёмкой не считается."""
+        return self._credit(bits, origin=origin, request_id=request_id)
+
+    def release_bits(self, bits: float) -> float:
+        """Отдаёт биты соседу. Наземная сдача от этого не растёт."""
+        if bits <= 0.0 or not math.isfinite(bits):
+            return 0.0
+        moved = min(self._stored_bits, bits)
+        self._stored_bits -= moved
+        self._relayed_out_bits += moved
+        return moved
+
+    def _room_bits(self) -> float:
+        memory = self.spacecraft.config.payload.memory_bits
+        if memory <= 0.0:
+            return math.inf
+        return max(0.0, memory - self._stored_bits)
+
+    def _credit(self, bits: float, *, origin: str, request_id: str) -> float:
+        if bits == 0.0:
+            return 0.0
+        if bits < 0.0 or not math.isfinite(bits):
+            raise ValueError("объём бит должен быть положительным")
+        room = self._room_bits()
+        added = bits if math.isinf(room) else min(bits, room)
+        lost = bits - added
+        if origin == "preload":
+            self._initial_bits += bits
+        elif origin == "relay":
+            self._received_bits += added
+            lost = 0.0
+            bits = added
+        else:
+            self._produced_bits += bits
+        self._generated_bits += bits
+        self._stored_bits += added
+        self._lost_bits += lost
+        self._products.append(
+            {
+                "product_id": f"{origin}-{len(self._products) + 1}",
+                "request_id": request_id,
+                "generated_time_sec": self._time_sec,
+                "size_bits": bits,
+                "accepted_bits": added,
+                "quality": "full" if lost <= 1e-9 else "partial",
+                "owner": self.spacecraft.config.name if hasattr(self.spacecraft.config, "name") else origin,
+                "origin": origin,
+            }
+        )
+        return added
+
+    def _store_capture(self, request_id: str, when_sec: float, duration_sec: float) -> None:
+        """Пишет один продукт. Поток интегрируется по видимому времени, кадр без потока берётся один раз."""
         payload = self.spacecraft.config.payload
-        bits = payload.store_rate_bps if payload.store_rate_bps > 0.0 else payload.image_bits
+        streaming = payload.store_rate_bps > 0.0
+        existing = next(
+            (item for item in self._products if item["origin"] == "imaging" and item["request_id"] == request_id),
+            None,
+        )
+        if not streaming:
+            if existing is not None or duration_sec < 0.0:
+                return
+            bits = payload.image_bits
+        else:
+            if duration_sec <= 0.0:
+                return
+            bits = payload.store_rate_bps * duration_sec
         if bits <= 0.0:
             return
-        room = bits if payload.memory_bits <= 0.0 else max(0.0, payload.memory_bits - self._stored_bits)
-        added = min(bits, room)
+        room = self._room_bits()
+        added = bits if math.isinf(room) else min(bits, room)
+        lost = bits - added
+        self._produced_bits += bits
+        self._generated_bits += bits
         self._stored_bits += added
-        self._generated_bits += added
-        self._lost_bits += bits - added
+        self._lost_bits += lost
+        if existing is None:
+            self._captured_targets.add(request_id)
+            self._imaging_count += 1
+            self._products.append(
+                {
+                    "product_id": f"imaging-{len(self._products) + 1}",
+                    "request_id": request_id,
+                    "generated_time_sec": when_sec,
+                    "size_bits": bits,
+                    "accepted_bits": added,
+                    "quality": "full" if lost <= 1e-9 else "partial",
+                    "owner": request_id,
+                    "origin": "imaging",
+                }
+            )
+            return
+        existing["size_bits"] += bits
+        existing["accepted_bits"] += added
+        existing["quality"] = "full" if existing["accepted_bits"] + 1e-6 >= existing["size_bits"] else "partial"
 
-    def _accrue_downlink(self, dt_sec: float) -> None:
-        if not self._downlink_armed or not self._link_ok() or self._stored_bits <= 0.0:
-            return
-        rate = stepped_rate_bps(self._link_margin_db, self.spacecraft.config.comms.data_rate_max_bps)
-        moved = min(self._stored_bits, rate * dt_sec)
+    def _move_downlink(self, open_sec: float, margin_db: float) -> float:
+        if open_sec <= 0.0 or self._stored_bits <= 0.0 or margin_db < 0.0:
+            return 0.0
+        rate = stepped_rate_bps(margin_db, self.spacecraft.config.comms.data_rate_max_bps)
+        moved = min(self._stored_bits, rate * open_sec)
         if moved <= 0.0:
-            return
+            return 0.0
         self._stored_bits -= moved
         self._delivered_bits += moved
         self._data_downlink_Mb = self._delivered_bits / 1.0e6
         self.spacecraft.state.comms.data_sent_this_pass_Mb += moved / 1.0e6
+        return moved
+
+    def transmit_downlink(self, dt_sec: float) -> float:
+        """Сдача за dt без второго прохода по уже закрытому интервалу. Возвращает мегабиты."""
+        if dt_sec <= 0.0 or not math.isfinite(dt_sec):
+            return 0.0
+        if self._settled_until + 1e-9 >= self._time_sec and self._settled_span + 1e-9 >= dt_sec:
+            return 0.0
+        if not self._link_ok():
+            return 0.0
+        moved = self._move_downlink(dt_sec, self._link_margin_db)
+        self._settled_until = self._time_sec
+        self._settled_span = dt_sec
+        return moved / 1.0e6
+
+    def _accrue_downlink(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float) -> None:
+        if not self._downlink_armed:
+            return
+        moved = 0.0
+        for left, right in zip(samples, samples[1:]):
+            open_left, margin_left = self._link_sample(left[1], t0 + left[0])
+            open_right, margin_right = self._link_sample(right[1], t0 + right[0])
+            span = right[0] - left[0]
+            if open_left and open_right:
+                moved += self._move_downlink(span, min(margin_left, margin_right))
+            elif open_left or open_right:
+                margin = margin_left if open_left else margin_right
+                moved += self._move_downlink(0.5 * span, margin)
+        self._settled_until = self._time_sec
+        self._settled_span = self._time_sec - t0
+        del moved
+
+    def _link_sample(self, position: np.ndarray, time_sec: float) -> tuple[bool, float]:
+        moment = self._epoch + time_sec
+        best_margin = -99.0
+        open_link = False
+        if not self.radio_ready():
+            return False, best_margin
+        for station in self.stations:
+            elevation = elevation_deg(position, station.lat_deg, station.lon_deg, station.alt_m, moment)
+            slant = float(
+                np.linalg.norm(
+                    eci_to_ecef(position, moment) - geodetic_to_ecef(station.lat_deg, station.lon_deg, station.alt_m)
+                )
+            )
+            margin = self._margin_db(slant)
+            if elevation >= station.min_elevation_deg and margin >= self.spacecraft.config.comms.min_margin_dB:
+                open_link = True
+                best_margin = max(best_margin, margin)
+        return open_link, best_margin
+
+    def _visible_seconds(
+        self,
+        samples: list[tuple[float, np.ndarray, np.ndarray]],
+        t0: float,
+        lat_deg: float,
+        lon_deg: float,
+    ) -> tuple[float, float | None]:
+        fov = self.spacecraft.config.payload.half_fov_deg
+        images_in_eclipse = self.spacecraft.config.payload.images_in_eclipse
+        duration = 0.0
+        opened_at: float | None = None
+        for left, right in zip(samples, samples[1:]):
+            if left[0] + t0 + 1e-9 < self._imaging_from:
+                continue
+            span = right[0] - left[0]
+            visible = []
+            for offset, position, _velocity in (left, right):
+                access = target_access(
+                    position,
+                    lat_deg,
+                    lon_deg,
+                    self._epoch + (t0 + offset),
+                    half_fov_deg=fov,
+                    frame=self.orbit.frame,
+                    images_in_eclipse=images_in_eclipse,
+                )
+                visible.append(access.visible)
+            if visible[0] and visible[1]:
+                duration += span
+            elif visible[0] or visible[1]:
+                duration += 0.5 * span
+            if opened_at is None and any(visible):
+                opened_at = t0 + (left[0] if visible[0] else right[0])
+        return duration, opened_at
 
     def _resolve_imaging(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float, events: list[MissionEvent]) -> None:
         if not self._imaging_requested:
             return
         self._imaging_requested = False
-        fov = self.spacecraft.config.payload.half_fov_deg
-        captured_now = False
         if self.spacecraft.state.pointing != "nadir" or self._slew_remaining_deg > 1.0:
             self.last_command_ok = False
             return
-        for offset, position, _velocity in samples:
-            moment = self._epoch + (t0 + offset)
-            sun = sun_position_m(moment)
-            if in_eclipse(position, sun) and not self.spacecraft.config.payload.images_in_eclipse:
+        captured_now = False
+        for target in self.scenario.ground_targets:
+            duration, opened_at = self._visible_seconds(samples, t0, target.lat_deg, target.lon_deg)
+            if duration <= 0.0:
                 continue
-            for target in self.scenario.ground_targets:
-                if target.name in self._captured_targets:
-                    continue
-                if off_nadir_deg(position, target.lat_deg, target.lon_deg, moment) <= fov:
-                    self._captured_targets.add(target.name)
-                    self._imaging_count += 1
-                    self._store_capture()
-                    captured_now = True
-                    events.append(self._event(EventKind.IMAGING, {"target": target.name, "count": self._imaging_count}))
+            before = self._imaging_count
+            self._store_capture(target.name, opened_at if opened_at is not None else t0, duration)
+            if self._imaging_count > before:
+                captured_now = True
+                events.append(
+                    self._event_at(
+                        EventKind.IMAGING,
+                        opened_at if opened_at is not None else t0,
+                        {"target": target.name, "count": self._imaging_count},
+                    )
+                )
+            elif duration > 0.0 and target.name in self._captured_targets:
+                captured_now = True
         if not captured_now:
             self.last_command_ok = False
 
@@ -758,6 +986,10 @@ class SimulationEngine:
             generated_bits=self._generated_bits,
             delivered_bits=self._delivered_bits,
             lost_bits=self._lost_bits,
+            produced_bits=self._produced_bits,
+            initial_bits=self._initial_bits,
+            received_bits=self._received_bits,
+            relayed_out_bits=self._relayed_out_bits,
             delta_v_used_m_s=total_dv - st.propulsion.delta_v_remaining_m_s,
             in_contact=self._in_contact,
             elevation_deg=self._elevation,
@@ -777,21 +1009,24 @@ class SimulationEngine:
             seconds_to_aos=self.seconds_to_next_aos(),
         )
 
-    def step(
-        self,
-        dt_sec: float,
-        command: str | None = None,
-        command_payload: dict | None = None,
-    ) -> tuple[SimulationState, list[MissionEvent]]:
-        """Один шаг. command — действие агента или плана на начало шага."""
-        if dt_sec <= 0.0:
-            raise ValueError("dt_sec должен быть положительным")
-        events: list[MissionEvent] = []
-        was_umbra = self._in_umbra
-        was_contact = self._in_contact
-        flux_start = self._flux
-        self._apply_command(command, command_payload or {}, events, dt_sec)
+    def _deadlines(self, t0: float, t1: float) -> list[float]:
+        marks: list[float] = []
+        for planned in self.scenario.planned_events:
+            if t0 < planned.scheduled_at_sec < t1:
+                marks.append(planned.scheduled_at_sec)
+        for inj in self.scenario.anomaly_injects:
+            if t0 < inj.at_sec < t1:
+                marks.append(inj.at_sec)
+        for inj in self.scenario.conjunction_injects:
+            if t0 < inj.at_sec < t1:
+                marks.append(inj.at_sec)
+        return sorted(set(marks))
+
+    def _propagate_segment(self, dt_sec: float) -> list[tuple[float, np.ndarray, np.ndarray]]:
         prop = self.spacecraft.config.propulsion
+        if prop.mass_kg <= 0.0 or not math.isfinite(prop.mass_kg):
+            raise ValueError("масса аппарата должна быть положительной")
+        lat, lon = self._body_latlon()
         r_end, v_end, samples = propagate_state(
             self.orbit.r,
             self.orbit.v,
@@ -804,32 +1039,69 @@ class SimulationEngine:
             f107a=self.scenario.f107a,
             ap=self.scenario.ap,
             density_scale=self.scenario.density_scale,
-            lat_deg=self._body_latlon()[0],
-            lon_deg=self._body_latlon()[1],
+            lat_deg=lat,
+            lon_deg=lon,
             when=self._now().datetime.replace(tzinfo=None),
             srp_area_m2=prop.srp_area_m2,
             srp_coefficient=prop.srp_coefficient,
             include_third_body=True,
         )
-        self._advance_slew(dt_sec)
-        prev_t = self._time_sec
+        if not np.all(np.isfinite(r_end)) or not np.all(np.isfinite(v_end)):
+            raise RuntimeError("состояние орбиты перестало быть конечным")
         self._time_sec += dt_sec
-        self.orbit = Orbit.from_vectors(r_end, v_end, self._epoch + self._time_sec)
+        self.orbit = self.orbit.with_state(r_end, v_end, self._epoch + self._time_sec)
         self._refresh_environment()
+        return samples
+
+    def step(
+        self,
+        dt_sec: float,
+        command: str | None = None,
+        command_payload: dict | None = None,
+    ) -> tuple[SimulationState, list[MissionEvent]]:
+        """Один шаг. Команда действует с начала шага, событие плана — в свой момент."""
+        if not math.isfinite(dt_sec) or dt_sec <= 0.0:
+            raise ValueError("dt_sec должен быть положительным и конечным")
+        events: list[MissionEvent] = []
+        was_umbra = self._in_umbra
+        was_contact = self._in_contact
+        flux_start = self._flux
+        origin = self._time_sec
+        if self._imaging_until > self._time_sec:
+            self._imaging_requested = True
+            self._imaging_from = self._time_sec
+        self._apply_command(command, command_payload or {}, events, dt_sec)
+        if origin == 0.0:
+            self._fire_injects(0.0, 0.0, events, include_zero=True)
+            self._run_planned(0.0, 0.0, events, 0.0)
+        combined: list[tuple[float, np.ndarray, np.ndarray]] = []
+        cursor = origin
+        end = origin + dt_sec
+        for mark in [*self._deadlines(origin, end), end]:
+            seg = mark - cursor
+            if seg > 1e-8:
+                samples = self._propagate_segment(seg)
+                base = cursor - origin
+                for offset, position, velocity in samples:
+                    if combined and offset <= 1e-9:
+                        continue
+                    combined.append((base + offset, position, velocity))
+            self._fire_injects(cursor, mark, events, include_zero=False)
+            self._run_planned(cursor, mark, events, seg)
+            cursor = mark
+        self._advance_slew(dt_sec)
         self._advance_encounter(dt_sec)
-        self._fire_injects(prev_t, self._time_sec, events, include_zero=False)
-        self._run_planned(prev_t, self._time_sec, events, dt_sec)
-        self._resolve_imaging(samples, prev_t, events)
+        self._resolve_imaging(combined, origin, events)
         self._restore_anomalies(events)
         if self._radio_recovery_steps > 0:
             self._radio_recovery_steps -= 1
             if self._radio_recovery_steps == 0:
                 self._faults.discard("radio_latch")
         self._update_subsystems(dt_sec, 0.5 * (flux_start + self._flux))
-        self._accrue_downlink(dt_sec)
+        self._accrue_downlink(combined, origin)
         self._soc_rate = (self.spacecraft.state.power.battery_soc - self._prev_soc) / dt_sec
         self._prev_soc = self.spacecraft.state.power.battery_soc
-        self._emit_edges(was_umbra, was_contact, events)
+        self._emit_edges(was_umbra, was_contact, events, combined, origin)
         self._check_constraints(events)
         snap = self._snapshot()
         self._log.append((self._time_sec, snap, events))
@@ -842,6 +1114,14 @@ class SimulationEngine:
     @property
     def time_sec(self) -> float:
         return self._time_sec
+
+    @property
+    def stored_bits(self) -> float:
+        return self._stored_bits
+
+    @property
+    def delivered_bits(self) -> float:
+        return self._delivered_bits
 
     @property
     def log(self) -> list[tuple[float, SimulationState, list[MissionEvent]]]:

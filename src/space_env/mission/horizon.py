@@ -142,7 +142,7 @@ def _secondary(name: str, primary, radial_m: float, cross_m: float, approach_m_s
     position = primary.orbit.r + basis @ np.array([radial_m, 0.0, cross_m])
     velocity = primary.orbit.v + basis @ np.array([0.0, -approach_m_s, 0.0])
     engine = _make_vehicle(name, 6_800_000.0, 51.6, 0.0, 10.0, moment, ScenarioConfig(ground_stations=[]))
-    engine.orbit = Orbit.from_vectors(position, velocity, moment)
+    engine.orbit = engine.orbit.with_state(position, velocity, moment)
     return engine
 
 
