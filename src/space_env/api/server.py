@@ -9,12 +9,28 @@ from urllib.parse import parse_qs, urlparse
 from space_env import __version__
 from space_env.api.console import open_shift, step_shift
 from space_env.mission.scenario_v2 import scenario_manifest
+from space_env.mission.session import mission_report
 from space_env.mission.shift_scenario import load_shift_scenario
 from space_env.simulation.fleet_view import describe_fleet, fleet_episode
 
 _VIZ = Path(__file__).resolve().parents[3] / "viz"
 if not _VIZ.is_dir():
     _VIZ = Path.cwd() / "viz"
+_MISSION: dict | None = None
+
+
+def _mission_file() -> Path:
+    root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "mission_short.yaml"
+    if root.is_file():
+        return root
+    return Path(__file__).resolve().parents[1] / "configs" / "mission_short.yaml"
+
+
+def _mission_outcome() -> dict:
+    global _MISSION
+    if _MISSION is None:
+        _MISSION = mission_report(_mission_file(), step_sec=60.0, policy="priority")
+    return _MISSION
 
 
 def _json_bytes(payload: dict, status: int = 200) -> tuple[int, bytes, str]:
@@ -33,6 +49,8 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
         if not root.is_file():
             root = Path(__file__).resolve().parents[1] / "configs" / "eo_72h.yaml"
         return _json_bytes(scenario_manifest(root))
+    if path == "/api/mission":
+        return _json_bytes(_mission_outcome())
     if path == "/api/fleet":
         try:
             count = int(query.get("count", ["6"])[0])

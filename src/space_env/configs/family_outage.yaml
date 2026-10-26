@@ -1,0 +1,25 @@
+# Тот же проход, станция закрыта на весь горизонт.
+version: 2
+epoch: "2026-10-20T10:00:00Z"
+horizon_sec: 900
+instances:
+  - id: sentinel-a
+    model: sentinel-2a
+    nu_deg: 80
+stations:
+  - Kiruna
+requests:
+  - id: kiruna-pass
+    lat_deg: 67.85712777777778
+    lon_deg: 20.964325
+    release_sec: 0
+    deadline_sec: 720
+    size_bits: 8000000
+    priority: 2
+    payload: optical
+    destination: Kiruna
+    quality: full
+outages:
+  - station: Kiruna
+    start_sec: 0
+    end_sec: 900

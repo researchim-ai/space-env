@@ -9,6 +9,7 @@ from pathlib import Path
 from space_env.core.access import subsatellite_latlon, target_access
 from space_env.core.environment import in_eclipse
 from space_env.core.sun import sun_position_m
+from space_env.mission.events import EventKind
 from space_env.mission.scenario_v2 import load_scenario_v2, scenario_manifest, world_from_scenario
 from space_env.mission.scenarios import GroundTarget
 from space_env.simulation.engine import SimulationEngine
@@ -28,6 +29,8 @@ class TaskRequest:
     size_bits: float
     priority: int
     payload: str
+    destination: str = ""
+    quality: str = "full"
 
 
 @dataclass(frozen=True)
@@ -159,7 +162,7 @@ def _first_contact_offset(
     for offset, position in engine.preview_positions(dt):
         if offset <= 1e-6:
             continue
-        station, _margin = engine.contact_at(position, origin + offset)
+        station, _margin = engine.contact_at(position, origin + offset, time_sec=engine.time_sec + offset)
         if station and not _station_down(station, now + offset, outages):
             return float(offset)
     return None
@@ -333,6 +336,8 @@ def requests_from_scenario(spec: dict) -> list[TaskRequest]:
             size_bits=float(item["size_bits"]),
             priority=int(item["priority"]),
             payload=str(item["payload"]),
+            destination=str(item.get("destination", "")),
+            quality=str(item.get("quality", "full")),
         )
         for item in rows
     ]
@@ -348,12 +353,47 @@ def _receipts_for(receipts: list[dict], request_id: str) -> list[dict]:
     return mine
 
 
-def _completion_time(mine: list[dict], size_bits: float) -> float | None:
-    """Момент, когда сумма квитанций впервые закрывает объём заявки."""
+def _covered_union(items: list[dict]) -> float:
+    """Уникальный объём по отрезкам [offset, offset+bits). Повтор того же отрезка не считается дважды."""
+    spans = []
+    for item in items:
+        start = float(item.get("offset_bits", 0.0))
+        stop = start + float(item["bits"])
+        if stop > start:
+            spans.append((start, stop))
+    spans.sort()
     total = 0.0
+    cursor: float | None = None
+    for start, stop in spans:
+        if cursor is None or start >= cursor:
+            total += stop - start
+            cursor = stop
+        elif stop > cursor:
+            total += stop - cursor
+            cursor = stop
+    return total
+
+
+def _countable_receipts(receipts: list[dict], request: TaskRequest) -> list[dict]:
+    mine = _receipts_for(receipts, request.request_id)
+    kept = []
     for item in mine:
-        total += float(item["bits"])
-        if total + 1e-6 >= size_bits:
+        if float(item["time_sec"]) + 1e-9 < request.release_sec:
+            continue
+        if request.destination and str(item.get("destination", "")) != request.destination:
+            continue
+        if request.quality == "full" and str(item.get("quality", "full")) != "full":
+            continue
+        kept.append(item)
+    return kept
+
+
+def _completion_time(mine: list[dict], size_bits: float) -> float | None:
+    """Момент, когда уникальная сумма квитанций впервые закрывает объём заявки."""
+    accepted: list[dict] = []
+    for item in mine:
+        accepted.append(item)
+        if _covered_union(accepted) + 1e-6 >= size_bits:
             return float(item["time_sec"])
     return None
 
@@ -362,7 +402,8 @@ def delivery_score(requests: list[TaskRequest], receipts: list[dict], unmet: lis
     """Доля приоритета, сданная целиком и в срок. Нулевой приоритет весит как единица."""
     on_time = []
     for request in requests:
-        done_at = _completion_time(_receipts_for(receipts, request.request_id), request.size_bits)
+        mine = _countable_receipts(receipts, request)
+        done_at = _completion_time(mine, request.size_bits)
         if done_at is not None and done_at <= request.deadline_sec + 1e-6:
             on_time.append(request.request_id)
     total = sum(_weight(item) for item in requests)
@@ -376,6 +417,21 @@ def delivery_score(requests: list[TaskRequest], receipts: list[dict], unmet: lis
         "weighted_on_time": (hit / total) if total else 0.0,
         "unmet_by_reason": reasons,
     }
+
+
+def request_lifecycle(request: TaskRequest, receipts: list[dict], now_sec: float) -> str:
+    """unreleased → available → in_progress → delivered или expired."""
+    if now_sec + 1e-9 < request.release_sec:
+        return "unreleased"
+    mine = _countable_receipts(receipts, request)
+    done_at = _completion_time(mine, request.size_bits)
+    if done_at is not None and done_at <= request.deadline_sec + 1e-6:
+        return "delivered"
+    if now_sec + 1e-9 >= request.deadline_sec:
+        return "expired"
+    if mine:
+        return "in_progress"
+    return "available"
 
 
 @dataclass(frozen=True)
@@ -436,8 +492,9 @@ def mission_kpis(
     for request in requests:
         if request.request_id not in score["on_time"]:
             continue
-        first = min(float(item["time_sec"]) for item in receipts if item["request_id"] == request.request_id)
-        delays.append(first - request.release_sec)
+        mine = _countable_receipts(receipts, request)
+        done_at = _completion_time(mine, request.size_bits)
+        delays.append(done_at - request.release_sec)
     qualities = [
         1.0 if product.get("quality") == "full" else 0.0
         for engine in world.engines.values()
@@ -445,10 +502,13 @@ def mission_kpis(
     ]
     fuel = 0.0
     faults = 0
+    violations = 0
     for engine in world.engines.values():
         fuel += float(engine.get_state_snapshot().delta_v_used_m_s)
         if engine.faults_active():
             faults += 1
+        for _time, _snap, events in engine.log:
+            violations += sum(event.kind == EventKind.CONSTRAINT_VIOLATION for event in events)
     energy = sum(float(engine._payload_energy_j) for engine in world.engines.values())
     ground = sum(float(engine.delivered_bits) for engine in world.engines.values())
     return {
@@ -459,7 +519,7 @@ def mission_kpis(
         "payload_energy_j": energy,
         "ground_bits": ground,
         "relay_bits": relay_bits,
-        "safety_violations": 0,
+        "safety_violations": violations,
         "active_faults": faults,
         "runtime_sec": runtime_sec,
         "replans": replans,
@@ -480,9 +540,11 @@ def run_policy(
     if step_sec <= 0.0:
         raise ValueError("шаг должен быть положительным")
     closed = list(outages or [])
+    world.set_outages([(item.station, item.start_sec, item.end_sec) for item in closed])
     blocked: set[str] = set()
     relays: list[dict] = []
-    elapsed = 0.0
+    schedule: list[dict] = []
+    elapsed = float(world.now_sec())
     replans = 0
     started = time.perf_counter()
     while elapsed + 1e-9 < world.horizon_sec:
@@ -491,8 +553,18 @@ def run_policy(
         commands, denied = _commands(world, requests, policy, elapsed, closed, dt)
         blocked.update(denied)
         dt, commands = _cut_to_event(world, requests, commands, elapsed, dt, closed)
+        schedule.append(
+            {
+                "dt": dt,
+                "orders": dict(commands),
+                "targets": {
+                    name: [target.name for target in engine.scenario.ground_targets]
+                    for name, engine in world.engines.items()
+                },
+            }
+        )
         world.step(dt, commands)
-        elapsed += dt
+        elapsed = float(world.now_sec())
         replans += 1
     runtime_sec = time.perf_counter() - started
     receipts = [
@@ -502,8 +574,8 @@ def run_policy(
     ]
     unmet = []
     for request in requests:
-        mine = _receipts_for(receipts, request.request_id)
-        delivered = sum(float(item["bits"]) for item in mine)
+        mine = _countable_receipts(receipts, request)
+        delivered = _covered_union(mine)
         done_at = _completion_time(mine, request.size_bits)
         if done_at is not None and done_at <= request.deadline_sec + 1e-6:
             continue
@@ -521,6 +593,7 @@ def run_policy(
         "receipts": receipts,
         "unmet": unmet,
         "relays": relays,
+        "schedule": schedule,
         "score": score,
         "kpis": mission_kpis(
             world,
@@ -540,16 +613,20 @@ def run_scenario(
     step_sec: float = 60.0,
     policy: str = "priority",
     outages: list[StationOutage] | None = None,
+    refresh_passes: bool = True,
 ) -> dict:
     """Исполняет файл v2 на его горизонте. Станции файла вешаются на каждый аппарат."""
     spec = load_scenario_v2(path)
-    world = world_from_scenario(path, attach_stations=True)
+    world = world_from_scenario(path, attach_stations=True, refresh_passes=refresh_passes)
+    file_outages = [
+        StationOutage(item["station"], item["start_sec"], item["end_sec"]) for item in spec.get("outages", [])
+    ]
     report = run_policy(
         world,
         requests_from_scenario(spec),
         step_sec=step_sec,
         policy=policy,
-        outages=outages,
+        outages=[*file_outages, *(outages or [])],
     )
     report["manifest"] = scenario_manifest(path)
     return report

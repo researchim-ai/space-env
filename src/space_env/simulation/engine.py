@@ -94,6 +94,7 @@ class SimulationEngine:
         self._faults: set[str] = set()
         self._radio_recovery_steps = 0
         self._downlink_armed = False
+        self._link_outages: list[tuple[str, float, float]] = []
         self._imaging_requested = False
         self._captured_targets: set[str] = set()
         self._prev_soc = 1.0
@@ -981,14 +982,17 @@ class SimulationEngine:
             self._terminal_reserve(t0, self._time_sec)
         del moved
 
-    def contact_at(self, position: np.ndarray, moment: Time) -> tuple[str, float]:
+    def contact_at(self, position: np.ndarray, moment: Time, *, time_sec: float | None = None) -> tuple[str, float]:
         """Станция с лучшим запасом в этот момент. Пустое имя — линия закрыта."""
         if not self.radio_ready():
             return "", -99.0
+        clock = self.time_sec if time_sec is None else float(time_sec)
         best_margin = -99.0
         best = ""
         floor = self.spacecraft.config.comms.min_margin_dB
         for station in self.stations:
+            if any(station.name == name and start <= clock < end for name, start, end in self._link_outages):
+                continue
             elevation = elevation_deg(position, station.lat_deg, station.lon_deg, station.alt_m, moment)
             slant = float(
                 np.linalg.norm(
@@ -1002,7 +1006,7 @@ class SimulationEngine:
         return best, best_margin
 
     def _link_sample(self, position: np.ndarray, time_sec: float) -> tuple[bool, float, str]:
-        name, margin = self.contact_at(position, self._epoch + time_sec)
+        name, margin = self.contact_at(position, self._epoch + time_sec, time_sec=time_sec)
         return bool(name), margin, name
 
     def _imaging_windows(self, origin: float, end: float, *, agent: bool) -> list[tuple[float, float]]:
@@ -1334,6 +1338,10 @@ class SimulationEngine:
     def log(self) -> list[tuple[float, SimulationState, list[MissionEvent]]]:
         return self._log
 
+    def set_link_outages(self, intervals: list[tuple[str, float, float]]) -> None:
+        """Станция не принимает в полуинтервалах [start, end) по часам аппарата."""
+        self._link_outages = [(str(name), float(start), float(end)) for name, start, end in intervals]
+
     def capture(self) -> dict:
         """Снимок, с которого шаг можно продолжить."""
         import copy
@@ -1360,6 +1368,19 @@ class SimulationEngine:
             "imaging_count": self._imaging_count,
             "payload_energy_j": self._payload_energy_j,
             "downlink_armed": self._downlink_armed,
+            "delta_v_remaining_m_s": self.spacecraft.state.propulsion.delta_v_remaining_m_s,
+            "fired_planned": set(self._fired_planned),
+            "fired_anomaly": set(self._fired_anomaly),
+            "fired_conjunction": set(self._fired_conjunction),
+            "faults": set(self._faults),
+            "radio_recovery_steps": self._radio_recovery_steps,
+            "load_mode": self._load_mode,
+            "pointing": self.spacecraft.state.pointing,
+            "payload_mode": self.spacecraft.state.payload_mode,
+            "slew_remaining_deg": self._slew_remaining_deg,
+            "slew_span_deg": self._slew_span_deg,
+            "product_seq": self._product_seq,
+            "log_len": len(self._log),
         }
 
     def restore(self, payload: dict) -> None:
@@ -1386,6 +1407,32 @@ class SimulationEngine:
         self._imaging_count = int(payload["imaging_count"])
         self._payload_energy_j = float(payload["payload_energy_j"])
         self._downlink_armed = bool(payload["downlink_armed"])
+        if "delta_v_remaining_m_s" in payload:
+            self.spacecraft.state.propulsion.delta_v_remaining_m_s = float(payload["delta_v_remaining_m_s"])
+        if "fired_planned" in payload:
+            self._fired_planned = set(payload["fired_planned"])
+        if "fired_anomaly" in payload:
+            self._fired_anomaly = set(payload["fired_anomaly"])
+        if "fired_conjunction" in payload:
+            self._fired_conjunction = set(payload["fired_conjunction"])
+        if "faults" in payload:
+            self._faults = set(payload["faults"])
+        if "radio_recovery_steps" in payload:
+            self._radio_recovery_steps = int(payload["radio_recovery_steps"])
+        if "load_mode" in payload:
+            self._load_mode = str(payload["load_mode"])
+        if "pointing" in payload:
+            self.spacecraft.state.pointing = str(payload["pointing"])
+        if "payload_mode" in payload:
+            self.spacecraft.state.payload_mode = str(payload["payload_mode"])
+        if "slew_remaining_deg" in payload:
+            self._slew_remaining_deg = float(payload["slew_remaining_deg"])
+        if "slew_span_deg" in payload:
+            self._slew_span_deg = float(payload["slew_span_deg"])
+        if "product_seq" in payload:
+            self._product_seq = int(payload["product_seq"])
+        if "log_len" in payload:
+            self._log = self._log[: int(payload["log_len"])]
         self._prev_soc = self.spacecraft.state.power.battery_soc
         self._refresh_environment()
 

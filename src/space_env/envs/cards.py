@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from space_env.envs.mission_fleet_env import observation_names as mission_fleet_observation
+
 
 @dataclass(frozen=True)
 class EnvCard:
@@ -274,6 +276,21 @@ ENV_CARDS: dict[str, EnvCard] = {
             "Заявка файла сдана целиком не позже своего срока",
         ),
         EnvCard(
+            "space_env/FleetTasking-v0",
+            (
+                "заряд alpha",
+                "доля объёма alpha",
+                "контакт alpha",
+                "код станции alpha",
+                "заряд beta",
+                "доля объёма beta",
+                "контакт beta",
+                "код станции beta",
+            ),
+            "для каждого аппарата: 0 ждать, 1 съёмка, 2 сдача",
+            "Ровно один аппарат сдал биты: одна станция не обслуживает двоих сразу",
+        ),
+        EnvCard(
             "space_env/DayMission-v0",
             ("доля бюджета Δv", "Pc горячей пары", "фрагмент ниже порога", "доля аппаратов с сеансом"),
             "0 принять сутки, 1 жечь по фрагменту, 2 не жечь горячую пару",
@@ -284,6 +301,12 @@ ENV_CARDS: dict[str, EnvCard] = {
             ("заряд", "тень", "контакт", "заполнение памяти", "доля съёмки", "время до AOS", "угол от надира"),
             "0 ждать, 1 съёмка, 2 сдача",
             "Эпизод дожит и на станции сдано больше нуля бит",
+        ),
+        EnvCard(
+            "space_env/MissionFleet-v0",
+            mission_fleet_observation(),
+            "для каждого аппарата: режим 0/1/2 и номер заявки",
+            "Хотя бы одна заявка сдана в срок. Неверная съёмка отклоняется и не подменяет команду",
         ),
     )
 }

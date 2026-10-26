@@ -1,0 +1,57 @@
+{
+  "version": "0.86.0",
+  "forecast_side_effects": {
+    "before_dv": 20.0,
+    "after_forecast_dv": 19.0,
+    "forecast_restored_time_before_real_step": 0.0,
+    "real_step_maneuver_events": 0
+  },
+  "snapshot_rng": {
+    "first": 1029.8745537508469,
+    "after_restore": 910.9408161242726,
+    "equal": false
+  },
+  "unknown_actor": {
+    "accepted_without_error": true,
+    "clock_after": 1.0
+  },
+  "mixed_clocks": {
+    "a": 1.0,
+    "b": 2.0
+  },
+  "resume_horizon": {
+    "horizon_sec": 2.0,
+    "end_time_sec": 3.0
+  },
+  "duplicate_receipts": {
+    "single_on_time": [],
+    "duplicate_on_time": [
+      "r"
+    ]
+  },
+  "before_release_receipt": [
+    "later"
+  ],
+  "safety_metric": {
+    "constraint_events": 1,
+    "reported_violations": 0
+  },
+  "invalid_scenarios": {
+    "negative_horizon": "accepted",
+    "nan_anomaly": "accepted",
+    "bad_coordinates_and_deadline": "accepted"
+  },
+  "shared_station_direct_world": {
+    "a": 1000000.0,
+    "b": 1000000.0
+  },
+  "outage_after_arming": {
+    "receipts_times": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "delivered_bits": 3000000.0,
+    "outage_start": 1.0
+  }
+}

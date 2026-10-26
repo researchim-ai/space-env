@@ -97,6 +97,37 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         if stored <= 0.0:
             return 1
         return 0
+    if "FleetTasking" in env_id:
+        count = obs.size // 4
+        actions = []
+        for index in range(count):
+            stored = obs[index * 4 + 1]
+            contact = obs[index * 4 + 2]
+            actions.append(2 if stored > 0.0 and contact > 0.5 else 0)
+        return np.array(actions, dtype=int)
+    if "MissionFleet" in env_id:
+        vehicle_count = 2
+        request_count = 12
+        actions = []
+        request_base = 1 + vehicle_count * 3
+        for vehicle in range(vehicle_count):
+            stored = obs[1 + vehicle * 3 + 1]
+            contact = obs[1 + vehicle * 3 + 2]
+            if stored > 0.0 and contact > 0.5:
+                actions.extend([2, 0])
+                continue
+            chosen = 0
+            best = -1.0
+            for slot in range(request_count):
+                offset = request_base + slot * 5
+                released = obs[offset]
+                priority = obs[offset + 1]
+                mask = obs[offset + 3 + vehicle]
+                if released > 0.5 and mask > 0.5 and priority > best:
+                    chosen = slot
+                    best = priority
+            actions.extend([1, chosen] if best >= 0.0 else [0, 0])
+        return np.array(actions, dtype=int)
     if "OperatorShift" in env_id:
         if obs[0] < 0.5:
             count = (obs.size - 6) // 3

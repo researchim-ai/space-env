@@ -126,6 +126,7 @@
       <p id="explain">Считаем дугу…</p>
       <h2>Заявки на 72 часа</h2>
       <ul id="tasking-requests"></ul>
+      <p id="mission-outcome">Считаем исход миссии…</p>
       <div id="summary"></div>
       <h2 id="approach-title">Сближения</h2>
       <table id="approaches">
@@ -190,6 +191,17 @@
       })
       .catch(() => {
         taskingRequests.replaceChildren();
+      });
+    const missionOutcome = document.querySelector("#mission-outcome");
+    fetch("/api/mission")
+      .then((response) => response.json())
+      .then((data) => {
+        const done = (data.on_time || []).join(", ") || "нет";
+        const missed = (data.unmet || []).length;
+        missionOutcome.textContent = `Сдано в срок: ${done}. Без сдачи: ${missed}`;
+      })
+      .catch(() => {
+        missionOutcome.textContent = "";
       });
 
     const explain = document.querySelector("#explain");

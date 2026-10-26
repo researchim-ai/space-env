@@ -1,6 +1,8 @@
 """Общие часы нескольких аппаратов и снимок, с которого прогон продолжается."""
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
 from space_env.simulation.engine import SimulationEngine
@@ -19,21 +21,86 @@ class MissionWorld:
     ) -> None:
         if len(engines) < 1:
             raise ValueError("в мире нужен хотя бы один аппарат")
+        if len(set(engines)) != len(engines):
+            raise ValueError("идентификаторы аппаратов повторяются")
         self.engines = dict(engines)
         self.epoch = epoch
-        self.horizon_sec = horizon_sec
+        self.horizon_sec = float(horizon_sec)
         self.rng = np.random.default_rng(seed)
+        self.outages: list[tuple[str, float, float]] = []
+        self._require_common_clock()
+
+    def now_sec(self) -> float:
+        """Общие часы. Разъезд аппаратов — ошибка, а не среднее."""
+        self._require_common_clock()
+        return float(next(iter(self.engines.values())).time_sec)
+
+    def _require_common_clock(self) -> None:
+        times = [float(engine.time_sec) for engine in self.engines.values()]
+        if max(times) - min(times) > 1e-6:
+            raise RuntimeError("часы аппаратов разъехались")
+        epochs = {round(float(engine.orbit.epoch.jd), 8) for engine in self.engines.values()}
+        if len(epochs) != 1:
+            raise RuntimeError("эпохи аппаратов различаются")
+
+    def set_outages(self, intervals: list[tuple[str, float, float]]) -> None:
+        """Станция закрыта на [start, end) для любого вызывающего, не только для политики."""
+        self.outages = [(str(name), float(start), float(end)) for name, start, end in intervals]
+        for engine in self.engines.values():
+            engine.set_link_outages(self.outages)
 
     def step(self, dt_sec: float, commands: dict[str, str] | None = None) -> None:
-        orders = commands or {}
+        if not math.isfinite(dt_sec) or dt_sec <= 0.0:
+            raise ValueError("шаг должен быть положительным и конечным")
+        self._require_common_clock()
+        orders = dict(commands or {})
+        unknown = set(orders) - set(self.engines)
+        if unknown:
+            raise KeyError(f"нет аппарата {sorted(unknown)[0]}")
+        orders = self._one_antenna(orders)
+        for engine in self.engines.values():
+            engine.set_link_outages(self.outages)
         for name, engine in self.engines.items():
             command = orders.get(name)
             engine.step(dt_sec, None if command in {None, "wait"} else command)
 
+    def _one_antenna(self, orders: dict[str, str]) -> dict[str, str]:
+        """Одна станция в один момент отдаёт линию одному аппарату. Победитель — меньшее имя."""
+        groups: dict[str, list[str]] = {}
+        for name, command in orders.items():
+            if command != "comms":
+                continue
+            snap = self.engines[name].get_state_snapshot()
+            if snap.in_contact and snap.contact_station:
+                groups.setdefault(snap.contact_station, []).append(name)
+        adjusted = dict(orders)
+        for names in groups.values():
+            if len(names) <= 1:
+                continue
+            winner = min(names)
+            for name in names:
+                if name == winner:
+                    continue
+                adjusted[name] = "wait"
+                self.engines[name]._downlink_armed = False
+        return adjusted
+
     def snapshot(self) -> dict:
-        return {name: engine.capture() for name, engine in self.engines.items()}
+        return {
+            "engines": {name: engine.capture() for name, engine in self.engines.items()},
+            "rng": self.rng.bit_generator.state,
+            "outages": list(self.outages),
+        }
 
     def restore(self, snapshot: dict) -> None:
+        if "engines" in snapshot and "rng" in snapshot:
+            for name, payload in snapshot["engines"].items():
+                self.engines[name].restore(payload)
+            self.rng.bit_generator.state = snapshot["rng"]
+            self.outages = list(snapshot.get("outages", []))
+            for engine in self.engines.values():
+                engine.set_link_outages(self.outages)
+            return
         for name, payload in snapshot.items():
             self.engines[name].restore(payload)
 
@@ -70,13 +137,11 @@ class MissionWorld:
         """Коуэлл на dt вперёд тем же шагом. После вызова часы мира стоят на прежнем месте."""
         engine = self.engines[name]
         snap = engine.capture()
-        logged = len(engine.log)
-        engine.step(dt_sec, "wait")
-        ahead = self.truth(name)
-        engine.restore(snap)
-        extra = len(engine.log) - logged
-        if extra > 0:
-            del engine._log[-extra:]
+        try:
+            engine.step(dt_sec, "wait")
+            ahead = self.truth(name)
+        finally:
+            engine.restore(snap)
         ahead["forecast_sec"] = float(dt_sec)
         ahead["kind"] = "forecast"
         return ahead
