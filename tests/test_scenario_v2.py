@@ -9,6 +9,7 @@ from space_env.mission.scenario_v2 import load_scenario_v2, scenario_manifest, w
 from space_env.simulation.world import MissionWorld
 
 _EO = Path(__file__).resolve().parents[1] / "configs" / "scenarios" / "eo_72h.yaml"
+_EO16 = Path(__file__).resolve().parents[1] / "configs" / "scenarios" / "eo_72h_16.yaml"
 
 
 def test_seventy_two_hour_file_repeats_one_model_without_a_new_env():
@@ -25,6 +26,11 @@ def test_seventy_two_hour_file_repeats_one_model_without_a_new_env():
     assert manifest["sha256"]
     assert manifest["requests"] == ["kiruna-day", "svalbard-radar"]
     assert manifest["stations"] == ["Kiruna", "Svalbard", "Matera"]
+    wide = load_scenario_v2(_EO16)
+    assert wide["horizon_sec"] == 259200
+    assert len(wide["instances"]) == 16
+    assert len({item["id"] for item in wide["instances"]}) == 16
+    assert {item["model"] for item in wide["instances"]} == {"sentinel-2a", "landsat-9", "sar-small"}
 
 
 def test_duplicate_instance_id_is_rejected(tmp_path: Path):

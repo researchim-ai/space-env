@@ -90,6 +90,13 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
         if target > 0.5:
             return 1
         return 0
+    if "TaskingShift" in env_id:
+        stored, contact = obs[1], obs[2]
+        if stored > 0.0 and contact > 0.5:
+            return 2
+        if stored <= 0.0:
+            return 1
+        return 0
     if "OperatorShift" in env_id:
         if obs[0] < 0.5:
             count = (obs.size - 6) // 3

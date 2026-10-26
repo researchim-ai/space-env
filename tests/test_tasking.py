@@ -25,6 +25,7 @@ from space_env.simulation.engine import SimulationEngine
 from space_env.simulation.world import MissionWorld
 
 _EO = Path(__file__).resolve().parents[1] / "configs" / "scenarios" / "eo_72h.yaml"
+_EO16 = Path(__file__).resolve().parents[1] / "configs" / "scenarios" / "eo_72h_16.yaml"
 
 
 def _overhead(
@@ -343,3 +344,23 @@ def test_seventy_two_hour_file_delivers_kiruna_and_names_every_request():
     assert report["kpis"]["safety_violations"] == 0
     assert report["kpis"]["ground_bits"] >= 8.0e6
     assert report["kpis"]["runtime_sec"] > 0.0
+
+
+def test_sixteen_vehicles_finish_seventy_two_hours_with_a_reason_for_every_request():
+    report = run_scenario(_EO16, step_sec=60.0)
+    names = report["manifest"]["instances"]
+    requests = set(report["manifest"]["requests"])
+    on_time = set(report["score"]["on_time"])
+    unmet = {item["request_id"] for item in report["unmet"]}
+    assert len(names) == 16
+    assert len(set(names)) == 16
+    assert "sentinel-2a" in report["manifest"]["models"]
+    assert "landsat-9" in report["manifest"]["models"]
+    assert "sar-small" in report["manifest"]["models"]
+    assert report["manifest"]["horizon_sec"] == 259200.0
+    assert on_time.isdisjoint(unmet)
+    assert on_time | unmet == requests
+    assert report["kpis"]["replans"] >= 4320
+    assert report["kpis"]["runtime_sec"] > 0.0
+    assert report["kpis"]["safety_violations"] == 0
+    assert report["kpis"]["fuel_m_s"] == 0.0

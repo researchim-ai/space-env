@@ -1,0 +1,19 @@
+# Тот же проход, срок раньше съёмки. Жадный план биты в срок не сдаёт.
+version: 2
+epoch: "2026-10-20T10:00:00Z"
+horizon_sec: 400
+instances:
+  - id: sentinel-a
+    model: sentinel-2a
+    nu_deg: 80
+stations:
+  - Kiruna
+requests:
+  - id: kiruna-early
+    lat_deg: 67.85712777777778
+    lon_deg: 20.964325
+    release_sec: 0
+    deadline_sec: 300
+    size_bits: 8000000
+    priority: 2
+    payload: optical
