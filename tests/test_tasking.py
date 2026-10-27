@@ -354,12 +354,16 @@ def test_sixteen_vehicles_finish_seventy_two_hours_with_a_reason_for_every_reque
     unmet = {item["request_id"] for item in report["unmet"]}
     assert len(names) == 16
     assert len(set(names)) == 16
+    assert len(requests) == 16
+    assert {"kiruna-day", "svalbard-radar"} <= requests
+    assert sum(item.startswith("fleet-") for item in requests) == 14
     assert "sentinel-2a" in report["manifest"]["models"]
     assert "landsat-9" in report["manifest"]["models"]
     assert "sar-small" in report["manifest"]["models"]
     assert report["manifest"]["horizon_sec"] == 259200.0
     assert on_time.isdisjoint(unmet)
     assert on_time | unmet == requests
+    assert len(on_time) >= 14
     assert report["kpis"]["replans"] >= 4320
     assert report["kpis"]["runtime_sec"] > 0.0
     assert report["kpis"]["safety_violations"] > 0

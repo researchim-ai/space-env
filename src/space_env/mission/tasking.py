@@ -12,6 +12,7 @@ from space_env.core.sun import sun_position_m
 from space_env.mission.events import EventKind
 from space_env.mission.scenario_v2 import load_scenario_v2, scenario_manifest, world_from_scenario
 from space_env.mission.scenarios import GroundTarget
+from space_env.simulation.commands import CommandBook, MissionCommand
 from space_env.simulation.engine import SimulationEngine
 from space_env.simulation.fleet import Fleet
 from space_env.simulation.world import MissionWorld
@@ -69,7 +70,7 @@ def _rank(request: TaskRequest, policy: str, name: str) -> tuple:
 def _onboard_request(engine: SimulationEngine, requests: dict[str, TaskRequest]) -> TaskRequest | None:
     owner = engine.spacecraft.config.name
     found: TaskRequest | None = None
-    for product in engine._products:
+    for product in engine.products():
         if product.get("custodian") != owner or product.get("delivered_to"):
             continue
         if float(product.get("onboard_bits", 0.0)) <= 0.0:
@@ -106,6 +107,64 @@ def _visible(engine: SimulationEngine, request: TaskRequest) -> bool:
     return _visible_state(engine, request, engine.orbit.r, engine.now())
 
 
+def _captured(engine: SimulationEngine, request_id: str) -> bool:
+    """Кадр этой заявки уже лежит в памяти. Повторно окно не занимаем."""
+    owner = engine.spacecraft.config.name
+    return any(
+        product.get("request_id") == request_id
+        and product.get("origin") == "imaging"
+        and product.get("custodian") == owner
+        and float(product.get("accepted_bits", 0.0)) > 0.0
+        for product in engine.products()
+    )
+
+
+def _opening_offset(engine: SimulationEngine, request: TaskRequest, dt: float) -> float | None:
+    """Первый отсчёт, где цель видна. 0 — видна уже сейчас."""
+    if _visible(engine, request):
+        return 0.0
+    if dt <= 0.0:
+        return None
+    origin = engine.now()
+    for offset, position in engine.preview_positions(dt):
+        if offset <= 1e-6:
+            continue
+        if _visible_state(engine, request, position, origin + offset):
+            return float(offset)
+    return None
+
+
+def _prefer_window(
+    engine: SimulationEngine,
+    candidate: TaskRequest,
+    chosen: TaskRequest,
+    policy: str,
+    dt: float,
+) -> bool:
+    """Раньше закрывающееся окно важнее приоритета. При одном моменте решает политика."""
+    left = _opening_offset(engine, candidate, dt)
+    right = _opening_offset(engine, chosen, dt)
+    if left is None:
+        return False
+    if right is None or left + 1e-6 < right:
+        return True
+    if right + 1e-6 < left:
+        return False
+    return _better(candidate, chosen, policy)
+
+
+def _scarce_window(engine: SimulationEngine, request: TaskRequest, dt: float) -> bool:
+    """Окно видно не на всём шаге. Его нельзя откладывать ради сдачи уже снятого кадра."""
+    if dt <= 0.0 or not _visible_during(engine, request, dt):
+        return False
+    origin = engine.now()
+    flags = [
+        _visible_state(engine, request, position, origin + offset)
+        for offset, position in engine.preview_positions(dt)
+    ]
+    return bool(flags) and any(flags) and not all(flags)
+
+
 def _visible_during(engine: SimulationEngine, request: TaskRequest, dt: float) -> bool:
     """Цель видна сейчас или на отсчётах предстоящего шага. Часы не сдвигаются."""
     if _visible(engine, request):
@@ -135,8 +194,13 @@ def _first_visible_offset(
     pending = [
         item
         for item in requests
-        if item.release_sec <= now < item.deadline_sec and _payload_matches(engine, item)
+        if item.release_sec <= now < item.deadline_sec and _payload_matches(engine, item) and not _captured(engine, item.request_id)
     ]
+    names = [target.name for target in engine.scenario.ground_targets]
+    if names:
+        focused = [item for item in pending if item.request_id == names[-1]]
+        if focused:
+            pending = focused
     if not pending or any(_visible(engine, item) for item in pending):
         return None
     origin = engine.now()
@@ -300,7 +364,22 @@ def _commands(
     winners = set()
     for group in claimants.values():
         winners.add(min(group)[1])
+    keep_window: set[str] = set()
+    for name, engine in world.engines.items():
+        held = _onboard_request(engine, by_id)
+        if held is not None and held.deadline_sec <= now + dt:
+            continue
+        if any(
+            item.release_sec <= now < item.deadline_sec
+            and _payload_matches(engine, item)
+            and not _captured(engine, item.request_id)
+            and _scarce_window(engine, item, dt)
+            for item in requests
+        ):
+            keep_window.add(name)
     for name in winners:
+        if name in keep_window:
+            continue
         commands[name] = "comms"
     for name, engine in world.engines.items():
         if commands[name] != "wait":
@@ -308,13 +387,18 @@ def _commands(
         pending = [
             item
             for item in requests
-            if item.release_sec <= now < item.deadline_sec and _payload_matches(engine, item) and _visible_during(engine, item, dt)
+            if item.release_sec <= now < item.deadline_sec
+            and _payload_matches(engine, item)
+            and not _captured(engine, item.request_id)
+            and _visible_during(engine, item, dt)
         ]
         if not pending:
             continue
-        chosen = pending[0]
-        for item in pending[1:]:
-            if _better(item, chosen, policy):
+        scarce = [item for item in pending if _scarce_window(engine, item, dt)]
+        pool = scarce or pending
+        chosen = pool[0]
+        for item in pool[1:]:
+            if _prefer_window(engine, item, chosen, policy, dt):
                 chosen = item
         _focus_target(engine, chosen, request_ids)
         commands[name] = "imaging"
@@ -498,7 +582,7 @@ def mission_kpis(
     qualities = [
         1.0 if product.get("quality") == "full" else 0.0
         for engine in world.engines.values()
-        for product in engine._products
+        for product in engine.products()
     ]
     fuel = 0.0
     faults = 0
@@ -543,27 +627,50 @@ def run_policy(
     world.set_outages([(item.station, item.start_sec, item.end_sec) for item in closed])
     blocked: set[str] = set()
     relays: list[dict] = []
+    rejected: list[dict] = []
     schedule: list[dict] = []
     elapsed = float(world.now_sec())
     replans = 0
     started = time.perf_counter()
     while elapsed + 1e-9 < world.horizon_sec:
         dt = min(step_sec, world.horizon_sec - elapsed)
-        relays.extend(_relay(world, requests, elapsed, dt, closed))
+        planned = dt
+        moved = _relay(world, requests, elapsed, planned, closed)
+        relays.extend(moved)
         commands, denied = _commands(world, requests, policy, elapsed, closed, dt)
         blocked.update(denied)
         dt, commands = _cut_to_event(world, requests, commands, elapsed, dt, closed)
+        book = CommandBook()
+        issued = {}
+        for name, kind in commands.items():
+            targets = [target.name for target in world.engines[name].scenario.ground_targets]
+            request_id = targets[-1] if targets else ""
+            command = MissionCommand(
+                command_id=f"{elapsed:.3f}:{name}:{kind}:{request_id}",
+                actor_id=name,
+                kind=kind,
+                request_id=request_id,
+                destination_id=world.engines[name].get_state_snapshot().contact_station,
+            )
+            issued[name] = book.submit(command)
         schedule.append(
             {
                 "dt": dt,
-                "orders": dict(commands),
+                "orders": book.orders(),
+                "commands": issued,
+                "relays": moved,
+                "relay_dt": planned,
                 "targets": {
                     name: [target.name for target in engine.scenario.ground_targets]
                     for name, engine in world.engines.items()
                 },
             }
         )
-        world.step(dt, commands)
+        world.step(dt, book.orders())
+        schedule[-1]["rejected"] = list(getattr(world, "last_rejected", []))
+        rejected.extend(schedule[-1]["rejected"])
+        for record in issued.values():
+            book.complete(record["command_id"])
         elapsed = float(world.now_sec())
         replans += 1
     runtime_sec = time.perf_counter() - started
@@ -593,6 +700,7 @@ def run_policy(
         "receipts": receipts,
         "unmet": unmet,
         "relays": relays,
+        "rejected": rejected,
         "schedule": schedule,
         "score": score,
         "kpis": mission_kpis(

@@ -22,7 +22,7 @@ from space_env.mission import (
     execute_decay_plan,
 )
 
-__version__ = "0.89.0"
+__version__ = "0.93.0"
 __all__ = [
     "ENV_CARDS",
     "Orbit",

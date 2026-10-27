@@ -1,42 +1,214 @@
-# Шестнадцать аппаратов на 72 часа. Состав измеряет масштаб, не обещает закрыть каждую заявку.
+# Шестнадцать аппаратов на 72 часа. Спрос стоит на реальных проходах, кроме двух учебных заявок.
 version: 2
-epoch: "2026-10-20T10:00:00Z"
+epoch: '2026-10-20T10:00:00Z'
 horizon_sec: 259200
 instances:
-  - {id: sentinel-a, model: sentinel-2a, nu_deg: 80}
-  - {id: sentinel-b, model: sentinel-2a, nu_deg: 180}
-  - {id: landsat, model: landsat-9, nu_deg: 90}
-  - {id: radar, model: sar-small, nu_deg: 45}
-  - {id: sentinel-c, model: sentinel-2a, nu_deg: 0}
-  - {id: sentinel-d, model: sentinel-2a, nu_deg: 24}
-  - {id: sentinel-e, model: sentinel-2a, nu_deg: 48}
-  - {id: sentinel-f, model: sentinel-2a, nu_deg: 72}
-  - {id: sentinel-g, model: sentinel-2a, nu_deg: 108}
-  - {id: sentinel-h, model: sentinel-2a, nu_deg: 132}
-  - {id: sentinel-i, model: sentinel-2a, nu_deg: 156}
-  - {id: sentinel-j, model: sentinel-2a, nu_deg: 204}
-  - {id: sentinel-k, model: sentinel-2a, nu_deg: 228}
-  - {id: sentinel-l, model: sentinel-2a, nu_deg: 252}
-  - {id: sentinel-m, model: sentinel-2a, nu_deg: 276}
-  - {id: sentinel-n, model: sentinel-2a, nu_deg: 300}
+- id: sentinel-a
+  model: sentinel-2a
+  nu_deg: 80
+- id: sentinel-b
+  model: sentinel-2a
+  nu_deg: 180
+- id: landsat
+  model: landsat-9
+  nu_deg: 90
+- id: radar
+  model: sar-small
+  nu_deg: 45
+- id: sentinel-c
+  model: sentinel-2a
+  nu_deg: 0
+- id: sentinel-d
+  model: sentinel-2a
+  nu_deg: 24
+- id: sentinel-e
+  model: sentinel-2a
+  nu_deg: 48
+- id: sentinel-f
+  model: sentinel-2a
+  nu_deg: 72
+- id: sentinel-g
+  model: sentinel-2a
+  nu_deg: 108
+- id: sentinel-h
+  model: sentinel-2a
+  nu_deg: 132
+- id: sentinel-i
+  model: sentinel-2a
+  nu_deg: 156
+- id: sentinel-j
+  model: sentinel-2a
+  nu_deg: 204
+- id: sentinel-k
+  model: sentinel-2a
+  nu_deg: 228
+- id: sentinel-l
+  model: sentinel-2a
+  nu_deg: 252
+- id: sentinel-m
+  model: sentinel-2a
+  nu_deg: 276
+- id: sentinel-n
+  model: sentinel-2a
+  nu_deg: 300
 stations:
-  - Kiruna
-  - Svalbard
-  - Matera
+- Kiruna
+- Svalbard
+- Matera
 requests:
-  - id: kiruna-day
-    lat_deg: 67.85712777777778
-    lon_deg: 20.964325
-    release_sec: 0
-    deadline_sec: 86400
-    size_bits: 8000000
-    priority: 2
-    payload: optical
-  - id: svalbard-radar
-    lat_deg: 78.912776
-    lon_deg: 41.395619
-    release_sec: 0
-    deadline_sec: 86400
-    size_bits: 8000000
-    priority: 1
-    payload: sar
+- id: kiruna-day
+  lat_deg: 67.85712777777778
+  lon_deg: 20.964325
+  release_sec: 0
+  deadline_sec: 86400
+  size_bits: 8000000
+  priority: 2
+  payload: optical
+- id: svalbard-radar
+  lat_deg: 78.912776
+  lon_deg: 41.395619
+  release_sec: 0
+  deadline_sec: 86400
+  size_bits: 8000000
+  priority: 1
+  payload: sar
+- id: fleet-00
+  lat_deg: 70.2135
+  lon_deg: 28.4601
+  release_sec: 0.0
+  deadline_sec: 1800.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Kiruna
+  quality: full
+- id: fleet-01
+  lat_deg: 47.4567
+  lon_deg: 13.1475
+  release_sec: 0.0
+  deadline_sec: 1800.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Matera
+  quality: full
+- id: fleet-02
+  lat_deg: 23.8386
+  lon_deg: 7.5144
+  release_sec: 0.0
+  deadline_sec: 1800.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Matera
+  quality: full
+- id: fleet-03
+  lat_deg: 76.4377
+  lon_deg: 31.8722
+  release_sec: 0.0
+  deadline_sec: 1980.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-04
+  lat_deg: 77.7193
+  lon_deg: 45.6411
+  release_sec: 150.0
+  deadline_sec: 2250.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-05
+  lat_deg: 75.5555
+  lon_deg: 35.7807
+  release_sec: 600.0
+  deadline_sec: 2700.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-06
+  lat_deg: 77.4551
+  lon_deg: 41.1345
+  release_sec: 960.0
+  deadline_sec: 3060.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-07
+  lat_deg: 75.1924
+  lon_deg: 31.3762
+  release_sec: 1410.0
+  deadline_sec: 3510.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-08
+  lat_deg: 76.0637
+  lon_deg: 29.849
+  release_sec: 2400.0
+  deadline_sec: 4500.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-09
+  lat_deg: 78.1405
+  lon_deg: 36.8043
+  release_sec: 2760.0
+  deadline_sec: 4860.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-10
+  lat_deg: 76.1399
+  lon_deg: 26.7245
+  release_sec: 3210.0
+  deadline_sec: 5310.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-11
+  lat_deg: 77.8123
+  lon_deg: 31.8532
+  release_sec: 3570.0
+  deadline_sec: 5670.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-12
+  lat_deg: 75.2768
+  lon_deg: 20.7362
+  release_sec: 4020.0
+  deadline_sec: 6120.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full
+- id: fleet-13
+  lat_deg: 77.0066
+  lon_deg: 25.0339
+  release_sec: 4380.0
+  deadline_sec: 6480.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Svalbard
+  quality: full

@@ -124,9 +124,10 @@
     <aside id="brief">
       <h2>Что видно</h2>
       <p id="explain">Считаем дугу…</p>
-      <h2>Заявки на 72 часа</h2>
+      <h2>Заявки шестнадцати аппаратов</h2>
       <ul id="tasking-requests"></ul>
       <p id="mission-outcome">Считаем исход миссии…</p>
+      <ul id="mission-statuses"></ul>
       <div id="summary"></div>
       <h2 id="approach-title">Сближения</h2>
       <table id="approaches">
@@ -199,6 +200,24 @@
         const done = (data.on_time || []).join(", ") || "нет";
         const missed = (data.unmet || []).length;
         missionOutcome.textContent = `Сдано в срок: ${done}. Без сдачи: ${missed}`;
+        const statuses = document.querySelector("#mission-statuses");
+        statuses.replaceChildren();
+        const reasons = Object.fromEntries((data.unmet || []).map((item) => [item.request_id, item.reason]));
+        for (const row of data.statuses || []) {
+          const item = document.createElement("li");
+          const reason = reasons[row.request_id];
+          item.textContent = reason ? `${row.request_id}: ${row.status}. ${reason}` : `${row.request_id}: ${row.status}`;
+          statuses.appendChild(item);
+        }
+        const rejected = data.rejected || [];
+        const rejection = document.createElement("li");
+        if (rejected.length) {
+          const sample = rejected[0];
+          rejection.textContent = `Отклонено команд: ${rejected.length}. Например, ${sample.actor_id}: ${sample.kind}. ${sample.reason}`;
+        } else {
+          rejection.textContent = "Отклонённых команд нет";
+        }
+        statuses.appendChild(rejection);
       })
       .catch(() => {
         missionOutcome.textContent = "";

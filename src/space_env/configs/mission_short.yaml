@@ -14,122 +14,122 @@ stations:
 - Matera
 requests:
 - id: req-00
-  lat_deg: 63.5603
-  lon_deg: -127.3909
-  release_sec: 340.0
-  deadline_sec: 1612.0
+  lat_deg: 75.7399
+  lon_deg: 38.5643
+  release_sec: 60.0
+  deadline_sec: 2160.0
   size_bits: 8000000.0
-  priority: 4
-  payload: sar
-  destination: Kiruna
-  quality: full
-- id: req-01
-  lat_deg: -4.9676
-  lon_deg: 117.3175
-  release_sec: 683.0
-  deadline_sec: 1672.0
-  size_bits: 8000000.0
-  priority: 2
+  priority: 3
   payload: optical
   destination: Svalbard
   quality: full
+- id: req-01
+  lat_deg: 64.116
+  lon_deg: 19.3756
+  release_sec: 280.0
+  deadline_sec: 2380.0
+  size_bits: 8000000.0
+  priority: 4
+  payload: optical
+  destination: Kiruna
+  quality: full
 - id: req-02
-  lat_deg: 11.4472
-  lon_deg: -169.1338
-  release_sec: 185.0
-  deadline_sec: 1346.0
+  lat_deg: 82.5671
+  lon_deg: 98.8528
+  release_sec: 400.0
+  deadline_sec: 2500.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: sar
+  destination: Svalbard
+  quality: full
+- id: req-03
+  lat_deg: 52.7192
+  lon_deg: 11.8662
+  release_sec: 480.0
+  deadline_sec: 2580.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: optical
+  destination: Matera
+  quality: full
+- id: req-04
+  lat_deg: 45.7556
+  lon_deg: 8.8495
+  release_sec: 600.0
+  deadline_sec: 2700.0
   size_bits: 8000000.0
   priority: 4
   payload: optical
   destination: Matera
   quality: full
-- id: req-03
-  lat_deg: -17.1349
-  lon_deg: 103.2575
-  release_sec: 542.0
-  deadline_sec: 2166.0
-  size_bits: 8000000.0
-  priority: 3
-  payload: optical
-  destination: Kiruna
-  quality: full
-- id: req-04
-  lat_deg: -1.0453
-  lon_deg: -131.0131
-  release_sec: 89.0
-  deadline_sec: 1136.0
-  size_bits: 8000000.0
-  priority: 2
-  payload: optical
-  destination: Svalbard
-  quality: full
 - id: req-05
-  lat_deg: -25.8993
-  lon_deg: 89.6306
-  release_sec: 290.0
-  deadline_sec: 1986.0
+  lat_deg: 74.2801
+  lon_deg: 27.1023
+  release_sec: 640.0
+  deadline_sec: 2740.0
   size_bits: 8000000.0
   priority: 1
   payload: sar
-  destination: Matera
+  destination: Svalbard
   quality: full
 - id: req-06
-  lat_deg: 3.0748
-  lon_deg: 172.1039
-  release_sec: 44.0
-  deadline_sec: 1066.0
+  lat_deg: 60.2418
+  lon_deg: 11.842
+  release_sec: 880.0
+  deadline_sec: 2980.0
   size_bits: 8000000.0
-  priority: 3
-  payload: optical
+  priority: 2
+  payload: sar
   destination: Kiruna
   quality: full
 - id: req-07
-  lat_deg: 10.3595
-  lon_deg: -79.8729
-  release_sec: 692.0
-  deadline_sec: 1511.0
+  lat_deg: 54.1671
+  lon_deg: 8.6726
+  release_sec: 980.0
+  deadline_sec: 3080.0
   size_bits: 8000000.0
-  priority: 3
-  payload: optical
-  destination: Svalbard
+  priority: 1
+  payload: sar
+  destination: Matera
   quality: full
 - id: req-08
-  lat_deg: 66.0903
-  lon_deg: 5.7526
-  release_sec: 522.0
-  deadline_sec: 1415.0
+  lat_deg: 45.5766
+  lon_deg: 5.358
+  release_sec: 1120.0
+  deadline_sec: 3220.0
   size_bits: 8000000.0
   priority: 2
-  payload: optical
+  payload: sar
   destination: Matera
   quality: full
 - id: req-09
-  lat_deg: 40.9688
-  lon_deg: 40.4552
-  release_sec: 83.0
-  deadline_sec: 1261.0
-  size_bits: 8000000.0
-  priority: 3
-  payload: optical
-  destination: Kiruna
-  quality: full
-- id: req-10
-  lat_deg: -54.8529
-  lon_deg: 10.235
-  release_sec: 556.0
-  deadline_sec: 2266.0
+  lat_deg: 43.1096
+  lon_deg: 4.5629
+  release_sec: 1160.0
+  deadline_sec: 3260.0
   size_bits: 8000000.0
   priority: 4
   payload: sar
-  destination: Svalbard
+  destination: Matera
   quality: full
-- id: req-11
-  lat_deg: 23.3727
-  lon_deg: 126.2426
-  release_sec: 330.0
-  deadline_sec: 1447.0
+- id: req-10
+  lat_deg: 39.4009
+  lon_deg: 3.4588
+  release_sec: 1220.0
+  deadline_sec: 3320.0
   size_bits: 8000000.0
   priority: 1
-  payload: optical
+  payload: sar
+  destination: Matera
+  quality: full
+- id: req-11
+  lat_deg: 28.2296
+  lon_deg: 0.5944
+  release_sec: 1400.0
+  deadline_sec: 3500.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: sar
   destination: Matera
   quality: full

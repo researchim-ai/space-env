@@ -151,8 +151,7 @@ def test_downlink_does_not_invent_bits_and_the_recorder_balances():
     empty = engine.get_state_snapshot()
     assert empty.data_downlink_Mb == 0.0
     assert empty.delivered_bits == 0.0
-    engine._stored_bits = 2.0e6
-    engine._generated_bits = 2.0e6
+    engine.accept_bits(2.0e6, origin="imaging", request_id="frame")
     engine.step(5.0, "comms")
     filled = engine.get_state_snapshot()
     assert filled.delivered_bits > 0.0

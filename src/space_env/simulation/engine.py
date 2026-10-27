@@ -790,6 +790,7 @@ class SimulationEngine:
             piece["custodian"] = owner
             piece["delivered_to"] = ""
             piece["onboard_bits"] = float(piece.get("onboard_bits", piece.get("accepted_bits", 0.0)))
+            piece["available_time_sec"] = float(piece.get("available_time_sec", self._time_sec))
             self._products.append(piece)
             total += piece["onboard_bits"]
         if total <= 0.0:
@@ -832,6 +833,7 @@ class SimulationEngine:
                 "request_id": request_id,
                 "offset_bits": 0.0,
                 "generated_time_sec": self._time_sec,
+                "available_time_sec": self._time_sec,
                 "size_bits": bits,
                 "accepted_bits": added,
                 "onboard_bits": added,
@@ -862,6 +864,7 @@ class SimulationEngine:
             bits = payload.store_rate_bps * duration_sec
         if bits <= 0.0:
             return
+        ready = min(float(self._time_sec), float(when_sec) + max(float(duration_sec), 0.0))
         room = self._room_bits()
         added = bits if math.isinf(room) else min(bits, room)
         lost = bits - added
@@ -880,6 +883,7 @@ class SimulationEngine:
                     "request_id": request_id,
                     "offset_bits": 0.0,
                     "generated_time_sec": when_sec,
+                    "available_time_sec": ready,
                     "size_bits": bits,
                     "accepted_bits": added,
                     "onboard_bits": added,
@@ -894,47 +898,79 @@ class SimulationEngine:
         existing["size_bits"] += bits
         existing["accepted_bits"] += added
         existing["onboard_bits"] = float(existing.get("onboard_bits", 0.0)) + added
+        existing["available_time_sec"] = max(float(existing.get("available_time_sec", when_sec)), ready)
         existing["quality"] = "full" if existing["accepted_bits"] + 1e-6 >= existing["size_bits"] else "partial"
 
-    def _move_downlink(self, open_sec: float, margin_db: float, station: str = "") -> float:
+    def _move_downlink(
+        self,
+        open_sec: float,
+        margin_db: float,
+        station: str = "",
+        start_sec: float | None = None,
+        end_sec: float | None = None,
+    ) -> float:
         if open_sec <= 0.0 or self._stored_bits <= 0.0 or margin_db < 0.0:
             return 0.0
+        if start_sec is None or end_sec is None:
+            end_sec = self._time_sec
+            start_sec = end_sec - open_sec
         rate = stepped_rate_bps(margin_db, self.spacecraft.config.comms.data_rate_max_bps)
-        moved = min(self._stored_bits, rate * open_sec)
+        ready = 0.0
+        owner = self.spacecraft.config.name
+        for product in self._products:
+            if product.get("delivered_to") or product.get("custodian") != owner:
+                continue
+            available = float(product.get("available_time_sec", product.get("generated_time_sec", 0.0)))
+            if available > float(start_sec) + 1e-9:
+                continue
+            ready += float(product.get("onboard_bits", 0.0))
+        moved = min(ready, rate * open_sec)
         if moved <= 0.0:
             return 0.0
+        air = moved / rate if rate > 0.0 else 0.0
         self._stored_bits -= moved
         self._delivered_bits += moved
         self._data_downlink_Mb = self._delivered_bits / 1.0e6
         self.spacecraft.state.comms.data_sent_this_pass_Mb += moved / 1.0e6
-        self._mark_delivered(moved, station or self._station_name or "ground")
+        self._mark_delivered(moved, station or self._station_name or "ground", float(start_sec), float(start_sec) + air)
         return moved
 
-    def _mark_delivered(self, bits: float, station: str) -> None:
+    def _mark_delivered(self, bits: float, station: str, start_sec: float, end_sec: float) -> None:
+        """Квитанция несёт отрезок передачи. time_sec — момент, когда эти биты дошли."""
         left = bits
+        span = max(float(end_sec) - float(start_sec), 0.0)
+        speed = bits / span if span > 1e-12 else 0.0
+        cursor = float(start_sec)
+        stop = float(end_sec)
         for product in self._products:
             if left <= 1e-9:
                 return
             if product.get("delivered_to") or product.get("custodian") != self.spacecraft.config.name:
                 continue
             onboard = float(product.get("onboard_bits", 0.0))
-            if onboard <= 1e-9:
+            ready = float(product.get("available_time_sec", product.get("generated_time_sec", 0.0)))
+            if onboard <= 1e-9 or ready > float(start_sec) + 1e-9:
                 continue
             take = min(onboard, left)
             offset = float(product.get("offset_bits", 0.0)) + float(product.get("size_bits", onboard)) - onboard
             product["onboard_bits"] = onboard - take
             if product["onboard_bits"] <= 1e-9:
                 product["delivered_to"] = station
+            piece_end = cursor + (take / speed if speed > 0.0 else 0.0)
+            piece_end = min(stop, piece_end) if speed > 0.0 else stop
             self._receipts.append(
                 {
                     "product_id": product["product_id"],
                     "request_id": product["request_id"],
                     "destination": station,
-                    "time_sec": self._time_sec,
+                    "time_sec": piece_end,
+                    "start_sec": cursor,
+                    "end_sec": piece_end,
                     "offset_bits": offset,
                     "bits": take,
                 }
             )
+            cursor = piece_end
             left -= take
 
     def _terminal_free(self, start: float, end: float) -> float:
@@ -960,24 +996,32 @@ class SimulationEngine:
         if free <= 0.0:
             return 0.0
         self._terminal_reserve(start, start + dt_sec)
-        moved = self._move_downlink(free, self._link_margin_db)
+        moved = self._move_downlink(free, self._link_margin_db, self._station_name or "ground", start, start + free)
         return moved / 1.0e6
 
-    def _accrue_downlink(self, samples: list[tuple[float, np.ndarray, np.ndarray]], t0: float) -> None:
-        if not self._downlink_armed:
+    def _accrue_downlink(
+        self,
+        samples: list[tuple[float, np.ndarray, np.ndarray]],
+        t0: float,
+        *,
+        armed: bool,
+    ) -> None:
+        if not armed:
             return
         moved = 0.0
         for left, right in zip(samples, samples[1:]):
             open_left, margin_left, name_left = self._link_sample(left[1], t0 + left[0])
             open_right, margin_right, name_right = self._link_sample(right[1], t0 + right[0])
             span = right[0] - left[0]
+            left_t = t0 + left[0]
+            right_t = t0 + right[0]
             if open_left and open_right and name_left == name_right:
-                moved += self._move_downlink(span, min(margin_left, margin_right), name_left)
+                moved += self._move_downlink(span, min(margin_left, margin_right), name_left, left_t, right_t)
             else:
                 if open_left:
-                    moved += self._move_downlink(0.5 * span, margin_left, name_left)
+                    moved += self._move_downlink(0.5 * span, margin_left, name_left, left_t, left_t + 0.5 * span)
                 if open_right:
-                    moved += self._move_downlink(0.5 * span, margin_right, name_right)
+                    moved += self._move_downlink(0.5 * span, margin_right, name_right, right_t - 0.5 * span, right_t)
         if self._time_sec > t0:
             self._terminal_reserve(t0, self._time_sec)
         del moved
@@ -1247,6 +1291,7 @@ class SimulationEngine:
         was_contact = self._in_contact
         origin = self._time_sec
         self._apply_command(command, command_payload or {}, events, dt_sec)
+        armed = self._downlink_armed
         windows = self._imaging_windows(origin, origin + dt_sec, agent=command == "imaging")
         if origin == 0.0:
             self._fire_injects(0.0, 0.0, events, include_zero=True)
@@ -1276,7 +1321,7 @@ class SimulationEngine:
             self._radio_recovery_steps -= 1
             if self._radio_recovery_steps == 0:
                 self._faults.discard("radio_latch")
-        self._accrue_downlink(combined, origin)
+        self._accrue_downlink(combined, origin, armed=armed)
         self._soc_rate = (self.spacecraft.state.power.battery_soc - self._prev_soc) / dt_sec
         self._prev_soc = self.spacecraft.state.power.battery_soc
         self._emit_edges(was_umbra, was_contact, events, combined, origin)
@@ -1308,6 +1353,10 @@ class SimulationEngine:
     @property
     def receipts(self) -> tuple[dict, ...]:
         return tuple(self._receipts)
+
+    def products(self) -> tuple[dict, ...]:
+        """Снимок регистратора. Политика читает его и не пишет в борт."""
+        return tuple(dict(item) for item in self._products)
 
     def request_report(self, request_id: str, *, deadline_sec: float | None = None, destination: str | None = None) -> dict:
         """Полнота заявки по квитанциям, а не по общей сумме регистратора."""

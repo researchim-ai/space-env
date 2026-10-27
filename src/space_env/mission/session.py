@@ -38,4 +38,5 @@ def mission_report(
         "statuses": statuses,
         "weighted_on_time": report["score"]["weighted_on_time"],
         "safety_violations": report["kpis"]["safety_violations"],
+        "rejected": report["rejected"],
     }

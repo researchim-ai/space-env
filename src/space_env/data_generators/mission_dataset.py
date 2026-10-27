@@ -43,12 +43,14 @@ def replay(path: str | Path) -> bool:
     from space_env.mission.scenarios import GroundTarget
     from space_env.mission.scenario_v2 import load_scenario_v2, world_from_scenario
     from space_env.mission.tasking import requests_from_scenario, run_policy
+    from space_env.simulation.commands import CommandBook, MissionCommand
 
     spec = load_scenario_v2(record["scenario"])
     requests = requests_from_scenario(spec)
     by_id = {item.request_id: item for item in requests}
     world = world_from_scenario(record["scenario"], attach_stations=True, refresh_passes=False)
     world.set_outages([(item["station"], item["start_sec"], item["end_sec"]) for item in spec.get("outages", [])])
+    book = CommandBook()
     for item in record["schedule"]:
         for name, idents in item.get("targets", {}).items():
             engine = world.engines[name]
@@ -57,7 +59,27 @@ def replay(path: str | Path) -> bool:
                 for ident in idents
                 if ident in by_id
             ]
-        world.step(float(item["dt"]), item["orders"])
+        hops = item.get("relays") or []
+        if hops:
+            from space_env.simulation.fleet import Fleet
+
+            fleet = Fleet(world.engines)
+            span = float(item.get("relay_dt", item["dt"]))
+            for hop in hops:
+                fleet.relay(hop["source"], hop["destination"], span)
+        for name, record_command in item.get("commands", {}).items():
+            book.submit(
+                MissionCommand(
+                    command_id=record_command["command_id"],
+                    actor_id=record_command["actor_id"],
+                    kind=record_command["kind"],
+                    request_id=record_command.get("request_id", ""),
+                    destination_id=record_command.get("destination_id", ""),
+                )
+            )
+        world.step(float(item["dt"]), book.orders())
+        for record_command in item.get("commands", {}).values():
+            book.complete(record_command["command_id"])
     scored = run_policy(world, requests, step_sec=float(record["step_sec"]), policy=record["policy"])
     receipts = [
         {

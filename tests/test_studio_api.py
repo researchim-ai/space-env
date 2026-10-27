@@ -36,7 +36,9 @@ def test_api_serves_scenario_fleet_and_studio():
     status, body, _kind = handle_get("/api/tasking", {})
     tasking = json.loads(body)
     assert status == 200
-    assert tasking["requests"] == ["kiruna-day", "svalbard-radar"]
+    assert tasking["requests"][:2] == ["kiruna-day", "svalbard-radar"]
+    assert len(tasking["requests"]) == 16
+    assert tasking["requests"][2].startswith("fleet-")
     assert tasking["stations"] == ["Kiruna", "Svalbard", "Matera"]
     _status, page, kind = handle_get("/studio", {})
     assert b"tasking-requests" in page

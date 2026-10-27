@@ -45,9 +45,9 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
     if path == "/api/scenario":
         return _json_bytes(load_shift_scenario())
     if path == "/api/tasking":
-        root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "eo_72h.yaml"
+        root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "eo_72h_16.yaml"
         if not root.is_file():
-            root = Path(__file__).resolve().parents[1] / "configs" / "eo_72h.yaml"
+            root = Path(__file__).resolve().parents[1] / "configs" / "eo_72h_16.yaml"
         return _json_bytes(scenario_manifest(root))
     if path == "/api/mission":
         return _json_bytes(_mission_outcome())

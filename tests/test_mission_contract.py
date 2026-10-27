@@ -11,7 +11,7 @@ from space_env.core.spacecraft import PropulsionConfig, Spacecraft, SpacecraftCo
 from space_env.core.time import Time
 from space_env.mission.events import EventKind, PlannedEvent
 from space_env.mission.scenario_v2 import load_scenario_v2
-from space_env.mission.scenarios import ScenarioConfig
+from space_env.mission.scenarios import GroundTarget, ScenarioConfig
 from space_env.mission.tasking import TaskRequest, StationOutage, delivery_score, mission_kpis, run_policy
 from space_env.simulation.engine import SimulationEngine
 from space_env.simulation.world import MissionWorld
@@ -158,6 +158,10 @@ def test_one_station_and_an_outage_are_enforced_by_the_world():
     delivered = {name: engine.delivered_bits for name, engine in shared.engines.items()}
     assert delivered["a"] > 0.0
     assert delivered["b"] == 0.0
+    assert shared.last_rejected == [{"actor_id": "b", "kind": "comms", "reason": "станция занята"}]
+    receipt = shared.engines["a"].receipts[0]
+    assert receipt["start_sec"] < receipt["end_sec"] <= 1.0 + 1e-9
+    assert receipt["time_sec"] == receipt["end_sec"]
     closed = _world({"a": contacted("a")}, horizon=3.0)
     report = run_policy(
         closed,
@@ -168,3 +172,21 @@ def test_one_station_and_an_outage_are_enforced_by_the_world():
     assert report["receipts"]
     assert all(not (1.0 < float(item["time_sec"]) < 3.0) for item in report["receipts"])
     assert closed.engines["a"].delivered_bits < 2.0e6
+
+
+def test_a_picture_is_not_receipted_before_it_exists():
+    item = _engine("cam")
+    lat, lon = subsatellite_latlon(item.orbit.r, item.now())
+    item.stations = [GroundStation(name="Shared", lat_deg=lat, lon_deg=lon, min_elevation_deg=5.0)]
+    item.scenario.ground_stations = list(item.stations)
+    item.scenario.ground_targets = [GroundTarget(name="spot", lat_deg=lat, lon_deg=lon)]
+    item.spacecraft.config.payload.images_in_eclipse = True
+    item._refresh_environment()
+    item.step(1.0, "comms")
+    item.step(2.0, "imaging")
+    ready = float(item.products()[0]["available_time_sec"])
+    if not item.receipts:
+        item.step(1.0, "comms")
+    assert item.receipts
+    assert all(float(slip["start_sec"]) + 1e-9 >= ready for slip in item.receipts)
+    assert all(slip["start_sec"] <= slip["end_sec"] == slip["time_sec"] for slip in item.receipts)

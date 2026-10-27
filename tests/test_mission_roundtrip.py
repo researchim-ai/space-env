@@ -74,11 +74,11 @@ def test_two_seeds_change_the_mission_and_the_files_have_the_promised_counts():
     left = build_mission("short", 1)
     right = build_mission("short", 2)
     assert len(left["requests"]) == 12
-    assert len(build_mission("day", 1)["requests"]) == 32
     assert left["requests"][0]["lat_deg"] != right["requests"][0]["lat_deg"]
     loaded = load_scenario_v2("configs/scenarios/mission_short.yaml")
     assert len(loaded["requests"]) == 12
     assert len(loaded["instances"]) == 2
+    assert loaded["requests"][0]["destination"] in {"Kiruna", "Svalbard", "Matera"}
     day = load_scenario_v2("configs/scenarios/mission_day.yaml")
     assert len(day["requests"]) == 32
     assert len(day["instances"]) == 4
@@ -116,6 +116,22 @@ def test_cli_gym_and_api_share_the_short_mission():
     assert cli["on_time"] == api["on_time"] == report["on_time"] == flown["score"]["on_time"]
     assert cli["unmet"] == api["unmet"] == report["unmet"]
     assert len(report["statuses"]) == 12
+    assert report["on_time"] == [
+        "req-00",
+        "req-01",
+        "req-02",
+        "req-03",
+        "req-04",
+        "req-05",
+        "req-06",
+        "req-07",
+        "req-08",
+        "req-09",
+        "req-10",
+        "req-11",
+    ]
+    assert report["unmet"] == []
+    assert isinstance(report["rejected"], list)
 
 
 def test_holdout_seed_is_not_the_training_mission():
@@ -142,7 +158,9 @@ def test_three_families_record_commands_and_replay(tmp_path):
     assert impossible_report["on_time"] == []
     assert impossible_report["unmet"][0]["reason"] == "срок вышел"
     sealed = seal_run(tmp_path / "nominal.json", nominal, step_sec=30.0)
-    assert sealed["schedule"]
+    commands = [command for item in sealed["schedule"] for command in item.get("commands", {}).values()]
+    assert commands
+    assert all(item["command_id"] and item["kind"] in {"wait", "imaging", "comms"} for item in commands)
     assert replay(tmp_path / "nominal.json") is True
 
 
@@ -155,4 +173,5 @@ def test_day_mission_names_every_request():
     assert len(report["statuses"]) == 32
     assert set(report["on_time"]).isdisjoint(unmet)
     assert set(report["on_time"]) | unmet == names
+    assert len(report["on_time"]) >= 30
     assert report["safety_violations"] >= 0

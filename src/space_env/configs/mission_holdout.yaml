@@ -14,122 +14,122 @@ stations:
 - Matera
 requests:
 - id: req-00
-  lat_deg: 13.4619
-  lon_deg: 4.2659
-  release_sec: 689.0
-  deadline_sec: 1955.0
+  lat_deg: 80.4953
+  lon_deg: 130.6296
+  release_sec: 320.0
+  deadline_sec: 2420.0
   size_bits: 8000000.0
-  priority: 4
+  priority: 1
   payload: sar
-  destination: Kiruna
+  destination: Svalbard
   quality: full
 - id: req-01
-  lat_deg: 13.8769
-  lon_deg: -76.3304
-  release_sec: 699.0
-  deadline_sec: 2461.0
+  lat_deg: 52.7192
+  lon_deg: 11.8662
+  release_sec: 480.0
+  deadline_sec: 2580.0
   size_bits: 8000000.0
   priority: 3
   payload: optical
-  destination: Svalbard
+  destination: Matera
   quality: full
 - id: req-02
-  lat_deg: 0.7781
-  lon_deg: 39.4008
-  release_sec: 692.0
-  deadline_sec: 2010.0
+  lat_deg: 43.422
+  lon_deg: 7.9813
+  release_sec: 640.0
+  deadline_sec: 2740.0
   size_bits: 8000000.0
   priority: 2
   payload: optical
   destination: Matera
   quality: full
 - id: req-03
-  lat_deg: -19.773
-  lon_deg: -38.9935
-  release_sec: 669.0
-  deadline_sec: 1713.0
+  lat_deg: 73.1704
+  lon_deg: 24.9808
+  release_sec: 660.0
+  deadline_sec: 2760.0
   size_bits: 8000000.0
-  priority: 1
-  payload: optical
+  priority: 2
+  payload: sar
   destination: Kiruna
   quality: full
 - id: req-04
-  lat_deg: -14.4981
-  lon_deg: 156.1702
-  release_sec: 495.0
-  deadline_sec: 1506.0
+  lat_deg: 70.9009
+  lon_deg: 21.4378
+  release_sec: 700.0
+  deadline_sec: 2800.0
+  size_bits: 8000000.0
+  priority: 2
+  payload: sar
+  destination: Kiruna
+  quality: full
+- id: req-05
+  lat_deg: 36.3943
+  lon_deg: 5.6596
+  release_sec: 760.0
+  deadline_sec: 2860.0
   size_bits: 8000000.0
   priority: 3
   payload: optical
-  destination: Svalbard
-  quality: full
-- id: req-05
-  lat_deg: -54.7263
-  lon_deg: -72.0813
-  release_sec: 272.0
-  deadline_sec: 1713.0
-  size_bits: 8000000.0
-  priority: 4
-  payload: sar
   destination: Matera
   quality: full
 - id: req-06
-  lat_deg: -1.2072
-  lon_deg: 139.5691
-  release_sec: 255.0
-  deadline_sec: 1733.0
+  lat_deg: 66.2278
+  lon_deg: 16.2541
+  release_sec: 780.0
+  deadline_sec: 2880.0
   size_bits: 8000000.0
-  priority: 1
-  payload: optical
+  priority: 2
+  payload: sar
   destination: Kiruna
   quality: full
 - id: req-07
-  lat_deg: 16.0994
-  lon_deg: 35.4892
-  release_sec: 313.0
-  deadline_sec: 1353.0
+  lat_deg: 60.2418
+  lon_deg: 11.842
+  release_sec: 880.0
+  deadline_sec: 2980.0
   size_bits: 8000000.0
-  priority: 3
-  payload: optical
-  destination: Svalbard
+  priority: 4
+  payload: sar
+  destination: Kiruna
   quality: full
 - id: req-08
-  lat_deg: 6.4667
-  lon_deg: -109.6626
-  release_sec: 212.0
-  deadline_sec: 1640.0
+  lat_deg: 45.5766
+  lon_deg: 5.358
+  release_sec: 1120.0
+  deadline_sec: 3220.0
   size_bits: 8000000.0
-  priority: 1
-  payload: optical
+  priority: 2
+  payload: sar
   destination: Matera
   quality: full
 - id: req-09
-  lat_deg: -47.6249
-  lon_deg: -138.4997
-  release_sec: 49.0
-  deadline_sec: 800.0
+  lat_deg: 40.6381
+  lon_deg: 3.8162
+  release_sec: 1200.0
+  deadline_sec: 3300.0
   size_bits: 8000000.0
-  priority: 2
-  payload: optical
-  destination: Kiruna
+  priority: 4
+  payload: sar
+  destination: Matera
   quality: full
 - id: req-10
-  lat_deg: 17.0271
-  lon_deg: -56.1263
-  release_sec: 203.0
-  deadline_sec: 1226.0
+  lat_deg: 35.6839
+  lon_deg: 2.4405
+  release_sec: 1280.0
+  deadline_sec: 3380.0
+  size_bits: 8000000.0
+  priority: 4
+  payload: sar
+  destination: Matera
+  quality: full
+- id: req-11
+  lat_deg: 31.9598
+  lon_deg: 1.4903
+  release_sec: 1340.0
+  deadline_sec: 3440.0
   size_bits: 8000000.0
   priority: 3
   payload: sar
-  destination: Svalbard
-  quality: full
-- id: req-11
-  lat_deg: -16.8608
-  lon_deg: -94.4103
-  release_sec: 560.0
-  deadline_sec: 1782.0
-  size_bits: 8000000.0
-  priority: 4
-  payload: optical
   destination: Matera
   quality: full

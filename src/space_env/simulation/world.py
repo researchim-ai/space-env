@@ -57,7 +57,13 @@ class MissionWorld:
         unknown = set(orders) - set(self.engines)
         if unknown:
             raise KeyError(f"нет аппарата {sorted(unknown)[0]}")
-        orders = self._one_antenna(orders)
+        adjusted = self._one_antenna(orders)
+        self.last_rejected = [
+            {"actor_id": name, "kind": kind, "reason": "станция занята"}
+            for name, kind in orders.items()
+            if kind not in {None, "wait"} and adjusted.get(name) != kind
+        ]
+        orders = adjusted
         for engine in self.engines.values():
             engine.set_link_outages(self.outages)
         for name, engine in self.engines.items():
