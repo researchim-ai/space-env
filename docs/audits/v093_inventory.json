@@ -1,0 +1,1083 @@
+{
+  "package_python_modules": 118,
+  "test_modules": 42,
+  "registered_envs": [
+    "space_env/MissionPlanner-v0",
+    "space_env/ResourceManager-v0",
+    "space_env/AnomalyResponse-v0",
+    "space_env/ConjunctionAssessment-v0",
+    "space_env/Constellation-v0",
+    "space_env/ConstellationOps-v0",
+    "space_env/SentinelAcquisition-v0",
+    "space_env/LandsatAcquisition-v0",
+    "space_env/SentinelPhasing-v0",
+    "space_env/WorkPlan-v0",
+    "space_env/ConjunctionQueue-v0",
+    "space_env/DecayWatch-v0",
+    "space_env/DecayWatchHigh-v0",
+    "space_env/PhaseBurn-v0",
+    "space_env/Reroute-v0",
+    "space_env/FleetShift-v0",
+    "space_env/RendezvousHold-v0",
+    "space_env/PriorityCoverage-v0",
+    "space_env/PassFault-v0",
+    "space_env/DebrisAvoid-v0",
+    "space_env/Disposal-v0",
+    "space_env/StationContention-v0",
+    "space_env/OrderBook-v0",
+    "space_env/SentinelPassFault-v0",
+    "space_env/CubesatAcquisition-v0",
+    "space_env/DayMission-v0",
+    "space_env/DayShift-v0",
+    "space_env/DishAward-v0",
+    "space_env/OperatorShift-v0",
+    "space_env/DemandShift-v0",
+    "space_env/TaskingShift-v0",
+    "space_env/FleetTasking-v0",
+    "space_env/MissionFleet-v0",
+    "space_env/RadarPass-v0",
+    "space_env/LongitudeKeep-v0"
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "lines": 21,
+      "sha256": "cffd2e8def3a7d0c2c6cadc6659c378467db61e0d27762787a23331f8147d65e"
+    },
+    {
+      "path": "configs/curriculum.yaml",
+      "lines": 107,
+      "sha256": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07"
+    },
+    {
+      "path": "configs/rewards.yaml",
+      "lines": 83,
+      "sha256": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4"
+    },
+    {
+      "path": "configs/scenarios/demand_deliver.yaml",
+      "lines": 16,
+      "sha256": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098"
+    },
+    {
+      "path": "configs/scenarios/demand_late.yaml",
+      "lines": 16,
+      "sha256": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5"
+    },
+    {
+      "path": "configs/scenarios/eo_72h.yaml",
+      "lines": 38,
+      "sha256": "f6ad8a4487682e03979be86b875d20d5208856210cc25c2a09129e1b01faf838"
+    },
+    {
+      "path": "configs/scenarios/eo_72h_16.yaml",
+      "lines": 214,
+      "sha256": "109af0f3a7acb456cf03e6bbe576ab3dc8383439b9bb8f7615f615fbedc3b495"
+    },
+    {
+      "path": "configs/scenarios/eo_pass.yaml",
+      "lines": 9,
+      "sha256": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c"
+    },
+    {
+      "path": "configs/scenarios/family_infeasible.yaml",
+      "lines": 21,
+      "sha256": "42f0cffb43024cde11e7e2125615f038f008cbc7c13dac119e2cb60c457177b0"
+    },
+    {
+      "path": "configs/scenarios/family_nominal.yaml",
+      "lines": 19,
+      "sha256": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c"
+    },
+    {
+      "path": "configs/scenarios/family_outage.yaml",
+      "lines": 25,
+      "sha256": "5cbed335080fd18ebbe7fcc4c626a72cd6ba759b64d842639dee06d98591e6b9"
+    },
+    {
+      "path": "configs/scenarios/leo_nominal.yaml",
+      "lines": 28,
+      "sha256": "34414fa91fa3a07a0a9ddd479d388b7caaf5f1845f3c0d629d27321bcd924b4a"
+    },
+    {
+      "path": "configs/scenarios/mission_day.yaml",
+      "lines": 341,
+      "sha256": "640c6e1d2c4e9943579835469a8865272e73503f3cdeb90bf79241edd9a2c171"
+    },
+    {
+      "path": "configs/scenarios/mission_holdout.yaml",
+      "lines": 135,
+      "sha256": "a3be68d392a607b8e580fcd4ae701a768b02e5e10011a79bd4d6e05468e09670"
+    },
+    {
+      "path": "configs/scenarios/mission_short.yaml",
+      "lines": 135,
+      "sha256": "8cd47d9f777960ee601adf36919f8a7e5b38cebb387dbd2c493b0b5b67e84f2c"
+    },
+    {
+      "path": "configs/scenarios/operator_shift.yaml",
+      "lines": 12,
+      "sha256": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312"
+    },
+    {
+      "path": "configs/scenarios/tasking_deliver.yaml",
+      "lines": 19,
+      "sha256": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c"
+    },
+    {
+      "path": "configs/scenarios/tasking_late.yaml",
+      "lines": 19,
+      "sha256": "0b7804fb56b8ce31e9e80d61a4fe508b929c0a0ce560947639959a2719bc4e4b"
+    },
+    {
+      "path": "scripts/evaluate.py",
+      "lines": 35,
+      "sha256": "ccc9011cf575bc16377de50dba4b24acb8d4f47ce508391e0d8631a93d803928"
+    },
+    {
+      "path": "scripts/export_viz.py",
+      "lines": 29,
+      "sha256": "659536a2c69bfa066f94cd5036601e4813983ab0a6c8b60e5dfc08e22eb6c959"
+    },
+    {
+      "path": "scripts/generate_pretraining_data.py",
+      "lines": 28,
+      "sha256": "689eae5a7a029aad0056d7fb638db55a38e0133582b8f836c7993f2666c895c8"
+    },
+    {
+      "path": "scripts/generate_rl_data.py",
+      "lines": 19,
+      "sha256": "7199b35dce5f8f76c04a0707b9fc2f80424af29e6f651b4e0bec5db4009f3170"
+    },
+    {
+      "path": "scripts/generate_sft_data.py",
+      "lines": 28,
+      "sha256": "5e4fd0af70c7516e1b3c468c064abda27fee691293bc07bce5cd0ea0a4835f46"
+    },
+    {
+      "path": "scripts/train_reinforce.py",
+      "lines": 28,
+      "sha256": "eee2327067945803a23b924de841f5cc2f0968f4699b74b00ae562b97bf45caf"
+    },
+    {
+      "path": "src/space_env/__init__.py",
+      "lines": 42,
+      "sha256": "45be5f7bb8423a20de7cd6d0f3af4d731af9ec852c44f3b4349bb91ec6815700"
+    },
+    {
+      "path": "src/space_env/api/__init__.py",
+      "lines": 11,
+      "sha256": "fbe7a1cf5de770373048f44d40e2c66d2230cfe5adbfe4bdb4e6b22c5f83de6e"
+    },
+    {
+      "path": "src/space_env/api/console.py",
+      "lines": 433,
+      "sha256": "3a08ba3a71b9f0b7b5b00c6c6fc2d0fceb13101dde9d21e9d9d98e83a64004f1"
+    },
+    {
+      "path": "src/space_env/api/server.py",
+      "lines": 158,
+      "sha256": "f4e7631e5b473fb1bb800ce426f2436015dbb388eb50313a6e5362ad4cf91b04"
+    },
+    {
+      "path": "src/space_env/bundled_data/glossary.yaml",
+      "lines": 21,
+      "sha256": "3eb301d98add07edced1f10bbc8ff8a4ca7ae26646c6fa51dac9e794c129382e"
+    },
+    {
+      "path": "src/space_env/bundled_data/pretraining_templates.yaml",
+      "lines": 20,
+      "sha256": "bd2f30f29513487d111ca10cc29fea5b8a091409ba588ea257ecf1e7d1b930b1"
+    },
+    {
+      "path": "src/space_env/bundled_data/sft_pairs.yaml",
+      "lines": 32,
+      "sha256": "f90dc5d8eecfc2a90ba443bd69e67de395ff5f508e43f6a175d012b603bdfce7"
+    },
+    {
+      "path": "src/space_env/catalog/__init__.py",
+      "lines": 24,
+      "sha256": "29177e0534783768c863eb82f61e99c3523087f5c1ec4f5e07fe23b2f0ea1ffd"
+    },
+    {
+      "path": "src/space_env/catalog/build.py",
+      "lines": 154,
+      "sha256": "36145f09fd6698a494440c059949784fdb9686223199f113028890d7464ab3ff"
+    },
+    {
+      "path": "src/space_env/catalog/drag.py",
+      "lines": 50,
+      "sha256": "9dee679ed639e4091a7f885e5e9804cda4b93438ed49cff46abfad2df7b028ab"
+    },
+    {
+      "path": "src/space_env/catalog/geometry.py",
+      "lines": 126,
+      "sha256": "ba5bf161072a20e26f39aa440daea56f0c3fb8187c0922a40bc56e42bf65b681"
+    },
+    {
+      "path": "src/space_env/catalog/live.py",
+      "lines": 46,
+      "sha256": "987a8924453315a25da186d05d61ac627018e60539fe77d199ffe748c45fe5f2"
+    },
+    {
+      "path": "src/space_env/catalog/mesh.py",
+      "lines": 184,
+      "sha256": "3d7f08f67cbaf5098e183818817ee6fc9354424da156965b0701e0845ef9d627"
+    },
+    {
+      "path": "src/space_env/catalog/phasing.py",
+      "lines": 37,
+      "sha256": "68b3b20944d41daf44e48f20416975602f0e6b0bb0f753737e4a47f683590203"
+    },
+    {
+      "path": "src/space_env/catalog/references.py",
+      "lines": 471,
+      "sha256": "d40efe550ba1bf90e9ffacab723d2eab16e06b034c41c66231479a065a61455f"
+    },
+    {
+      "path": "src/space_env/catalog/traffic.py",
+      "lines": 32,
+      "sha256": "cc6d6263d088325afd2739b8e99c6e7065f3a0024b0c5fbe75b0d16beff8f61c"
+    },
+    {
+      "path": "src/space_env/cli.py",
+      "lines": 41,
+      "sha256": "ef4a4989fb57e0f16f7a56f2e3123a2639273f2160e37a7a4e66631fbdeccf11"
+    },
+    {
+      "path": "src/space_env/configs/curriculum.yaml",
+      "lines": 107,
+      "sha256": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07"
+    },
+    {
+      "path": "src/space_env/configs/demand_deliver.yaml",
+      "lines": 16,
+      "sha256": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098"
+    },
+    {
+      "path": "src/space_env/configs/demand_late.yaml",
+      "lines": 16,
+      "sha256": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5"
+    },
+    {
+      "path": "src/space_env/configs/eo_72h.yaml",
+      "lines": 38,
+      "sha256": "f6ad8a4487682e03979be86b875d20d5208856210cc25c2a09129e1b01faf838"
+    },
+    {
+      "path": "src/space_env/configs/eo_72h_16.yaml",
+      "lines": 214,
+      "sha256": "109af0f3a7acb456cf03e6bbe576ab3dc8383439b9bb8f7615f615fbedc3b495"
+    },
+    {
+      "path": "src/space_env/configs/eo_pass.yaml",
+      "lines": 9,
+      "sha256": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c"
+    },
+    {
+      "path": "src/space_env/configs/family_infeasible.yaml",
+      "lines": 21,
+      "sha256": "42f0cffb43024cde11e7e2125615f038f008cbc7c13dac119e2cb60c457177b0"
+    },
+    {
+      "path": "src/space_env/configs/family_nominal.yaml",
+      "lines": 19,
+      "sha256": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c"
+    },
+    {
+      "path": "src/space_env/configs/family_outage.yaml",
+      "lines": 25,
+      "sha256": "5cbed335080fd18ebbe7fcc4c626a72cd6ba759b64d842639dee06d98591e6b9"
+    },
+    {
+      "path": "src/space_env/configs/mission_day.yaml",
+      "lines": 341,
+      "sha256": "640c6e1d2c4e9943579835469a8865272e73503f3cdeb90bf79241edd9a2c171"
+    },
+    {
+      "path": "src/space_env/configs/mission_holdout.yaml",
+      "lines": 135,
+      "sha256": "a3be68d392a607b8e580fcd4ae701a768b02e5e10011a79bd4d6e05468e09670"
+    },
+    {
+      "path": "src/space_env/configs/mission_short.yaml",
+      "lines": 135,
+      "sha256": "8cd47d9f777960ee601adf36919f8a7e5b38cebb387dbd2c493b0b5b67e84f2c"
+    },
+    {
+      "path": "src/space_env/configs/operator_shift.yaml",
+      "lines": 12,
+      "sha256": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312"
+    },
+    {
+      "path": "src/space_env/configs/rewards.yaml",
+      "lines": 83,
+      "sha256": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4"
+    },
+    {
+      "path": "src/space_env/configs/tasking_deliver.yaml",
+      "lines": 19,
+      "sha256": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c"
+    },
+    {
+      "path": "src/space_env/configs/tasking_late.yaml",
+      "lines": 19,
+      "sha256": "0b7804fb56b8ce31e9e80d61a4fe508b929c0a0ce560947639959a2719bc4e4b"
+    },
+    {
+      "path": "src/space_env/core/__init__.py",
+      "lines": 84,
+      "sha256": "a6471fdf17e8d4e24cf9f62936259d58ae32377b8ffdb8de31687f9f9797a9d1"
+    },
+    {
+      "path": "src/space_env/core/access.py",
+      "lines": 135,
+      "sha256": "dedfbe697cdc9a239cd0b808ad43c62020cb608f6287ef6fd159cf5d7cac0b0c"
+    },
+    {
+      "path": "src/space_env/core/attitude.py",
+      "lines": 78,
+      "sha256": "5808bd5cf4882ef548777617e0dcdf4f2c503d123592250f1e37294fd488a474"
+    },
+    {
+      "path": "src/space_env/core/bodies.py",
+      "lines": 71,
+      "sha256": "d7eddf7e5e32946df0122937c2640f5df7402ab16fbdda1fda3b0163ed4d55ff"
+    },
+    {
+      "path": "src/space_env/core/cdm.py",
+      "lines": 205,
+      "sha256": "82f12d7c1d59b1636ad17b5cf60d7aef2b45acfce54b63a5a3bc4ccd33131edb"
+    },
+    {
+      "path": "src/space_env/core/constants.py",
+      "lines": 53,
+      "sha256": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535"
+    },
+    {
+      "path": "src/space_env/core/dut1.py",
+      "lines": 83,
+      "sha256": "ee055bfc4bae745a68690d4ee53dfcfc558262cddfe1715e82c953e554fb2e1d"
+    },
+    {
+      "path": "src/space_env/core/encounter.py",
+      "lines": 216,
+      "sha256": "c7a7ead7f3fe0c19752c947490c78aa6152ecebf444e90972980960eae8d5e73"
+    },
+    {
+      "path": "src/space_env/core/environment.py",
+      "lines": 89,
+      "sha256": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f"
+    },
+    {
+      "path": "src/space_env/core/frames.py",
+      "lines": 247,
+      "sha256": "5211e70c14a7fcc8fbc5bccfdc95b31589f46fe7dace8969b5fe2605fba987bf"
+    },
+    {
+      "path": "src/space_env/core/gravity.py",
+      "lines": 175,
+      "sha256": "ab82ecfe261d2b644b00a93a720b90bedca6b4bc132856e721500ed8ee71562a"
+    },
+    {
+      "path": "src/space_env/core/ground.py",
+      "lines": 77,
+      "sha256": "4d84c7dd9cd4c7dfd88efe824bd26bdf35469cd06d3b6cb21005937ba35b6165"
+    },
+    {
+      "path": "src/space_env/core/link.py",
+      "lines": 85,
+      "sha256": "ac6b4f810c00e84d8369a23ffc96bc1fa5a8ea058f7255c2db9e18602b40284b"
+    },
+    {
+      "path": "src/space_env/core/orbit.py",
+      "lines": 152,
+      "sha256": "e65c7144604c459906bde0bbd8039e4f0ad58c34564f862166faeb38e9722092"
+    },
+    {
+      "path": "src/space_env/core/packets.py",
+      "lines": 51,
+      "sha256": "1b6bd936716b6ab52dde0c71c8a15fdd0a52b769b47ced608aa4905983d1df2b"
+    },
+    {
+      "path": "src/space_env/core/passes.py",
+      "lines": 167,
+      "sha256": "b2d98c0559e2dd16796699133e2ae20c1d0fb90c276a2b33692b5c1a61ef8022"
+    },
+    {
+      "path": "src/space_env/core/power.py",
+      "lines": 21,
+      "sha256": "806aecd4d3b96c53d03517fc82fbc9eeadd82501872174d29f2ca4c221417466"
+    },
+    {
+      "path": "src/space_env/core/probability.py",
+      "lines": 92,
+      "sha256": "4750a4c6f293eef8c01fec9652cc73a92c90cf8561ba3fc9886c8beb920bdde1"
+    },
+    {
+      "path": "src/space_env/core/propagate.py",
+      "lines": 134,
+      "sha256": "8df453646080b6c5219603b9fda2f8e2c54c4ad13bb74feb9e64387f8cc4085e"
+    },
+    {
+      "path": "src/space_env/core/relative.py",
+      "lines": 114,
+      "sha256": "dc2430f6e320cba952b4d7fc7e2d63fe976383b0b9e22e5318d1345fd50ef996"
+    },
+    {
+      "path": "src/space_env/core/space_weather.py",
+      "lines": 78,
+      "sha256": "79b64fbc62f5a7198277268d530d75df71c640ea8f0ddf2c6fbf6931a86190cd"
+    },
+    {
+      "path": "src/space_env/core/spacecraft.py",
+      "lines": 173,
+      "sha256": "c7f7b1ec52a18780bacb623e8e941350e91ad8631d9b22b2693714319f2fae17"
+    },
+    {
+      "path": "src/space_env/core/sun.py",
+      "lines": 29,
+      "sha256": "aa86ea50eec0d9c5df83363ae910fe05ec0fd321c2a4f67c0c4df96539dea59c"
+    },
+    {
+      "path": "src/space_env/core/thermal.py",
+      "lines": 63,
+      "sha256": "bf70f9098cac12bdc606b95e001bf2ccf66702f5a943be0a3337878827ba5262"
+    },
+    {
+      "path": "src/space_env/core/time.py",
+      "lines": 128,
+      "sha256": "eb0b373352e4a2a94d562efcac6befda3298f3e5d958d1383ed35a18e4bfa761"
+    },
+    {
+      "path": "src/space_env/data_generators/__init__.py",
+      "lines": 7,
+      "sha256": "6da41dfedddedf3073adeb892f155ccd34d06fadb957b57f28005cda50bd85b1"
+    },
+    {
+      "path": "src/space_env/data_generators/mission_dataset.py",
+      "lines": 93,
+      "sha256": "dd2335d4cd3319f620fedc3ec2dfda4ae35443a3de1be37acd7aaecc70cbd796"
+    },
+    {
+      "path": "src/space_env/data_generators/pretraining.py",
+      "lines": 150,
+      "sha256": "f65075e3f4960b633764933df931a9548782651a596823a23b0b7a2c1ed9fbe1"
+    },
+    {
+      "path": "src/space_env/data_generators/sft.py",
+      "lines": 339,
+      "sha256": "b8efc9e48d911b4fcf2a49394871d9e1f7018ff42353f0e161a103441d21ac0c"
+    },
+    {
+      "path": "src/space_env/envs/__init__.py",
+      "lines": 129,
+      "sha256": "2acd30d9e7e71bab0b48b3b4289f10b160200eca7507471d92618901e1fc6b3a"
+    },
+    {
+      "path": "src/space_env/envs/anomaly_response_env.py",
+      "lines": 142,
+      "sha256": "bef0bfb0efb07c1c99ea2d8528034a7770f6f5471c8a44ecea1442825b770217"
+    },
+    {
+      "path": "src/space_env/envs/base.py",
+      "lines": 86,
+      "sha256": "2f39d88fd5f699dbb22ade982f223dd8d3bdb5b9c0384adbdb5b824ba661cbc6"
+    },
+    {
+      "path": "src/space_env/envs/campaign_env.py",
+      "lines": 815,
+      "sha256": "de6d50594ebbb76f2a0d65053600cb33c1d0143e943025ac174497cff61db157"
+    },
+    {
+      "path": "src/space_env/envs/cards.py",
+      "lines": 312,
+      "sha256": "e220049aea17ea88a6ce7b748e51b7d2a15cb32cb86a14e04edee85622e1a4e6"
+    },
+    {
+      "path": "src/space_env/envs/conjunction_env.py",
+      "lines": 225,
+      "sha256": "1440d4c299e698460d0ad4a0aad20f86992313d39ecbe74bd12480eb05c77fb4"
+    },
+    {
+      "path": "src/space_env/envs/constellation_env.py",
+      "lines": 136,
+      "sha256": "09282de6cd0861e72a8e845191da13895ed500473abec540c7c6361f5e9bf182"
+    },
+    {
+      "path": "src/space_env/envs/constellation_ops_env.py",
+      "lines": 179,
+      "sha256": "fd71dc49957b8ccc1099d96484e662c994648c5c05109753e476a3b60b16643d"
+    },
+    {
+      "path": "src/space_env/envs/demand_env.py",
+      "lines": 178,
+      "sha256": "28469444594b61d99b6d6ccca3337793a76b45cffa9cca2321c4909b9956736b"
+    },
+    {
+      "path": "src/space_env/envs/fleet_tasking_env.py",
+      "lines": 85,
+      "sha256": "8059d99b6ea13eb363d2e72f098a2585ae5155f76950278daaaae38f7970fbcd"
+    },
+    {
+      "path": "src/space_env/envs/horizon_envs.py",
+      "lines": 204,
+      "sha256": "1bb2899861faeb16c3b4f0ac960c1575c64f0b7e13ebcf2f902b0575c5116315"
+    },
+    {
+      "path": "src/space_env/envs/industry_envs.py",
+      "lines": 315,
+      "sha256": "d54f62970111102dc6fafe3ddd684e90da5968b8b0da63a4fdf495ea9977cb3d"
+    },
+    {
+      "path": "src/space_env/envs/market_envs.py",
+      "lines": 182,
+      "sha256": "68e0a5336018817f60c73338c22b40aa456ceb10270d23143945ee0ac491d0ce"
+    },
+    {
+      "path": "src/space_env/envs/mission_fleet_env.py",
+      "lines": 156,
+      "sha256": "00063709bac2f9645ed6d0506eab9ebb6aca57d8b8939198dccb4343d9329447"
+    },
+    {
+      "path": "src/space_env/envs/mission_planner_env.py",
+      "lines": 172,
+      "sha256": "894c19a5851f40631cfea1357564d0b002823347de99624512f3db1bdc4bbc69"
+    },
+    {
+      "path": "src/space_env/envs/phasing_env.py",
+      "lines": 111,
+      "sha256": "53a586922eb29f363f5d4423f32c03b81380d9f22bfca57cf88b3c977a69452c"
+    },
+    {
+      "path": "src/space_env/envs/regime_envs.py",
+      "lines": 141,
+      "sha256": "3835460c46668cfbba9918bcefe72e2a69af27def16e612387ca8b9b52a052b6"
+    },
+    {
+      "path": "src/space_env/envs/resource_manager_env.py",
+      "lines": 128,
+      "sha256": "09153e83d1752ffa879a9508f8f5e4234207a17485e0083e379051f576beef5a"
+    },
+    {
+      "path": "src/space_env/envs/sentinel_env.py",
+      "lines": 336,
+      "sha256": "a885e62e0cea88f986e553dfa9afeb1b3fa6bae4d81fa611fa8002106eb4b02a"
+    },
+    {
+      "path": "src/space_env/envs/shift_env.py",
+      "lines": 232,
+      "sha256": "cbced487bbdb8725c148720652a23782bf40be83e8c963410b6c4f6789583c04"
+    },
+    {
+      "path": "src/space_env/envs/tasking_env.py",
+      "lines": 117,
+      "sha256": "6f0da316c878b1c632f284524ed5965823022324210f5b80a9f09b0ac06d7ce1"
+    },
+    {
+      "path": "src/space_env/envs/workplan_env.py",
+      "lines": 198,
+      "sha256": "868ad57058c095f95acdfcf51f60855c80cebbda571f34f744e78e551f2d6585"
+    },
+    {
+      "path": "src/space_env/estimation/__init__.py",
+      "lines": 1,
+      "sha256": "e4922f5879ff9033b4c04eb2731d9f3f438d7821f4dea59b5511fdb73d965c18"
+    },
+    {
+      "path": "src/space_env/estimation/range_arc.py",
+      "lines": 331,
+      "sha256": "c921dfe62e9a71a26f0418ccc14171997876082083e5002bd36c3bb7c6837ac1"
+    },
+    {
+      "path": "src/space_env/eval/__init__.py",
+      "lines": 5,
+      "sha256": "a98991f1eff176510d07fb897da3673962ee664a408da11f9dee3e0489999897"
+    },
+    {
+      "path": "src/space_env/eval/benchmarks.py",
+      "lines": 101,
+      "sha256": "bcd137d65b586a12e8db505859f061b5c1ea6af0cd39037abc4326edc456db16"
+    },
+    {
+      "path": "src/space_env/eval/demand_report.py",
+      "lines": 38,
+      "sha256": "da1a54c7d93b6f458e47e485917750b8a778b250ec50a51cecf4b3220196b19f"
+    },
+    {
+      "path": "src/space_env/eval/holdout.py",
+      "lines": 61,
+      "sha256": "a5600aeb03ba1b3597c5362592a90a6cadb13502bb15fd1100927c3ddeb11384"
+    },
+    {
+      "path": "src/space_env/eval/operator_report.py",
+      "lines": 38,
+      "sha256": "3a0b761b9d17a771bcb13c2ed79161d53fa4b2be0106ff5e01081baa48ab1ee9"
+    },
+    {
+      "path": "src/space_env/eval/scale.py",
+      "lines": 38,
+      "sha256": "248272c3957b25ad914ae4e18b120b94d90fcd49d9ee3122527625ce02d33e5b"
+    },
+    {
+      "path": "src/space_env/eval/sft_rubric.py",
+      "lines": 19,
+      "sha256": "8342740dda4e0aa46d27f0f73b13e14b2500bae8f92ba9571a9368ca0934638d"
+    },
+    {
+      "path": "src/space_env/eval/tasking_report.py",
+      "lines": 42,
+      "sha256": "2d5bad8b6ee56c9c132bce2f095323297f8346eb1bd5f493de8f65920f1047fa"
+    },
+    {
+      "path": "src/space_env/eval/tracks.py",
+      "lines": 45,
+      "sha256": "cd382c224ee97b49a2633fd4acf6821297cdc2bdebc723b9a3723c4b424e2cbf"
+    },
+    {
+      "path": "src/space_env/eval/transfer.py",
+      "lines": 57,
+      "sha256": "9758b898fb02f4cec46b19df3c46a1eb518b38c279af988f7c2c3303c6af0f1b"
+    },
+    {
+      "path": "src/space_env/integrations/__init__.py",
+      "lines": 11,
+      "sha256": "fd2e06b6d3783304bf152500dc0ee17ba05c5830e0e3372dfa22d8461ca8fd79"
+    },
+    {
+      "path": "src/space_env/integrations/ccsds_backend.py",
+      "lines": 31,
+      "sha256": "1b137311e39ddb645260b10f3e92f8861067e223f4de28c9f05b554801545c38"
+    },
+    {
+      "path": "src/space_env/integrations/orekit_prop.py",
+      "lines": 80,
+      "sha256": "9bcadf3cd969a927c71b74262d0391dcce67b285b589a9c6f3da95f30c9b19a8"
+    },
+    {
+      "path": "src/space_env/integrations/sgp4_prop.py",
+      "lines": 32,
+      "sha256": "a974c6e806ebcdc106ee6703abe3d256fdff55b82a029f05126655a7681be4e7"
+    },
+    {
+      "path": "src/space_env/integrations/spice_ephem.py",
+      "lines": 29,
+      "sha256": "fa3be0eec4db702e49b1ab318642508700ade889c3ac97e7e6146345bcdb3039"
+    },
+    {
+      "path": "src/space_env/mission/__init__.py",
+      "lines": 53,
+      "sha256": "97d65da09c8acb995cbaa8768dcbe6114ea76fc4a159b6be9f1e69a81776805c"
+    },
+    {
+      "path": "src/space_env/mission/campaign.py",
+      "lines": 810,
+      "sha256": "f1ee4350448bb956491a400fcbf723ad712738db1e468e6e54d7dfad74dce0fc"
+    },
+    {
+      "path": "src/space_env/mission/constraints.py",
+      "lines": 16,
+      "sha256": "30a0fe8fdf403e0ac6302b1c5b6f37756a4df3fccf4fd8437b0feb2c03561a15"
+    },
+    {
+      "path": "src/space_env/mission/events.py",
+      "lines": 45,
+      "sha256": "ef523a47d895d4a26d78378efd2497a9feaf2269b70b408bf86f08e368e41e1b"
+    },
+    {
+      "path": "src/space_env/mission/factory.py",
+      "lines": 170,
+      "sha256": "d33161ad012691511578e7a3bd045391e3f05e517b91cd2eb1b411da0c3ef4ff"
+    },
+    {
+      "path": "src/space_env/mission/fleet_plan.py",
+      "lines": 192,
+      "sha256": "c6509821ea0213fc9443fa75d4eab21b98e7e58251d2b7d686da8ad647299900"
+    },
+    {
+      "path": "src/space_env/mission/goals.py",
+      "lines": 42,
+      "sha256": "171085cad082039425dc019af8605545c4cf201d970d674c1c5cf22239c8adbd"
+    },
+    {
+      "path": "src/space_env/mission/horizon.py",
+      "lines": 521,
+      "sha256": "b3f248c6f2b0dc38761ba18cc05040e879fcfcd118014c0db3e850968c04be3e"
+    },
+    {
+      "path": "src/space_env/mission/loader.py",
+      "lines": 53,
+      "sha256": "cf2e9109ef7b90ba4639c22d3a4fed405ca480d8fab1340da0dc936c2a1c8b57"
+    },
+    {
+      "path": "src/space_env/mission/outcome.py",
+      "lines": 30,
+      "sha256": "f36878940961c06d089b7ef6d4a416d98f8abce8cc905e7e3d288e93d951b8af"
+    },
+    {
+      "path": "src/space_env/mission/scenario_v2.py",
+      "lines": 180,
+      "sha256": "93d9b5ac99025e439af20691f3d961ed2d6f6f36e8f0afa25c3dc6d2dd705228"
+    },
+    {
+      "path": "src/space_env/mission/scenarios.py",
+      "lines": 75,
+      "sha256": "d8b22b1fb54c3370587cf84fb3a8af81f3a5a6d1b22f2b852d680305e696d8e5"
+    },
+    {
+      "path": "src/space_env/mission/session.py",
+      "lines": 42,
+      "sha256": "14f6f7ac30d077eafbb6ab5b78e67295ad8502d1022da455c4e0de2ce9b2aa0b"
+    },
+    {
+      "path": "src/space_env/mission/shift_scenario.py",
+      "lines": 125,
+      "sha256": "e9229680d35a10f109caadd064069bb61e2c074028791ddc02586aabbd809710"
+    },
+    {
+      "path": "src/space_env/mission/tasking.py",
+      "lines": 740,
+      "sha256": "2c3fbc8ddbe82a14393a100257a650c5ceaaca33b0df026b493177f9fde918a9"
+    },
+    {
+      "path": "src/space_env/mission/types.py",
+      "lines": 25,
+      "sha256": "b3582570cd1e5a5f441b5297ea482164fe19d2a13d735638a6de4a78063f36a1"
+    },
+    {
+      "path": "src/space_env/mission/workplan.py",
+      "lines": 572,
+      "sha256": "529d2dd62266bcf50b4d34062125bf0b9ccc0d77a0cfbea99998ca4d5e93c2e6"
+    },
+    {
+      "path": "src/space_env/rl/__init__.py",
+      "lines": 15,
+      "sha256": "2cabf080a0171f639722d20d86b3fdd8f942ec1c91028f2eee7a57d6e63e2591"
+    },
+    {
+      "path": "src/space_env/rl/curriculum.py",
+      "lines": 43,
+      "sha256": "028a23f6b35b0162595b83927f0fb9e41b8027b4410017d247bb9d35bf73e451"
+    },
+    {
+      "path": "src/space_env/rl/expert.py",
+      "lines": 200,
+      "sha256": "b2c37b392e9a5bef11691509f34f98c36cf0350cef4a9a04c5e04dd5cd95e9b1"
+    },
+    {
+      "path": "src/space_env/rl/reinforce.py",
+      "lines": 270,
+      "sha256": "95cb1947d08370024390d30008efac9bca4c016655d3a641d7ba7ae857024314"
+    },
+    {
+      "path": "src/space_env/rl/report.py",
+      "lines": 75,
+      "sha256": "6a2e0aef6f92c96f9c2a61f64479431ced16a43921b999cfc76da6d7a8ec49f0"
+    },
+    {
+      "path": "src/space_env/rl/rewards.py",
+      "lines": 100,
+      "sha256": "aef265db4775e0766b88fbca861d7d4cab7f1179d227091adf624cc6ca5810f7"
+    },
+    {
+      "path": "src/space_env/rl/trajectories.py",
+      "lines": 91,
+      "sha256": "5318fb567dbad614165df32d4474151a151236ce74c07b21f1d6d66697a23ded"
+    },
+    {
+      "path": "src/space_env/simulation/__init__.py",
+      "lines": 8,
+      "sha256": "c7d7dd310e44d473154f3dcd7a2e352c774f27faa5d0f5580da1d00fff930ac0"
+    },
+    {
+      "path": "src/space_env/simulation/commands.py",
+      "lines": 70,
+      "sha256": "03b71c0259f7c524ae0625a461d05c05ddb5a4888640cba65a35b3e30b179507"
+    },
+    {
+      "path": "src/space_env/simulation/engine.py",
+      "lines": 1516,
+      "sha256": "7670b99290e40b2226c5c97e9974b619779e3c51e935e972e7063c75af6ce6c6"
+    },
+    {
+      "path": "src/space_env/simulation/fleet.py",
+      "lines": 376,
+      "sha256": "786958fe1cd12cf92e76077da13e734ee9c56c99e32e5e478dbf638074e17a9a"
+    },
+    {
+      "path": "src/space_env/simulation/fleet_view.py",
+      "lines": 430,
+      "sha256": "351ba690a20c1831545b6461180645fb0e7c9180a747d738baddcfd31238677a"
+    },
+    {
+      "path": "src/space_env/simulation/snapshot.py",
+      "lines": 56,
+      "sha256": "f30b7d606d685eadbe3db202753d4d0f0ef8898bab1508a2e3a4a4bdca3f7609"
+    },
+    {
+      "path": "src/space_env/simulation/state.py",
+      "lines": 46,
+      "sha256": "96c122240cf8f1717e7ef457d4a99049bdf2d5457bd6991de0d23cf7663aecc2"
+    },
+    {
+      "path": "src/space_env/simulation/world.py",
+      "lines": 153,
+      "sha256": "2f57b551e5140617b75b3a5743571d965a1acb6217fc495af47ec24f151a8b90"
+    },
+    {
+      "path": "src/space_env/validation/__init__.py",
+      "lines": 5,
+      "sha256": "6978cf75e7be134083895c5f5b07ffd824a48dcd90afdaaad313c20c1549a14b"
+    },
+    {
+      "path": "src/space_env/validation/report.py",
+      "lines": 173,
+      "sha256": "6a8357d8e66c1dba983cab0be0e4b1a10853f0236f743c97aa5af7ba29d73a9c"
+    },
+    {
+      "path": "src/space_env/viz/__init__.py",
+      "lines": 4,
+      "sha256": "35a661ed597d5ba4982a4dbc9a7928410e89de36e32adfe9dd2afa963aa1cb00"
+    },
+    {
+      "path": "src/space_env/viz/export.py",
+      "lines": 227,
+      "sha256": "4188890a994e047eb7e201ba443ce8dc2d41294c757aa94f9a3ef50e3ee9627b"
+    },
+    {
+      "path": "tests/__init__.py",
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/test_astrodynamics.py",
+      "lines": 131,
+      "sha256": "7215ff51ca077a8637b817e955a8150780372958e6ff002499ab88fd5d7057f7"
+    },
+    {
+      "path": "tests/test_benchmark_tracks.py",
+      "lines": 52,
+      "sha256": "2fdb39569e30c1541d8402d766132714d23978794f541fa8ba83fde8ba78fee4"
+    },
+    {
+      "path": "tests/test_campaign.py",
+      "lines": 399,
+      "sha256": "b52b17c3ca9153d1a78599a2a8afd2fb1bc9b32067f141c5dc8fc45787e12410"
+    },
+    {
+      "path": "tests/test_cards.py",
+      "lines": 78,
+      "sha256": "c3025e286523490e0c9e3ec79629a937e4737d2a2866ece0ef8b14c8513a95d1"
+    },
+    {
+      "path": "tests/test_catalog.py",
+      "lines": 135,
+      "sha256": "bf6dbd0619ad1fab326dd6f2bf42e0ebed8eca39fbc8f86741714482eb8875db"
+    },
+    {
+      "path": "tests/test_constellation_ops.py",
+      "lines": 50,
+      "sha256": "82aa09fe69904a1b0cc82a5526f05291d62e276b514d0101c8bdcdadc0211842"
+    },
+    {
+      "path": "tests/test_core.py",
+      "lines": 109,
+      "sha256": "dd14fbedfbb9c5bfcf1c63c0f764e959a6e8f21d55a81d69a295a376da835a6e"
+    },
+    {
+      "path": "tests/test_data_generators.py",
+      "lines": 64,
+      "sha256": "b39fc2a552c7274c38bc2320f1b96058b7d94feba1688e59bbef160a8eb6fa24"
+    },
+    {
+      "path": "tests/test_demand.py",
+      "lines": 52,
+      "sha256": "917e21c6a1ad2001ba6670328cd550f80f13c59e72591c97d215113ecbd293f6"
+    },
+    {
+      "path": "tests/test_dynamics.py",
+      "lines": 211,
+      "sha256": "6dc93a31733aded86d8b6fd018f2f33d0d615eb2389e57bafbd3b7573be7da96"
+    },
+    {
+      "path": "tests/test_envs.py",
+      "lines": 92,
+      "sha256": "0c20922be7a2275141a39afb4100004245a7544a63d83cd28e6a74101f2db04c"
+    },
+    {
+      "path": "tests/test_fleet.py",
+      "lines": 152,
+      "sha256": "1f4bdd039376370f0f9ae742250b18e0486a7637229f38810b98ecfc481968f6"
+    },
+    {
+      "path": "tests/test_fleet_plan.py",
+      "lines": 50,
+      "sha256": "25224cb41aa1210d02cd0143f2075fbc299592eb9c94f258d49718a9d33a2391"
+    },
+    {
+      "path": "tests/test_fleet_tasking.py",
+      "lines": 45,
+      "sha256": "608d9d78dd5e936e1caaebfff61c951538df3002c284e8ee944bdbc838ccde2a"
+    },
+    {
+      "path": "tests/test_flight_products.py",
+      "lines": 135,
+      "sha256": "403f1b87a8c8d4e6b79acde171e2251332c9d6ecb36ab58801c1d74e619638a9"
+    },
+    {
+      "path": "tests/test_horizon.py",
+      "lines": 100,
+      "sha256": "006c7b39e2f00c28f74681d5425e99074f8febabe5f8edf9cdceff7c4f146674"
+    },
+    {
+      "path": "tests/test_industry.py",
+      "lines": 55,
+      "sha256": "6acd9619e66f616d637972d06fd2b8f83b0136d5b7e42ee29865bd9ecaeeb2a0"
+    },
+    {
+      "path": "tests/test_live_tle.py",
+      "lines": 24,
+      "sha256": "312ab45d128efbb0210724a8445c5910d8b8c6249aadcdbe037c92427acb2680"
+    },
+    {
+      "path": "tests/test_mission.py",
+      "lines": 50,
+      "sha256": "57f9903263d0955db1a11dd5b7a3b0256713c3a63d08ad6ef30c9dbfa5d38cb8"
+    },
+    {
+      "path": "tests/test_mission_contract.py",
+      "lines": 192,
+      "sha256": "45fad5e279cc773d65ebed6279a92ff25b89a9895fe98b6a505bab2895620680"
+    },
+    {
+      "path": "tests/test_mission_roundtrip.py",
+      "lines": 177,
+      "sha256": "880ec3247534d4133014ff3ce71b4bb3bebd2c609f496682591db3d516e95f5c"
+    },
+    {
+      "path": "tests/test_operations.py",
+      "lines": 199,
+      "sha256": "f76c108302844572b76606a85a97ed2e15ff151b8ede5b6f934f04f01561ed89"
+    },
+    {
+      "path": "tests/test_operator_console.py",
+      "lines": 205,
+      "sha256": "e57c3ee0593422aa525e8c5027387adea8da568697c17c23007d89da97271a03"
+    },
+    {
+      "path": "tests/test_pipeline.py",
+      "lines": 168,
+      "sha256": "dadb25a9544effaac6a477c3d45deba352d1599d2415a8e3e731a650f51764f6"
+    },
+    {
+      "path": "tests/test_r1_frames.py",
+      "lines": 175,
+      "sha256": "517bb1d39aa166b21fcc4ebec93a6ee6e008476708cc478cfadddf6e2d8cb961"
+    },
+    {
+      "path": "tests/test_r1_ledger.py",
+      "lines": 312,
+      "sha256": "47a5f7516830183671b71e465fff4d10ca21b9ef4c83081978c2699d5dd6ac04"
+    },
+    {
+      "path": "tests/test_r1_outcome.py",
+      "lines": 166,
+      "sha256": "83db9243c72b78082c95085b2f94752bf03f2efa710fe57d32bf6ebb9798a345"
+    },
+    {
+      "path": "tests/test_range_arc.py",
+      "lines": 142,
+      "sha256": "9ce62dcd3cea1cd2a6894f81a0edbd54711e66a703bb3d7cbed2542b5485f92a"
+    },
+    {
+      "path": "tests/test_real_ops.py",
+      "lines": 200,
+      "sha256": "c353bed3c9f549a28fc109ef6a8c895d6935f34095efa0e04edf9bb52647ed68"
+    },
+    {
+      "path": "tests/test_regimes.py",
+      "lines": 47,
+      "sha256": "f3ddc53c6f7a0fbde17296f8a85557264e825b0a42f9f1ab25d2a979bb7070b3"
+    },
+    {
+      "path": "tests/test_scale.py",
+      "lines": 17,
+      "sha256": "097f4a8fa9de120716bc93396954b6d56f4b19f226d8b6f7d6fe9933f69558d5"
+    },
+    {
+      "path": "tests/test_scenario_v2.py",
+      "lines": 119,
+      "sha256": "d79d765d3815a45e9f5c4e98a5a007cf31318342e478593233c4322ee12f2812"
+    },
+    {
+      "path": "tests/test_shift.py",
+      "lines": 57,
+      "sha256": "8e1593bf769c306db48a83f31a739344781e544fb3015c2e4cdccc6431dd8239"
+    },
+    {
+      "path": "tests/test_simulation.py",
+      "lines": 59,
+      "sha256": "1d46a8d7a03d11a68c1d6fd88c71bd07e4d8ffd726f46bce2f5231d6fa4acf7a"
+    },
+    {
+      "path": "tests/test_studio_api.py",
+      "lines": 174,
+      "sha256": "27807988590e034030d007895b4ef2ee9e4d65cff82e9a5bd0a1d152b2df6d2e"
+    },
+    {
+      "path": "tests/test_suite.py",
+      "lines": 43,
+      "sha256": "76093309a11d7e6d86bca51d43ef84c4ef6d69e20685859b0f60c8e5af4593b6"
+    },
+    {
+      "path": "tests/test_tasking.py",
+      "lines": 370,
+      "sha256": "476befb86ca35b9a6003ef9aaafc24b97c39e3bef63fd056553ecd46a22eb9aa"
+    },
+    {
+      "path": "tests/test_tasking_env.py",
+      "lines": 61,
+      "sha256": "1e8ca6fddfa87ccfd84679d6caad17f37dfb4a0ab4983dcaeb0445e22d7d40a1"
+    },
+    {
+      "path": "tests/test_validation.py",
+      "lines": 62,
+      "sha256": "04e817762f62ca7e6c26c8ef8dda833bbde79c145a464667c1eac55257ad861e"
+    },
+    {
+      "path": "tests/test_version.py",
+      "lines": 5,
+      "sha256": "86b8a52dd9aff45cd581a416ee92bd83ea61716bb88cf7de191b1aa3f0337972"
+    },
+    {
+      "path": "tests/test_viz.py",
+      "lines": 40,
+      "sha256": "f7173dc98f04a0f12189216cb62eeb7c2e107403e772e66eedfcc89eb3f5828d"
+    },
+    {
+      "path": "tests/test_workplan.py",
+      "lines": 80,
+      "sha256": "a5f0c0ad5af39f4a2f1e8338a6f247621236ba851f758e71c2c75721e7517d54"
+    },
+    {
+      "path": "viz/app.js",
+      "lines": 342,
+      "sha256": "88efcde2ac6376b801a13a70c89047f647534c35251ac2e06b91909c29d34753"
+    },
+    {
+      "path": "viz/index.html",
+      "lines": 69,
+      "sha256": "123330ea8e63c5407b93e535600427ad11997a7b33306d2de13210641cc4d302"
+    },
+    {
+      "path": "viz/studio.html",
+      "lines": 727,
+      "sha256": "6fae0d7a6548e0cb41e4717ef26737df7407aae0541eb13702e4660350c62a1e"
+    },
+    {
+      "path": "viz/studio.js",
+      "lines": 652,
+      "sha256": "3e24b9d43ea1faf161d0734447d8cbf7cd328239c9c55eeef2dd866d6b3210c9"
+    }
+  ]
+}

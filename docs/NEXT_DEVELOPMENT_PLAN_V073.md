@@ -1,6 +1,6 @@
 # Space-Env после 0.73.0: чёткий план следующей разработки
 
-> **Актуальная очередь после 0.86:** [единый план прохода](INDUSTRIAL_ONE_PASS_PLAN.md), [аудит текущего кода](audits/V086_AUDIT.md). Ниже сохранён исторический backlog: компоненты World/DSL/tasking/72-hour missions уже частично реализованы, не создавать их повторно без сверки.
+> **Актуальная очередь после 0.93:** [план развития](DEVELOPMENT_PLAN_V093.md), [аудит текущего кода](audits/V093_AUDIT.md). Ниже сохранён исторический backlog: компоненты World/DSL/tasking/72-hour missions уже частично реализованы, не создавать их повторно без сверки.
 
 Актуально на 25 октября 2026, HEAD `fcab948`. Основание — [новый аудит](audits/V073_STATE_AUDIT.md), [инвентаризация](audits/v073_inventory.json) и [runtime probes](audits/v073_probe_results.json).
 

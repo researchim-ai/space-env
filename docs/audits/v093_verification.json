@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-27",
+  "version": "0.93.0",
+  "head": "892c0a7d59027b4bdf85b1e60027901acbda7139",
+  "python": "3.12.9",
+  "selected_suite": {
+    "passed": 58,
+    "warnings": 5,
+    "duration_sec": 36.58,
+    "modules": [
+      "test_mission_contract.py",
+      "test_mission_roundtrip.py",
+      "test_fleet_tasking.py",
+      "test_scenario_v2.py",
+      "test_dynamics.py",
+      "test_validation.py",
+      "test_r1_frames.py",
+      "test_r1_ledger.py"
+    ]
+  },
+  "collected_tests": 243,
+  "full_suite": {
+    "status": "completed_with_sandbox_socket_failure",
+    "passed": 242,
+    "failed": 1,
+    "warnings": 45,
+    "duration_sec": 962.17,
+    "failure": "tests/test_studio_api.py::test_http_server_answers_health",
+    "failure_reason": "sandbox denies socket creation: PermissionError",
+    "slowest_sec": {
+      "sixteen_vehicles_72h": 322.73,
+      "campaign_three_days": 151.41,
+      "four_vehicles_72h": 85.61
+    },
+    "all_243_tests_passed_across_full_and_targeted_runs": true
+  },
+  "http_health_outside_sandbox": {
+    "passed": 1,
+    "duration_sec": 1.22
+  },
+  "wheel": {
+    "status": "not_verified",
+    "reason": "hatchling is not installed; no dependency installation performed"
+  },
+  "browser_ui": "not_verified",
+  "product_code_changed": false,
+  "commit_or_push_performed": false,
+  "cli_validate_day": {
+    "vehicles": 4,
+    "requests": 32,
+    "status": "passed"
+  },
+  "inventory": {
+    "package_python_modules": 118,
+    "test_modules": 42,
+    "registered_env_count": 35,
+    "authored_files": 208,
+    "package_python_lines": 18285
+  }
+}

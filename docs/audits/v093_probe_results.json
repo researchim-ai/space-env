@@ -1,0 +1,25 @@
+{
+  "version": "0.93.0",
+  "armed_station_collision": {
+    "a": 1000000.0,
+    "b": 1000000.0
+  },
+  "forecast_fault_leak": {
+    "clock": 0.0,
+    "before_health": "SubsystemHealth.NOMINAL",
+    "after_health": "SubsystemHealth.FAILED",
+    "pending_restores": 1
+  },
+  "world_horizon": {
+    "horizon": 2,
+    "actual": 3.0
+  },
+  "mixed_acquisition_score": [
+    "r"
+  ],
+  "scenario_validation": {
+    "unknown_model": "accepted_by_loader",
+    "nan_unknown_outage": "accepted_by_loader",
+    "invalid_epoch": "accepted_by_loader"
+  }
+}
