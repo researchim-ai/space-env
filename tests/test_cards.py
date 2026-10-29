@@ -27,10 +27,13 @@ def test_every_env_has_a_card_matching_its_vector():
     assert set(ENV_CARDS) == set(registered_env_ids())
     for env_id in registered_env_ids():
         env = gym.make(env_id)
-        width = int(env.observation_space.shape[0])
+        space = env.observation_space
         env.close()
         card = ENV_CARDS[env_id]
-        assert len(card.observation) == width
+        if isinstance(space, gym.spaces.Dict):
+            assert tuple(space.spaces) == card.observation
+        else:
+            assert len(card.observation) == int(space.shape[0])
         assert card.action
         assert "success" not in card.success or card.success
 

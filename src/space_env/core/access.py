@@ -32,6 +32,11 @@ def subsatellite_latlon(r_eci_m: np.ndarray, time: Time) -> tuple[float, float]:
     return lat, lon
 
 
+def footprint_diameter_m(altitude_m: float, half_fov_deg: float) -> float:
+    """Диаметр кадра надирного прибора на плоской площадке, м. Угол — половина поля зрения."""
+    return 2.0 * float(altitude_m) * float(np.tan(np.deg2rad(half_fov_deg)))
+
+
 def off_nadir_deg(r_eci_m: np.ndarray, lat_deg: float, lon_deg: float, time: Time) -> float:
     """
     Угол между надиром и направлением на точку поверхности, градусы.

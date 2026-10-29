@@ -27,6 +27,27 @@ def test_landsat_and_iridium_keep_their_published_mass_and_rate():
     assert 40.0 < iridium.payload.half_fov_deg < 70.0
 
 
+def test_catalog_node_follows_the_meeus_sun_and_not_the_shadow_sun():
+    import math
+
+    from space_env.catalog.geometry import raan_rad_for_ltdn
+    from space_env.core.sun import sun_iau2000_m, sun_meeus_m
+    from space_env.core.time import Time
+
+    moment = Time("2026-10-20T10:00:00Z")
+
+    def node(vector: np.ndarray) -> float:
+        sun_ra = math.atan2(float(vector[1]), float(vector[0]))
+        return sun_ra + (10.5 - 12.0) * math.pi / 12.0 - math.pi
+
+    def wrap(delta: float) -> float:
+        return (delta + math.pi) % (2.0 * math.pi) - math.pi
+
+    got = raan_rad_for_ltdn(moment, 10.5)
+    assert abs(wrap(got - node(sun_meeus_m(moment)))) < 1e-12
+    assert abs(wrap(got - node(sun_iau2000_m(moment)))) > 1e-3
+
+
 def test_mean_sentinel_steps_near_786_km():
     from space_env.catalog.build import make_engine
 

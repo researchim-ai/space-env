@@ -12,6 +12,12 @@ class GroundStation(BaseModel):
     lon_deg: float = Field(ge=-180, le=180)
     alt_m: float = Field(default=0.0, ge=-500, le=9000)
     min_elevation_deg: float = Field(default=5.0, ge=0, le=90)
+    terminals: int = Field(default=1, ge=1, description="Сколько аппаратов станция принимает одновременно.")
+    band_hz: float = Field(default=0.0, ge=0, description="Несущая станции, Гц. 0 — принимает любую частоту борта.")
+    share_bandwidth: bool = Field(
+        default=False,
+        description="Делить скорость модема между аппаратами в этом контакте. По умолчанию каждый терминал берёт полную скорость.",
+    )
 
 
 def _dms(degrees: float, minutes: float, seconds: float) -> float:

@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from astropy.time import Time as AstropyTime
 
-from space_env.catalog.build import make_engine
+from space_env.catalog.build import make_engine, tle_orbit
 from space_env.core.access import off_nadir_deg, subsatellite_latlon, target_access
 from space_env.core.constants import R_EARTH_EQUATOR
 from space_env.core.environment import in_eclipse
@@ -156,8 +156,10 @@ def test_zero_burn_and_two_body_step_keep_the_teme_label():
         require_same_frame("GCRF", "TEME")
     with pytest.raises(FrameError):
         SimulationEngine(orbit, _craft(), scenario=ScenarioConfig(ground_stations=[]))
-    with pytest.raises(FrameError, match="TEME"):
-        make_engine("sentinel-2a", use_tle=True)
+    engine = make_engine("sentinel-2a", use_tle=True)
+    raw = tle_orbit("sentinel-2a")
+    assert engine.orbit.frame == "GCRF"
+    assert np.linalg.norm(engine.orbit.r - raw.r) > 1.0
     position, velocity, covariance = copy_state(orbit.r, orbit.v, "TEME", np.eye(6))
     assert np.allclose(position, orbit.r)
     assert np.allclose(velocity, orbit.v)

@@ -1,0 +1,23 @@
+{
+  "version": "0.98.0",
+  "batch_conflict": {
+    "before_records": 0,
+    "after_records": 1,
+    "now": 0.0
+  },
+  "unknown_request_command": {
+    "command_id": "ghost-request",
+    "actor_id": "a",
+    "kind": "imaging",
+    "request_id": "not-a-request",
+    "destination_id": "",
+    "status": "completed"
+  },
+  "early_valid_late_larger": [],
+  "json_station_restore": {
+    "before": [
+      "Kiruna"
+    ],
+    "after": []
+  }
+}

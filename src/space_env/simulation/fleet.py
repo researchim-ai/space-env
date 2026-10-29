@@ -62,6 +62,12 @@ class Fleet:
         self._cdm: dict[tuple[str, str], _StoredCdm] = {}
         self._relay_used = {name: [] for name in self.vehicles}
 
+    def use_reservations(self, book: dict[str, list]) -> None:
+        """Книга занятости терминала живёт в мире и переживает новую обёртку Fleet."""
+        for name in self.vehicles:
+            book.setdefault(name, [])
+        self._relay_used = book
+
     @classmethod
     def string_of_pearls(
         cls,
@@ -301,7 +307,22 @@ class Fleet:
                 chosen = other
         return chosen
 
-    def relay(self, source: str, destination: str, dt_sec: float) -> float:
+    def route(self, source: str, *, down: set[frozenset[str]] | None = None) -> str | None:
+        """Следующий хоп: замкнутая линия и самая короткая очередь. down выключает ребро."""
+        from space_env.simulation.dtn import next_hop
+
+        queues = {name: engine.stored_bits for name, engine in self.vehicles.items()}
+        return next_hop(self.pairs(), source, down=down, queues=queues)
+
+    def relay(
+        self,
+        source: str,
+        destination: str,
+        dt_sec: float,
+        *,
+        at_sec: float | None = None,
+        custody: bool = True,
+    ) -> float:
         """Перекладывает буфер на соседа, если луч свободен и запас линии неотрицательный."""
         if source == destination or dt_sec <= 0.0:
             return 0.0
@@ -311,23 +332,123 @@ class Fleet:
         )
         if pair is None or pair.earth_blocked or pair.isl_margin_db < 0.0:
             return 0.0
-        now = self.vehicles[source].time_sec
+        source_engine = self.vehicles[source]
+        now = source_engine.time_sec if at_sec is None else float(at_sec)
         free = dt_sec - _covered_seconds(now, now + dt_sec, self._relay_used[source])
         free = min(free, dt_sec - _covered_seconds(now, now + dt_sec, self._relay_used[destination]))
         if free <= 1e-9:
             return 0.0
-        source_engine = self.vehicles[source]
         destination_engine = self.vehicles[destination]
         room = destination_engine._room_bits()
         offered = min(source_engine.stored_bits, isl_rate_bps(pair.range_m) * free)
         moved_bits = offered if math.isinf(room) else min(offered, room)
         if moved_bits <= 0.0:
             return 0.0
+        from space_env.simulation.dtn import order_for_forward
+
+        source_engine._products = order_for_forward(source_engine._products)
         records = source_engine.release_bits(moved_bits, destination=destination)
+        if not records:
+            return 0.0
+        ack = float(source_engine.spacecraft.config.comms.ack_sec) if custody else 0.0
+        for record in records:
+            record.pop("ack_due_sec", None)
+            record.pop("ack_from", None)
+            record.pop("acked", None)
+            if ack > 0.0:
+                record["ack_due_sec"] = now + dt_sec + ack
+                record["ack_from"] = source
+                record["acked"] = False
         destination_engine.accept_custody(records)
         self._relay_used[source] = _merge_intervals([*self._relay_used[source], (now, now + dt_sec)])
         self._relay_used[destination] = _merge_intervals([*self._relay_used[destination], (now, now + dt_sec)])
         return sum(float(item["onboard_bits"]) for item in records) / 1.0e6
+
+    def forward(self, source: str, path: list[str], dt_sec: float, *, down: set[frozenset[str]] | None = None) -> dict:
+        """Хопы занимают соседние интервалы. Остановившийся хоп оставляет биты у последнего держателя."""
+        if dt_sec <= 0.0 or not path or source not in self.vehicles:
+            return {"arrived": False, "holder": source, "reason": "нет хопа"}
+        holder = source
+        base = self.vehicles[source].time_sec
+        blocked = down or set()
+        for index, hop in enumerate(path):
+            if hop not in self.vehicles:
+                return {"arrived": False, "holder": holder, "reason": "нет аппарата"}
+            if frozenset({holder, hop}) in blocked:
+                return {"arrived": False, "holder": holder, "reason": "ребро выключено"}
+            moved = self.relay(holder, hop, dt_sec, at_sec=base + index * dt_sec)
+            if moved <= 0.0:
+                return {"arrived": False, "holder": holder, "reason": "линия не прошла"}
+            holder = hop
+        return {"arrived": True, "holder": holder, "reason": ""}
+
+    def forward_live(self, source: str, path: list[str], dt_sec: float, *, down: set[frozenset[str]] | None = None) -> dict:
+        """Каждый хоп занимает dt, затем орбита всех аппаратов сдвигается на этот dt."""
+        if dt_sec <= 0.0 or not path or source not in self.vehicles:
+            return {"arrived": False, "holder": source, "reason": "нет хопа", "time_sec": self.time_sec}
+        holder = source
+        blocked = down or set()
+        for hop in path:
+            if hop not in self.vehicles:
+                return {"arrived": False, "holder": holder, "reason": "нет аппарата", "time_sec": self.time_sec}
+            if frozenset({holder, hop}) in blocked:
+                return {"arrived": False, "holder": holder, "reason": "ребро выключено", "time_sec": self.time_sec}
+            moved = self.relay(holder, hop, dt_sec)
+            if moved <= 0.0:
+                return {"arrived": False, "holder": holder, "reason": "линия не прошла", "time_sec": self.time_sec}
+            before = self.vehicles[holder].orbit.r.copy()
+            self.step(dt_sec)
+            if float(np.linalg.norm(self.vehicles[holder].orbit.r - before)) <= 1.0:
+                return {"arrived": False, "holder": holder, "reason": "орбита не сдвинулась", "time_sec": self.time_sec}
+            holder = hop
+        return {"arrived": True, "holder": holder, "reason": "", "time_sec": self.time_sec}
+
+    def route_live(self, source: str, dt_sec: float, *, hops: int = 1, down: set[frozenset[str]] | None = None) -> dict:
+        """На каждом хопе маршрут считается заново по текущим линиям, затем орбита сдвигается."""
+        if dt_sec <= 0.0 or hops < 1 or source not in self.vehicles:
+            return {"arrived": False, "holder": source, "path": [], "reason": "нет хопа", "time_sec": self.time_sec}
+        holder = source
+        taken: list[str] = []
+        for _index in range(int(hops)):
+            nxt = self.route(holder, down=down)
+            if nxt is None:
+                return {"arrived": False, "holder": holder, "path": taken, "reason": "нет хопа", "time_sec": self.time_sec}
+            moved = self.relay(holder, nxt, dt_sec)
+            if moved <= 0.0:
+                return {"arrived": False, "holder": holder, "path": taken, "reason": "линия не прошла", "time_sec": self.time_sec}
+            self.step(dt_sec)
+            taken.append(nxt)
+            holder = nxt
+        return {"arrived": True, "holder": holder, "path": taken, "reason": "", "time_sec": self.time_sec}
+
+    def acknowledge(self, holder: str, product_id: str) -> bool:
+        """Подтверждение опеки. После него просрочка этот продукт не возвращает."""
+        for item in self.vehicles[holder]._products:
+            if str(item.get("product_id")) != product_id or not item.get("ack_from"):
+                continue
+            item["acked"] = True
+            return True
+        return False
+
+    def return_unacked(self, holder: str, dt_sec: float, *, down: set[frozenset[str]] | None = None) -> float:
+        """Просроченная опека возвращается предыдущему держателю, только если линия ещё жива."""
+        engine = self.vehicles[holder]
+        now = engine.time_sec
+        pending = [
+            item
+            for item in engine._products
+            if item.get("ack_from")
+            and not item.get("acked")
+            and not item.get("delivered_to")
+            and float(item.get("onboard_bits", 0.0)) > 1e-9
+            and now + 1e-9 >= float(item.get("ack_due_sec", 1e30))
+        ]
+        if not pending:
+            return 0.0
+        home = str(pending[0]["ack_from"])
+        if down and frozenset({holder, home}) in down:
+            return 0.0
+        return self.relay(holder, home, dt_sec, at_sec=now, custody=False)
 
     def screen(
         self,
@@ -374,3 +495,31 @@ def _make_vehicle(
     craft = Spacecraft(config=config)
     craft.reset_state()
     return SimulationEngine(orbit, craft, scenario=template.model_copy(deep=True))
+
+
+def one_watt_star_shell() -> dict[str, float | int]:
+    """
+    Оболочка 86.4°:66/6/2 на 780 км и линия 1 Вт / 6 дБи.
+    Возвращает ближайшую дистанцию и число замкнутых линий. Пороги модели не подгоняются.
+    """
+    from space_env.core.link import isl_closure_range_m
+
+    radius = 6_378_137.0 + 780_000.0
+    fleet = Fleet.walker_star(
+        66,
+        6,
+        2,
+        a_m=radius,
+        inc_deg=86.4,
+        scenario=ScenarioConfig(ground_stations=[]),
+    )
+    pairs = fleet.pairs()
+    nearest = min(pairs, key=lambda item: item.range_m)
+    closed = sum(1 for item in pairs if not item.earth_blocked and item.isl_margin_db >= 0.0)
+    return {
+        "count": 66,
+        "nearest_m": float(nearest.range_m),
+        "nearest_margin_db": float(nearest.isl_margin_db),
+        "closed_links": closed,
+        "closure_range_m": isl_closure_range_m(),
+    }

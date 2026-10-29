@@ -17,6 +17,25 @@ class GroundTarget(BaseModel):
     name: str = "target"
     lat_deg: float = Field(ge=-90, le=90)
     lon_deg: float = Field(ge=-180, le=180)
+    cloud_fraction: float = Field(default=0.0, ge=0.0, le=1.0, description="Доля облачности. 0 — ясно. Не прогноз.")
+    cloud_sigma: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Полуразмах случайной добавки к доле. Ноль — доля берётся как записана.",
+    )
+    geometry: str = Field(
+        default="point",
+        pattern="^(point|strip|polygon|revisit|stereo)$",
+        description="Точка снимается как раньше. Полоса, полигон, повтор и стереопара проверяются до записи продукта.",
+    )
+    length_km: float = Field(default=0.0, ge=0.0, description="Длина полосы, км. Для точки не читается.")
+    vertices: list[dict[str, float]] = Field(default_factory=list, description="Вершины полигона. Для точки пусто.")
+    looks: int = Field(default=1, ge=1, description="Сколько проходов нужно повтору.")
+    gap_sec: float = Field(default=0.0, ge=0.0, description="Минимальный промежуток повтора, с.")
+    min_stereo_deg: float = Field(default=0.0, ge=0.0)
+    max_stereo_deg: float = Field(default=0.0, ge=0.0)
+    depends_on: str = Field(default="", description="Имя предшественника. Пусто — зависимости нет.")
 
 
 class ScenarioType(str, Enum):
@@ -32,6 +51,14 @@ class AnomalyInject(BaseModel):
     at_sec: float = Field(ge=0)
     severity: str = Field(default="degraded")  # degraded | failed
     duration_sec: float | None = Field(default=None, ge=0)  # None = до конца эпизода
+    symptom: str = Field(
+        default="",
+        pattern="^(|rate|false_safe)$",
+        description="Пусто — прежняя запись health. rate режет скорость. false_safe держит безопасный режим без просадки заряда.",
+    )
+    cause: str = Field(default="", description="Скрытая причина. В отчёт симптома не копируется.")
+    hidden: bool = Field(default=False, description="Причина не попадает в отчёт симптома.")
+    recovery_sec: float = Field(default=0.0, ge=0, description="Сколько секунд команда recover держит симптом до снятия.")
 
 
 class ConjunctionInject(BaseModel):

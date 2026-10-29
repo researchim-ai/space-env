@@ -11,8 +11,9 @@ from space_env.core.spacecraft import PropulsionConfig, Spacecraft, SpacecraftCo
 from space_env.core.time import Time
 from space_env.mission.events import EventKind, PlannedEvent
 from space_env.mission.scenario_v2 import load_scenario_v2
-from space_env.mission.scenarios import GroundTarget, ScenarioConfig
+from space_env.mission.scenarios import AnomalyInject, GroundTarget, ScenarioConfig
 from space_env.mission.tasking import TaskRequest, StationOutage, delivery_score, mission_kpis, run_policy
+from space_env.simulation.commands import MissionCommand
 from space_env.simulation.engine import SimulationEngine
 from space_env.simulation.world import MissionWorld
 
@@ -32,6 +33,54 @@ def _engine(name: str = "a", planned=None) -> SimulationEngine:
 
 def _world(engines=None, horizon: float = 60.0) -> MissionWorld:
     return MissionWorld(engines or {"a": _engine()}, epoch=EPOCH, horizon_sec=horizon, seed=7)
+
+
+def test_the_world_keeps_one_command_book_across_steps():
+    world = _world(horizon=3.0)
+    first = MissionCommand("c1", "a", "wait")
+    world.accept([first])
+    world.step(1.0, {"a": "wait"})
+    world.settle()
+    assert world.commands.get("c1")["status"] == "completed"
+    assert world.now_sec() == 1.0
+    world.accept([first])
+    assert world.commands.get("c1")["status"] == "completed"
+    try:
+        world.accept([MissionCommand("c1", "a", "comms")])
+        conflict = False
+    except ValueError:
+        conflict = True
+    assert conflict
+    assert world.now_sec() == 1.0
+
+
+def test_relay_reservations_survive_a_new_fleet_wrapper():
+    world = _world({"a": _engine("a"), "b": _engine("b")})
+    world.relay_used["a"] = [(0.0, 5.0)]
+    from space_env.simulation.fleet import Fleet
+
+    fleet = Fleet(world.engines)
+    fleet.use_reservations(world.relay_used)
+    assert fleet._relay_used["a"] == [(0.0, 5.0)]
+    fleet._relay_used["b"].append((1.0, 2.0))
+    assert world.relay_used["b"] == [(1.0, 2.0)]
+
+
+def test_a_failed_vehicle_rolls_the_whole_step_back():
+    world = _world({"a": _engine("a"), "b": _engine("b")})
+
+    def boom(dt_sec, command=None, command_payload=None):
+        raise RuntimeError("сбой борта")
+
+    world.engines["b"].step = boom
+    try:
+        world.step(1.0, {"a": "wait", "b": "wait"})
+        raised = False
+    except RuntimeError:
+        raised = True
+    assert raised
+    assert world.engines["a"].time_sec == 0.0
+    assert world.engines["b"].time_sec == 0.0
 
 
 def test_forecast_keeps_the_burn_and_the_noise_seed():
@@ -55,6 +104,32 @@ def test_forecast_keeps_the_burn_and_the_noise_seed():
     fresh.restore(snap)
     again = fresh.estimate("a", noise=0.1)["stored_bits"]
     assert first == again
+
+
+def test_forecast_of_a_fault_leaves_the_vehicle_healthy():
+    item = _engine()
+    item.scenario.anomaly_injects = [
+        AnomalyInject(subsystem="payload", at_sec=0.5, severity="failed", duration_sec=10.0)
+    ]
+    world = _world({"a": item})
+    before = str(item.spacecraft.state.health["payload"])
+    world.forecast("a", 1.0)
+    assert item.time_sec == 0.0
+    assert str(item.spacecraft.state.health["payload"]) == before
+    assert item._restores == []
+
+
+def test_a_step_cannot_pass_the_horizon():
+    world = _world(horizon=2.0)
+    try:
+        world.step(3.0)
+        refused = False
+    except ValueError:
+        refused = True
+    assert refused
+    assert world.now_sec() == 0.0
+    world.step(2.0)
+    assert world.now_sec() == 2.0
 
 
 def test_unknown_actor_and_split_clocks_do_not_move_the_world():
@@ -93,6 +168,11 @@ def test_duplicate_and_early_receipts_do_not_close_the_request():
     early = TaskRequest("later", 0.0, 0.0, 20.0, 30.0, 100.0, 1, "optical")
     premature = dict(receipt, request_id="later", bits=100.0, time_sec=1.0)
     assert delivery_score([early], [premature], [])["on_time"] == []
+    halves = [
+        {"product_id": "capture-a", "request_id": "r", "destination": "x", "time_sec": 5.0, "offset_bits": 0.0, "bits": 50.0},
+        {"product_id": "capture-b", "request_id": "r", "destination": "x", "time_sec": 6.0, "offset_bits": 50.0, "bits": 50.0},
+    ]
+    assert delivery_score([request], halves, [])["on_time"] == []
 
 
 def test_safety_counts_a_real_constraint_event():
@@ -131,6 +211,12 @@ def test_invalid_scenario_is_rejected_before_propagation():
                 }
             ],
         ),
+        "unknown_model": dict(baseline, instances=[{"id": "a", "model": "does-not-exist"}]),
+        "invalid_epoch": dict(baseline, epoch="not-a-date"),
+        "nan_unknown_outage": dict(
+            baseline,
+            outages=[{"station": "unknown", "start_sec": float("nan"), "end_sec": 5}],
+        ),
     }
     with tempfile.TemporaryDirectory() as tmp:
         for name, config in bad.items():
@@ -159,6 +245,10 @@ def test_one_station_and_an_outage_are_enforced_by_the_world():
     assert delivered["a"] > 0.0
     assert delivered["b"] == 0.0
     assert shared.last_rejected == [{"actor_id": "b", "kind": "comms", "reason": "станция занята"}]
+    before = {name: engine.delivered_bits for name, engine in shared.engines.items()}
+    shared.step(1.0, {"b": "comms"})
+    assert shared.engines["a"].delivered_bits > before["a"]
+    assert shared.engines["b"].delivered_bits == before["b"]
     receipt = shared.engines["a"].receipts[0]
     assert receipt["start_sec"] < receipt["end_sec"] <= 1.0 + 1e-9
     assert receipt["time_sec"] == receipt["end_sec"]

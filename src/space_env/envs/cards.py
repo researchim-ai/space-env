@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from space_env.envs.mission_fleet_env import observation_names as mission_fleet_observation
+from space_env.envs.mission_fleet_env import watch_observation_names
 
 
 @dataclass(frozen=True)
@@ -307,6 +308,18 @@ ENV_CARDS: dict[str, EnvCard] = {
             mission_fleet_observation(),
             "для каждого аппарата: режим 0/1/2 и номер заявки",
             "Хотя бы одна заявка сдана в срок. Неверная съёмка отклоняется и не подменяет команду",
+        ),
+        EnvCard(
+            "space_env/FleetWatch-v0",
+            watch_observation_names(),
+            "до четырёх аппаратов: режим 0/1/2 и номер заявки, пустые слоты игнорируются",
+            "Сценарий от 1 до 4 аппаратов и не больше 16 заявок. Сверх лимита reset отвергается",
+        ),
+        EnvCard(
+            "space_env/MissionDict-v0",
+            ("clock", "contact", "open_requests", "soc"),
+            "0 ждать, 1 съёмка, 2 сдача. Один аппарат, наблюдение — словарь",
+            "Хотя бы одна заявка перешла в delivered. FleetWatch и его плоский вектор не меняются",
         ),
     )
 }

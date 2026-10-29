@@ -117,3 +117,19 @@ def test_sixteen_copies_of_one_model_keep_separate_names(tmp_path: Path):
     assert len(world.engines) == 16
     assert len({engine.spacecraft.config.name for engine in world.engines.values()}) == 16
     assert {item["model"] for item in load_scenario_v2(path)["instances"]} == {"sentinel-2a"}
+
+
+def test_comments_and_key_order_do_not_change_the_semantic_hash(tmp_path: Path):
+    from space_env.mission.scenario_v2 import semantic_hash
+
+    body = "version: 2\nhorizon_sec: 60\ninstances:\n- id: a\n  model: cubesat-6u\nstations: []\nrequests: []\n"
+    left = tmp_path / "left.yaml"
+    right = tmp_path / "right.yaml"
+    left.write_text("# заметка\n" + body, encoding="utf-8")
+    right.write_text(
+        "requests: []\nstations: []\ninstances:\n- model: cubesat-6u\n  id: a\nhorizon_sec: 60\nversion: 2\n",
+        encoding="utf-8",
+    )
+    assert semantic_hash(load_scenario_v2(left)) == semantic_hash(load_scenario_v2(right))
+    assert scenario_manifest(left)["sha256"] != scenario_manifest(right)["sha256"]
+    assert scenario_manifest(left)["semantic_sha256"] == scenario_manifest(right)["semantic_sha256"]

@@ -39,6 +39,7 @@ _SUITE_STEPS = {
     "space_env/DemandShift-v0": 2,
     "space_env/RadarPass-v0": 1,
     "space_env/LongitudeKeep-v0": 1,
+    "space_env/MissionDict-v0": 1,
 }
 
 

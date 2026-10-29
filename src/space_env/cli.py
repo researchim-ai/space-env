@@ -16,12 +16,26 @@ def main(argv: list[str] | None = None) -> None:
     run.add_argument("--step", type=float, default=60.0)
     validate = sub.add_parser("validate")
     validate.add_argument("scenario")
+    benchmark = sub.add_parser("benchmark")
+    benchmark.add_argument("suite")
+    replay_command = sub.add_parser("replay")
+    replay_command.add_argument("record")
     args = parser.parse_args(argv)
     if args.command == "validate":
         from space_env.mission.scenario_v2 import load_scenario_v2
 
         spec = load_scenario_v2(args.scenario)
         print(json.dumps({"instances": [item["id"] for item in spec["instances"]], "requests": [item["id"] for item in spec["requests"]]}, ensure_ascii=False))
+        return
+    if args.command == "benchmark":
+        from space_env.eval.mission_benchmark import run_mission_suite
+
+        print(json.dumps(run_mission_suite(args.suite), ensure_ascii=False))
+        return
+    if args.command == "replay":
+        from space_env.data_generators.mission_dataset import replay
+
+        print(json.dumps({"ok": replay(args.record)}, ensure_ascii=False))
         return
     report = mission_report(args.scenario, step_sec=args.step, policy=args.policy)
     print(

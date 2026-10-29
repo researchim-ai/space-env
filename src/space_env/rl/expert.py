@@ -7,6 +7,8 @@ from space_env.envs.cards import ENV_CARDS, observation_index
 
 
 def expert_action(env_id: str, observation: np.ndarray) -> int:
+    if "MissionDict" in env_id:
+        return 0
     obs = np.asarray(observation, dtype=float).ravel()
     if "ResourceManager" in env_id:
         in_eclipse = obs[1] > 0.5
@@ -105,6 +107,8 @@ def expert_action(env_id: str, observation: np.ndarray) -> int:
             contact = obs[index * 4 + 2]
             actions.append(2 if stored > 0.0 and contact > 0.5 else 0)
         return np.array(actions, dtype=int)
+    if "FleetWatch" in env_id:
+        return np.zeros(8, dtype=int)
     if "MissionFleet" in env_id:
         vehicle_count = 2
         request_count = 12

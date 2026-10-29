@@ -1,8 +1,8 @@
 """
 Суточные F10.7 и планетарный Ap по снимку NOAA SWPC.
 f107a — среднее скорректированного потока Пенктитона за 81 сутки, кончающиеся этим днём
-(компиляция IUP Bremen). Центрированное среднее потребовало бы дни после 20 октября 2026,
-а их в выпуске от 21 октября нет.
+(компиляция IUP Bremen). Центрированное среднее — ``centered_f107a``: оно есть только там,
+где в снимке есть 40 суток до даты и 40 после. На 20 октября 2026 хвоста нет.
 Вне окна снимка SWPC индекса нет: сценарий остаётся при своих значениях по умолчанию.
 """
 from __future__ import annotations
@@ -25,6 +25,7 @@ class SolarIndices:
     f107: float
     f107a: float
     ap: float
+    f107_centered: float | None = None
 
 
 @lru_cache(maxsize=1)
@@ -61,8 +62,33 @@ def trailing_f107a(time: Time) -> tuple[float, int] | None:
     return sum(window) / _TRAILING_DAYS, _TRAILING_DAYS
 
 
+def centered_f107a(time: Time) -> tuple[float, int] | None:
+    """
+    Среднее F10.7 за 81 сутки, симметрично вокруг даты: 40 до, эти сутки и 40 после.
+    None, если снимок не покрывает оба края. На 20 октября 2026 хвоста уже нет.
+    """
+    series = _flux()
+    index = None
+    for place, (jd, _flux_value) in enumerate(series):
+        if jd <= time.jd + 0.5:
+            index = place
+        else:
+            break
+    if index is None:
+        return None
+    lo = index - 40
+    hi = index + 40
+    if lo < 0 or hi >= len(series):
+        return None
+    window = series[lo : hi + 1]
+    span_days = window[-1][0] - window[0][0]
+    if len(window) != 81 or not 79.0 <= span_days <= 82.0:
+        return None
+    return sum(item[1] for item in window) / 81.0, 81
+
+
 def indices_for(time: Time) -> SolarIndices | None:
-    """Индексы суток UTC, в которые попадает момент. None, если дата не попала в снимок SWPC."""
+    """Индексы суток UTC. f107a — центрированные 81 сутки, если оба края есть в снимке, иначе скользящие 81."""
     rows = _rows()
     if time.jd < rows[0][0] or time.jd >= rows[-1][0] + 1.0:
         return None
@@ -75,4 +101,6 @@ def indices_for(time: Time) -> SolarIndices | None:
     averaged = trailing_f107a(time)
     if averaged is None:
         return None
-    return SolarIndices(chosen[1], averaged[0], chosen[2])
+    centered = centered_f107a(time)
+    f107a = averaged[0] if centered is None else centered[0]
+    return SolarIndices(chosen[1], f107a, chosen[2], None if centered is None else centered[0])

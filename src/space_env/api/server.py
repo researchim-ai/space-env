@@ -9,13 +9,30 @@ from urllib.parse import parse_qs, urlparse
 from space_env import __version__
 from space_env.api.console import open_shift, step_shift
 from space_env.mission.scenario_v2 import scenario_manifest
-from space_env.mission.session import mission_report
+from space_env.mission.session import RevisionError, MissionSession, mission_report
+from space_env.simulation.commands import MissionCommand
 from space_env.mission.shift_scenario import load_shift_scenario
 from space_env.simulation.fleet_view import describe_fleet, fleet_episode
 
-_VIZ = Path(__file__).resolve().parents[3] / "viz"
-if not _VIZ.is_dir():
-    _VIZ = Path.cwd() / "viz"
+
+def studio_root() -> Path:
+    """Каталог студии: корень репозитория, затем копия внутри пакета, затем текущий каталог."""
+    packaged = Path(__file__).resolve().parents[1] / "studio_assets"
+    checkout = Path(__file__).resolve().parents[3] / "viz"
+    local = Path.cwd() / "viz"
+    for candidate in (checkout, packaged, local):
+        if (candidate / "studio.html").is_file():
+            return candidate
+    return checkout
+
+
+_SESSIONS: dict[str, object] = {}
+_SESSION_FILES = {
+    "mission_short.yaml",
+    "family_nominal.yaml",
+    "family_outage.yaml",
+    "family_infeasible.yaml",
+}
 _MISSION: dict | None = None
 
 
@@ -51,6 +68,12 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
         return _json_bytes(scenario_manifest(root))
     if path == "/api/mission":
         return _json_bytes(_mission_outcome())
+    if path.startswith("/api/sessions/"):
+        session_id = path.removeprefix("/api/sessions/").strip("/")
+        session = _SESSIONS.get(session_id)
+        if session is None:
+            return _json_bytes({"error": "нет такой сессии"}, 404)
+        return _json_bytes(session.report())
     if path == "/api/fleet":
         try:
             count = int(query.get("count", ["6"])[0])
@@ -69,22 +92,59 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
             return _json_bytes({"error": str(exc)}, 400)
         return _json_bytes(payload)
     if path in {"/", "/studio"}:
-        return _file(_VIZ / "studio.html")
+        return _file(studio_root() / "studio.html")
     if path.startswith("/viz/"):
-        return _file(_VIZ / path.removeprefix("/viz/"))
+        return _file(studio_root() / path.removeprefix("/viz/"))
     return _json_bytes({"error": "нет такого пути"}, 404)
 
 
 def handle_post(path: str, body: bytes) -> tuple[int, bytes, str]:
-    """Команды пульта. GET по-прежнему только читает снимки."""
-    if path not in {"/api/shift/reset", "/api/shift/step"}:
-        return _json_bytes({"error": "нет такого пути"}, 404)
+    """Команды пульта и сессии миссии."""
     try:
         payload = json.loads(body.decode("utf-8") or "{}")
     except json.JSONDecodeError:
         return _json_bytes({"error": "нужен словарь JSON"}, 400)
     if not isinstance(payload, dict):
         return _json_bytes({"error": "нужен словарь JSON"}, 400)
+    if path == "/api/sessions":
+        name = str(payload.get("scenario", "mission_short.yaml"))
+        if Path(name).name != name or name not in _SESSION_FILES:
+            return _json_bytes({"error": "сценарий сессии не из списка"}, 400)
+        if len(_SESSIONS) >= 8:
+            return _json_bytes({"error": "слишком много сессий"}, 429)
+        session = MissionSession(name)
+        _SESSIONS[session.session_id] = session
+        return _json_bytes(session.report())
+    if path.startswith("/api/sessions/") and path.endswith("/advance"):
+        session_id = path.removeprefix("/api/sessions/").removesuffix("/advance").strip("/")
+        session = _SESSIONS.get(session_id)
+        if session is None:
+            return _json_bytes({"error": "нет такой сессии"}, 404)
+        try:
+            commands = [
+                MissionCommand(
+                    command_id=str(item["command_id"]),
+                    actor_id=str(item["actor_id"]),
+                    kind=str(item["kind"]),
+                    request_id=str(item.get("request_id", "")),
+                    destination_id=str(item.get("destination_id", "")),
+                )
+                for item in payload.get("commands", [])
+            ]
+            report = session.advance(
+                float(payload.get("dt_sec", 60.0)),
+                commands,
+                expected_revision=int(payload["expected_revision"]),
+            )
+        except KeyError:
+            return _json_bytes({"error": "нужна ревизия и поля команды"}, 400)
+        except RevisionError as exc:
+            return _json_bytes({"error": str(exc)}, 409)
+        except ValueError as exc:
+            return _json_bytes({"error": str(exc)}, 400)
+        return _json_bytes(report)
+    if path not in {"/api/shift/reset", "/api/shift/step"}:
+        return _json_bytes({"error": "нет такого пути"}, 404)
     try:
         if path == "/api/shift/reset":
             return _json_bytes(open_shift(int(payload.get("seed", 0))))
@@ -98,7 +158,7 @@ def handle_post(path: str, body: bytes) -> tuple[int, bytes, str]:
 
 
 def _file(path: Path) -> tuple[int, bytes, str]:
-    root = _VIZ.resolve()
+    root = studio_root().resolve()
     try:
         target = path.resolve()
         target.relative_to(root)

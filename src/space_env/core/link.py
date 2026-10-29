@@ -53,6 +53,19 @@ def earth_occults(r1_m: np.ndarray, r2_m: np.ndarray, limb_radius_m: float | Non
 ISL_RATE_MAX_BPS: float = 1.0e6
 
 
+def isl_closure_range_m() -> float:
+    """Дальность, на которой запас линии 1 Вт / 6 дБи ещё неотрицателен. Дальше линия разомкнута."""
+    lo = 1.0
+    hi = 20_000_000.0
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if isl_margin_db(mid) >= 0.0:
+            lo = mid
+        else:
+            hi = mid
+    return lo
+
+
 def isl_rate_bps(range_m: float) -> float:
     """Ступени того же модема на межспутниковой линии. Закрытие Землёй проверяют снаружи."""
     return stepped_rate_bps(isl_margin_db(range_m), ISL_RATE_MAX_BPS)
@@ -83,3 +96,13 @@ def stepped_rate_bps(margin_db: float, rate_max_bps: float) -> float:
     if margin_db < 8.0:
         return 0.5 * rate_max_bps
     return rate_max_bps
+
+
+def pass_capacity_bits(samples: list[tuple[float, float]], rate_max_bps: float) -> float:
+    """Сколько бит пропускает модем по запасу каждого куска. Видимость целиком на максимальной скорости сюда не подставляется."""
+    total = 0.0
+    for span_sec, margin_db in samples:
+        if span_sec <= 0.0:
+            continue
+        total += stepped_rate_bps(float(margin_db), rate_max_bps) * float(span_sec)
+    return total

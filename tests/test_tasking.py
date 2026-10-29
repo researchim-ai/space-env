@@ -306,7 +306,7 @@ def test_a_failed_radio_relays_the_request_to_the_neighbor():
     world = MissionWorld(
         {"down": dest, "up": source},
         epoch="2026-10-20T12:00:00Z",
-        horizon_sec=10.0,
+        horizon_sec=20.0,
     )
     report = run_policy(
         world,

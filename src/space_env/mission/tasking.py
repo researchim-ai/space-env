@@ -12,12 +12,12 @@ from space_env.core.sun import sun_position_m
 from space_env.mission.events import EventKind
 from space_env.mission.scenario_v2 import load_scenario_v2, scenario_manifest, world_from_scenario
 from space_env.mission.scenarios import GroundTarget
-from space_env.simulation.commands import CommandBook, MissionCommand
+from space_env.simulation.commands import MissionCommand
 from space_env.simulation.engine import SimulationEngine
 from space_env.simulation.fleet import Fleet
 from space_env.simulation.world import MissionWorld
 
-POLICIES = ("fifo", "deadline", "priority")
+POLICIES = ("fifo", "deadline", "priority", "rolling")
 
 
 @dataclass(frozen=True)
@@ -32,6 +32,8 @@ class TaskRequest:
     payload: str
     destination: str = ""
     quality: str = "full"
+    geometry: str = "point"
+    length_km: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -52,6 +54,12 @@ def _better(left: TaskRequest, right: TaskRequest, policy: str) -> bool:
             -right.priority,
             right.request_id,
         )
+    if policy == "rolling":
+        return (left.deadline_sec - left.release_sec, -left.priority, left.request_id) < (
+            right.deadline_sec - right.release_sec,
+            -right.priority,
+            right.request_id,
+        )
     return (-left.priority, left.deadline_sec, left.request_id) < (
         -right.priority,
         right.deadline_sec,
@@ -64,6 +72,8 @@ def _rank(request: TaskRequest, policy: str, name: str) -> tuple:
         return (request.release_sec, request.request_id, name)
     if policy == "deadline":
         return (request.deadline_sec, -request.priority, request.request_id, name)
+    if policy == "rolling":
+        return (request.deadline_sec - request.release_sec, -request.priority, request.request_id, name)
     return (-request.priority, request.deadline_sec, request.request_id, name)
 
 
@@ -300,11 +310,17 @@ def _relay(
     now: float,
     dt: float,
     outages: list[StationOutage],
+    downlink: set[str] | None = None,
 ) -> list[dict]:
-    """Передаёт борт соседу, который может сдать, если сам аппарат линию на Землю не откроет."""
+    """Передаёт борт соседу, который может сдать, если сам аппарат линию на Землю не откроет.
+
+    Полудуплекс не совмещает ретрансляцию и сдачу. full_duplex на борту это разрешает.
+    """
     if len(world.engines) < 2 or dt <= 0.0:
         return []
     fleet = Fleet(world.engines)
+    fleet.use_reservations(world.relay_used)
+    busy = set(downlink or [])
     by_id = {item.request_id: item for item in requests}
     margins: dict[frozenset[str], float] = {}
     for pair in fleet.pairs():
@@ -314,11 +330,15 @@ def _relay(
     moved = []
     for name, engine in world.engines.items():
         held = _onboard_request(engine, by_id)
-        if held is None or _can_dump(engine, now, outages):
+        if held is None:
+            continue
+        if not engine.spacecraft.config.comms.full_duplex and (name in busy or _can_dump(engine, now, outages)):
             continue
         candidates = []
         for other, destination in world.engines.items():
             if other == name:
+                continue
+            if other in busy and not destination.spacecraft.config.comms.full_duplex:
                 continue
             margin = margins.get(frozenset((name, other)))
             if margin is None or not _can_dump(destination, now, outages):
@@ -422,6 +442,8 @@ def requests_from_scenario(spec: dict) -> list[TaskRequest]:
             payload=str(item["payload"]),
             destination=str(item.get("destination", "")),
             quality=str(item.get("quality", "full")),
+            geometry=str(item.get("geometry", "point")),
+            length_km=float(item.get("length_km", 0.0)),
         )
         for item in rows
     ]
@@ -472,14 +494,58 @@ def _countable_receipts(receipts: list[dict], request: TaskRequest) -> list[dict
     return kept
 
 
+def _single_acquisition(items: list[dict]) -> list[dict]:
+    """Одна съёмка. Куски разных product_id не складываются в один снимок."""
+    groups: dict[str, list[dict]] = {}
+    for item in items:
+        groups.setdefault(str(item.get("product_id", "")), []).append(item)
+    if len(groups) <= 1:
+        return items
+    return max(groups.values(), key=_covered_union)
+
+
 def _completion_time(mine: list[dict], size_bits: float) -> float | None:
-    """Момент, когда уникальная сумма квитанций впервые закрывает объём заявки."""
-    accepted: list[dict] = []
+    """Самый ранний момент, когда какая-либо одна съёмка закрывает объём."""
+    groups: dict[str, list[dict]] = {}
     for item in mine:
-        accepted.append(item)
-        if _covered_union(accepted) + 1e-6 >= size_bits:
-            return float(item["time_sec"])
-    return None
+        groups.setdefault(str(item.get("product_id", "")), []).append(item)
+    earliest: float | None = None
+    for group in groups.values():
+        accepted: list[dict] = []
+        for item in group:
+            accepted.append(item)
+            if _covered_union(accepted) + 1e-6 >= size_bits:
+                moment = float(item["time_sec"])
+                if earliest is None or moment < earliest:
+                    earliest = moment
+                break
+    return earliest
+
+
+def service_level(issued: list[dict], on_time_ids: set[str]) -> dict[str, float | int]:
+    """
+    Доля приоритета, сданная в срок.
+    Недостижимые заявки остаются в знаменателе выданного спроса и не считаются успехом съёмки.
+    """
+
+    def weight(item: dict) -> int:
+        return max(int(item.get("priority", 1)), 1)
+
+    reachable = [item for item in issued if item.get("reachable")]
+    def ratio(pool: list[dict]) -> float:
+        total = sum(weight(item) for item in pool)
+        if total <= 0:
+            return 0.0
+        hit = sum(weight(item) for item in pool if str(item.get("id")) in on_time_ids)
+        return hit / total
+
+    return {
+        "issued": len(issued),
+        "reachable": len(reachable),
+        "unreachable": len(issued) - len(reachable),
+        "on_time_of_reachable": ratio(reachable),
+        "on_time_of_issued": ratio(issued),
+    }
 
 
 def delivery_score(requests: list[TaskRequest], receipts: list[dict], unmet: list[dict]) -> dict:
@@ -610,6 +676,26 @@ def mission_kpis(
     }
 
 
+def _unmet_rows(world: MissionWorld, requests: list[TaskRequest], blocked: set[str]) -> list[dict]:
+    """Причины несданных заявок. Закрытая станция не превращается в «срок вышел»."""
+    receipts = [item for engine in world.engines.values() for item in engine.receipts]
+    unmet = []
+    for request in requests:
+        mine = _countable_receipts(receipts, request)
+        delivered = _covered_union(_single_acquisition(mine))
+        done_at = _completion_time(mine, request.size_bits)
+        if done_at is not None and done_at <= request.deadline_sec + 1e-6:
+            continue
+        if request.request_id in blocked and delivered <= 1e-6:
+            reason = "станция недоступна"
+        elif done_at is not None or world.horizon_sec + 1e-6 >= request.deadline_sec:
+            reason = "срок вышел"
+        else:
+            reason = "не сдано до горизонта"
+        unmet.append({"request_id": request.request_id, "reason": reason, "delivered_bits": delivered})
+    return unmet
+
+
 def run_policy(
     world: MissionWorld,
     requests: list[TaskRequest],
@@ -625,6 +711,7 @@ def run_policy(
         raise ValueError("шаг должен быть положительным")
     closed = list(outages or [])
     world.set_outages([(item.station, item.start_sec, item.end_sec) for item in closed])
+    world.task_requests = {item.request_id: item for item in requests}
     blocked: set[str] = set()
     relays: list[dict] = []
     rejected: list[dict] = []
@@ -634,65 +721,66 @@ def run_policy(
     started = time.perf_counter()
     while elapsed + 1e-9 < world.horizon_sec:
         dt = min(step_sec, world.horizon_sec - elapsed)
-        planned = dt
-        moved = _relay(world, requests, elapsed, planned, closed)
-        relays.extend(moved)
         commands, denied = _commands(world, requests, policy, elapsed, closed, dt)
         blocked.update(denied)
         dt, commands = _cut_to_event(world, requests, commands, elapsed, dt, closed)
-        book = CommandBook()
-        issued = {}
+        downlink = set()
+        for name, kind in commands.items():
+            engine = world.engines[name]
+            if kind == "comms" and _can_dump(engine, elapsed, closed):
+                downlink.add(name)
+            snap = engine.get_state_snapshot()
+            if engine._downlink_armed and engine.radio_ready() and snap.in_contact:
+                downlink.add(name)
+        moved = _relay(world, requests, elapsed, dt, closed, downlink)
+        relays.extend(moved)
+        batch = []
         for name, kind in commands.items():
             targets = [target.name for target in world.engines[name].scenario.ground_targets]
             request_id = targets[-1] if targets else ""
-            command = MissionCommand(
-                command_id=f"{elapsed:.3f}:{name}:{kind}:{request_id}",
-                actor_id=name,
-                kind=kind,
-                request_id=request_id,
-                destination_id=world.engines[name].get_state_snapshot().contact_station,
+            batch.append(
+                MissionCommand(
+                    command_id=f"{elapsed:.3f}:{name}:{kind}:{request_id}",
+                    actor_id=name,
+                    kind=kind,
+                    request_id=request_id,
+                    destination_id=world.engines[name].get_state_snapshot().contact_station,
+                )
             )
-            issued[name] = book.submit(command)
+        orders = world.accept(batch)
+        issued = {world.commands.get(command_id)["actor_id"]: world.commands.get(command_id) for command_id in world._batch}
+        for command in batch:
+            if command.actor_id not in issued:
+                try:
+                    issued[command.actor_id] = world.commands.get(command.command_id)
+                except KeyError:
+                    continue
         schedule.append(
             {
                 "dt": dt,
-                "orders": book.orders(),
+                "orders": orders,
                 "commands": issued,
                 "relays": moved,
-                "relay_dt": planned,
+                "relay_dt": dt,
                 "targets": {
                     name: [target.name for target in engine.scenario.ground_targets]
                     for name, engine in world.engines.items()
                 },
+                "denied": sorted(denied),
             }
         )
-        world.step(dt, book.orders())
+        world.step(dt, orders)
         schedule[-1]["rejected"] = list(getattr(world, "last_rejected", []))
         rejected.extend(schedule[-1]["rejected"])
-        for record in issued.values():
-            book.complete(record["command_id"])
+        world.settle()
+        for name, record in list(issued.items()):
+            issued[name] = world.commands.get(record["command_id"])
+        schedule[-1]["commands"] = issued
         elapsed = float(world.now_sec())
         replans += 1
     runtime_sec = time.perf_counter() - started
-    receipts = [
-        item
-        for engine in world.engines.values()
-        for item in engine.receipts
-    ]
-    unmet = []
-    for request in requests:
-        mine = _countable_receipts(receipts, request)
-        delivered = _covered_union(mine)
-        done_at = _completion_time(mine, request.size_bits)
-        if done_at is not None and done_at <= request.deadline_sec + 1e-6:
-            continue
-        if request.request_id in blocked and delivered <= 1e-6:
-            reason = "станция недоступна"
-        elif done_at is not None or world.horizon_sec + 1e-6 >= request.deadline_sec:
-            reason = "срок вышел"
-        else:
-            reason = "не сдано до горизонта"
-        unmet.append({"request_id": request.request_id, "reason": reason, "delivered_bits": delivered})
+    receipts = [item for engine in world.engines.values() for item in engine.receipts]
+    unmet = _unmet_rows(world, requests, blocked)
     score = delivery_score(requests, receipts, unmet)
     relay_bits = sum(float(item["bits"]) for item in relays)
     return {
@@ -712,7 +800,23 @@ def run_policy(
             replans=replans,
             relay_bits=relay_bits,
         ),
+        "final": _final_rows(world),
     }
+
+
+def _final_rows(world: MissionWorld) -> dict:
+    rows = {}
+    for name, engine in world.engines.items():
+        snap = engine.get_state_snapshot()
+        rows[name] = {
+            "time_sec": round(float(engine.time_sec), 6),
+            "soc": round(float(snap.battery_soc), 6),
+            "dv_remaining_m_s": round(float(snap.delta_v_remaining_m_s), 6),
+            "stored_bits": round(float(snap.stored_bits), 3),
+            "delivered_bits": round(float(snap.delivered_bits), 3),
+            "lost_bits": round(float(snap.lost_bits), 3),
+        }
+    return rows
 
 
 def run_scenario(

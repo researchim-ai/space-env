@@ -1,0 +1,20 @@
+# Короткий набор миссий. 72 часа сюда не входят: это отдельный длинный прогон.
+version: 1
+name: mission_v1_smoke
+cases:
+  - id: nominal
+    scenario: family_nominal.yaml
+    step_sec: 30
+    on_time: [kiruna-pass]
+  - id: outage
+    scenario: family_outage.yaml
+    step_sec: 30
+    unmet_reason: станция недоступна
+  - id: infeasible
+    scenario: family_infeasible.yaml
+    step_sec: 30
+    unmet_reason: срок вышел
+  - id: curriculum
+    scenario: mission_short.yaml
+    step_sec: 60
+    min_on_time: 12

@@ -159,6 +159,57 @@ def test_api_serves_scenario_fleet_and_studio():
     assert status == 404
 
 
+def test_studio_root_finds_the_page_and_the_packaged_suite():
+    import space_env
+    from pathlib import Path
+
+    from space_env.api.server import studio_root
+
+    root = studio_root()
+    assert (root / "studio.html").is_file()
+    assert (root / "studio.js").is_file()
+    suite = Path(space_env.__file__).resolve().parent / "configs" / "benchmark_suites" / "mission_v1_smoke.yaml"
+    assert suite.is_file()
+    import json
+
+    from space_env.api.server import _SESSIONS, handle_get, handle_post
+
+    _SESSIONS.clear()
+    status, body, _kind = handle_post("/api/sessions", b'{"scenario": "family_nominal.yaml"}')
+    first = json.loads(body)
+    assert status == 200
+    status, body, _kind = handle_post("/api/sessions", b'{"scenario": "family_nominal.yaml"}')
+    second = json.loads(body)
+    assert status == 200 and second["session_id"] != first["session_id"]
+    status, moved, _kind = handle_post(
+        f"/api/sessions/{first['session_id']}/advance",
+        b'{"expected_revision": 0, "dt_sec": 30}',
+    )
+    moved_body = json.loads(moved)
+    assert status == 200 and moved_body["now_sec"] == 30.0
+    assert [row["t"] for row in moved_body["track"]] == [0.0, 30.0]
+    assert [frame["t"] for frame in moved_body["episode"]["frames"]] == [0.0, 30.0]
+    assert moved_body["episode"]["summary"]["layout"] == "session"
+    assert len(moved_body["episode"]["frames"][1]["vehicles"]["sentinel-a"]["r"]) == 3
+    assert moved_body["episode"]["earth_radius_m"] > 6.0e6
+    assert moved_body["vehicles"][0]["name"] == "sentinel-a"
+    opened = moved_body["track"][0]
+    stepped = moved_body["track"][1]
+    assert abs(stepped["lat_deg"] - opened["lat_deg"]) + abs(stepped["lon_deg"] - opened["lon_deg"]) > 0.05
+    status, still, _kind = handle_get(f"/api/sessions/{second['session_id']}", {})
+    still_body = json.loads(still)
+    assert status == 200 and still_body["now_sec"] == 0.0
+    assert [row["t"] for row in still_body["track"]] == [0.0]
+    again = _SESSIONS[second["session_id"]].report()
+    assert len(again["track"]) == 1
+    status, _body, _kind = handle_post(
+        f"/api/sessions/{first['session_id']}/advance",
+        b'{"expected_revision": 0, "dt_sec": 30}',
+    )
+    assert status == 409
+    _SESSIONS.clear()
+
+
 def test_http_server_answers_health():
     server = ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)

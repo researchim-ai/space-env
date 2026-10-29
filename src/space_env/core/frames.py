@@ -2,8 +2,11 @@
 Переходы численной инерциальной системы ↔ ECEF и угол места над станцией.
 
 Орбита хранит подпись GCRF или TEME. GCRF здесь — система численного Кауэлла:
-GAST по десяти членам IAU 1980 и полярное движение без локатора TIO. Это не
-сертифицированный GCRF и не полный переход IAU 2000A. TEME — подпись SGP4.
+истинное звёздное время IAU 2000A через ERFA и полярное движение без локатора TIO.
+Это не сертифицированный GCRF. Десять членов IAU 1980 остаются в gast_iau1980_rad.
+TEME — подпись SGP4. Явный переход в численный кадр идёт через ITRS
+по GMST 1982 и полярному движению Валладо 2006, затем обратным звёздным временем
+этого пакета. Это не J2000 GCRS и не сертификат кадра.
 EME2000 и ITRF как состояние орбиты не принимаются: отдельного проверенного
 перехода нет, векторы и ковариация молча не переписываются.
 """
@@ -68,18 +71,39 @@ def nutation_rad(time: Time) -> tuple[float, float]:
     return float(longitude * scale), float(obliquity * scale)
 
 
-def gast_rad(time: Time) -> float:
+def gast_iau2000a_rad(time: Time, *, tai_minus_utc_s: float = 37.0) -> float:
     """
-    Гринвичское истинное звёздное время.
-    GMST плюс уравнение равноденствий по десяти членам IAU 1980.
-    UT1 берётся из снимка IERS, когда дата внутри него. Полный ряд IAU 2000A не используется.
+    Гринвичское истинное звёздное время по резолюциям IAU 2000, рад.
+    Ряд считает ERFA ``eraGst00a``. С 2017-01-01 до следующего скачка TAI−UTC = 37 с,
+    поэтому TT = UTC + 37 с + 32.184 с. ``gast_rad`` вызывает эту функцию.
     """
+    try:
+        from erfa import gst00a
+    except ImportError as exc:
+        raise ImportError("для IAU 2000A нужен пакет erfa, он приходит с astropy") from exc
+
+    utc = float(time.jd)
+    ut1 = utc + dut1_seconds(time) / 86400.0
+    tt = utc + (float(tai_minus_utc_s) + 32.184) / 86400.0
+    return float(gst00a(ut1, 0.0, tt, 0.0))
+
+
+def gast_iau1980_rad(time: Time) -> float:
+    """Десять членов IAU 1980. Сравнение со штатным рядом, не кадр перехода ECEF."""
     centuries = (time.jd - 2451545.0) / 36525.0
     dpsi, _deps = nutation_rad(time)
     mean_obliquity = np.deg2rad(23.439291 - 0.0130042 * centuries)
     _moon, _sun, _lat, _elong, node = _delaunay_rad(centuries)
     complementary = (0.00264 * np.sin(node) + 0.000063 * np.sin(2.0 * node)) * _ARCSEC_TO_RAD
     return float(gmst_rad(time) + dpsi * np.cos(mean_obliquity) + complementary)
+
+
+def gast_rad(time: Time) -> float:
+    """Истинное звёздное время кадра ECEF: IAU 2000A. Без ERFA остаётся ряд 1980."""
+    try:
+        return gast_iau2000a_rad(time)
+    except ImportError:
+        return gast_iau1980_rad(time)
 
 
 def _rotate_z(vector: np.ndarray, theta: float) -> np.ndarray:
@@ -185,6 +209,84 @@ def ecef_to_eci(r_ecef_m: np.ndarray, time: Time) -> np.ndarray:
     arcsec = np.pi / (180.0 * 3600.0)
     undone = _undo_polar_motion(np.asarray(r_ecef_m, dtype=float), xp * arcsec, yp * arcsec)
     return _rotate_z(undone, -gast_rad(time))
+
+
+def _teme_to_itrs(r_teme_m: np.ndarray, time: Time) -> np.ndarray:
+    """
+    TEME → ITRS матрицей ERFA, как у astropy: GMST 1982 и pom00 без локатора TIO.
+    Это цепочка Валладо 2006, не самодельный поворот.
+    """
+    try:
+        from erfa import c2tcio, gmst82, pom00
+    except ImportError as exc:
+        raise ImportError("для перехода TEME нужен пакет erfa, он приходит с astropy") from exc
+
+    ut1 = float(time.jd) + dut1_seconds(time) / 86400.0
+    jd1 = 2400000.5
+    jd2 = ut1 - jd1
+    gst = float(gmst82(jd1, jd2))
+    xp, yp = pole_arcsec(time)
+    arcsec = np.pi / (180.0 * 3600.0)
+    polar = pom00(xp * arcsec, yp * arcsec, 0.0)
+    matrix = c2tcio(np.eye(3), gst, polar)
+    return np.asarray(matrix, dtype=float) @ np.asarray(r_teme_m, dtype=float)
+
+
+def teme_to_numerical(r_teme_m: np.ndarray, v_teme_m_s: np.ndarray, time: Time) -> tuple[np.ndarray, np.ndarray]:
+    """
+    TEME → численный кадр этого пакета.
+    Сначала ITRS по Валладо 2006, затем тот же обратный поворот, что у ecef_to_eci.
+    Кадр назначения — не J2000 GCRS: прецессия в GCRS здесь не добавляется.
+    """
+    position = np.asarray(r_teme_m, dtype=float)
+    velocity = np.asarray(v_teme_m_s, dtype=float)
+    if position.shape != (3,) or velocity.shape != (3,):
+        raise FrameError("r и v TEME должны быть векторами из трёх чисел")
+    step = 1.0e-4
+    here = ecef_to_eci(_teme_to_itrs(position, time), time)
+    ahead = ecef_to_eci(_teme_to_itrs(position + velocity * step, time + step), time + step)
+    return here, (ahead - here) / step
+
+
+def _gcrs_from_itrs(r_itrs_m: np.ndarray, time: Time, *, tai_minus_utc_s: float = 37.0) -> np.ndarray:
+    """ITRS → GCRS матрицей ERFA c2t06a: прецессия-нутация IAU 2006/2000A, ERA и полюс."""
+    try:
+        from erfa import c2t06a
+    except ImportError as exc:
+        raise ImportError("для GCRS нужен пакет erfa, он приходит с astropy") from exc
+
+    utc = float(time.jd)
+    ut1 = utc + dut1_seconds(time) / 86400.0
+    tt = utc + (float(tai_minus_utc_s) + 32.184) / 86400.0
+    xp, yp = pole_arcsec(time)
+    arcsec = np.pi / (180.0 * 3600.0)
+    matrix = c2t06a(2400000.5, tt - 2400000.5, 2400000.5, ut1 - 2400000.5, xp * arcsec, yp * arcsec)
+    return np.asarray(matrix, dtype=float).T @ np.asarray(r_itrs_m, dtype=float)
+
+
+def teme_to_gcrs(
+    r_teme_m: np.ndarray,
+    v_teme_m_s: np.ndarray,
+    time: Time,
+    *,
+    tai_minus_utc_s: float = 37.0,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    TEME → GCRS. Земной вектор — цепочка Валладо, небесный — c2t06a.
+    Этот вектор не подставляется в движок: силы и ECEF живут в численном кадре пакета.
+    """
+    position = np.asarray(r_teme_m, dtype=float)
+    velocity = np.asarray(v_teme_m_s, dtype=float)
+    if position.shape != (3,) or velocity.shape != (3,):
+        raise FrameError("r и v TEME должны быть векторами из трёх чисел")
+    step = 1.0e-4
+
+    def place(vector: np.ndarray, moment: Time) -> np.ndarray:
+        return _gcrs_from_itrs(_teme_to_itrs(vector, moment), moment, tai_minus_utc_s=tai_minus_utc_s)
+
+    here = place(position, time)
+    ahead = place(position + velocity * step, time + step)
+    return here, (ahead - here) / step
 
 
 def geodetic_to_ecef(lat_deg: float, lon_deg: float, alt_m: float = 0.0) -> np.ndarray:

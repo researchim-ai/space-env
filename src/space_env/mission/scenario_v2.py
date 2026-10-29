@@ -2,13 +2,17 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import math
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from space_env.catalog.build import make_engine
+from space_env.catalog.references import reference
 from space_env.core.ground import station_by_name
+from space_env.core.time import Time
 from space_env.simulation.world import MissionWorld
 
 _FIELDS = {"version", "epoch", "horizon_sec", "instances", "stations", "requests", "outages"}
@@ -24,6 +28,14 @@ _REQUEST_FIELDS = {
     "payload",
     "destination",
     "quality",
+    "geometry",
+    "length_km",
+    "vertices",
+    "looks",
+    "gap_sec",
+    "min_stereo_deg",
+    "max_stereo_deg",
+    "depends_on",
 }
 
 
@@ -54,6 +66,10 @@ def load_scenario_v2(path: str | Path) -> dict[str, Any]:
             raise ValueError("у аппарата нужны id и model")
         if ident in seen:
             raise ValueError(f"идентификатор аппарата повторяется: {ident}")
+        try:
+            reference(model)
+        except KeyError as exc:
+            raise ValueError(f"неизвестная модель: {model}") from exc
         seen.add(ident)
         anomaly = float(item.get("nu_deg", 0.0))
         if anomaly != anomaly or anomaly in {float("inf"), float("-inf")}:
@@ -77,6 +93,26 @@ def load_scenario_v2(path: str | Path) -> dict[str, Any]:
         quality = str(item.get("quality", "full"))
         if quality not in {"full", "partial"}:
             raise ValueError("качество заявки должно быть full или partial")
+        geometry = str(item.get("geometry", "point"))
+        if geometry not in {"point", "strip", "polygon", "revisit", "stereo"}:
+            raise ValueError("геометрия заявки должна быть point, strip, polygon, revisit или stereo")
+        length_km = float(item.get("length_km", 0.0))
+        if length_km != length_km or length_km < 0.0:
+            raise ValueError("длина полосы должна быть конечной и неотрицательной")
+        if geometry == "strip" and length_km <= 0.0:
+            raise ValueError("у полосы нужна положительная длина")
+        vertices = item.get("vertices", [])
+        if geometry == "polygon" and (not isinstance(vertices, list) or len(vertices) < 3):
+            raise ValueError("у полигона нужны хотя бы три вершины")
+        looks = int(item.get("looks", 1))
+        gap_sec = float(item.get("gap_sec", 0.0))
+        if geometry == "revisit" and (looks < 2 or gap_sec <= 0.0):
+            raise ValueError("повтор требует не меньше двух взглядов и положительный промежуток")
+        min_stereo = float(item.get("min_stereo_deg", 0.0))
+        max_stereo = float(item.get("max_stereo_deg", 0.0))
+        if geometry == "stereo" and not 0.0 <= min_stereo < max_stereo:
+            raise ValueError("стереопара требует min_stereo_deg < max_stereo_deg")
+        depends_on = str(item.get("depends_on", "")).strip()
         destination = str(item.get("destination", "")).strip()
         if not ident:
             raise ValueError("у заявки нужен id")
@@ -109,6 +145,14 @@ def load_scenario_v2(path: str | Path) -> dict[str, Any]:
                 "payload": payload,
                 "destination": destination,
                 "quality": quality,
+                "geometry": geometry,
+                "length_km": length_km,
+                "vertices": vertices,
+                "looks": looks,
+                "gap_sec": gap_sec,
+                "min_stereo_deg": min_stereo,
+                "max_stereo_deg": max_stereo,
+                "depends_on": depends_on,
             }
         )
     outages = []
@@ -118,21 +162,34 @@ def load_scenario_v2(path: str | Path) -> dict[str, Any]:
         station = str(item.get("station", "")).strip()
         start = float(item.get("start_sec", 0.0))
         end = float(item.get("end_sec", 0.0))
-        if not station or end <= start:
-            raise ValueError("у отказа станции нужны имя и положительный интервал")
+        if not station or not math.isfinite(start) or not math.isfinite(end) or end <= start:
+            raise ValueError("у отказа станции нужны имя и конечный положительный интервал")
+        if station not in {str(name) for name in stations}:
+            raise ValueError(f"станция отказа не из списка сценария: {station}")
         outages.append({"station": station, "start_sec": start, "end_sec": end})
     horizon = float(loaded.get("horizon_sec", 86400.0))
     if horizon != horizon or horizon in {float("inf"), float("-inf")} or horizon <= 0.0:
         raise ValueError("горизонт сценария должен быть положительным")
+    epoch = str(loaded.get("epoch", "2026-10-20T00:00:00Z"))
+    try:
+        Time(epoch)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("эпоха сценария не разбирается") from exc
     return {
         "version": 2,
-        "epoch": str(loaded.get("epoch", "2026-10-20T00:00:00Z")),
+        "epoch": epoch,
         "horizon_sec": horizon,
         "instances": parsed,
         "stations": [str(item) for item in stations],
         "requests": requests,
         "outages": outages,
     }
+
+
+def semantic_hash(spec: dict[str, Any]) -> str:
+    """Отпечаток разобранного сценария. Комментарии и порядок ключей в файле его не меняют."""
+    payload = json.dumps(spec, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def scenario_manifest(path: str | Path) -> dict[str, Any]:
@@ -142,6 +199,7 @@ def scenario_manifest(path: str | Path) -> dict[str, Any]:
     return {
         "version": spec["version"],
         "sha256": hashlib.sha256(raw).hexdigest(),
+        "semantic_sha256": semantic_hash(spec),
         "epoch": spec["epoch"],
         "horizon_sec": spec["horizon_sec"],
         "instances": [item["id"] for item in spec["instances"]],

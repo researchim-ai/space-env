@@ -8,7 +8,7 @@ import math
 
 from space_env.core.constants import C_LIGHT, J2_EARTH, MU_EARTH, R_EARTH_EQUATOR, R_EARTH_MEAN, SIGMA_SB
 from space_env.core.link import free_space_path_loss_db
-from space_env.core.sun import sun_position_m
+from space_env.core.sun import sun_meeus_m
 from space_env.core.time import Time
 
 # Монопропеллентный гидразин. Удельный импульс в карточках Sentinel и Landsat не опубликован.
@@ -102,9 +102,10 @@ def radiating_area_m2(heat_w: float, temp_c: float = 20.0, emissivity: float = 0
 def raan_rad_for_ltdn(moment: Time, ltdn_hours: float) -> float:
     """
     Долгота восходящего узла, при которой нисходящий узел имеет заданное местное солнечное время.
-    Прямое восхождение Солнца берётся из core.sun. Уравнение времени отдельно не вводится.
+    Прямое восхождение берётся из ряда Миуса: записанные цели лежат на этой трассе.
+    Тень, давление и прилив читают ERFA и этот узел не крутят. Уравнение времени отдельно не вводится.
     """
-    sun = sun_position_m(moment)
+    sun = sun_meeus_m(moment)
     sun_ra = math.atan2(float(sun[1]), float(sun[0]))
     descending_ra = sun_ra + (float(ltdn_hours) - 12.0) * math.pi / 12.0
     return descending_ra - math.pi

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "space-env"
-version = "0.93.0"
+version = "0.134.0"
 description = "Environment for generating pretraining/SFT/RL data for space industry agents"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -47,6 +47,14 @@ space_env = "space_env.envs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/space_env"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"viz/studio.html" = "space_env/studio_assets/studio.html"
+"viz/studio.js" = "space_env/studio_assets/studio.js"
+"viz/app.js" = "space_env/studio_assets/app.js"
+"viz/index.html" = "space_env/studio_assets/index.html"
+"viz/vendor" = "space_env/studio_assets/vendor"
+"viz/textures" = "space_env/studio_assets/textures"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

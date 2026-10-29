@@ -1,20 +1,22 @@
 """
 Положение Луны и приливное ускорение точечных тел.
-Луна — укороченный ряд Миуса (долгота, широта, расстояние), не ELP2000.
-Солнце берётся из core.sun. Прилив: GM (r_отн/|r|³ − r_тела/|R|³).
+В приливе Луна берётся из ERFA moon98, если пакет есть. Ряд Миуса остаётся для сравнения.
+Солнце тени и светового давления — по-прежнему укороченный ряд Миуса.
+Прилив: GM (r_отн/|r|³ − r_тела/|R|³).
 """
 from __future__ import annotations
 
 import numpy as np
 
+from space_env.core.constants import AU
 from space_env.core.time import Time
 
 MU_MOON_M3_S2: float = 4.9048695e12
 MU_SUN_M3_S2: float = 1.32712440018e20
 
 
-def moon_position_m(time: Time) -> np.ndarray:
-    """Геоцентрический вектор на Луну, м. Точность — сотни километров, не метры."""
+def moon_meeus_m(time: Time) -> np.ndarray:
+    """Геоцентрический вектор на Луну, м. Укороченный ряд Миуса, сотни километров."""
     day = time.jd - 2451545.0
     longitude = np.deg2rad((218.3164477 + 13.17639648 * day) % 360.0)
     anomaly = np.deg2rad((134.9633964 + 13.06499295 * day) % 360.0)
@@ -50,6 +52,26 @@ def moon_position_m(time: Time) -> np.ndarray:
     return np.array([x, y, z], dtype=float)
 
 
+def moon_iau2000_m(time: Time, *, tai_minus_utc_s: float = 37.0) -> np.ndarray:
+    """Геоцентрическая Луна по ERFA moon98, метры. Ряд IAU, не Миус."""
+    try:
+        from erfa import moon98
+    except ImportError as exc:
+        raise ImportError("для ряда Луны IAU нужен пакет erfa") from exc
+
+    tt = float(time.jd) + (float(tai_minus_utc_s) + 32.184) / 86400.0
+    sample = moon98(2400000.5, tt - 2400000.5)
+    return np.asarray(sample["p"], dtype=float) * AU
+
+
+def moon_position_m(time: Time) -> np.ndarray:
+    """Луна для прилива. ERFA moon98, если пакет установлен, иначе ряд Миуса."""
+    try:
+        return moon_iau2000_m(time)
+    except ImportError:
+        return moon_meeus_m(time)
+
+
 def tidal_acceleration_m_s2(r_sat_m: np.ndarray, r_body_m: np.ndarray, mu_m3_s2: float) -> np.ndarray:
     """Приливное ускорение точечного тела на спутнике у Земли."""
     r_sat = np.asarray(r_sat_m, dtype=float)
@@ -63,9 +85,9 @@ def tidal_acceleration_m_s2(r_sat_m: np.ndarray, r_body_m: np.ndarray, mu_m3_s2:
 
 
 def third_body_acceleration_m_s2(r_sat_m: np.ndarray, time: Time) -> np.ndarray:
-    """Сумма приливов Луны и Солнца."""
-    from space_env.core.sun import sun_position_m
+    """Сумма приливов Луны и Солнца. Солнце прилива — ряд ERFA, не ряд тени."""
+    from space_env.core.sun import sun_iau2000_m
 
     moon = tidal_acceleration_m_s2(r_sat_m, moon_position_m(time), MU_MOON_M3_S2)
-    sun = tidal_acceleration_m_s2(r_sat_m, sun_position_m(time), MU_SUN_M3_S2)
+    sun = tidal_acceleration_m_s2(r_sat_m, sun_iau2000_m(time), MU_SUN_M3_S2)
     return moon + sun

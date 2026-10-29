@@ -84,6 +84,8 @@
     #console-ledger { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
     #console-log { max-height: 180px; overflow: auto; margin: 8px 0 0; padding-left: 18px; font-size: 13px; }
     #console-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    #live-map { width: 100%; height: 180px; display: block; margin: 8px 0 4px; background: #0b121c; border-radius: 12px; }
+    #live-vehicles { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
     #console-actions button[data-blocked="true"] { color: var(--muted); }
     #console-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
     #console-board div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
@@ -163,6 +165,13 @@
     </div>
   </section>
   <section id="console">
+    <h2>Живая сессия</h2>
+    <p id="live-session-status">Сессия не открыта.</p>
+    <canvas id="live-map" width="640" height="180"></canvas>
+    <table id="live-vehicles"></table>
+    <ul id="live-statuses"></ul>
+    <button type="button" id="live-open">Открыть учебную Кируну</button>
+    <button type="button" id="live-step">Шаг 30 с</button>
     <h2>Пульт смены</h2>
     <p id="console-status">Смена закрыта. Открытие считает те же сутки, что и обучение.</p>
     <button type="button" id="console-open">Открыть смену</button>
@@ -194,6 +203,94 @@
         taskingRequests.replaceChildren();
       });
     const missionOutcome = document.querySelector("#mission-outcome");
+    const liveStatus = document.querySelector("#live-session-status");
+    const liveStatuses = document.querySelector("#live-statuses");
+    const liveMap = document.querySelector("#live-map");
+    const liveVehicles = document.querySelector("#live-vehicles");
+    let liveSession = null;
+    function drawLive(data) {
+      const context = liveMap.getContext("2d");
+      const width = liveMap.width;
+      const height = liveMap.height;
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#0b121c";
+      context.fillRect(0, 0, width, height);
+      const track = data.track || [];
+      const names = [...new Set(track.map((row) => row.name))];
+      names.forEach((name, index) => {
+        const rows = track.filter((row) => row.name === name);
+        context.beginPath();
+        context.strokeStyle = index === 0 ? "#9fd4ff" : "#f0c27a";
+        context.lineWidth = 2;
+        rows.forEach((row, point) => {
+          const x = ((row.lon_deg + 180) / 360) * width;
+          const y = ((90 - row.lat_deg) / 180) * height;
+          if (point === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        });
+        context.stroke();
+      });
+      for (const row of data.vehicles || []) {
+        const x = ((row.lon_deg + 180) / 360) * width;
+        const y = ((90 - row.lat_deg) / 180) * height;
+        context.fillStyle = "#f4f7fb";
+        context.beginPath();
+        context.arc(x, y, 4, 0, Math.PI * 2);
+        context.fill();
+      }
+      liveVehicles.innerHTML = (data.vehicles || []).map((row) => `
+        <tr>
+          <td>${row.name}</td>
+          <td>${row.lat_deg.toFixed(2)}°, ${row.lon_deg.toFixed(2)}°</td>
+          <td>${row.altitude_km.toFixed(0)} км</td>
+          <td>${row.in_eclipse ? "тень" : "свет"}</td>
+          <td>${row.in_contact ? (row.station || "есть") : "нет"}</td>
+        </tr>
+      `).join("");
+    }
+    function showLive(data) {
+      liveSession = data;
+      liveStatus.textContent = `Сессия ${data.session_id}, ревизия ${data.revision}, время ${data.now_sec} с.`;
+      drawLive(data);
+      if (data.episode) showSession(data.episode);
+      liveStatuses.replaceChildren();
+      for (const row of data.statuses || []) {
+        const item = document.createElement("li");
+        item.textContent = `${row.request_id}: ${row.status}`;
+        liveStatuses.appendChild(item);
+      }
+    }
+    document.querySelector("#live-open").addEventListener("click", async () => {
+      liveStatus.textContent = "Открываем сессию…";
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({scenario: "family_nominal.yaml"}),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        liveStatus.textContent = data.error || "Сессия не открылась.";
+        return;
+      }
+      showLive(data);
+    });
+    document.querySelector("#live-step").addEventListener("click", async () => {
+      if (!liveSession) {
+        liveStatus.textContent = "Сначала откройте сессию.";
+        return;
+      }
+      const response = await fetch(`/api/sessions/${liveSession.session_id}/advance`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({dt_sec: 30, expected_revision: liveSession.revision, commands: []}),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        liveStatus.textContent = data.error || "Шаг не прошёл.";
+        return;
+      }
+      showLive(data);
+    });
     fetch("/api/mission")
       .then((response) => response.json())
       .then((data) => {
@@ -234,6 +331,7 @@
     const neighborhood = document.querySelector("#neighborhood");
     const neighborhoodCaption = document.querySelector("#neighborhood-caption");
     let episodeSummary = null;
+    let viewToken = 0;
     let lastNeighbors = [];
     const logTitle = document.querySelector("#log-title");
     const logTools = document.querySelector("#log-tools");
@@ -465,7 +563,41 @@
       fillApproaches(episodeSummary, screening);
     }
 
+    function showSession(episode) {
+      if (!episode || !episode.frames || !episode.frames.length) return;
+      viewToken += 1;
+      studio.load(episode);
+      studio.setPlaying(false);
+      fillSummary(episode.summary);
+      studio.seekTime(episode.frames[episode.frames.length - 1].t);
+      play.textContent = "Пуск";
+    }
+
     function fillSummary(data) {
+      if (data.layout === "session") {
+        episodeSummary = data;
+        tape = data.events || [];
+        logMode = "all";
+        logPasses.setAttribute("aria-pressed", "false");
+        logAll.setAttribute("aria-pressed", "true");
+        logTitle.hidden = false;
+        logTools.hidden = false;
+        log.hidden = false;
+        logTitle.textContent = "Журнал сессии";
+        approachTitle.hidden = true;
+        approaches.hidden = true;
+        approachNote.hidden = true;
+        neighborhood.hidden = true;
+        neighborhoodCaption.hidden = true;
+        buildLog();
+        explain.textContent = data.brief;
+        summary.innerHTML = [
+          [String(data.count), "аппарат сессии"],
+          [`${Math.round(data.minutes)} мин`, "прожито"],
+          [String((data.events || []).length), "заявок в журнале"],
+        ].map(([value, label]) => `<div><b>${value}</b><span>${label}</span></div>`).join("");
+        return;
+      }
       episodeSummary = data;
       tape = data.layout === "shift" ? (data.events || []) : [];
       logTitle.textContent = "Журнал дуги";
@@ -499,11 +631,13 @@
     }
 
     async function show(layout) {
+      const token = ++viewToken;
       shift.setAttribute("aria-pressed", layout === "shift" ? "true" : "false");
       chain.setAttribute("aria-pressed", layout === "chain" ? "true" : "false");
       star.setAttribute("aria-pressed", layout === "star" ? "true" : "false");
       explain.textContent = "Считаем дугу…";
       const episode = await fetch(`/api/episode?layout=${layout}`).then((response) => response.json());
+      if (token !== viewToken) return;
       if (episode.error) {
         explain.textContent = episode.error;
         return;

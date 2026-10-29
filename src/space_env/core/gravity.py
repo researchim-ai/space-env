@@ -153,7 +153,8 @@ def _srp_acceleration_m_s2(
 ) -> np.ndarray:
     """
     Пушечное ядро: a = −Cr (A/m) P (1 а.е. / r)² ν · r̂_солнце.
-    ν — доля солнечного диска из конуса тени. В umbra ускорение нулевое.
+    Направление и доля диска берутся из того же вектора Солнца, что тень и прилив.
+    В umbra ускорение нулевое.
     """
     from space_env.core.environment import shadow_state
     from space_env.core.sun import sun_position_m
