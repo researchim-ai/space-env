@@ -1,0 +1,1 @@
+{"task":"Observe the two scouts and wait until mission time 30 seconds.","calls":[{"name":"observe","arguments":{}},{"name":"forecast","arguments":{"actor":"scout-a","dt_sec":2}},{"name":"advance","arguments":{"dt_sec":10,"expected_revision":0}},{"name":"observe","arguments":{}},{"name":"advance","arguments":{"dt_sec":20,"expected_revision":1}}]}

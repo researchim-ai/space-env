@@ -1,0 +1,32 @@
+{
+  "version": "0.134.0",
+  "parallel_reset_clock": 1.0,
+  "truth_log_restore": {
+    "clock": 0.0,
+    "before": 1,
+    "after": 2,
+    "last_sample_time": 1.0
+  },
+  "operation_duration": {
+    "duration_sec": 2,
+    "step_sec": 10,
+    "command": {
+      "command_id": "bounded",
+      "actor_id": "a",
+      "kind": "comms",
+      "request_id": "",
+      "destination_id": "",
+      "duration_sec": 2.0,
+      "started_sec": 0.0,
+      "until_sec": 2.0,
+      "status": "completed"
+    },
+    "receipt_end_sec": 10.0,
+    "delivered_bits": 10000000.0
+  },
+  "dict_rollout": {
+    "error": "TypeError",
+    "message": "float() argument must be a string or a real number, not 'dict'"
+  },
+  "same_vector_frame_difference_m": 46011.23580535697
+}

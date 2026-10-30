@@ -5,7 +5,8 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+import copy
+from dataclasses import asdict, dataclass
 
 import numpy as np
 
@@ -30,6 +31,30 @@ class SensorStream:
         self.rng = rng
         self._last: dict | None = None
         self._emitted_at = -1.0e30
+
+    def capture(self) -> dict:
+        """Portable state of the observation channel, including sampling cache."""
+        return {
+            "model": asdict(self.model),
+            "rng": copy.deepcopy(self.rng.bit_generator.state),
+            "last": copy.deepcopy(self._last),
+            "emitted_at": self._emitted_at,
+        }
+
+    def restore(self, state: dict) -> None:
+        self.model = SensorModel(**state["model"])
+        self.rng.bit_generator.state = copy.deepcopy(state["rng"])
+        self._last = copy.deepcopy(state["last"])
+        self._emitted_at = float(state["emitted_at"])
+
+    @classmethod
+    def from_snapshot(cls, state: dict) -> SensorStream:
+        name = state["rng"]["bit_generator"]
+        if name not in {"PCG64", "PCG64DXSM", "Philox", "SFC64", "MT19937"}:
+            raise ValueError("неподдерживаемый генератор измерений")
+        stream = cls(SensorModel(), np.random.Generator(getattr(np.random, name)()))
+        stream.restore(state)
+        return stream
 
     def read(self, now_sec: float, tape: list[dict]) -> dict:
         target = float(now_sec) - float(self.model.delay_sec)

@@ -1,0 +1,23 @@
+{
+  "package": "/tmp/space-env-execution-clean/lib/python3.12/site-packages/space_env",
+  "dict_steps": 2,
+  "suite_passed": true,
+  "cases": 4,
+  "studio_status": 200,
+  "restored_time_sec": 1.0,
+  "cli_validate": {
+    "instances": [
+      "sentinel-a"
+    ],
+    "requests": [
+      "kiruna-pass"
+    ]
+  },
+  "dependencies": {
+    "numpy": "2.5.4",
+    "boinor": "0.20.0",
+    "gymnasium": "1.4.0",
+    "astropy": "8.0.2",
+    "pydantic": "2.14.2"
+  }
+}

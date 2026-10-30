@@ -19,6 +19,7 @@ from space_env.mission.campaign import (
     commit_award,
     shared_windows,
 )
+from space_env.mission.coast import coast_to_job
 from space_env.mission.horizon import PC_THRESHOLD
 from space_env.mission.outcome import classify_outcome
 from space_env.mission.scenarios import GroundTarget
@@ -213,8 +214,7 @@ class DayShiftEnv(gym.Env):
 
     def _coast_to(self, engine: SimulationEngine, at_sec: float) -> None:
         """Шаг 60 с, как у плана: время третьего тела не застывает на длинном скачке."""
-        while engine.time_sec + 0.5 < at_sec:
-            engine.step(min(60.0, at_sec - engine.time_sec), "wait")
+        coast_to_job(engine, max(at_sec, engine.time_sec))
 
     def _engine_accepts(self, job: _Job) -> bool:
         engine = self._engine_for(job.vehicle)
@@ -364,12 +364,10 @@ class DishAwardEnv(gym.Env):
             engine = make_engine(vehicle, epoch=campaign.epoch, nu_deg=180.0, with_stations=True)
             if vehicle == campaign.vehicles[0] and campaign.burn_at_sec is not None:
                 burn = next(item for item in campaign.conjunctions if item.required)
-                while engine.time_sec + 0.5 < campaign.burn_at_sec:
-                    engine.step(min(60.0, campaign.burn_at_sec - engine.time_sec), "wait")
+                coast_to_job(engine, campaign.burn_at_sec)
                 engine.step(1.0, "maneuver", {"dv_m_s": burn.dv_m_s, "direction": burn.direction or "prograde"})
             for start, end, station, ready in rows:
-                while engine.time_sec + 0.5 < start:
-                    engine.step(min(60.0, start - engine.time_sec), "wait")
+                coast_to_job(engine, max(start, engine.time_sec))
                 capacity = engine.spacecraft.config.payload.memory_bits
                 room = ready if capacity <= 0.0 else min(ready, max(0.0, capacity - engine.stored_bits))
                 if room > engine.stored_bits:
@@ -640,9 +638,7 @@ class OperatorShiftEnv(gym.Env):
             if job.vehicle == name and job.end_sec > engine.time_sec + 0.5:
                 cap = min(cap, max(engine.time_sec, float(job.start_sec)))
                 break
-        while engine.time_sec + 0.5 < cap:
-            engine.step(min(60.0, cap - engine.time_sec), "wait")
-            self._append_flight(name)
+        coast_to_job(engine, max(cap, engine.time_sec), on_step=lambda: self._append_flight(name))
         self._append_flight(name)
 
     def _advance_fleet(self, until_sec: float, releasing: _Job | None = None) -> None:
@@ -654,8 +650,7 @@ class OperatorShiftEnv(gym.Env):
 
     def _engine_accepts(self, job: _Job) -> bool:
         engine = self._engines[job.vehicle]
-        while engine.time_sec + 0.5 < job.start_sec:
-            engine.step(min(60.0, job.start_sec - engine.time_sec), "wait")
+        coast_to_job(engine, max(job.start_sec, engine.time_sec))
         if job.kind == "maneuver":
             campaign = self._campaign
             burn = next(item for item in campaign.conjunctions if item.required) if campaign is not None else None

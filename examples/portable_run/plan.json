@@ -1,0 +1,1 @@
+{"steps":[{"dt_sec":10,"commands":[{"command_id":"a-wait","actor_id":"scout-a","kind":"wait","duration_sec":10},{"command_id":"b-wait","actor_id":"scout-b","kind":"wait","duration_sec":10}]},{"dt_sec":20,"commands":[]}]}

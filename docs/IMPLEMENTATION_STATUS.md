@@ -1,5 +1,64 @@
 # Статус пакета исполнения миссии
 
+> **31 октября: reference scheduling.** Добавлен priority/slack greedy-планировщик
+> группировки, CLI `reference-plan`, исполняемый план и повторная проверка на новой
+> reference-миссии. [Контракт и следующие этапы](validation/REFERENCE_SCHEDULING_V1.md).
+> Добавлено 9 тестов: reference 88 passed, fast 110 passed. Полный suite и новая
+> сборка wheel в этом пакете не запускались. Оптимальность и промышленная
+> квалификация планировщика не заявляются.
+
+> **31 октября: reference operations.** Отдельный reference-fixed-downlink/1 исполняет
+> передачу готовых продуктов на GCRS-эфемеридах с терминалами/outages/памятью/энергией.
+> Gymnasium facade и portable replay реализованы. [Контракт](validation/REFERENCE_OPERATIONS_V1.md),
+> [приёмка](acceptance/REFERENCE_OPERATIONS_V1.md). Новые15, physics79, fast110 и wheel проверки прошли.
+> Полная миграция legacy MissionWorld, thermal/ADCS/RF и acquisition не объявляются закрытыми.
+
+> **Reference access:** переносимая эфемерида, AOS/LOS, range/range-rate/Doppler и
+> Boinor formula/LSODA cross-check реализованы в рабочем дереве.
+> [Контракт](validation/REFERENCE_ACCESS_V1.md), [приёмка](acceptance/REFERENCE_ACCESS_V1.md).
+> Новые20, physics64, fast110 и installed-wheel проверки прошли. Общие EOP/ephemerides/density явно
+> отмечены; это не независимая квалификация всей миссионной физики.
+
+> **Физический фундамент:** отдельный gcrs-reference/1 реализует двухчастное время,
+> явный EOP, GCRS/ITRS r/v/covariance и DOP853. MissionWorld остаётся legacy-training/1.
+> [Физический контракт](validation/GCRS_REFERENCE_V1.md), [приёмка](acceptance/GCRS_REFERENCE_V1.md).
+> Новые28, physics44, fast110 и integration93 прошли; wheel проверен. Полная миграция и физическая
+> квалификация возмущённых миссий не объявляются завершёнными.
+
+> **Агентный протокол:** schemas, snapshots сессии/каналов, записываемые вызовы/ошибки,
+> serial relay и verified tool-dialogue доступны в рабочем дереве.
+> Исправлены общий sensor cache и выдача subsystem truth в новом протоколе.
+> [Контракт и ограничения](AGENT_PROTOCOL.md), [приёмка](acceptance/AGENT_PROTOCOL_V1.md).
+> Новые38, CI fast110 и интеграция82 прошли; установленные tool/relay/replay проверены.
+> Это не квалификация полной физики/DTN.
+
+> **Переносимые эксперименты:** world schema2 хранит эффективную конфигурацию и журнал
+> без исходного YAML; run/1 проверяет прямые команды и экспортирует transitions JSONL.
+> [SDK/CLI и ограничения](PORTABLE_EXPERIMENTS.md), [приёмка](acceptance/PORTABLE_RUN_V1.md).
+> CI fast72, интеграция20 и installed-wheel проверка прошли; полный P3 этим не закрыт.
+
+> **Следующее дополнение:** [Resource timeline v1](acceptance/RESOURCE_TIMELINE_V1.md)
+> исправляет границы бронирований и отключений внутри шага. Предыдущие wheel/72ч
+> результаты ниже относятся к прежнему срезу. Следующая очередь: [PRODUCT_EXECUTION_NEXT.md](PRODUCT_EXECUTION_NEXT.md).
+
+> **Исполнение следующего пакета (рабочее дерево):** добавлены границы длительности
+> команд, откат ленты истины/RNG измерений, reset параллельных эпизодов и Dict JSONL.
+> Исправлен профиль CI `full`: он включает все тестовые файлы. Суточный baseline
+> зафиксирован как18/32 с объяснением энергозависимости, без изменения физики.
+> Проверка поставки wheel вне репозитория прошла. Полный перечень проверок и
+> оставшиеся ограничения: [EXECUTION_V1.md](acceptance/EXECUTION_V1.md).
+> Ожидание в DayShift/DishAward/OperatorShift теперь использует реальные команды
+> зарядки/возврата в надир; семь сценариев смен и восемь проверок пульта/API прошли.
+> Остаточный набор прошёл:18 тестов, включая16 аппаратов за72 часа; проверки
+> выполнялись раздельными прогонами, единого полного зелёного запуска нет.
+> Миграция кадров пока описана спецификацией: [FRAME_MIGRATION.md](validation/FRAME_MIGRATION.md).
+
+> **Проверка30октября2026:** актуальная очередь — [промышленный roadmap0.134](INDUSTRIAL_ROADMAP_V0134.md).
+> [Аудит](audits/V0134_STATE.md) подтверждает прогресс и фиксирует открытые duration,
+> reset/restore и Dict-rollout дефекты. Все CI-профили прошли, но отдельный суточный
+> тест падает:18/32 при требовании≥30. Строки verified ниже относятся к указанным
+> локальным проверкам, не к полной промышленной приёмке.
+
 > Следующие этапы после среза M1: [roadmap моделирования](MODELING_ROADMAP_V098.md).
 > [Новая проверка](audits/V098_STATE.md) подтверждает прогресс ниже и фиксирует
 > оставшиеся проблемы batch atomicity, request execution, acquisition scoring

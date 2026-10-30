@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-30",
+  "version": "0.134.0",
+  "head": "1e5a9f603dcd2af36beb25920f3e0b1ce1e983cc",
+  "python": "3.12.9",
+  "selected_contract_tests": {
+    "passed": 33,
+    "duration_sec": 16.86
+  },
+  "all_current_ci_profile_files": {
+    "passed": 29,
+    "duration_sec": 15.34,
+    "warnings": 1
+  },
+  "suite_overlap": true,
+  "day_mission_test": {
+    "failed": 1,
+    "duration_sec": 43.43,
+    "expected_min_on_time": 30,
+    "actual_on_time": 18,
+    "request_count": 32
+  },
+  "collected_tests": 358,
+  "full_suite_executed": false,
+  "browser_verified": false,
+  "installed_wheel_0134_verified": false,
+  "product_code_changed": false,
+  "commits_pushes": false
+}

@@ -1,0 +1,1 @@
+{"epoch_utc":"2026-07-18T12:00:00Z","frame":"GCRS","r_m":[7000000,0,0],"v_m_s":[0,5000,5700],"duration_sec":86400,"sample_sec":600,"forces":{"j2":true,"srp":true,"third_body":true},"integrator":{"rtol":1e-11,"position_atol_m":0.0001,"velocity_atol_m_s":0.0000001,"max_step_sec":60}}

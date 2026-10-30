@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-30",
+  "package_version": "0.134.0",
+  "collected_tests": 446,
+  "checks": {
+    "new_agent_tests": {
+      "passed": 38,
+      "duration_sec": 4.16
+    },
+    "fast_profile": {
+      "passed": 110,
+      "duration_sec": 12.93
+    },
+    "integration": {
+      "passed": 82,
+      "duration_sec": 13.68
+    }
+  },
+  "counts_overlap": true,
+  "installed": {
+    "package": "/tmp/space-env-agent-clean/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "ba7c6f5f9870ece81df61ec0214e396cbcd80a1eefef47d7fdcefe790dfd7e16"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "0ed215d8edd862d6e568925b19ebd18972fa398775f2f10219cc7b054da775a8",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "installed_cwd": "/tmp",
+  "installed_python_isolated": true,
+  "wheel_sha256": "8c3432c4c3f9ed04ea1e49c6894967e07eb9ee8b63b7ffab11d224d5e2319600",
+  "wheel_source_modules": 149,
+  "wheel_source_mismatches": [],
+  "relay_demo": {
+    "relay": {
+      "source": "SC-1",
+      "destination": "SC-2",
+      "start_sec": 0.0,
+      "end_sec": 5.0,
+      "bits": 5000000.0,
+      "status": "transferred",
+      "profile": "serial-sampled-relay/1",
+      "revision": 1
+    },
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 3,
+      "mismatches": [],
+      "run_sha256": "41cec2929bc60a1e3cccd71deb0499de83ac66992c718876795ae7dd92ea0f31",
+      "lineage": "serial-handover-demo"
+    },
+    "dataset": {
+      "rows": 1,
+      "messages": 7,
+      "events": 3,
+      "sha256": "8b454047dc77797bef8f502c326113ec3d2788a5acb8ff7662336b932b68fc07",
+      "split": "train",
+      "run_sha256": "41cec2929bc60a1e3cccd71deb0499de83ac66992c718876795ae7dd92ea0f31"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/mission/session.py": "31d4454753c5091355a8f573ffcec6fe0c561b1433006a88163270fb4c157c3f",
+    "src/space_env/mission/tools.py": "98475ec464c4ebc1efe2055ffa4b766403feaddcfaa1a736825aca6e893cb01b",
+    "src/space_env/mission/agent_protocol.py": "da0823df0e014cb476ca5f20265dce9aba8fdb8b595e9b8581aa9c3401ee1556",
+    "src/space_env/data_generators/agent_run.py": "6d560e274e89172e0682b86d14890f7fc582122ed623e1328a47e3d39e386175",
+    "src/space_env/simulation/relay.py": "00086567aea7b1b05b6b5dcb280b72167f2996d0aab2faa35519539edf6f4cb5",
+    "src/space_env/simulation/snapshot.py": "1626098df6d186ca81ed2110a66662f9c9997d7b0526f9234b33f39a79d16f4d",
+    "src/space_env/simulation/engine.py": "51329b9a4147ce82f77669a684b74ea9e45d7b8f8659613e6587bab8c4885467",
+    "src/space_env/cli.py": "ac149778be11ef47e3c2e7678b830da6bcd0ac1cc620524336836e73f6c10be3",
+    "src/space_env/eval/ci_profiles.py": "59ffdf4df8b6fd4fb8a564b6667d94afe7f59d9f680fb9949200803805afd80c",
+    "tests/test_agent_run.py": "fe1af6c1c231e66675dc8641f8bc7ace583db6158f01764204bdd1da02f5c711",
+    "scripts/verify_installed.py": "6a577c10866ec24f81eb5277605b350cd7049f153234adff783dc5cd9dd02e08",
+    "examples/agent_tools/relay_demo.py": "7e89dbeeec800b8f9ab3fd04e7aebdc4cc6ce3d17a32979b38e1f46f733df6b6"
+  },
+  "full_suite_rerun": false,
+  "sixteen_satellite_72h_rerun": false,
+  "browser_interaction_verified": false,
+  "commit_or_push": false
+}

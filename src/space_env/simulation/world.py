@@ -1,7 +1,9 @@
 """Общие часы нескольких аппаратов и снимок, с которого прогон продолжается."""
 from __future__ import annotations
 
+import copy
 import math
+from dataclasses import asdict
 
 import numpy as np
 
@@ -36,6 +38,7 @@ class MissionWorld:
         self.task_requests: dict = {}
         self._batch: list[str] = []
         self._truth_log: dict[str, list[dict]] = {name: [] for name in self.engines}
+        self._sensor_streams: list = []
         self._book_on = False
         self._book: dict[str, list[tuple[str, float, float]]] = {}
         self._reject_reason: dict[str, str] = {}
@@ -152,7 +155,8 @@ class MissionWorld:
 
     def set_outages(self, intervals: list[tuple[str, float, float]]) -> None:
         """Станция закрыта на [start, end) для любого вызывающего, не только для политики."""
-        self.outages = [(str(name), float(start), float(end)) for name, start, end in intervals]
+        validated = [(str(name), *_resource_interval(start, end)) for name, start, end in intervals]
+        self.outages = validated
         for engine in self.engines.values():
             engine.set_link_outages(self.outages)
 
@@ -167,38 +171,62 @@ class MissionWorld:
             orders.setdefault(actor, kind)
         unknown = set(orders) - set(self.engines)
         if unknown:
-            raise KeyError(f"нет аппарата {sorted(unknown)[0]}")
-        snapshot = self.snapshot()
+            raise KeyError(f"нет аппарата {min(unknown)}")
+        snapshot = self.snapshot(include_history=False)
         try:
-            adjusted = self._one_antenna(orders)
-            self._limit_overlapping_contacts(adjusted, dt_sec)
-            self.last_rejected = [
-                {
-                    "actor_id": name,
-                    "kind": kind,
-                    "reason": self._reject_reason.get(name, "станция занята"),
-                }
-                for name, kind in orders.items()
-                if kind not in {None, "wait"} and adjusted.get(name) != kind
-            ]
-            for engine in self.engines.values():
-                engine.set_link_outages(self.outages)
-            for name, engine in self.engines.items():
-                command = adjusted.get(name)
-                engine.step(dt_sec, None if command in {None, "wait"} else command)
-            self._record_truth()
+            end = self.now_sec() + dt_sec
+            resource_edges = {t for _, start, finish in self.outages for t in (start, finish)}
+            if self._book_on:
+                resource_edges.update(t for windows in self._book.values() for _, start, finish in windows for t in (start, finish))
+            rejected = []
+            while self.now_sec() < end - 1e-9:
+                active = self.commands.active_windows()
+                deadlines = [float(row["until_sec"]) for row in active if float(row["until_sec"]) > self.now_sec() + 1e-9]
+                deadlines.extend(t for t in resource_edges if t > self.now_sec() + 1e-9)
+                boundary = min([end, *deadlines])
+                self._step_interval(boundary - self.now_sec(), orders)
+                rejected.extend(self.last_rejected)
+                expired = [row for row in active if float(row["until_sec"]) <= self.now_sec() + 1e-9]
+                if expired:
+                    self.settle()
+                    for row in expired:
+                        orders[row["actor_id"]] = "wait"
+            self.last_rejected = rejected
         except Exception:
             self.restore(snapshot)
-            self.last_rejected = []
             raise
+
+    def _step_interval(self, dt_sec: float, orders: dict[str, str]) -> None:
+        """Advance one interval with no command-completion boundary inside it."""
+        adjusted = self._one_antenna(orders)
+        self._limit_overlapping_contacts(adjusted, dt_sec)
+        self.last_rejected = [
+            {
+                "actor_id": name,
+                "kind": kind,
+                "reason": self._reject_reason.get(name, "станция занята"),
+            }
+            for name, kind in orders.items()
+            if kind not in {None, "wait"} and adjusted.get(name) != kind
+        ]
+        for engine in self.engines.values():
+            engine.set_link_outages(self.outages)
+        for name, engine in self.engines.items():
+            command = adjusted.get(name)
+            engine.step(dt_sec, None if command in {None, "wait"} else command)
+        self._record_truth()
 
     def use_book(self, booked: dict) -> None:
         """Принятые окна становятся действующей книгой. Снять её может только clear_book."""
-        self._book = {}
+        validated = {}
         for item in booked.get("accepted", []):
-            self._book.setdefault(str(item["vehicle"]), []).append(
-                (str(item["station"]), float(item["start_sec"]), float(item["end_sec"]))
+            actor = str(item["vehicle"])
+            if actor not in self.engines:
+                raise KeyError(f"нет аппарата {actor}")
+            validated.setdefault(actor, []).append(
+                (str(item["station"]), *_resource_interval(item["start_sec"], item["end_sec"]))
             )
+        self._book = validated
         self._book_on = True
 
     def clear_book(self) -> None:
@@ -298,12 +326,22 @@ class MissionWorld:
                 return max(1, int(item.terminals))
         return 1
 
-    def snapshot(self) -> dict:
+    def snapshot(self, *, include_history: bool = True) -> dict:
         return {
             "engines": {name: engine.capture() for name, engine in self.engines.items()},
             "rng": self.rng.bit_generator.state,
             "outages": list(self.outages),
-            "commands": self.commands.export(),
+            **({"commands": self.commands.export()} if include_history else {
+                "command_checkpoint": self.commands.checkpoint()
+            }),
+            "batch": list(self._batch),
+            "last_rejected": copy.deepcopy(getattr(self, "last_rejected", [])),
+            "reject_reason": dict(self._reject_reason),
+            "task_requests": {name: asdict(request) for name, request in self.task_requests.items()},
+            "sensor_streams": [stream.capture() for stream in self._sensor_streams],
+            **({"truth_log": copy.deepcopy(self._truth_log)} if include_history else {
+                "truth_lengths": {name: len(rows) for name, rows in self._truth_log.items()}
+            }),
             "relay_used": {name: list(intervals) for name, intervals in self.relay_used.items()},
             "stations": {
                 name: [
@@ -333,12 +371,45 @@ class MissionWorld:
 
     def restore(self, snapshot: dict) -> None:
         if "engines" in snapshot and "rng" in snapshot:
+            if set(snapshot["engines"]) != set(self.engines):
+                raise ValueError("snapshot actors do not match world")
+            for name, payload in snapshot["engines"].items():
+                if payload.get("physics_profile", self.engines[name].physics_profile) != self.engines[name].physics_profile:
+                    raise ValueError("incompatible physics profile; world was not restored")
             for name, payload in snapshot["engines"].items():
                 self.engines[name].restore(payload)
             self.rng.bit_generator.state = snapshot["rng"]
             self.outages = list(snapshot.get("outages", []))
             if "commands" in snapshot:
                 self.commands.load(snapshot["commands"])
+            elif "command_checkpoint" in snapshot:
+                self.commands.restore_checkpoint(snapshot["command_checkpoint"])
+            self._batch = list(snapshot.get("batch", []))
+            self.last_rejected = copy.deepcopy(snapshot.get("last_rejected", []))
+            self._reject_reason = dict(snapshot.get("reject_reason", {}))
+            if "task_requests" in snapshot:
+                from space_env.mission.tasking import TaskRequest
+
+                self.task_requests = {name: TaskRequest(**row) for name, row in snapshot["task_requests"].items()}
+            if "truth_log" in snapshot:
+                self._truth_log = copy.deepcopy(snapshot["truth_log"])
+            elif "truth_lengths" in snapshot:
+                self._truth_log = {
+                    name: self._truth_log.get(name, [])[:length]
+                    for name, length in snapshot["truth_lengths"].items()
+                }
+            if "sensor_streams" in snapshot:
+                from space_env.mission.awareness import SensorStream
+
+                restored = []
+                for index, state in enumerate(snapshot["sensor_streams"]):
+                    if index < len(self._sensor_streams):
+                        stream = self._sensor_streams[index]
+                        stream.restore(state)
+                    else:
+                        stream = SensorStream.from_snapshot(state)
+                    restored.append(stream)
+                self._sensor_streams = restored
             if "relay_used" in snapshot:
                 self.relay_used = {
                     str(name): [tuple(item) for item in intervals]
@@ -416,6 +487,8 @@ class MissionWorld:
 
     def measure(self, name: str, stream) -> dict:
         """Измерение по ленте истины. Причины отказов в пакет не входят."""
+        if not any(item is stream for item in self._sensor_streams):
+            self._sensor_streams.append(stream)
         return stream.read(self.now_sec(), self._truth_log.get(name, []))
 
     def safety_events(self) -> int:
@@ -458,3 +531,11 @@ def _target_row(target) -> dict:
         "max_stereo_deg": float(getattr(target, "max_stereo_deg", 0.0)),
         "depends_on": str(getattr(target, "depends_on", "")),
     }
+
+
+def _resource_interval(start: float, end: float) -> tuple[float, float]:
+    """Resource windows use finite, nonnegative half-open mission times."""
+    start, end = float(start), float(end)
+    if not math.isfinite(start) or not math.isfinite(end) or start < 0 or end <= start:
+        raise ValueError("resource interval must satisfy 0 <= start < end with finite times")
+    return start, end

@@ -9,9 +9,9 @@ from urllib.parse import parse_qs, urlparse
 from space_env import __version__
 from space_env.api.console import open_shift, step_shift
 from space_env.mission.scenario_v2 import scenario_manifest
-from space_env.mission.session import RevisionError, MissionSession, mission_report
-from space_env.simulation.commands import MissionCommand
+from space_env.mission.session import MissionSession, RevisionError, mission_report
 from space_env.mission.shift_scenario import load_shift_scenario
+from space_env.simulation.commands import MissionCommand
 from space_env.simulation.fleet_view import describe_fleet, fleet_episode
 
 
@@ -128,6 +128,7 @@ def handle_post(path: str, body: bytes) -> tuple[int, bytes, str]:
                     kind=str(item["kind"]),
                     request_id=str(item.get("request_id", "")),
                     destination_id=str(item.get("destination_id", "")),
+                    duration_sec=float(item.get("duration_sec", 0.0)),
                 )
                 for item in payload.get("commands", [])
             ]
@@ -181,7 +182,7 @@ def _file(path: Path) -> tuple[int, bytes, str]:
 
 
 class _Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         parsed = urlparse(self.path)
         status, body, kind = handle_get(parsed.path, parse_qs(parsed.query))
         self.send_response(status)
@@ -190,7 +191,7 @@ class _Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def do_POST(self) -> None:  # noqa: N802
+    def do_POST(self) -> None:
         parsed = urlparse(self.path)
         length = int(self.headers.get("Content-Length", "0") or "0")
         body = self.rfile.read(length) if length else b""

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-30",
+  "package_version": "0.134.0",
+  "scope": "uncommitted resource boundary increment",
+  "initial_regression": {
+    "passed": 2,
+    "failed": 10
+  },
+  "resource_suite": {
+    "passed": 13,
+    "duration_sec": 1.55
+  },
+  "expanded_selection": {
+    "passed": 67,
+    "duration_sec": 8.03,
+    "includes_final_json_replay_case": false
+  },
+  "fast_profile": {
+    "passed": 58,
+    "duration_sec": 8.39
+  },
+  "counts_overlap": true,
+  "full_suite_rerun": false,
+  "installed_wheel_rerun": false,
+  "commit_or_push": false,
+  "source_sha256": {
+    "src/space_env/simulation/world.py": "db780d91b22a72db8085cd4c05b7a5089f82b896eefe12ee8d0f3a0cbe9a528c",
+    "src/space_env/simulation/engine.py": "3e21450a33af708825503c416f6a7bbd5da3574779f7e817bd4aff166cc5e5ee",
+    "src/space_env/eval/ci_profiles.py": "4f16c977a57b51b9c11ab0db466567cba0537c8a69136ae3db050cf5554d7808",
+    "tests/test_resource_timeline.py": "ecdfb8498176e276210eb5f24dc4dcab3afad040d9595b3638b05eb7743bc921"
+  }
+}

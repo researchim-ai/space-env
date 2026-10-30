@@ -16,6 +16,41 @@ python -m space_env.cli benchmark mission_v1_smoke.yaml
 
 `benchmark` проверяет обычную сдачу, закрытую станцию, ранний срок и все 12 заявок короткой миссии. 72 часа в этот набор не входят.
 
+## Переносимый эксперимент
+
+Прямые команды группировки можно записать вместе с конфигурацией, состоянием и журналом, проверить повтором и экспортировать в JSONL:
+
+```bash
+python -m space_env.cli record-commands examples/portable_run/mission.yaml examples/portable_run/plan.json /tmp/space-run.json --lineage portable-demo-1
+python -m space_env.cli replay-run /tmp/space-run.json
+python -m space_env.cli export-transitions /tmp/space-run.json /tmp/transitions.jsonl
+```
+
+Исходный YAML после записи не нужен. Экспорт содержит проверенные поведенческие переходы; replay не доказывает качество эксперта. Форматы, SDK и ограничения — в [руководстве](docs/PORTABLE_EXPERIMENTS.md).
+
+Записываемые вызовы агента, прогноз геометрии, baseline и последовательная
+ретрансляция с экспортом tool-dialogue описаны в [руководстве протокола](docs/AGENT_PROTOCOL.md).
+Рабочий пример передачи5 Мбит: `python examples/agent_tools/relay_demo.py /tmp/agent-demo`.
+
+Отдельное физическое ядро GCRS с явным временем/EOP и адаптивной пропагацией:
+`python -m space_env.cli physics-reference --long`.
+[Применимость и SDK](docs/validation/GCRS_REFERENCE_V1.md). Основные среды пока работают
+на явно обозначенном legacy-профиле; reference orbit не подменяет их физику автоматически.
+
+Окна наземной связи, дальность/range-rate и внешняя сверка формул сил:
+[Reference access](docs/validation/REFERENCE_ACCESS_V1.md).
+`python -m space_env.cli physics-reference --long --crosscheck` сравнивает J2/drag/
+third-body формулы с Boinor, а J2 дуги — с LSODA при объявленных общих inputs.
+
+Исполнение передачи данных и обучение на фиксированных GCRS-траекториях:
+[Reference downlink operations](docs/validation/REFERENCE_OPERATIONS_V1.md).
+
+Generate an executable, simulator-verified multi-satellite downlink baseline with
+`space-env reference-plan spec.json plan.json --report schedule.json`.
+See [scheduling contract and limitations](docs/validation/REFERENCE_SCHEDULING_V1.md).
+Пример с двумя аппаратами, общим терминалом и outage:
+`python examples/reference_operations/demo.py /tmp/reference-downlink`.
+
 ## Четыре задачи
 
 Среды зарегистрированы в Gymnasium. Первые четыре — аппарат около 420 км и наклонения 51.6°. Дальше идут карточки Sentinel-2 и Landsat 9.

@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-30",
+  "package_version": "0.134.0",
+  "collected_tests": 494,
+  "checks": {
+    "new_tests": {
+      "passed": 20,
+      "duration_sec": 1.33
+    },
+    "reference_profile": {
+      "passed": 64,
+      "duration_sec": 7.04
+    },
+    "fast_profile": {
+      "passed": 110,
+      "duration_sec": 12.39
+    }
+  },
+  "counts_overlap": true,
+  "installed": {
+    "package": "/tmp/space-env-agent-clean/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "ec7d9795d780c8498c8874777ea57b9c9bdcbd44dee06bffc63039df3eb776d8"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "90845961e636eebb6c7fe02d5f6ddbe7f57c9669699a3ac94f568eb3b0851c6e",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "installed_cwd": "/tmp",
+  "installed_python_isolated": true,
+  "wheel_sha256": "f933a0bfc6f69f56e241b94609e11b3e638ec3631cdea115a9bf44bb7a65ca38",
+  "wheel_source_modules": 156,
+  "wheel_source_mismatches": [],
+  "network_demo": {
+    "stations": 2,
+    "windows": 26,
+    "sha256": "3aed35a297b30a1b908f613d5f88b966f9c0ed394f2aa92ca55c272764dbd7fe"
+  },
+  "force_shared_inputs": [
+    "ERFA/EOP frames",
+    "density",
+    "Sun/Moon positions",
+    "physical constants"
+  ],
+  "source_sha256": {
+    "src/space_env/reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+    "src/space_env/validation/force_crosscheck.py": "efd4e8989d44991a1bfcecb91e7a4e409c0902eae691e1f6f9c1addc185741ab",
+    "src/space_env/validation/gcrs_report.py": "cc9bab8e58a177d58a2eac9327c3bf036fdcb51003c7a3873e21adca4883d6e1",
+    "src/space_env/cli.py": "f2a3717588e19244cbae246c0de6bdbcbef64ef000f3deeb3df34a1cee1a5cee",
+    "src/space_env/eval/ci_profiles.py": "ac73f14348052b0a762ebaca1f4c86d640372607355371c5300024a6625650e1",
+    "tests/test_reference_access.py": "1c259c463d62695ba8ae853546ffa6a3b910787f308a090773e47fd17e79497c",
+    "scripts/verify_installed.py": "3934b05e33800990fba4c2df9a999d5442f2e881d3bb2133f7792a56e3e2d934"
+  },
+  "full_suite_rerun": false,
+  "independent_frames_density_ephemerides_verified": false,
+  "reference_mission_executor_migrated": false,
+  "commit_or_push": false
+}

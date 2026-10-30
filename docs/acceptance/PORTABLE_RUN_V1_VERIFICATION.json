@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-30",
+  "package_version": "0.134.0",
+  "collected_tests": 408,
+  "checks": {
+    "portable": {
+      "passed": 14,
+      "duration_sec": 3.98
+    },
+    "expanded_contracts": {
+      "passed": 69,
+      "duration_sec": 9.32
+    },
+    "legacy_integration": {
+      "passed": 20,
+      "duration_sec": 56.7
+    },
+    "fast": {
+      "passed": 72,
+      "duration_sec": 10.65
+    }
+  },
+  "counts_overlap": true,
+  "full_suite_rerun": false,
+  "sixteen_satellite_72h_rerun": false,
+  "installed": {
+    "package": "/tmp/space-env-execution-clean/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "e2368426172a96a0541e2bd8b2e9d0b5df3e76cb6ddc4f824cab60234a18ca1b"
+    },
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "installed_cwd": "/tmp",
+  "installed_python_isolated": true,
+  "wheel_sha256": "b09e1d0f45c04dcdd5fb3c29d08d9cd55431c2cc351dfd2656045c063ed1b87f",
+  "wheel_source_modules": 146,
+  "wheel_source_mismatches": [],
+  "source_sha256": {
+    "src/space_env/simulation/snapshot.py": "994e5a34f6f19d4919d7e601991914b2d7788c2ad52ccef3febf32168ff02d74",
+    "src/space_env/data_generators/portable_run.py": "0fe01d7995fe9d577e3265a9e8586eec0dbf72e4136e26d78f291ce4489c1a54",
+    "src/space_env/cli.py": "f59d6ba8170a493f28fc9b9c42d004d41edd22fa169a3cf052bf51645024e2f0",
+    "src/space_env/eval/ci_profiles.py": "2f240b86a5e21ab455c399581a57492845bc1fcadcc2917f31550c00aa3642d5",
+    "tests/test_portable_run.py": "32de5b31c899ea387b36aa420aa4c80288b83963a9383aea88b9c32e0b3268ab",
+    "scripts/verify_installed.py": "2082eae27409c6ea31c79bc8c1a54ea3860f87a598bd4b31fcdb7c9614ecefd8"
+  },
+  "commit_or_push": false
+}

@@ -136,7 +136,8 @@ def _undo_polar_motion(vector: np.ndarray, xp_rad: float, yp_rad: float) -> np.n
     return np.array([x1, cosine_y * y - sine_y * z1, sine_y * y + cosine_y * z1], dtype=float)
 
 
-NUMERICAL_FRAME = "GCRF"
+LEGACY_PHYSICS_PROFILE = "legacy-training/1"
+NUMERICAL_FRAME = "GCRF"  # Historical serialization tag, not the reference GCRS profile.
 SGP4_FRAME = "TEME"
 ORBIT_FRAMES = frozenset({NUMERICAL_FRAME, SGP4_FRAME})
 

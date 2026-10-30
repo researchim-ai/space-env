@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-30",
+  "package_version": "0.134.0",
+  "profile": "gcrs-reference/1",
+  "mission_executor_profile": "legacy-training/1",
+  "collected_tests": 474,
+  "checks": {
+    "new_reference_tests": {
+      "passed": 28,
+      "duration_sec": 3.81
+    },
+    "reference_profile": {
+      "passed": 44,
+      "duration_sec": 6.44
+    },
+    "fast_profile": {
+      "passed": 110,
+      "duration_sec": 12.18
+    },
+    "integration": {
+      "passed": 93,
+      "duration_sec": 8.35
+    }
+  },
+  "counts_overlap": true,
+  "installed": {
+    "package": "/tmp/space-env-agent-clean/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "19d59432a3cd66c34c795d34b876af379db0416a6532232b8a672f2c482faa80"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "e8437f01ae74589b4b8dfefbd4a0bcabe29ff883445c7df72e20c55a1b4ec8f2",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "installed_cwd": "/tmp",
+  "installed_python_isolated": true,
+  "wheel_sha256": "9493b0a8256aee759d8b8c0247b914897534c75de898e66c9e9b5d6f550dc71b",
+  "wheel_source_modules": 154,
+  "wheel_source_mismatches": [],
+  "reference_fixture_in_wheel": true,
+  "trajectory_24h": {
+    "profile": "gcrs-reference/1",
+    "frame": "GCRS",
+    "samples": 145,
+    "sha256": "33b89a7494f7651186dbb5541897663563a844a4f5725b62b45cb92244d8fcf6",
+    "independent_external_accuracy_verified": false
+  },
+  "source_sha256": {
+    "src/space_env/reference/time.py": "2de915e61d968b60aefa0a6571511a130b0837121bdfbdba867ca961ce543e37",
+    "src/space_env/reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+    "src/space_env/reference/orbit.py": "33e327846b8d3d6c89038dbb617a10a1ed5d1c74a075f81fc23ea6fcd755f67d",
+    "src/space_env/reference/__init__.py": "39dc40ebdf1d1e28e71b58c6af041e8edd49298a2483b08192485a236b00c2bc",
+    "src/space_env/reference/fixtures/c2t06a.json": "6d67648cc557fa13643dad27e5778c2144716761c030318730ba9b24f1e5bb05",
+    "src/space_env/core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+    "src/space_env/simulation/engine.py": "ab3213c35207b083ca12ec09b967227afb5eaa9f3f06cb272f9bfa4e8435689e",
+    "src/space_env/simulation/world.py": "608db4ae86d845a9c4dc94a2fd21416073313fd13085d18e206fac961674fcdf",
+    "src/space_env/simulation/snapshot.py": "1e7a77827d85ac4345d6721b420505622885fb27de36967375a631cc61561335",
+    "src/space_env/data_generators/portable_run.py": "3fa484e90a915de0396befd07d1f49a8bafa410e4339ab953e506e03bf1d572c",
+    "src/space_env/validation/gcrs_report.py": "74e93f4ebbc84c76f62f16d4f0c5f7307fbf7d7e51c6d45e07e4f35f647316c3",
+    "src/space_env/cli.py": "b0490c0fb5e42f885151a379e065bf3c68fbd5b3feecb013cc9f48abd5dc73e0",
+    "tests/test_reference_physics.py": "0c22173a16fe7947502da1ab32e8371d9b038f009e14b770b48c02f2f8b4f63a",
+    "tests/test_physics_rest.py": "a7802533370a4704121006a93c3ff1c7c9b988a720d063da8250e79ee0e5e39d",
+    "scripts/verify_installed.py": "0c5010a4bf05dadfb66c081df404ff8ebd888fc77f5a79cef17fd129c4e89e1a",
+    "pyproject.toml": "4d6fc45dc553d25e3b1c9e06787e4d559a5b1ab6f92c2edf2a6a374cced48a47"
+  },
+  "full_suite_rerun": false,
+  "reference_mission_executor_migrated": false,
+  "commit_or_push": false
+}

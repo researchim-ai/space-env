@@ -1,0 +1,8 @@
+version: 2
+epoch: '2026-10-20T10:00:00Z'
+horizon_sec: 30
+instances:
+  - {id: scout-a, model: cubesat-6u, nu_deg: 0}
+  - {id: scout-b, model: cubesat-6u, nu_deg: 180}
+stations: []
+requests: []

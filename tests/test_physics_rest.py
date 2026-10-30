@@ -2,27 +2,33 @@
 import numpy as np
 import pytest
 from astropy import units as u
-from astropy.coordinates import CartesianRepresentation, GCRS, ITRS, TEME
+from astropy.coordinates import GCRS, ITRS, TEME, CartesianRepresentation
 from astropy.time import Time as AstropyTime
 
 from space_env.core.access import subsatellite_latlon
-from space_env.core.constants import MU_EARTH
 from space_env.core.frames import _teme_to_itrs, teme_to_numerical
 from space_env.core.lifetime import circular_lifetime_years, drag_ode_lifetime_years
 from space_env.core.orbit import Orbit
-from space_env.core.probability import collision_probability, collision_probability_integral
+from space_env.core.probability import (
+    collision_probability,
+    collision_probability_integral,
+)
 from space_env.core.propagate import propagate_state
 from space_env.core.time import Time
-from space_env.estimation.knowledge import knowledge_claim, look_shift_rad, range_shift_m
+from space_env.estimation.knowledge import (
+    knowledge_claim,
+    look_shift_rad,
+    range_shift_m,
+)
 
 
-def test_teme_itrs_matches_astropy_and_the_engine_frame_is_not_the_raw_vector():
-    from astropy.utils import iers
+def test_teme_itrs_matches_astropy_and_the_engine_frame_is_not_the_raw_vector(monkeypatch):
     import astropy.coordinates.builtin_frames.intermediate_rotation_transforms as transforms
+    from astropy.utils import iers
 
     from space_env.core.dut1 import dut1_seconds, pole_arcsec
 
-    iers.conf.auto_download = False
+    monkeypatch.setattr(iers.conf, "auto_download", False)
     epoch = Time("2026-10-20T00:00:00Z")
     position = np.array([7_000_000.0, 0.0, 0.0])
     velocity = np.array([0.0, 7_500.0, 0.0])
@@ -30,7 +36,7 @@ def test_teme_itrs_matches_astropy_and_the_engine_frame_is_not_the_raw_vector():
     ut1 = float(epoch.jd) + dut1_seconds(epoch) / 86400.0
     xp, yp = pole_arcsec(epoch)
     arcsec = np.pi / (180.0 * 3600.0)
-    transforms.get_polar_motion = lambda time: (xp * arcsec, yp * arcsec)
+    monkeypatch.setattr(transforms, "get_polar_motion", lambda time: (xp * arcsec, yp * arcsec))
     astropy_time = AstropyTime(ut1, format="jd", scale="ut1")
     teme = TEME(CartesianRepresentation(*(position * u.m)), obstime=astropy_time)
     itrs = teme.transform_to(ITRS(obstime=astropy_time))
@@ -43,22 +49,22 @@ def test_teme_itrs_matches_astropy_and_the_engine_frame_is_not_the_raw_vector():
     assert np.linalg.norm(speed) > 1_000.0
 
 
-def test_teme_gcrs_matches_astropy_and_is_not_the_engine_vector():
-    from astropy.utils import iers
+def test_teme_gcrs_matches_astropy_and_is_not_the_engine_vector(monkeypatch):
     import astropy.coordinates.builtin_frames.intermediate_rotation_transforms as transforms
+    from astropy.utils import iers
 
     from space_env.core.dut1 import dut1_seconds, pole_arcsec
     from space_env.core.frames import teme_to_gcrs
 
-    iers.conf.auto_download = False
-    iers.conf.auto_max_age = None
+    monkeypatch.setattr(iers.conf, "auto_download", False)
+    monkeypatch.setattr(iers.conf, "auto_max_age", None)
     epoch = Time("2026-10-20T00:00:00Z")
     position = np.array([7_000_000.0, 0.0, 0.0])
     velocity = np.array([0.0, 7_500.0, 0.0])
     ut1 = float(epoch.jd) + dut1_seconds(epoch) / 86400.0
     xp, yp = pole_arcsec(epoch)
     arcsec = np.pi / (180.0 * 3600.0)
-    transforms.get_polar_motion = lambda time: (xp * arcsec, yp * arcsec)
+    monkeypatch.setattr(transforms, "get_polar_motion", lambda time: (xp * arcsec, yp * arcsec))
     astropy_time = AstropyTime(ut1, format="jd", scale="ut1")
     teme = TEME(CartesianRepresentation(*(position * u.m)), obstime=astropy_time)
     gcrs = teme.transform_to(GCRS(obstime=astropy_time))

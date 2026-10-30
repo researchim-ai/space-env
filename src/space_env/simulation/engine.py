@@ -6,23 +6,39 @@ from __future__ import annotations
 
 import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
 
 import numpy as np
 
 from space_env.core.access import target_access
 from space_env.core.attitude import align_z, slew_step
-from space_env.core.encounter import PropagationContext, secondary_from_geometry
-from space_env.core.environment import in_eclipse, shadow_state, solar_flux_at_satellite_W_m2
-from space_env.core.frames import ecef_to_geodetic, eci_to_ecef, elevation_deg, geodetic_to_ecef, require_numerical_frame
+from space_env.core.encounter import (
+    NumericalEncounter,
+    PropagationContext,
+    secondary_from_geometry,
+)
+from space_env.core.environment import (
+    in_eclipse,
+    shadow_state,
+    solar_flux_at_satellite_W_m2,
+)
+from space_env.core.frames import (
+    LEGACY_PHYSICS_PROFILE,
+    ecef_to_geodetic,
+    eci_to_ecef,
+    elevation_deg,
+    geodetic_to_ecef,
+    require_numerical_frame,
+)
 from space_env.core.ground import DEFAULT_GROUND_STATIONS, GroundStation
 from space_env.core.link import link_margin_db, stepped_rate_bps
-from space_env.core.passes import PassWindow, find_passes
 from space_env.core.orbit import Orbit
+from space_env.core.passes import PassWindow, find_passes
 from space_env.core.power import solar_generation_w, step_battery_soc
 from space_env.core.propagate import propagate_state
 from space_env.core.relative import mean_motion_rad_s
-from space_env.core.spacecraft import Spacecraft, SubsystemHealth
+from space_env.core.spacecraft import Spacecraft, SpacecraftState, SubsystemHealth
 from space_env.core.sun import sun_position_m
 from space_env.core.thermal import environmental_heat_w, step_temperature_c
 from space_env.core.time import Time
@@ -160,6 +176,11 @@ class SimulationEngine:
         if self.scenario.initial_delta_v_fraction is not None:
             total = self.spacecraft.config.propulsion.delta_v_total_m_s
             self.spacecraft.state.propulsion.delta_v_remaining_m_s = total * self.scenario.initial_delta_v_fraction
+
+    @property
+    def physics_profile(self) -> str:
+        """Explicitly identify historical frame/time and mission-force conventions."""
+        return LEGACY_PHYSICS_PROFILE
 
     def now(self) -> Time:
         """Время миссии: эпоха старта плюс секунды симуляции."""
@@ -1111,11 +1132,15 @@ class SimulationEngine:
         """Принимает биты от группировки: collect или relay. Съёмкой не считается."""
         return self._credit(bits, origin=origin, request_id=request_id)
 
-    def release_bits(self, bits: float, *, destination: str = "") -> list[dict]:
+    def release_bits(
+        self, bits: float, *, destination: str = "",
+        eligible: dict[tuple[str, float], float] | None = None,
+    ) -> list[dict]:
         """Отдаёт куски продуктов соседу. Идентификатор заявки у куска не меняется."""
         if bits <= 0.0 or not math.isfinite(bits):
             return []
         left = bits
+        budgets = None if eligible is None else dict(eligible)
         handed: list[dict] = []
         for product in self._products:
             if left <= 1e-9:
@@ -1128,7 +1153,12 @@ class SimulationEngine:
             onboard = float(product["onboard_bits"])
             if onboard <= 1e-9:
                 continue
-            take = min(onboard, left)
+            key = (str(product.get("product_id", "")), float(product.get("offset_bits", 0.0)))
+            take = min(onboard, left, math.inf if budgets is None else budgets.get(key, 0.0))
+            if take <= 1e-9:
+                continue
+            if budgets is not None:
+                budgets[key] -= take
             if take + 1e-9 < onboard:
                 moved = dict(product)
                 moved["offset_bits"] = float(product["offset_bits"]) + onboard - take
@@ -1478,7 +1508,7 @@ class SimulationEngine:
         moved = 0.0
         for left, right in zip(samples, samples[1:]):
             open_left, margin_left, name_left = self._link_sample(left[1], t0 + left[0])
-            open_right, margin_right, name_right = self._link_sample(right[1], t0 + right[0])
+            open_right, margin_right, name_right = self._link_sample(right[1], math.nextafter(t0 + right[0], -math.inf))
             span = right[0] - left[0]
             left_t = t0 + left[0]
             right_t = t0 + right[0]
@@ -2168,7 +2198,17 @@ class SimulationEngine:
         import copy
 
         return {
+            "physics_profile": self.physics_profile,
             "time_sec": self.time_sec,
+            "spacecraft_state": self.spacecraft.state.model_dump(mode="json"),
+            "runtime": {
+                name: getattr(self, name) for name in (
+                    "_comms_sessions", "_data_downlink_Mb", "_pass_capacity_bits",
+                    "_imaging_requested", "_prev_soc", "_soc_rate", "last_command_ok",
+                )
+            },
+            "passes": [asdict(window) for window in self._passes],
+            "encounter": _capture_encounter(self._encounter),
             "r": self.orbit.r.copy(),
             "v": self.orbit.v.copy(),
             "stored_bits": self._stored_bits,
@@ -2240,6 +2280,8 @@ class SimulationEngine:
         """Возвращает снимок capture(). Дальнейший шаг совпадает с непрерывным прогоном."""
         import copy
 
+        if payload.get("physics_profile", LEGACY_PHYSICS_PROFILE) != self.physics_profile:
+            raise ValueError("incompatible physics profile; no implicit frame relabeling")
         self._time_sec = float(payload["time_sec"])
         self.orbit = self.orbit.with_state(payload["r"], payload["v"], self._epoch + self._time_sec)
         self._stored_bits = float(payload["stored_bits"])
@@ -2344,7 +2386,48 @@ class SimulationEngine:
         if "phase_reason" in payload:
             self._phase_reason = str(payload["phase_reason"])
         self._prev_soc = self.spacecraft.state.power.battery_soc
+        if "spacecraft_state" in payload:
+            self.spacecraft.state = SpacecraftState.model_validate(payload["spacecraft_state"])
+        for name, value in payload.get("runtime", {}).items():
+            if name in {"_comms_sessions", "_data_downlink_Mb", "_pass_capacity_bits",
+                        "_imaging_requested", "_prev_soc", "_soc_rate", "last_command_ok"}:
+                setattr(self, name, value)
+        if "passes" in payload:
+            self._passes = [PassWindow(**row) for row in payload["passes"]]
+        if "encounter" in payload:
+            self._encounter = _restore_encounter(payload["encounter"])
         self._refresh_environment()
+
+
+def _capture_encounter(encounter):
+    if encounter is None:
+        return None
+    import copy
+
+    state = copy.deepcopy(vars(encounter))
+    state["debris"] = asdict(encounter.debris)
+    when = state["debris"]["when"]
+    state["debris"]["when"] = when.isoformat() if isinstance(when, datetime) else when
+    return state
+
+
+def _restore_encounter(payload):
+    if payload is None:
+        return None
+    import copy
+
+    state = copy.deepcopy(payload)
+    context = state.pop("debris")
+    if isinstance(context["when"], str):
+        context["when"] = datetime.fromisoformat(context["when"])
+    encounter = NumericalEncounter(
+        state.pop("r"), state.pop("v"), state.pop("covariance"),
+        state.pop("tca_sec"), state.pop("hard_body_m"), PropagationContext(**context),
+    )
+    for name, value in state.items():
+        if name in {"passed", "frozen_miss_m", "frozen_pc", "frozen_radial_m", "frozen_cross_m"}:
+            setattr(encounter, name, value)
+    return encounter
 
 
 def _rng_state(state):

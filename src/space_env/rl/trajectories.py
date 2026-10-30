@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import gymnasium as gym
 import numpy as np
@@ -11,16 +12,25 @@ import numpy as np
 from space_env.rl.curriculum import load_curriculum
 
 
-def _json_action(action: Any) -> int | list[int]:
-    values = np.atleast_1d(np.asarray(action, dtype=int)).ravel()
-    if values.size == 1:
-        return int(values[0])
-    return [int(item) for item in values]
+def _json_value(value: Any) -> Any:
+    """Preserve structured observations rather than flattening entity dimensions."""
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_json_value(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return _json_value(value.tolist())
+    if isinstance(value, np.generic):
+        return value.item()
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    raise TypeError(f"неподдерживаемое значение наблюдения: {type(value).__name__}")
 
 
-def rollout_episode(env: gym.Env, seed: int, policy: Callable[[np.ndarray], Any] | None = None) -> list[dict[str, Any]]:
+def rollout_episode(env: gym.Env, seed: int, policy: Callable[[Any], Any] | None = None) -> list[dict[str, Any]]:
     """Один эпизод. policy(obs) → действие; по умолчанию равномерная выборка."""
     obs, info = env.reset(seed=seed)
+    env.action_space.seed(seed)
     rows: list[dict[str, Any]] = []
     done = False
     step_index = 0
@@ -29,11 +39,13 @@ def rollout_episode(env: gym.Env, seed: int, policy: Callable[[np.ndarray], Any]
         next_obs, reward, terminated, truncated, info = env.step(action)
         rows.append(
             {
+                "schema": 2,
+                "seed": int(seed),
                 "step": step_index,
-                "observation": np.asarray(obs, dtype=float).ravel().tolist(),
-                "action": _json_action(action),
+                "observation": _json_value(obs),
+                "action": _json_value(action),
                 "reward": float(reward),
-                "next_observation": np.asarray(next_obs, dtype=float).ravel().tolist(),
+                "next_observation": _json_value(next_obs),
                 "terminated": bool(terminated),
                 "truncated": bool(truncated),
                 "success": bool(info.get("success", False)),
@@ -86,6 +98,6 @@ def write_trajectories(
                     row["stage"] = stage["name"]
                     row["env"] = stage["env"]
                     row["episode"] = episode
-                    handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    handle.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
                     count += 1
     return count

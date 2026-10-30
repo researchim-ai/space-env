@@ -1,13 +1,19 @@
 """Один отчёт миссии для CLI, среды и студии и живая сессия с ревизией."""
 from __future__ import annotations
 
-import uuid
+import copy
 import math
 import threading
+import uuid
+from dataclasses import asdict
 from pathlib import Path
 
 from space_env.mission.scenario_v2 import load_scenario_v2
-from space_env.mission.tasking import request_lifecycle, requests_from_scenario, run_scenario
+from space_env.mission.tasking import (
+    request_lifecycle,
+    requests_from_scenario,
+    run_scenario,
+)
 from space_env.simulation.commands import MissionCommand
 
 
@@ -39,6 +45,74 @@ class MissionSession:
         self._track: list[dict] = []
         self._frames: list[dict] = []
         self._remember()
+
+    @classmethod
+    def from_world(cls, world) -> MissionSession:
+        """Attach a configured world without a source file or catalog reconstruction."""
+        session = cls.__new__(cls)
+        session.scenario = "in-memory-world"
+        session.session_id = uuid.uuid4().hex[:12]
+        session.revision = 0
+        session.requests = list(world.task_requests.values())
+        session.world = world
+        session._lock = threading.Lock()
+        session._track, session._frames = [], []
+        session._remember()
+        return session
+
+    def capture(self) -> dict:
+        """Self-contained session state, including revision and already lived frames."""
+        from space_env.simulation.snapshot import digest, encode, world_payload
+
+        with self._lock:
+            body = {"schema": "space-env.session/1", "session_id": self.session_id,
+                    "revision": self.revision, "world": world_payload(self.world),
+                    "requests": [asdict(item) for item in self.requests],
+                    "track": copy.deepcopy(self._track), "frames": copy.deepcopy(self._frames)}
+            body = encode(body)
+            return {**body, "sha256": digest(body)}
+
+    @classmethod
+    def from_snapshot(cls, payload: dict) -> MissionSession:
+        from space_env.mission.tasking import TaskRequest
+        from space_env.simulation.snapshot import decode, digest, world_from_payload
+
+        body = {key: value for key, value in payload.items() if key != "sha256"}
+        if payload.get("schema") != "space-env.session/1" or payload.get("sha256") != digest(body):
+            raise ValueError("unsupported or corrupt session snapshot")
+        if type(payload["revision"]) is not int or payload["revision"] < 0:
+            raise ValueError("session revision must be a nonnegative integer")
+        session = cls.__new__(cls)
+        session.scenario = "portable-session"
+        session.session_id = payload["session_id"]
+        session.revision = payload["revision"]
+        session.world = world_from_payload(payload["world"])
+        session.requests = [TaskRequest(**item) for item in payload["requests"]]
+        session._track = decode(copy.deepcopy(payload["track"]))
+        session._frames = decode(copy.deepcopy(payload["frames"]))
+        session._lock = threading.Lock()
+        return session
+
+    def relay(self, source: str, destination: str, dt_sec: float, *, expected_revision: int) -> dict:
+        """A blocking relay occupies mission time and shares the session revision."""
+        from space_env.simulation.relay import relay_step
+
+        with self._lock:
+            if expected_revision != self.revision:
+                raise RevisionError("устаревшая ревизия")
+            snapshot = self.world.snapshot(include_history=False)
+            revision, tracks, frames = self.revision, len(self._track), len(self._frames)
+            try:
+                result = relay_step(self.world, source, destination, dt_sec)
+                self.revision += 1
+                self._remember()
+                return {**result, "revision": self.revision}
+            except Exception:
+                self.world.restore(snapshot)
+                self.revision = revision
+                del self._track[tracks:]
+                del self._frames[frames:]
+                raise
 
     def _remember(self) -> None:
         from space_env.core.access import subsatellite_latlon
@@ -146,19 +220,21 @@ class MissionSession:
             if remaining <= 1e-9:
                 raise ValueError("горизонт уже пройден")
             dt = min(float(dt_sec), remaining)
-            book = self.world.commands.export()
-            batch = list(self.world._batch)
+            snapshot = self.world.snapshot(include_history=False)
+            revision, tracks, frames = self.revision, len(self._track), len(self._frames)
             try:
                 orders = self.world.accept(list(commands or []))
                 self.world.step(dt, orders)
                 self.world.settle()
+                self.revision += 1
+                self._remember()
+                return self.report()
             except Exception:
-                self.world.commands.load(book)
-                self.world._batch = batch
+                self.world.restore(snapshot)
+                self.revision = revision
+                del self._track[tracks:]
+                del self._frames[frames:]
                 raise
-            self.revision += 1
-            self._remember()
-            return self.report()
 
 
 def mission_report(

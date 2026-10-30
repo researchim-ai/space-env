@@ -1,0 +1,124 @@
+{
+  "base_head": "1e5a9f603dcd2af36beb25920f3e0b1ce1e983cc",
+  "date": "2026-10-30",
+  "python": "3.12.9",
+  "collected_tests": 381,
+  "focused_contract_and_day": {
+    "passed": 13,
+    "warnings": 1,
+    "duration_sec": 40.59
+  },
+  "http_outside_sandbox": {
+    "passed": 1,
+    "duration_sec": 1.28
+  },
+  "installed_wheel": {
+    "package": "/tmp/space-env-execution-clean/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "wheel_sha256": "5ffc08ad7138d1f89870af7dfe952348beed0d43aa40ce8a20ca0835da3235f2",
+  "full_suite": {
+    "single_uninterrupted_full_run": false,
+    "initial_run": {
+      "collected_at_start": 370,
+      "completed": 347,
+      "passed": 341,
+      "failed_nodes": [
+        "tests/test_campaign.py::test_day_shift_executes_every_required_job",
+        "tests/test_campaign.py::test_dish_award_walks_every_shared_window",
+        "tests/test_campaign.py::test_operator_shift_awards_the_dishes_and_flies_them",
+        "tests/test_campaign.py::test_operator_shift_report_keeps_holdout_separate_from_learned",
+        "tests/test_operator_console.py::test_console_closes_the_shift_when_dishes_follow_the_buffer",
+        "tests/test_studio_api.py::test_http_server_answers_health"
+      ],
+      "next_node": "tests/test_tasking.py::test_sixteen_vehicles_finish_seventy_two_hours_with_a_reason_for_every_request",
+      "remaining_nodes": [
+        "tests/test_tasking.py::test_sixteen_vehicles_finish_seventy_two_hours_with_a_reason_for_every_request",
+        "tests/test_tasking_env.py::test_greedy_delivers_kiruna_and_the_early_deadline_does_not",
+        "tests/test_tasking_env.py::test_env_success_matches_the_greedy_executor",
+        "tests/test_tasking_env.py::test_tasking_report_keeps_two_files_and_skips_learned",
+        "tests/test_validation.py::test_core_report_records_measured_error_against_a_prior_tolerance",
+        "tests/test_validation.py::test_applicability_names_what_has_no_independent_reference",
+        "tests/test_validation.py::test_a_broken_measurement_fails_the_same_tolerance_rule",
+        "tests/test_validation.py::test_rk4_stages_use_distinct_epochs",
+        "tests/test_validation.py::test_stage_coordinates_move_when_density_reads_them",
+        "tests/test_validation.py::test_reference_pack_keeps_prior_tolerances_and_rejects_euler",
+        "tests/test_validation.py::test_mission_file_builds_a_different_shift_and_rejects_a_bad_field",
+        "tests/test_vehicle_capabilities.py::test_imaging_starts_at_once_when_prep_is_zero",
+        "tests/test_vehicle_capabilities.py::test_prep_holds_the_shutter_until_it_elapses",
+        "tests/test_vehicle_capabilities.py::test_an_armed_radio_blocks_imaging_when_the_payload_is_exclusive",
+        "tests/test_vehicle_capabilities.py::test_a_dead_battery_does_not_start_imaging_or_the_radio",
+        "tests/test_vehicle_capabilities.py::test_exclusive_payload_refuses_comms_over_a_planned_exposure",
+        "tests/test_version.py::test_version",
+        "tests/test_viz.py::test_export_trajectory_has_two_vehicles_and_finite_positions",
+        "tests/test_viz.py::test_export_keeps_route_and_memory_fill",
+        "tests/test_workplan.py::test_weak_pass_is_left_for_a_faster_window",
+        "tests/test_workplan.py::test_full_store_keeps_the_early_pass",
+        "tests/test_workplan.py::test_maneuver_is_attached_by_the_caller",
+        "tests/test_workplan.py::test_sentinel_plan_names_tasks_and_expert_follows_them"
+      ]
+    },
+    "final_tail_status": "passed",
+    "failure_reruns": {
+      "scheduled_shift": {
+        "passed": 7,
+        "duration_sec": 250.8
+      },
+      "console_api": {
+        "passed": 8,
+        "duration_sec": 181.15
+      },
+      "http_outside_sandbox": {
+        "passed": 1,
+        "duration_sec": 1.28
+      }
+    },
+    "additional_checks": {
+      "final_contract_selection": {
+        "passed": 61,
+        "duration_sec": 9.97
+      },
+      "index_json_duration_coast": {
+        "passed": 23,
+        "duration_sec": 1.91
+      },
+      "vehicle_capabilities": {
+        "passed": 5,
+        "duration_sec": 0.71
+      }
+    },
+    "counts_overlap": true,
+    "final_tail": {
+      "passed": 18,
+      "warnings": 5,
+      "duration_sec": 477.57,
+      "sixteen_satellite_72h_sec": 460.51
+    },
+    "coverage_note": "381 collected node IDs exercised across overlapping runs and successful failure reruns; initial broad run preceded final fixes. No single uninterrupted full-suite pass on final source is claimed."
+  },
+  "browser_interaction_verified": false,
+  "commit_or_push": false,
+  "wheel_source_check": {
+    "modules": 145,
+    "mismatches": []
+  }
+}
