@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-31",
+  "package": "B01",
+  "status": "verified",
+  "scope": "runtime-contract/1, scenario schema 3; not physical qualification",
+  "tests": {
+    "runtime": 38,
+    "reference": 287,
+    "fast": 110,
+    "collected": 717,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "full_regression_note": "Previous v9 full run 665 passed plus sandbox socket failure; separate loopback retest passed. No uninterrupted full green run claimed for B01."
+  },
+  "commands": [
+    "python -m pytest -q tests/test_runtime.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python -m ruff check src/space_env/runtime tests/test_runtime.py examples/unified_runtime/demo.py",
+    "python examples/unified_runtime/demo.py /tmp/space-env-b01-demo"
+  ],
+  "coverage": [
+    "legacy and reference finite command windows",
+    "duplicate/stale/idempotency atomicity",
+    "whole advance rollback after injected failure",
+    "concurrent revision admission",
+    "explicit CPU and idle semantics",
+    "permission guards and actor ownership",
+    "coarse/fine outcome consistency",
+    "self-contained JSON checkpoint without original scenario file",
+    "active command continuation and cache recovery",
+    "DAG retention, partial CPU, booking, power and thermal lock recovery",
+    "resigned corruption rejection",
+    "CLI validate/run/resume/replay"
+  ],
+  "wheel": {
+    "sha256": "a996c6f319b32435df1a34a071b95618ce6f8772dd50940ca081267287bc856d",
+    "python_modules_matching_source": 173,
+    "isolated_python_I_smoke": true,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "unified_runtime": {
+      "ok": true,
+      "reason": "verified",
+      "report": {
+        "schema": "space-env.runtime-report/1",
+        "revision": 4,
+        "time_sec": 605.0,
+        "horizon_sec": 1200.0,
+        "profile": "reference-fixed-downlink/1",
+        "objective": "on_time_bits",
+        "metrics": {
+          "on_time_bits": 2000000.0
+        },
+        "commands": [
+          {
+            "command": {
+              "command_id": "radio",
+              "actor_id": "a",
+              "kind": "downlink",
+              "duration_sec": 5.0,
+              "destination_id": "ReferenceGround",
+              "product_id": "",
+              "request_id": ""
+            },
+            "status": "completed",
+            "start_sec": 600.0,
+            "until_sec": 605.0
+          }
+        ]
+      }
+    },
+    "installed_cli_example": {
+      "ok": true,
+      "reason": "verified",
+      "report": {
+        "schema": "space-env.runtime-report/1",
+        "revision": 3,
+        "time_sec": 10.0,
+        "horizon_sec": 30.0,
+        "profile": "reference-fixed-downlink/1",
+        "objective": "on_time_bits",
+        "metrics": {
+          "on_time_bits": 2000000.0
+        },
+        "commands": [
+          {
+            "command": {
+              "command_id": "a-radio",
+              "actor_id": "a",
+              "kind": "downlink",
+              "duration_sec": 10.0,
+              "destination_id": "Ground",
+              "product_id": "",
+              "request_id": ""
+            },
+            "status": "completed",
+            "start_sec": 0.0,
+            "until_sec": 10.0
+          }
+        ]
+      }
+    }
+  },
+  "known_limits": [
+    "Reference trajectory remains fixed GCRS ephemeris; no new controllable propagator",
+    "Checkpoint load verifies the entire prefix; not O(1), not a long-mission streaming guarantee",
+    "Scenario seed is experiment metadata; embedded backend RNG is preserved",
+    "Source records are provenance declarations; URIs not fetched",
+    "Agent facade is not a sandbox or hosted authorization service",
+    "One active control window per actor",
+    "Commands complete when control windows expire; product completion is a separate outcome",
+    "No universal RL/MARL/LLM facade in B01; B06 remains planned"
+  ],
+  "git_actions": {
+    "commit": false,
+    "push": false,
+    "publish": false
+  },
+  "next_package": "B02"
+}

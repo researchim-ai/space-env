@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-transmitter-health/6",
+  "tests": {
+    "operations": 112,
+    "reference": 176,
+    "fast": 110,
+    "new_cases": 15,
+    "collected": 606,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "on_time_bits": 5000000.0,
+    "health": {
+      "tx_seconds": 3.9999999999999982,
+      "quota_remaining_sec": 1.0000000000000018,
+      "temperature_k": 295.1626191736144,
+      "thermal_locked": false,
+      "ready": true,
+      "heat_input_j": 79.99999999999997,
+      "rejected_heat_j": 49.67476165277113,
+      "thermal_balance_error_j": 7.105427357601002e-15
+    },
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "rl_steps": 18,
+    "completed_sec": 17.862943611198897
+  },
+  "wheel": {
+    "sha256": "a58327d81004f0d28bd2789e0ee70f55394f4d11f0184415242fc69c4d5c69c9",
+    "modules": 165,
+    "source_mismatches": []
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "lifecycle_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "booking_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "thermal_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "c064901ca572ec88d95febd8b810153fedf1e3bf74debe6a5c259df009a4217c"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "1634ed780f28229e62106fc83327e61fab9e3ae02d042d802bc5294c2ade3eb1",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+    "src/space_env/reference/operations.py": "8778b130e9cd4129e5f140fc951f47b8b59db6b46cdbd096fb529afb2bffc94c",
+    "src/space_env/reference/scheduling.py": "86d8ec20d389e8dccd4ed57d11e9ef64f3b73800bd9ab7d2744c3b827a844bdb",
+    "src/space_env/reference/operations_env.py": "5413275745856de39a6593867b95db6d7b57b1bdb95737698eea1ac852289f00",
+    "src/space_env/reference/event_env.py": "633950dad6e67948bbb47ed6b254b15886b894efc0db37f0a6ea1732b7b7c33b",
+    "tests/test_reference_operations.py": "403a3e01a3340a884dd0c6ca956e212e319fffb0dd79963d646d7c00f5600f72",
+    "scripts/verify_installed.py": "19c6d7b011cd20c61e8524d675f8e135d87f691d2bee24a5112f6576e29c1b85",
+    "examples/reference_operations/thermal_demo.py": "0331cf31a89ff02e52310e9a1ad9dbaa65fdfbf0008512a77d665e2dc42ab3c5"
+  },
+  "unqualified": [
+    "spacecraft thermal calibration",
+    "multi-node radiation model",
+    "rolling duty cycle",
+    "large fleet endurance",
+    "independent planner optimum"
+  ]
+}

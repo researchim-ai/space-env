@@ -73,8 +73,10 @@ def slew_step(
         goal = -goal
     cosine = float(np.clip(np.dot(start, goal), -1.0, 1.0))
     angle_rad = float(np.arccos(cosine)) * 2.0
-    if angle_rad < 1e-8 or dt_sec <= 0.0 or rate_deg_s <= 0.0:
+    if angle_rad < 1e-8:
         return goal, 0.0
+    if dt_sec <= 0.0 or rate_deg_s <= 0.0:
+        return start, float(np.rad2deg(angle_rad))
     fraction = min(1.0, np.deg2rad(rate_deg_s) * dt_sec / angle_rad)
     updated = goal if fraction >= 1.0 else _slerp(start, goal, fraction)
     return updated, float(np.rad2deg(angle_rad * (1.0 - fraction)))

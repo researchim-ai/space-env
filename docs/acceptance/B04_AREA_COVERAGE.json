@@ -1,0 +1,235 @@
+{
+  "date": "2026-10-31",
+  "package": "B04-B1",
+  "status": "verified",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "backend": "reference-spacecraft",
+  "profile": "reference-spacecraft-bus/1",
+  "scope": "Bounded sampled rectangular-camera WGS84 polygon coverage and delivered-product provenance; not calibrated imaging, continuous swath or full B04 qualification",
+  "tests": {
+    "new_area_cases": 32,
+    "reference": 449,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 879,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/area_coverage/demo.py OUTPUT",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/area_coverage/demo.py OUTPUT",
+    "installed console mission-validate/run/resume/replay"
+  ],
+  "coverage": [
+    "First positive WGS84 ellipsoid ray hit, rectangular perimeter sampling and actual bus quaternion",
+    "Analytic equatorial ray result and polar surface intersection",
+    "Geodesic area vs ellipsoidal LAEA projection crosscheck",
+    "Closed rings, holes, dateline, polar areas and invalid geometry rejection",
+    "Spatial/vertex/densification/sample budgets; pre-allocation densification guard",
+    "Clipped polygon unions, overlap/disjoint/repeated footprint cases",
+    "Raw geometry metadata, unique source samples and consuming fan-in/out spatial provenance",
+    "No acquired area from failed/cancelled imaging",
+    "No request fulfillment from insufficient area after full ACK or another product delivery",
+    "Historical acquired vs fully delivered area and bounded pairwise revisit diagnostics",
+    "Actor/release-scoped AOI definitions and payload geometry observation",
+    "Mid-acquisition source/installed checkpoints and native geometry manifest drift rejection",
+    "Atomic sample-budget rollback with preserved bus/resource aliases",
+    "Explicit missing-optional-dependency error and CI coverage-extra installation"
+  ],
+  "tolerances": {
+    "geodesic_vs_equal_area_relative": 2e-07,
+    "sampled_shell_fraction_absolute": 2e-05,
+    "analytic_equatorial_ray_position_absolute_m": 1e-08,
+    "disjoint_union_area_relative": 1e-12,
+    "qualification_note": "These are deterministic engineering check tolerances, not independently calibrated mission error budgets"
+  },
+  "installed_sdk_demo": {
+    "ok": true,
+    "metrics": {
+      "fulfilled_requests": 1,
+      "total_requests": 2
+    },
+    "areas": {
+      "customer-area": {
+        "definition": {
+          "id": "customer-area",
+          "anchor_lon_deg": -115.97179778214284,
+          "anchor_lat_deg": 0.14962777132238012,
+          "shell": [
+            [
+              -115.97679778214284,
+              0.1446277713223801
+            ],
+            [
+              -115.96679778214285,
+              0.1446277713223801
+            ],
+            [
+              -115.96679778214285,
+              0.15462777132238012
+            ],
+            [
+              -115.97679778214284,
+              0.15462777132238012
+            ],
+            [
+              -115.97679778214284,
+              0.1446277713223801
+            ]
+          ],
+          "holes": [],
+          "max_segment_m": 1000.0,
+          "source_status": "synthetic",
+          "source": "caller-declared synthetic polygon"
+        },
+        "area_m2": 1230903.1234358884
+      }
+    },
+    "acquired": {
+      "customer-area": {
+        "aoi_id": "customer-area",
+        "aoi_sha256": "b8bbfab40b67c741de711e5804d3bced3b0f8687b4eafed0fd357d32c7b2000f",
+        "projection": "WGS84/ellipsoidal-LAEA; metres; declared anchor",
+        "model": "sampled-rectangular-frame-union/1",
+        "aoi_area_m2": 1230903.1234358884,
+        "covered_area_m2": 1230903.1234358884,
+        "fraction": 1.0,
+        "sample_count": 12,
+        "sources": {
+          "raw-a": {
+            "sample_count": 12,
+            "actor": "a",
+            "end_sec": 2.0
+          }
+        }
+      }
+    },
+    "delivered": {
+      "customer-area": {
+        "aoi_id": "customer-area",
+        "aoi_sha256": "b8bbfab40b67c741de711e5804d3bced3b0f8687b4eafed0fd357d32c7b2000f",
+        "projection": "WGS84/ellipsoidal-LAEA; metres; declared anchor",
+        "model": "sampled-rectangular-frame-union/1",
+        "aoi_area_m2": 1230903.1234358884,
+        "covered_area_m2": 1230903.1234358884,
+        "fraction": 1.0,
+        "sample_count": 12,
+        "sources": {
+          "raw-a": {
+            "sample_count": 12,
+            "actor": "a",
+            "end_sec": 2.0
+          }
+        }
+      }
+    },
+    "ledger": {
+      "a": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 1000000,
+        "transformed_out": 500000,
+        "transformed_in": 1000000.0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 500000.0,
+        "remaining": 0.0,
+        "balance_error_bits": 0.0,
+        "acked": 500000
+      },
+      "b": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 0,
+        "transformed_out": 0,
+        "transformed_in": 0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 0,
+        "remaining": 0,
+        "balance_error_bits": 0,
+        "acked": 0
+      }
+    },
+    "acknowledgements": [
+      {
+        "product_id": "final-a",
+        "actor": "a",
+        "destination_id": "Ground",
+        "bits": 500000,
+        "acknowledged_sec": 4.5,
+        "fulfilled_request_ids": [
+          "customer-a"
+        ]
+      }
+    ],
+    "geometry_manifest": {
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "installed_smoke": {
+    "verified": true,
+    "acquired_fraction": 1.0,
+    "delivered_fraction": 1.0,
+    "area_m2": 982998.7954001974,
+    "partial_acquisition_checkpoint": true,
+    "geometry_manifest": {
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "wheel": {
+    "sha256": "51c45cc70e74cfe544c550c5146eafdb06126c7c96c7e81498c8636c6b6ef38d",
+    "python_modules_byte_matched": 186,
+    "frozen_orbit_fixtures_byte_matched": 3,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "isolated_python_I": true,
+    "cli_validate_run_resume_replay": true,
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2",
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "bounds": {
+    "max_aois": 128,
+    "max_aoi_radius_m": 1000000,
+    "max_footprint_vertex_distance_to_aoi_anchor_m": 2000000,
+    "max_aoi_input_vertices": 10000,
+    "max_aoi_densified_vertices": 20000,
+    "max_revisit_pair_checks": 10000,
+    "default_acquisition_sample_limit": 4096
+  },
+  "not_implemented": [
+    "Continuous swath/continuous dwell proof for every ground cell",
+    "Limb-clipped partial footprints, terrain, refraction or pushbroom timing",
+    "Optical/cloud/GSD/radiometric quality or scientific image rendering",
+    "SAR duty/energy and calibrated imaging or stereo reconstruction",
+    "Guaranteed revisit/stereo requirements; current interval is materialization-time diagnostic",
+    "Spatial cropping/registration/quality loss in transforms; model preserves input support",
+    "Global/MultiPolygon AOIs, large-scale SLA or constant-time checkpoints",
+    "Remaining B04 parallel resource scheduling, actuator/thrust and detailed thermal calibration"
+  ],
+  "physical_qualification": "needs_external_evidence",
+  "next": "B04-B2 optical/cloud/quality and SAR applicability, then actual revisit/stereo requirements",
+  "commit_push_deploy_performed": false
+}

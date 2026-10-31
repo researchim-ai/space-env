@@ -1,0 +1,338 @@
+{
+  "date": "2026-10-31",
+  "package": "B04-B2",
+  "status": "verified",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "profile": "reference-spacecraft-bus/1",
+  "scope": "Deterministic sampled optical quality and nominal SAR geometry/resource surrogates; not scientific image generation, calibrated radiometry or full B04 qualification",
+  "tests": {
+    "new_payload_quality_cases": 39,
+    "reference": 488,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 918,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/payload_quality/demo.py OUTPUT optical",
+    "python examples/payload_quality/demo.py OUTPUT sar",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/payload_quality/demo.py OUTPUT optical/sar",
+    "installed console mission-validate/run/resume/replay for optical and SAR"
+  ],
+  "coverage": [
+    "Explicit instrument source/applicability and per-request discriminated quality criteria",
+    "Categorical cloud/unknown cells tied to AOI hash and local LAEA coordinates",
+    "Availability/validity/forecast opt-in, no hidden future observed masks, no unknown-as-clear fallback",
+    "Cloud boundaries clip actual acquired area rather than evaluating target center",
+    "Sampled local-normal incidence, geometric Sun and optical GSD; passive daylight applicability",
+    "Nominal stripmap SAR range/azimuth equations, incidence and orbital-plane look side",
+    "SAR DC energy integrated once into common bus, conservative peak admission, separate RF/amplifier heat",
+    "Continuous rolling session duty, exact substep boundary and retained history after failure/cancel/safe/recover",
+    "Evidence fan-in/out deduplication and independent per-request reevaluation after specific product ACK",
+    "Cell/region/evidence budgets, atomic acquisition rollback and expected CPU materialization failure",
+    "Actor-scoped masks/models and optical/SAR mid-acquisition checkpoint/replay",
+    "Wheel SDK and console workflows outside source checkout"
+  ],
+  "tolerances": {
+    "incidence_crosscheck_absolute_deg": 1e-10,
+    "bus_demo_ledger_absolute_limit": 1e-07,
+    "rolling_duty_final_guard_sec": 1e-12,
+    "qualification_note": "Deterministic engineering checks; no independently calibrated mission accuracy or uncertainty guarantee"
+  },
+  "installed_sdk_demos": {
+    "optical": {
+      "ok": true,
+      "kind": "optical",
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "payload_quality": {
+        "schema": "space-env.payload-quality/1",
+        "requests": {
+          "customer-a": {
+            "usable_area_m2": 1230903.1234358882,
+            "usable_fraction": 0.9999999999999998,
+            "evidence_records": 48,
+            "criterion": {
+              "kind": "optical",
+              "min_sun_elevation_deg": 5.0,
+              "max_gsd_m": 25.0,
+              "max_ground_range_resolution_m": null,
+              "max_azimuth_resolution_m": null
+            },
+            "delivered_and_fulfilled": true
+          }
+        },
+        "models": {
+          "a": {
+            "kind": "optical",
+            "model_id": "synthetic-optical/1",
+            "source_status": "synthetic",
+            "source": "declared demonstration parameters; no flight calibration",
+            "instantaneous_fov_rad": 1e-05,
+            "max_incidence_deg": 70.0,
+            "min_sun_elevation_deg": 5.0
+          }
+        },
+        "sar_intervals": {},
+        "scope": "sampled geometry and categorical cloud masks; no measured radiometry or focused SAR imagery"
+      },
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 1000000,
+          "transformed_out": 500000,
+          "transformed_in": 1000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 500000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 0,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 0,
+          "remaining": 0,
+          "balance_error_bits": 0,
+          "acked": 0
+        }
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 4.440892098500626e-16,
+          "thermal_stored_j": 60.28356453593915,
+          "thermal_balance_error_j": 1.4210854715202004e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 3.469446951953614e-18
+        },
+        "b": {
+          "battery_balance_error_wh": -8.881784197001252e-16,
+          "thermal_stored_j": 20.300738998923862,
+          "thermal_balance_error_j": 7.105427357601002e-15,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 0.0
+        }
+      },
+      "scope": "sampled engineering quality/resource model; no calibrated science image"
+    },
+    "sar": {
+      "ok": true,
+      "kind": "sar",
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "payload_quality": {
+        "schema": "space-env.payload-quality/1",
+        "requests": {
+          "customer-a": {
+            "usable_area_m2": 1230666.0703716015,
+            "usable_fraction": 1.0,
+            "evidence_records": 48,
+            "criterion": {
+              "kind": "sar",
+              "min_sun_elevation_deg": null,
+              "max_gsd_m": null,
+              "max_ground_range_resolution_m": 25.0,
+              "max_azimuth_resolution_m": 10.0
+            },
+            "delivered_and_fulfilled": true
+          }
+        },
+        "models": {
+          "a": {
+            "kind": "sar",
+            "model_id": "synthetic-sar/1",
+            "source_status": "synthetic",
+            "source": "declared demonstration parameters; no flight calibration",
+            "bandwidth_hz": 100000000.0,
+            "antenna_length_m": 4.0,
+            "min_incidence_deg": 5.0,
+            "max_incidence_deg": 60.0,
+            "look_side": "either",
+            "peak_rf_power_w": 20.0,
+            "pulse_duty_fraction": 0.5,
+            "amplifier_efficiency": 0.5,
+            "rolling_window_sec": 10.0,
+            "max_on_sec": 4.0
+          }
+        },
+        "sar_intervals": {
+          "a": [
+            {
+              "start_sec": 0.0,
+              "end_sec": 2.0,
+              "dc_input_j": 40.0,
+              "radiated_rf_j": 20.0,
+              "amplifier_heat_j": 20.0
+            }
+          ]
+        },
+        "scope": "sampled geometry and categorical cloud masks; no measured radiometry or focused SAR imagery"
+      },
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 1000000,
+          "transformed_out": 500000,
+          "transformed_in": 1000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 500000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 0,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 0,
+          "remaining": 0,
+          "balance_error_bits": 0,
+          "acked": 0
+        }
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 0.0,
+          "thermal_stored_j": 84.24407638526645,
+          "thermal_balance_error_j": 0.0,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 0.0
+        },
+        "b": {
+          "battery_balance_error_wh": -8.881784197001252e-16,
+          "thermal_stored_j": 20.300738998923862,
+          "thermal_balance_error_j": 7.105427357601002e-15,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 0.0
+        }
+      },
+      "scope": "sampled engineering quality/resource model; no calibrated science image"
+    }
+  },
+  "installed_smoke": {
+    "optical": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "request": {
+        "usable_area_m2": 1230903.1234358882,
+        "usable_fraction": 0.9999999999999998,
+        "evidence_records": 48,
+        "criterion": {
+          "kind": "optical",
+          "min_sun_elevation_deg": 5.0,
+          "max_gsd_m": 25.0,
+          "max_ground_range_resolution_m": null,
+          "max_azimuth_resolution_m": null
+        },
+        "delivered_and_fulfilled": true
+      },
+      "sar_intervals": {},
+      "mid_acquisition_replay": true
+    },
+    "sar": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "request": {
+        "usable_area_m2": 1230666.0703716015,
+        "usable_fraction": 1.0,
+        "evidence_records": 48,
+        "criterion": {
+          "kind": "sar",
+          "min_sun_elevation_deg": null,
+          "max_gsd_m": null,
+          "max_ground_range_resolution_m": 25.0,
+          "max_azimuth_resolution_m": 10.0
+        },
+        "delivered_and_fulfilled": true
+      },
+      "sar_intervals": {
+        "a": [
+          {
+            "start_sec": 0.0,
+            "end_sec": 2.0,
+            "dc_input_j": 40.0,
+            "radiated_rf_j": 20.0,
+            "amplifier_heat_j": 20.0
+          }
+        ]
+      },
+      "mid_acquisition_replay": true
+    }
+  },
+  "wheel": {
+    "sha256": "61524c438d14310b6bf6c09e328b6648ec71ebab7edb063bebb950808d0bc2b6",
+    "python_modules_byte_matched": 187,
+    "frozen_orbit_fixtures_byte_matched": 3,
+    "isolated_python_I": true,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "console_workflows": [
+      "optical:validate/run/resume/replay",
+      "sar:validate/run/resume/replay"
+    ],
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "geometry_manifest": {
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "not_implemented": [
+    "Measured radiometry, MTF/SNR, photon budget, real cloud classification or meteorological fetching",
+    "Stochastic spatial/temporal cloud fields and calibrated forecast uncertainty",
+    "Focused SAR data, aperture coherence, PRF ambiguities, squint/Doppler, speckle or NESZ",
+    "Pulse-resolved electrical storage/current, multinode radar thermal hardware",
+    "Continuous ground dwell/swath, terrain, refraction or new limb clipping",
+    "Stereo reconstruction or actual revisit/stereo request requirements",
+    "Quality loss/cropping in transforms; this model preserves spatial support",
+    "Remaining B04 parallelism/actuator/thrust and independent external qualification/SLA"
+  ],
+  "policy_notes": [
+    "Absent quality criteria mean a geometric-only obligation, not qualified image delivery",
+    "Synthetic or caller-declared published/calibrated source status is not library attestation",
+    "Usable fraction denominator is whole AOI, not known/clear observed subset",
+    "Peak SAR load is admitted conservatively without an implicit pulse-energy buffer",
+    "Historical evidence is not recomputed from cloud masks published after capture"
+  ],
+  "physical_qualification": "needs_external_evidence",
+  "next": "B04-B3: actual revisit/stereo requirements over qualified overlap and observation epochs",
+  "commit_push_deploy_performed": false
+}

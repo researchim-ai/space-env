@@ -1,92 +1,103 @@
-# Следующие пакеты: проверяемый симулятор и продукт для обучения агентов
+# Следующие крупные пакеты реализации
 
-Актуально на 30 октября 2026. Основной план: [INDUSTRIAL_ROADMAP_V0134.md](INDUSTRIAL_ROADMAP_V0134.md).
-Это последовательность реализации, а не заявление о промышленной готовности.
 
-## Выполнено в рабочем дереве
+## B04-D2a — проверенное ядро вращения, 1 ноября 2026
 
-Reference-планирование группировки: greedy baseline с ограничениями контактов,
-очередей, терминалов и текущего SoC, исполнением и повторной проверкой плана.
-Следующие gates: выбор продукта, rolling replanning, независимые optimum/regret
-проверки и нагрузочные измерения — [Scheduling v1](validation/REFERENCE_SCHEDULING_V1.md).
+Добавлено standalone rigid attitude ядро: физически допустимый тензор инерции,
+Euler/quaternion integration, три идеальных ортогональных маховика, пределы torque
+и momentum, DC/heat/mechanical-work ledger, внешний момент и `r cross F`.
+21 новых тестов; JSON continuation и пример насыщения/разгрузки.
+[Контракт](validation/RIGID_ATTITUDE_CONTRACT.md),
+[приемка](acceptance/B04_RIGID_ATTITUDE_KERNEL.json),
+[пример](../examples/rigid_attitude/demo.py).
 
-Контракты команд/reset/restore/данных: [Execution v1](acceptance/EXECUTION_V1.md).
-Наземные окна/отключения внутри шага: [Resource timeline v1](acceptance/RESOURCE_TIMELINE_V1.md).
+**Это пока отдельный kernel:** MissionRuntime сохраняет rate-limited slew и
+held-body burn. B04-D2 и B04 остаются in_progress. Следующий исполняемый блок —
+B04-D2b: opt-in mission controller/state, реальная pointing/rate settling,
+энергия/тепло и faults/cancel без сброса spin, off-center rotating thrust,
+общие ownership/rollback/checkpoints и installed mission acceptance.
+Подробные критерии интеграции — в контракте; затем calibration и B04-E/B05/B09.
 
-## 1. Закончить причинное исполнение
+Актуально на 1 ноября 2026.
 
-Расширять диспетчер границ MissionWorld через публичные поставщики событий
-подсистем. Включить processing-ready, TTL/ACK, fault/recovery. Для release/deadline
-отделить момент изменения доступности заявки от момента принятия решения политикой.
-Не вызывать policy повторно скрыто внутри шага. Определить порядок одновременных
-событий, отсутствие бесконечного цикла на нулевом интервале и поведение отмены.
+**Единая очередь:** [INDUSTRIAL_AI_SIMULATOR_PLAN.md](INDUSTRIAL_AI_SIMULATOR_PLAN.md).
+В ней находятся B01–B12, задачи, зависимости, критерии приемки и журнал закрытия.
+Этот файл — короткая навигация, а не конкурирующий roadmap.
 
-Приёмка: coarse/fine сравнение дискретных исходов и баланса данных; ошибка на
-любом подинтервале откатывает шаг; replay из JSON повторяет события/квитанции.
-Проверить накладные расходы на реальной миссии, затем полный pytest на финальном коде.
+## B04-D1 — связанная тяга в системе корпуса, 1 ноября 2026
 
-## 2. Самодостаточный артефакт эксперимента
+Добавлены chemical/electric engine schemas и `body_burn`: конечный gimbal,
+settling/ignition, фактические quaternion → GCRS force, масса/топливо,
+электричество/тепло, faults/cancel и совместная работа с CPU/omni-radio.
+Прогноз учитывает только исполненную тягу; дальше — coast. Legacy GCRS команды
+в coupled profile не открыты. Нет rigid-body моментов/маховиков и flight calibration.
+[Контракт](validation/BODY_THRUST_CONTRACT.md),
+[приемка](acceptance/B04_BODY_THRUST.json),
+[пример](../examples/actuation/demo.py).
 
-Первый срез реализован: [Portable experiments](PORTABLE_EXPERIMENTS.md).
-World schema2, run/1, direct-command replay и verified JSONL доступны через SDK/CLI.
-Этот срез не закрывает весь этап: остаются tool/relay protocol, полный контекст SFT,
-sharding/bounded storage и квалификация совместимости.
+Следующий блок **B04-D2**: инерция, угловая скорость и Euler dynamics;
+ограниченные torque actuators/маховики, насыщение и разгрузка momentum;
+off-center thrust torque, связь с pointing/энергией/теплом; аналитические
+conservation tests, fault/cancel/replay и installed mission acceptance.
+B04-D и B04 остаются in_progress; затем B04-E thermal, B05 RF и B09 scale.
 
-Сохранить schema version, полную конфигурацию миссии без зависимости от исходного
-YAML, seeds, модель/данные и их hashes, observation/action/tool events, products,
-receipts и итоговые KPI. Данные хранятся с checksums и атомарным завершением shard.
-Не выдавать внутреннюю truth за доступную агенту телеметрию.
 
-Приёмка: перенести run в другой каталог, запретить сеть и доступ к старому YAML;
-продолжение и replay дают те же дискретные исходы и численные поля в объявленном допуске.
-Из этого артефакта строятся RL/SFT records с контекстом и provenance, без leakage
-между train/holdout по lineage миссии.
+## Последовательность
 
-## 3. Квалифицированный физический профиль
+1. B01: общий runtime и сценарий.
+2. B02: управляемая reference-физика и независимая квалификация.
+3. B03: request → acquisition → processing → delivery.
+4. B04: связанный аппарат, ADCS/payload/энергия/здоровье.
+5. B05: RF, наземные ресурсы и конкурентная ретрансляция.
+6. B06: одна задача для RL/MARL/LLM/оператора.
+7. B07: планирование, objectives и честный benchmark.
+8. B08: воспроизводимая фабрика RL/SFT/preference данных.
+9. B09: исполняемые нагрузки 16/100 → 64/1000 → отдельно 256/10000.
+10. B10: Studio/оператор на общем runtime.
+11. B11: release engineering и эксплуатация.
+12. B12: данные промышленного пилота, калибровка и приемка.
 
-Реализовано отдельное ядро [gcrs-reference/1](validation/GCRS_REFERENCE_V1.md):
-время/EOP, GCRS/ITRS state/covariance, DOP853, force switches и измеренные проверки.
-Добавлены [reference access и external formula checks](validation/REFERENCE_ACCESS_V1.md).
-Сверка J2/drag/third-body имеет общие данные/кадры и не заменяет независимую
-квалификацию всех сил. Переносимая эфемерида даёт геометрические окна станций.
-Добавлен [reference-fixed-downlink/1](validation/REFERENCE_OPERATIONS_V1.md) для
-исполнения готовых продуктов/Gymnasium на фиксированных reference-траекториях.
-Его явные упрощения не являются полной миграцией общей миссии.
-MissionWorld остаётся legacy-training/1. Следующий gate — независимые perturbed
-reference fixtures и перенос всех связанных моделей миссии, не просто смена метки кадра.
+## Реализованная база и доказательства
 
-Выполнить [FRAME_MIGRATION.md](validation/FRAME_MIGRATION.md): отделить legacy
-от reference, закрепить время/EOP/backend, r/v/covariance и внешние reference fixtures.
-Задать допуски до измерения, проверить несколько эпох и дуги 24/72 ч.
-Сохранить старые задачи в versioned legacy suite, новый профиль получает свои цели.
+[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) фиксирует v1–v10 и проверки.
+[Исходный аудит/roadmap](INDUSTRIAL_ROADMAP_V0134.md) сохраняет историю разрывов.
+[Контракты и ограничения моделей](validation/) и [acceptance artifacts](acceptance/)
+нужны для приемки; они не заменяются количеством функций или тестов.
 
-Приёмка: измеренный error budget и applicability report, включая неподдерживаемые
-режимы. Одного короткого двухтелого теста недостаточно для perturbed миссии.
+v10: reference 249 passed, fast 110 passed, 679 collected, installed-wheel smoke.
+Предыдущий полный v9: 665 passed, один sandbox socket failure, тот же HTTP-тест
+отдельно passed с loopback-доступом. Это не непрерывный green-run на v10.
 
-## 4. Полноценная среда группировки и baseline
+B01: runtime 38 passed, reference 287 passed, fast 110 passed, 717 collected;
+installed wheel и console resume/replay подтверждены. Полный B01 regression не запускался.
+B02: 18 новых тестов, reference 305 passed, fast 110 passed, 735 collected;
+wheel 178/178 модулей и установленная dynamic CLI подтверждены. Полный regression
+не перезапускался. B02 needs_external_evidence (исторический срез на завершении B02).
+B02-Q1: 24 новых теста, reference 329 passed, fast 110 passed, 759 collected;
+wheel 180/180 Python modules, 3 orbit fixtures, covariance CLI workflow проверены.
+B02-Q2: 28 новых tests, reference 357 passed, fast 110 passed, 787 collected;
+wheel 183/183 modules и installed SDK/CLI с binding/stale rejection проверены.
+B03: 31 новых tests, reference 388 passed, fast 110 passed, 818 collected;
+wheel 184/184 modules, installed EO lifecycle SDK/CLI и полная receipt проверены.
+B04-A: 29 новых tests, reference 417 passed, fast 110 passed, legacy attitude
+19 passed; 847 collected. Wheel 185/185 modules и 3 fixtures, installed SDK/CLI.
+B04-B1: 32 новых cases, reference 449 passed, fast 110 passed, 879 collected;
+wheel 186/186 Python modules и 3 frozen fixtures, isolated SDK/CLI acceptance.
+B04-B2: 39 новых cases, reference 488 passed, fast 110 passed, 918 collected;
+wheel 187/187 modules и 3 frozen fixtures, isolated optical/SAR SDK/CLI verified.
+B04-B3: 37 новых cases, reference 525 passed, fast 110 passed, 955 collected;
+wheel 188/188 modules + 3 fixtures; isolated SDK/CLI обоих режимов — в артефакте приемки.
+B04-C: 34 новых cases, reference 559 passed, fast 110 passed, 989 collected;
+wheel 189/189 modules + 3 fixtures; isolated resource-lanes SDK/CLI обоих режимов verified.
+Full regression не запускался. Следующее «продолжаем» выполняет B04-D.
+Commit/push/deployment — только по отдельной команде.
 
-Первый общий tool protocol, записываемый heuristic baseline и блокирующий relay
-реализованы: [AGENT_PROTOCOL.md](AGENT_PROTOCOL.md). Они не заменяют constraint solver,
-официальную MARL qualification или конкурентный событийный relay scheduler.
+B04-D1: 39 новых cases; итоговые проверки — в acceptance artifact. Следующий шаг B04-D2.
 
-Единый entities observation (аппараты, станции, заявки, операции), masks, явный
-режим полной/частичной информации; официальный optional PettingZoo adapter.
-Rolling-horizon planner учитывает энергию, память, pointing/setup, окна и сроки.
-Начать с малых exact задач, затем неоднородной EO/ground/relay миссии.
+B04-D1 validation: 39 новых cases, reference 598 passed (13 warnings), fast 110 passed (2 warnings), 1028 collected. Counts overlap; full regression не перезапускался. Wheel: 190/190 Python modules и 3 frozen fixtures. Chemical/electric installed CLI validate/run/resume/replay verified; обе миссии 2/2 delivered requests.
 
-Приёмка: официальные API tests, invalid-action атомарность, воспроизводимые seeds,
-малый exact optimum и честный holdout отчёт. Невыполнимые заявки остаются в знаменателе.
+B04-D1 isolated extended SDK verification passed: chemical/electric, mid-gimbal и mid-firing restore, balances и console replay.
 
-## 5. Поставляемый пилотный продукт
+B04-D2a validation: 21 новых cases; reference 619 passed (13 warnings), fast 110 passed (2 warnings), 1049 collected. Counts overlap; full regression не запускался. Wheel 191/191 Python modules byte-matched, 3 frozen fixtures; isolated standalone demo passed.
 
-Один CLI/SDK workflow: scenario → agent → run → dataset → replay → report.
-Studio показывает фактическое и запланированное исполнение, причины отказов,
-ресурсные конфликты, метрики и версии модели из того же run artifact.
-Ввести bounded history, pagination, recovery и измерить реальные нагрузки
-16/100, затем64/1000, затем256/10000 с работающими заявками и станциями.
-
-Приёмка: воспроизводимый load/install report и проверенный браузерный workflow.
-Для совместного hosted-сервиса отдельно реализовать ownership/auth/isolation,
-quotas и backup. Пилот с оператором требует его данных, baseline и согласованных
-критериев полезности. Превосходство над другими системами подтверждается только
-сравнимым экспериментом; отсутствие такого эксперимента не скрывается.
+Расширенный isolated installed SDK/CLI smoke также passed, включая прежние chemical/electric missions и mid-gimbal/mid-firing replay. Это проверка совместимости, не интеграция rigid kernel с MissionRuntime.

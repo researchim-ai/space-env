@@ -1,5 +1,10 @@
 # Reference downlink scheduling baseline
 
+Update: [rolling continuation and product selection](REFERENCE_REPLANNING_V2.md)
+adds schedule schema /2 and state-bound executable plans. The v1 implicit queue
+algorithm below remains available; reexecution now uses independent copies of
+the supplied start state to support continuation after partial execution.
+
 Implemented 2026-10-31 over `reference-fixed-downlink/1`; no claim of industrial
 qualification or optimal scheduling. This does not migrate the legacy MissionWorld.
 

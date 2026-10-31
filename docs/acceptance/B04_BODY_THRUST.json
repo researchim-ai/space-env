@@ -1,0 +1,175 @@
+{
+  "date": "2026-11-01",
+  "package": "B04-D1",
+  "status": "verified_engineering_scope",
+  "parent_B04_status": "in_progress",
+  "parent_B04_D_status": "in_progress",
+  "version": "0.134.0",
+  "contract": "../validation/BODY_THRUST_CONTRACT.md",
+  "tests": {
+    "new_actuation_cases": 39,
+    "reference": 598,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1028,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 190,
+    "frozen_orbit_fixtures": 3,
+    "sha256": "bb5fc6b96b19db9881c7a5d1f50ed51ef583c096c991438f02794659a8e262ad"
+  },
+  "demos": {
+    "chemical": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 2,
+      "operation": {
+        "actor": "a",
+        "status": "completed",
+        "reason": null,
+        "phase": "completed",
+        "direction_body": [
+          0.17364817766693033,
+          0.0,
+          0.984807753012208
+        ],
+        "thrust_n": 1.0,
+        "remaining_firing_sec": 0.0,
+        "ignition_remaining_sec": 0.0,
+        "until_sec": 7.0,
+        "gimbal_sec": 2.0,
+        "settling_sec": 0.5,
+        "ignition_sec": 0.5,
+        "firing_sec": 1.0,
+        "dc_energy_j": 8.5,
+        "engine_heat_j": 12.5,
+        "jet_energy_j": 1470.9975,
+        "chemical_wall_heat_j": 4.0,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 0.0003399054043313754,
+        "ideal_scalar_delta_v_m_s": 0.010000016995810365,
+        "impulse_vector_gcrs_ns": [
+          0.9878069741167208,
+          -0.000913392925658231,
+          -0.15568091597794353
+        ],
+        "active_phase": "firing"
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "electrical_heat_balance_error_j": {
+        "engine": 0.0
+      }
+    },
+    "electric": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 2,
+      "operation": {
+        "actor": "a",
+        "status": "completed",
+        "reason": null,
+        "phase": "completed",
+        "direction_body": [
+          0.17364817766693033,
+          0.0,
+          0.984807753012208
+        ],
+        "thrust_n": 0.01,
+        "remaining_firing_sec": 0.0,
+        "ignition_remaining_sec": 0.0,
+        "until_sec": 7.0,
+        "gimbal_sec": 2.0,
+        "settling_sec": 0.5,
+        "ignition_sec": 0.5,
+        "firing_sec": 1.0,
+        "dc_energy_j": 37.91995,
+        "engine_heat_j": 23.209975,
+        "jet_energy_j": 14.709975,
+        "chemical_wall_heat_j": 0.0,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 3.399054037345195e-06,
+        "ideal_scalar_delta_v_m_s": 0.00010000000161537685,
+        "impulse_vector_gcrs_ns": [
+          0.009878069741167209,
+          -9.13392925658231e-06,
+          -0.0015568091597794355
+        ],
+        "active_phase": "firing"
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "electrical_heat_balance_error_j": {
+        "engine": 0.0
+      }
+    }
+  },
+  "installed_console": {
+    "chemical": {
+      "validate_run_resume_replay": true
+    },
+    "electric": {
+      "validate_run_resume_replay": true
+    }
+  },
+  "commands": [
+    "python -m pytest -q tests/test_actuation.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/actuation/demo.py OUTPUT chemical|electric",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed CLI mission-validate/run/resume/replay for chemical and electric"
+  ],
+  "limits": [
+    "Center-of-mass thrust, held body attitude; no inertia/torque/wheels/off-center dynamics",
+    "Forecast only executed thrust, coast beyond applied intervals",
+    "Synthetic engines; no flight or external qualification",
+    "Chemical wall heat is declared, not full chemical calorimetry",
+    "Sampled bus thermal model; no startup propellant or throttle transients",
+    "GCRS impulse/finite_burn remain unsupported in coupled profile"
+  ],
+  "next": "B04-D2 rigid attitude, bounded torque actuators, wheel momentum and off-center thrust",
+  "installed_sdk": {
+    "chemical": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "mid_gimbal_and_firing_replay": true,
+      "fuel_kg": 0.0003399054043313754
+    },
+    "electric": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "mid_gimbal_and_firing_replay": true,
+      "fuel_kg": 3.399054037345195e-06
+    }
+  },
+  "installed_extended_verification": {
+    "passed": true,
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  }
+}

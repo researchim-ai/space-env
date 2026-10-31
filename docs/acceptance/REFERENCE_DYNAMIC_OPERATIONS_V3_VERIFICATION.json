@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-dynamic-operations/3",
+  "tests": {
+    "operations": 58,
+    "reference": 122,
+    "fast": 110,
+    "collected": 552,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "on_time_bits": 6000000.0,
+    "events": 2,
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "rl_steps": 2,
+    "rl_reward_mbit": 6.0,
+    "inventory_ledger": {
+      "a": {
+        "initial_bits": 2000000.0,
+        "injected_bits": 1000000.0,
+        "delivered_bits": 3000000.0,
+        "remaining_bits": 0.0,
+        "balance_error_bits": 0.0
+      },
+      "b": {
+        "initial_bits": 3000000.0,
+        "injected_bits": 0,
+        "delivered_bits": 3000000.0,
+        "remaining_bits": 0.0,
+        "balance_error_bits": 0.0
+      }
+    }
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "b9e72976242b3ae06c9c0bace5a91d38fd4773fda9fabd32d98201fe9b521d00"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "d746186591357bf378e59f5679efa64ede8456f09496ac51fb23fafffe27235e",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "wheel": {
+    "sha256": "abed29ad11f3153d94992fcb1b2f6567a25d6a398f875562b7c09971513857a2",
+    "python_modules": 163,
+    "source_mismatches": []
+  },
+  "source_sha256": {
+    "src/space_env/reference/events.py": "a8ee073589bcf1547cede8c7945215c1ae1a6d184ddba7d579cffb96187adc91",
+    "src/space_env/reference/event_env.py": "0885275364b5f02f6a3c38419732334a482825226ce28b29226415dd7ecfdbe1",
+    "src/space_env/reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+    "src/space_env/reference/operations.py": "1f127d6bf2393afbac07515189f8b9f6ec2071f18951ddaf145448728a8e1ea0",
+    "src/space_env/data_generators/reference_operations.py": "1764b2af4f0adfef56c6ccacb2523432001c02ded137127b3fc1aaab50224078",
+    "src/space_env/cli.py": "2dcc7bb2e8c06a21425991f84350c6411bb2a37bf304cf44fc37ebf51f933e11",
+    "tests/test_reference_operations.py": "e1a37e9ab316c1181d7f49c0d76e063c74d4fbe181e5593e0153c48fbcce2125",
+    "scripts/verify_installed.py": "adacb10e349bdea7fe9b0b23d5b313482c015cf610c56588624784cc2f7789f6"
+  },
+  "unqualified": [
+    "physical acquisition",
+    "independent planner optimum",
+    "large fleet endurance",
+    "general MissionWorld migration"
+  ]
+}

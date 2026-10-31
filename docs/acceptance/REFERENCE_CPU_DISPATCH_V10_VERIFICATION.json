@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-cpu-dispatch/10",
+  "tests": {
+    "operations": 185,
+    "reference": 249,
+    "fast": 110,
+    "collected": 679,
+    "new_cases": 13,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "automatic_on_time_bits": 1000000.0,
+    "controlled_on_time_bits": 2000000.0,
+    "cpu_seconds": {
+      "a": 11.0,
+      "b": 0.0
+    },
+    "rl_steps": 13,
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    }
+  },
+  "wheel": {
+    "sha256": "d8a4e8948f0419ce5a96fed656aa3f5f83cc070fb797b1962ca42e94b062af85",
+    "modules": 168,
+    "source_mismatches": []
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "lifecycle_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "booking_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "thermal_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "processing_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "cpu_choice_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dependency_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "calendar_verification": {
+      "ok": true,
+      "reason": "verified"
+    },
+    "console_verification": {
+      "ok": true,
+      "reason": "verified"
+    },
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "99b14d4beee423e3c8529987eded56751541607e6e83b167cd1e2966ad0aaa4f"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "7fb70a2371c0691fa1aa56dfdcea8fa62f48459027d571bf2729674616e0cabf",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+    "src/space_env/reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+    "src/space_env/reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+    "src/space_env/data_generators/reference_operations.py": "3c7d08230ac82b3164a2568dc9612254c53cb24f742067439a922804f1021f21",
+    "src/space_env/cli.py": "6484f97241b3a5fc6900f3a074acf516ca27441faab156931ce94335af7eebdb",
+    "tests/test_reference_operations.py": "d71c3b29f13863465ad80c37a88fe91b9dfea67b33ed4bf2cd5781bd9c9e84a9",
+    "scripts/verify_installed.py": "c9ea1b9b72bf87bfa9a1257bf3853e10eb306b9491ea9d4c6e0939ebfa488fe7",
+    "examples/reference_operations/cpu_selection_demo.py": "61e6c59216ca5af38353cdbf48cbc678b739289f907824554007d421c7127f08"
+  },
+  "unqualified": [
+    "learned CPU scheduling",
+    "optimal joint compute/radio policy",
+    "hardware algorithm calibration",
+    "multi-core execution",
+    "full regression of this revision"
+  ]
+}

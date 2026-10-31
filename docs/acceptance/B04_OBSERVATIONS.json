@@ -1,0 +1,343 @@
+{
+  "date": "2026-10-31",
+  "package": "B04-B3",
+  "status": "verified",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "profile": "reference-spacecraft-bus/1",
+  "scope": "Sampled static WGS84 revisit/stereo geometry and named ground evidence bundles; not image reconstruction, uncertainty-aware flight qualification or full B04 acceptance",
+  "tests": {
+    "new_observation_cases": 37,
+    "reference": 525,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 955,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "python -m pytest -q tests/test_observations.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/observations/demo.py OUTPUT revisit",
+    "python examples/observations/demo.py OUTPUT stereo-fleet",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/observations/demo.py OUTPUT revisit/stereo-fleet",
+    "installed console mission-validate/run/resume/replay for both modes"
+  ],
+  "coverage": [
+    "Exposure-time pose/UTC/two-part TAI/GCRS/ITRS/trajectory/AOI fingerprints",
+    "Actual per-observation quality evidence links rather than raw-wide favorable union",
+    "Distinct acquisition IDs and actor/time policies; DAG copies cannot create another visit",
+    "N-observation revisit chains with consecutive time intervals and spatial intersection",
+    "Independent 2*atan(B/(2H)) convergence check and Earth-fixed baseline",
+    "Stereo angle/baseline/time checks on shared sampled surface cells",
+    "Revisit/stereo joint area intersection and same-actor fan-in provenance",
+    "Two-actor named ground bundle with full individual station ACK/deadline and no byte duplication",
+    "Partial/cloudy/disjoint observations, missing global support, duplicate/corrupt lineage and failed budgets",
+    "Cancellation of uncreated raw and support expiry propagate unreachable state; late ACK does not revive expiry",
+    "Acquisition record-budget rollback, bounded pair/chain/cell evaluation with no partial credit",
+    "Mid-acquisition and partial-radio checkpoint/replay; copied pure-cache reports cannot mutate execution",
+    "Installed wheel SDK/CLI and an outage-aware station schedule"
+  ],
+  "tolerances": {
+    "analytic_center_convergence_absolute_deg": 1e-12,
+    "test_cloud_disjoint_joint_fraction_upper_bound": 1e-08,
+    "qualification_note": "Engineering check tolerances; samples do not guarantee continuous surface extrema or calibrated stereo/height accuracy"
+  },
+  "installed_sdk_demos": {
+    "revisit": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "obligation": {
+        "schema": "space-env.observation-evaluation/1",
+        "status": "evaluated",
+        "satisfied": true,
+        "joint_area_m2": 1230903.1234358884,
+        "joint_fraction": 1.0,
+        "distinct_acquisitions": 2,
+        "checks": {
+          "pair_checks": 144,
+          "chain_checks": 300,
+          "cell_checks": 576
+        },
+        "delivery_product_ids": [
+          "final-a"
+        ],
+        "full_delivery": true,
+        "delivered_and_fulfilled": true,
+        "revisit": {
+          "area_m2": 1230903.1234358882,
+          "fraction": 0.9999999999999998,
+          "witnesses_truncated": true,
+          "witness_example": [
+            {
+              "raw_ids": [
+                "raw-a",
+                "raw-b"
+              ],
+              "observation_ids": [
+                "57329dc75078910d63b11f580aa6441e0bacb920da515024f5f600b0d6a58037",
+                "ecbc2d4f22b14bdd4249c887ab432f69352fe5624d88d558e22779e5f69028e3"
+              ],
+              "actors": [
+                "a",
+                "a"
+              ],
+              "times_sec": [
+                0.0,
+                2.0
+              ]
+            }
+          ]
+        },
+        "stereo": {
+          "area_m2": 1230903.1234358884,
+          "fraction": 1.0,
+          "witnesses_truncated": true,
+          "witness_example": [
+            {
+              "raw_ids": [
+                "raw-a",
+                "raw-b"
+              ],
+              "observation_ids": [
+                "57329dc75078910d63b11f580aa6441e0bacb920da515024f5f600b0d6a58037",
+                "ecbc2d4f22b14bdd4249c887ab432f69352fe5624d88d558e22779e5f69028e3"
+              ],
+              "actors": [
+                "a",
+                "a"
+              ],
+              "times_sec": [
+                0.0,
+                2.0
+              ],
+              "baseline_itrs_m": 15126.623183628479,
+              "min_sampled_angle_deg": 1.393429619630914,
+              "max_sampled_angle_deg": 1.3934910112358934
+            }
+          ]
+        }
+      },
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 2000000,
+          "transformed_out": 500000,
+          "transformed_in": 2000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 500000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 0,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 0,
+          "remaining": 0,
+          "balance_error_bits": 0,
+          "acked": 0
+        }
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 6.5,
+          "fulfilled_request_ids": [
+            "customer-a",
+            "customer-b"
+          ]
+        }
+      ]
+    },
+    "stereo-fleet": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "obligation": {
+        "schema": "space-env.observation-evaluation/1",
+        "status": "evaluated",
+        "satisfied": true,
+        "joint_area_m2": 1230903.1234358884,
+        "joint_fraction": 1.0,
+        "distinct_acquisitions": 2,
+        "checks": {
+          "pair_checks": 144,
+          "chain_checks": 0,
+          "cell_checks": 576
+        },
+        "delivery_product_ids": [
+          "raw-a",
+          "raw-b"
+        ],
+        "full_delivery": true,
+        "delivered_and_fulfilled": true,
+        "revisit": null,
+        "stereo": {
+          "area_m2": 1230903.1234358884,
+          "fraction": 1.0,
+          "witnesses_truncated": true,
+          "witness_example": [
+            {
+              "raw_ids": [
+                "raw-a",
+                "raw-b"
+              ],
+              "observation_ids": [
+                "57329dc75078910d63b11f580aa6441e0bacb920da515024f5f600b0d6a58037",
+                "c07d058bfa3888530f7ec01f6b391323454232f8fe9b12ec4957211b32f5f087"
+              ],
+              "actors": [
+                "a",
+                "b"
+              ],
+              "times_sec": [
+                0.0,
+                0.0
+              ],
+              "baseline_itrs_m": 22638.149668946397,
+              "min_sampled_angle_deg": 2.0849123175468915,
+              "max_sampled_angle_deg": 2.085042145646768
+            }
+          ]
+        }
+      },
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 1000000,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 1000000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 1000000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 1000000,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 1000000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 1000000
+        }
+      },
+      "acknowledgements": [
+        {
+          "product_id": "raw-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 5.0,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-b",
+          "actor": "b",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 6.0,
+          "fulfilled_request_ids": [
+            "customer-a",
+            "customer-b"
+          ]
+        }
+      ]
+    }
+  },
+  "installed_smoke": {
+    "revisit": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "joint_fraction": 1.0,
+      "distinct_acquisitions": 2,
+      "full_delivery": true,
+      "mid_acquisition_and_partial_radio_replay": true
+    },
+    "stereo-fleet": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "joint_fraction": 1.0,
+      "distinct_acquisitions": 2,
+      "full_delivery": true,
+      "mid_acquisition_and_partial_radio_replay": true
+    }
+  },
+  "wheel": {
+    "sha256": "e3b31c2ea89f5c7fe439aaf3d1c8cbd0657f5fe679bb4508d6ae28e2f1926513",
+    "python_modules_byte_matched": 188,
+    "frozen_orbit_fixtures_byte_matched": 3,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "isolated_python_I": true,
+    "console_validate_run_resume_replay_for_both_modes": true,
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "geometry_manifest": {
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "not_implemented": [
+    "Stereo matching/reconstruction, DSM accuracy, RPC/terrain/sensor distortion",
+    "Continuous swath/dwell guarantees or convergence extrema between spatial samples",
+    "Covariance-aware probabilistic stereo constraints, calibration or scene motion",
+    "SAR coherent interferometry/phase/Doppler reconstruction",
+    "Ground pixel fusion/storage processing costs or intersatellite transport",
+    "General concurrent CPU/payload/radio scheduler, detailed thermal/actuator/thrust coupling",
+    "Large-mission throughput/SLA or constant-time checkpoint recovery"
+  ],
+  "policy_notes": [
+    "Only named primary/support products contribute to the fulfilled bundle",
+    "Every part must be fully acknowledged at the declared station before the same deadline",
+    "Baseline uses camera ITRS positions at their own exposure epochs; not simultaneous satellite range",
+    "Different sampled frames of one raw are one acquisition",
+    "Quality-free requirements are geometric only",
+    "Evaluation over budget is reported as uncertified, with zero fulfillment credit, preserving physical radio work",
+    "Display witnesses are capped at 32; evaluation area is not silently truncated"
+  ],
+  "physical_qualification": "needs_external_evidence",
+  "next": "B04-C: real concurrent resource scheduler and memory bandwidth",
+  "commit_push_deploy_performed": false
+}

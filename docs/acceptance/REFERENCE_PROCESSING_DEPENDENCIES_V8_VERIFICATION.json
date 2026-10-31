@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-processing-dependencies/8",
+  "tests": {
+    "operations": 143,
+    "reference": 207,
+    "fast": 110,
+    "collected": 637,
+    "new_cases": 16,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "on_time_bits": 6000000.0,
+    "cpu_seconds": {
+      "a": 3.0,
+      "b": 0.0
+    },
+    "parent_processed_sec": 1.0,
+    "child_started_sec": 1.0,
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "rl_steps": 9
+  },
+  "wheel": {
+    "sha256": "8bf6beb913c946a4465b6d9baeff35b0479de6a6945417cc559845ab76704b5d",
+    "modules": 166,
+    "source_mismatches": []
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "lifecycle_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "booking_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "thermal_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "processing_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dependency_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "cd3a0bc2c4fb9a885c0a4518557c3fbae9eaa4004a429dff262837bb19c2451c"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "90113e686aab92709d2a6bad06b7a8f114d361fbb13cd0de1813501d976bc5de",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+    "src/space_env/reference/operations.py": "adf75cef42aece2e5e42b63653b1475b7e96807e729cb2ef6a68ad93a7657ad9",
+    "src/space_env/reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+    "src/space_env/reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+    "src/space_env/reference/operations_env.py": "fb29c7f9a925156457d03efecd50555e25b0e169886c706e56e178b85dddec9c",
+    "src/space_env/reference/event_env.py": "12161dff1a464d826d727e3fc84b2e5e7d2994d0119563229c0ad880b527896f",
+    "tests/test_reference_operations.py": "8361b217334bdb7b496692969b65d9d82caebee45c9ab2190570be4b9d23805b",
+    "scripts/verify_installed.py": "7984a86db84ee15357f67c3f7ba5910404138659248566c830024936d2572512",
+    "examples/reference_operations/dependency_demo.py": "e1c9bfa1537ad352720dc979438691df646ca714c611c8009d3a939e974badc1"
+  },
+  "unqualified": [
+    "scientific output materialization",
+    "cross-actor dataflow",
+    "independent DAG optimum",
+    "large fleet endurance"
+  ]
+}

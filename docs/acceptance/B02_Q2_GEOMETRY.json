@@ -1,0 +1,4274 @@
+{
+  "date": "2026-10-31",
+  "package": "B02-Q2",
+  "status": "verified",
+  "parent_package_status": "needs_external_evidence",
+  "scope": "Readonly point-acquisition/eclipse geometry and atomic optional stale-forecast guard; no acquisition execution or flight qualification",
+  "interfaces": {
+    "profile": "reference-dynamic-downlink/1; fixed reference supports eclipse and geometry binding",
+    "scenario_fields": [
+      "acquisition_targets",
+      "acquisition_sensors"
+    ],
+    "runtime_methods": [
+      "forecast_acquisition",
+      "forecast_eclipses",
+      "forecast"
+    ],
+    "capabilities": [
+      "forecast.acquisition.geometry",
+      "forecast.eclipse"
+    ],
+    "optional_command_field": "forecast: ForecastBinding",
+    "binding_fields": [
+      "scenario_sha256",
+      "trajectory_sha256",
+      "actor_id",
+      "revision",
+      "geometry_revision"
+    ]
+  },
+  "models": {
+    "acquisition": "WGS84 point target, ideal geocentric nadir cone, elevation/range/solar/dwell constraints",
+    "eclipse": "core.spherical-conical-linear-penumbra/1, same as existing power/SRP",
+    "search": "bounded sampled bracketing + Brent refinement; no unconditional narrow/grazing-event completeness",
+    "dwell": "root-tolerance guards inside non-clipped event boundaries; half-open target availability",
+    "root_at_query_boundary": "not mislabeled as clipped feasible interior"
+  },
+  "tests": {
+    "new_geometry_cases": 28,
+    "reference": 357,
+    "fast": 110,
+    "collected": 787,
+    "counts_overlap": true,
+    "full_regression_rerun": false
+  },
+  "commands": [
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python -m space_env.cli reference-qualify-orbits /tmp/space-env-b02q2-physics.json",
+    "python examples/unified_runtime/geometry_demo.py /tmp/space-env-b02q2-demo",
+    "installed Python -I scripts/verify_installed.py --expected-prefix /tmp/space-env-events-installed",
+    "installed Python -I examples/unified_runtime/geometry_demo.py and console validate/run/resume/replay"
+  ],
+  "coverage": [
+    "Point target geometry and sensor/illumination/range constraints",
+    "Availability clipping and root-guarded minimum dwell",
+    "Read-only forecasts, permissions, actor/sensor/target/coverage validation",
+    "Invalid target/sensor scenario rejection",
+    "Root/touch/clipping and explicit coarse miss/fine detection",
+    "Sampling/refinement/geometry evaluation budgets",
+    "Foreign scenario/actor/trajectory and stale revision bindings rejected atomically",
+    "Cached idempotency retry despite later state",
+    "Maneuver/cancel invalidation and checkpoint replay",
+    "Fixed-reference capability boundaries",
+    "Poles and antimeridian",
+    "Nested eclipse contacts and shared current conical model",
+    "Analytic orbit/separate bisection AOS/LOS/acquisition comparison",
+    "Approximate cone contacts versus spherical apparent-disc comparison"
+  ],
+  "physics_comparison": {
+    "covariance_prediction": {
+      "comparison": "separate vectorized central-gravity RK45 RHS; no production acceleration/STM",
+      "duration_sec": 60.0,
+      "ensemble": "12 deterministic symmetric sigma points, population covariance; not random Monte Carlo",
+      "harness_sha256": "c95798743d864576b6188a2f4294e00c8950f6bd877bf21859043ab6c6ca3613",
+      "nominal_manifest": {
+        "celestial_pole_offsets": "dX/dY not applied",
+        "eop": {
+          "allow_predictions": false,
+          "interpolation": "linear UT1-TAI/xp/yp over TAI seconds",
+          "rows": [
+            {
+              "dut1_s": 0.0115424,
+              "status": "final",
+              "utc": "2026-07-16T00:00:00Z",
+              "xp_arcsec": 0.212967,
+              "yp_arcsec": 0.376427
+            },
+            {
+              "dut1_s": 0.01107,
+              "status": "final",
+              "utc": "2026-07-17T00:00:00Z",
+              "xp_arcsec": 0.213823,
+              "yp_arcsec": 0.37525
+            },
+            {
+              "dut1_s": 0.0104557,
+              "status": "final",
+              "utc": "2026-07-18T00:00:00Z",
+              "xp_arcsec": 0.214843,
+              "yp_arcsec": 0.374315
+            },
+            {
+              "dut1_s": 0.0098758,
+              "status": "final",
+              "utc": "2026-07-19T00:00:00Z",
+              "xp_arcsec": 0.215337,
+              "yp_arcsec": 0.373343
+            },
+            {
+              "dut1_s": 0.0094327,
+              "status": "final",
+              "utc": "2026-07-20T00:00:00Z",
+              "xp_arcsec": 0.215477,
+              "yp_arcsec": 0.372293
+            },
+            {
+              "dut1_s": 0.0092047,
+              "status": "final",
+              "utc": "2026-07-21T00:00:00Z",
+              "xp_arcsec": 0.215988,
+              "yp_arcsec": 0.371392
+            },
+            {
+              "dut1_s": 0.0092116,
+              "status": "final",
+              "utc": "2026-07-22T00:00:00Z",
+              "xp_arcsec": 0.217029,
+              "yp_arcsec": 0.37075
+            },
+            {
+              "dut1_s": 0.0093716,
+              "status": "final",
+              "utc": "2026-07-23T00:00:00Z",
+              "xp_arcsec": 0.217917,
+              "yp_arcsec": 0.370143
+            },
+            {
+              "dut1_s": 0.0097464,
+              "status": "final",
+              "utc": "2026-07-24T00:00:00Z",
+              "xp_arcsec": 0.218631,
+              "yp_arcsec": 0.369535
+            },
+            {
+              "dut1_s": 0.0102796,
+              "status": "final",
+              "utc": "2026-07-25T00:00:00Z",
+              "xp_arcsec": 0.21915,
+              "yp_arcsec": 0.369096
+            },
+            {
+              "dut1_s": 0.0108882,
+              "status": "final",
+              "utc": "2026-07-26T00:00:00Z",
+              "xp_arcsec": 0.219387,
+              "yp_arcsec": 0.368713
+            },
+            {
+              "dut1_s": 0.0115755,
+              "status": "final",
+              "utc": "2026-07-27T00:00:00Z",
+              "xp_arcsec": 0.219367,
+              "yp_arcsec": 0.3682
+            },
+            {
+              "dut1_s": 0.0121805,
+              "status": "final",
+              "utc": "2026-07-28T00:00:00Z",
+              "xp_arcsec": 0.219142,
+              "yp_arcsec": 0.367314
+            },
+            {
+              "dut1_s": 0.0126825,
+              "status": "final",
+              "utc": "2026-07-29T00:00:00Z",
+              "xp_arcsec": 0.219176,
+              "yp_arcsec": 0.366379
+            },
+            {
+              "dut1_s": 0.0129626,
+              "status": "final",
+              "utc": "2026-07-30T00:00:00Z",
+              "xp_arcsec": 0.219641,
+              "yp_arcsec": 0.365805
+            },
+            {
+              "dut1_s": 0.0129405,
+              "status": "final",
+              "utc": "2026-07-31T00:00:00Z",
+              "xp_arcsec": 0.220423,
+              "yp_arcsec": 0.365337
+            },
+            {
+              "dut1_s": 0.0127089,
+              "status": "final",
+              "utc": "2026-08-01T00:00:00Z",
+              "xp_arcsec": 0.221514,
+              "yp_arcsec": 0.364969
+            },
+            {
+              "dut1_s": 0.0122625,
+              "status": "final",
+              "utc": "2026-08-02T00:00:00Z",
+              "xp_arcsec": 0.222424,
+              "yp_arcsec": 0.364632
+            },
+            {
+              "dut1_s": 0.0117555,
+              "status": "final",
+              "utc": "2026-08-03T00:00:00Z",
+              "xp_arcsec": 0.222703,
+              "yp_arcsec": 0.363952
+            },
+            {
+              "dut1_s": 0.0112626,
+              "status": "final",
+              "utc": "2026-08-04T00:00:00Z",
+              "xp_arcsec": 0.22263,
+              "yp_arcsec": 0.36289
+            },
+            {
+              "dut1_s": 0.0108214,
+              "status": "final",
+              "utc": "2026-08-05T00:00:00Z",
+              "xp_arcsec": 0.222696,
+              "yp_arcsec": 0.36172
+            },
+            {
+              "dut1_s": 0.0105946,
+              "status": "final",
+              "utc": "2026-08-06T00:00:00Z",
+              "xp_arcsec": 0.222889,
+              "yp_arcsec": 0.360777
+            },
+            {
+              "dut1_s": 0.0105568,
+              "status": "final",
+              "utc": "2026-08-07T00:00:00Z",
+              "xp_arcsec": 0.22311,
+              "yp_arcsec": 0.360023
+            },
+            {
+              "dut1_s": 0.010738,
+              "status": "final",
+              "utc": "2026-08-08T00:00:00Z",
+              "xp_arcsec": 0.223492,
+              "yp_arcsec": 0.359522
+            },
+            {
+              "dut1_s": 0.0110862,
+              "status": "final",
+              "utc": "2026-08-09T00:00:00Z",
+              "xp_arcsec": 0.223624,
+              "yp_arcsec": 0.35917
+            },
+            {
+              "dut1_s": 0.0114637,
+              "status": "final",
+              "utc": "2026-08-10T00:00:00Z",
+              "xp_arcsec": 0.223253,
+              "yp_arcsec": 0.35866
+            },
+            {
+              "dut1_s": 0.0117133,
+              "status": "final",
+              "utc": "2026-08-11T00:00:00Z",
+              "xp_arcsec": 0.222842,
+              "yp_arcsec": 0.357826
+            },
+            {
+              "dut1_s": 0.0116194,
+              "status": "final",
+              "utc": "2026-08-12T00:00:00Z",
+              "xp_arcsec": 0.222828,
+              "yp_arcsec": 0.356994
+            },
+            {
+              "dut1_s": 0.0111489,
+              "status": "final",
+              "utc": "2026-08-13T00:00:00Z",
+              "xp_arcsec": 0.223002,
+              "yp_arcsec": 0.356174
+            },
+            {
+              "dut1_s": 0.0103867,
+              "status": "final",
+              "utc": "2026-08-14T00:00:00Z",
+              "xp_arcsec": 0.223101,
+              "yp_arcsec": 0.355155
+            },
+            {
+              "dut1_s": 0.0094474,
+              "status": "final",
+              "utc": "2026-08-15T00:00:00Z",
+              "xp_arcsec": 0.223155,
+              "yp_arcsec": 0.354098
+            },
+            {
+              "dut1_s": 0.0085001,
+              "status": "final",
+              "utc": "2026-08-16T00:00:00Z",
+              "xp_arcsec": 0.22304,
+              "yp_arcsec": 0.353008
+            },
+            {
+              "dut1_s": 0.0077269,
+              "status": "final",
+              "utc": "2026-08-17T00:00:00Z",
+              "xp_arcsec": 0.222515,
+              "yp_arcsec": 0.352004
+            },
+            {
+              "dut1_s": 0.0071951,
+              "status": "final",
+              "utc": "2026-08-18T00:00:00Z",
+              "xp_arcsec": 0.221651,
+              "yp_arcsec": 0.351143
+            },
+            {
+              "dut1_s": 0.00689,
+              "status": "final",
+              "utc": "2026-08-19T00:00:00Z",
+              "xp_arcsec": 0.220697,
+              "yp_arcsec": 0.350292
+            },
+            {
+              "dut1_s": 0.0067344,
+              "status": "final",
+              "utc": "2026-08-20T00:00:00Z",
+              "xp_arcsec": 0.219602,
+              "yp_arcsec": 0.349517
+            },
+            {
+              "dut1_s": 0.0067863,
+              "status": "final",
+              "utc": "2026-08-21T00:00:00Z",
+              "xp_arcsec": 0.218549,
+              "yp_arcsec": 0.348738
+            },
+            {
+              "dut1_s": 0.0068563,
+              "status": "final",
+              "utc": "2026-08-22T00:00:00Z",
+              "xp_arcsec": 0.217529,
+              "yp_arcsec": 0.347797
+            },
+            {
+              "dut1_s": 0.0069868,
+              "status": "final",
+              "utc": "2026-08-23T00:00:00Z",
+              "xp_arcsec": 0.216432,
+              "yp_arcsec": 0.346716
+            },
+            {
+              "dut1_s": 0.0070915,
+              "status": "final",
+              "utc": "2026-08-24T00:00:00Z",
+              "xp_arcsec": 0.215302,
+              "yp_arcsec": 0.345638
+            },
+            {
+              "dut1_s": 0.0070607,
+              "status": "final",
+              "utc": "2026-08-25T00:00:00Z",
+              "xp_arcsec": 0.214218,
+              "yp_arcsec": 0.344645
+            },
+            {
+              "dut1_s": 0.0068941,
+              "status": "final",
+              "utc": "2026-08-26T00:00:00Z",
+              "xp_arcsec": 0.213361,
+              "yp_arcsec": 0.343581
+            },
+            {
+              "dut1_s": 0.0064875,
+              "status": "final",
+              "utc": "2026-08-27T00:00:00Z",
+              "xp_arcsec": 0.212998,
+              "yp_arcsec": 0.342396
+            },
+            {
+              "dut1_s": 0.0059022,
+              "status": "final",
+              "utc": "2026-08-28T00:00:00Z",
+              "xp_arcsec": 0.212824,
+              "yp_arcsec": 0.341402
+            },
+            {
+              "dut1_s": 0.0050754,
+              "status": "final",
+              "utc": "2026-08-29T00:00:00Z",
+              "xp_arcsec": 0.212499,
+              "yp_arcsec": 0.340576
+            },
+            {
+              "dut1_s": 0.0041643,
+              "status": "final",
+              "utc": "2026-08-30T00:00:00Z",
+              "xp_arcsec": 0.212087,
+              "yp_arcsec": 0.339942
+            },
+            {
+              "dut1_s": 0.0032721,
+              "status": "final",
+              "utc": "2026-08-31T00:00:00Z",
+              "xp_arcsec": 0.21148,
+              "yp_arcsec": 0.339526
+            },
+            {
+              "dut1_s": 0.0024177,
+              "status": "final",
+              "utc": "2026-09-01T00:00:00Z",
+              "xp_arcsec": 0.210815,
+              "yp_arcsec": 0.33931
+            },
+            {
+              "dut1_s": 0.0017229,
+              "status": "final",
+              "utc": "2026-09-02T00:00:00Z",
+              "xp_arcsec": 0.209899,
+              "yp_arcsec": 0.339098
+            },
+            {
+              "dut1_s": 0.0012147,
+              "status": "final",
+              "utc": "2026-09-03T00:00:00Z",
+              "xp_arcsec": 0.208704,
+              "yp_arcsec": 0.338587
+            },
+            {
+              "dut1_s": 0.0009578,
+              "status": "final",
+              "utc": "2026-09-04T00:00:00Z",
+              "xp_arcsec": 0.207115,
+              "yp_arcsec": 0.337949
+            },
+            {
+              "dut1_s": 0.0009204,
+              "status": "final",
+              "utc": "2026-09-05T00:00:00Z",
+              "xp_arcsec": 0.20523,
+              "yp_arcsec": 0.337127
+            },
+            {
+              "dut1_s": 0.0008859,
+              "status": "final",
+              "utc": "2026-09-06T00:00:00Z",
+              "xp_arcsec": 0.203557,
+              "yp_arcsec": 0.336182
+            },
+            {
+              "dut1_s": 0.0006851,
+              "status": "final",
+              "utc": "2026-09-07T00:00:00Z",
+              "xp_arcsec": 0.20244,
+              "yp_arcsec": 0.335222
+            },
+            {
+              "dut1_s": 0.0002215,
+              "status": "final",
+              "utc": "2026-09-08T00:00:00Z",
+              "xp_arcsec": 0.201823,
+              "yp_arcsec": 0.334462
+            },
+            {
+              "dut1_s": -0.0005075,
+              "status": "final",
+              "utc": "2026-09-09T00:00:00Z",
+              "xp_arcsec": 0.201192,
+              "yp_arcsec": 0.334118
+            },
+            {
+              "dut1_s": -0.0015241,
+              "status": "final",
+              "utc": "2026-09-10T00:00:00Z",
+              "xp_arcsec": 0.200189,
+              "yp_arcsec": 0.333881
+            },
+            {
+              "dut1_s": -0.0026585,
+              "status": "final",
+              "utc": "2026-09-11T00:00:00Z",
+              "xp_arcsec": 0.198562,
+              "yp_arcsec": 0.333421
+            },
+            {
+              "dut1_s": -0.0038584,
+              "status": "final",
+              "utc": "2026-09-12T00:00:00Z",
+              "xp_arcsec": 0.196426,
+              "yp_arcsec": 0.332628
+            },
+            {
+              "dut1_s": -0.0050578,
+              "status": "final",
+              "utc": "2026-09-13T00:00:00Z",
+              "xp_arcsec": 0.194491,
+              "yp_arcsec": 0.331657
+            },
+            {
+              "dut1_s": -0.0061765,
+              "status": "final",
+              "utc": "2026-09-14T00:00:00Z",
+              "xp_arcsec": 0.192935,
+              "yp_arcsec": 0.330541
+            },
+            {
+              "dut1_s": -0.0071289,
+              "status": "final",
+              "utc": "2026-09-15T00:00:00Z",
+              "xp_arcsec": 0.19166,
+              "yp_arcsec": 0.329566
+            },
+            {
+              "dut1_s": -0.0078975,
+              "status": "final",
+              "utc": "2026-09-16T00:00:00Z",
+              "xp_arcsec": 0.190824,
+              "yp_arcsec": 0.329155
+            },
+            {
+              "dut1_s": -0.0085912,
+              "status": "final",
+              "utc": "2026-09-17T00:00:00Z",
+              "xp_arcsec": 0.190044,
+              "yp_arcsec": 0.329082
+            },
+            {
+              "dut1_s": -0.0089631,
+              "status": "final",
+              "utc": "2026-09-18T00:00:00Z",
+              "xp_arcsec": 0.189056,
+              "yp_arcsec": 0.32913
+            },
+            {
+              "dut1_s": -0.0094665,
+              "status": "final",
+              "utc": "2026-09-19T00:00:00Z",
+              "xp_arcsec": 0.187651,
+              "yp_arcsec": 0.329278
+            },
+            {
+              "dut1_s": -0.0099832,
+              "status": "final",
+              "utc": "2026-09-20T00:00:00Z",
+              "xp_arcsec": 0.186195,
+              "yp_arcsec": 0.329068
+            },
+            {
+              "dut1_s": -0.0106337,
+              "status": "final",
+              "utc": "2026-09-21T00:00:00Z",
+              "xp_arcsec": 0.185023,
+              "yp_arcsec": 0.328567
+            },
+            {
+              "dut1_s": -0.0114006,
+              "status": "final",
+              "utc": "2026-09-22T00:00:00Z",
+              "xp_arcsec": 0.183765,
+              "yp_arcsec": 0.328158
+            },
+            {
+              "dut1_s": -0.0123544,
+              "status": "final",
+              "utc": "2026-09-23T00:00:00Z",
+              "xp_arcsec": 0.18245,
+              "yp_arcsec": 0.327683
+            },
+            {
+              "dut1_s": -0.013516,
+              "status": "final",
+              "utc": "2026-09-24T00:00:00Z",
+              "xp_arcsec": 0.181496,
+              "yp_arcsec": 0.327265
+            },
+            {
+              "dut1_s": -0.0148104,
+              "status": "final",
+              "utc": "2026-09-25T00:00:00Z",
+              "xp_arcsec": 0.180837,
+              "yp_arcsec": 0.326958
+            },
+            {
+              "dut1_s": -0.016317,
+              "status": "final",
+              "utc": "2026-09-26T00:00:00Z",
+              "xp_arcsec": 0.180022,
+              "yp_arcsec": 0.326585
+            },
+            {
+              "dut1_s": -0.0178589,
+              "status": "final",
+              "utc": "2026-09-27T00:00:00Z",
+              "xp_arcsec": 0.179154,
+              "yp_arcsec": 0.326129
+            },
+            {
+              "dut1_s": -0.0193322,
+              "status": "final",
+              "utc": "2026-09-28T00:00:00Z",
+              "xp_arcsec": 0.178397,
+              "yp_arcsec": 0.325851
+            },
+            {
+              "dut1_s": -0.0206352,
+              "status": "final",
+              "utc": "2026-09-29T00:00:00Z",
+              "xp_arcsec": 0.177454,
+              "yp_arcsec": 0.325945
+            },
+            {
+              "dut1_s": -0.0217135,
+              "status": "final",
+              "utc": "2026-09-30T00:00:00Z",
+              "xp_arcsec": 0.176115,
+              "yp_arcsec": 0.325828
+            },
+            {
+              "dut1_s": -0.0225344,
+              "status": "final",
+              "utc": "2026-10-01T00:00:00Z",
+              "xp_arcsec": 0.174592,
+              "yp_arcsec": 0.325299
+            },
+            {
+              "dut1_s": -0.0231366,
+              "status": "final",
+              "utc": "2026-10-02T00:00:00Z",
+              "xp_arcsec": 0.173343,
+              "yp_arcsec": 0.324589
+            },
+            {
+              "dut1_s": -0.0236485,
+              "status": "final",
+              "utc": "2026-10-03T00:00:00Z",
+              "xp_arcsec": 0.172581,
+              "yp_arcsec": 0.323944
+            },
+            {
+              "dut1_s": -0.0242194,
+              "status": "final",
+              "utc": "2026-10-04T00:00:00Z",
+              "xp_arcsec": 0.171874,
+              "yp_arcsec": 0.323454
+            },
+            {
+              "dut1_s": -0.0250067,
+              "status": "final",
+              "utc": "2026-10-05T00:00:00Z",
+              "xp_arcsec": 0.170954,
+              "yp_arcsec": 0.322945
+            },
+            {
+              "dut1_s": -0.0260101,
+              "status": "final",
+              "utc": "2026-10-06T00:00:00Z",
+              "xp_arcsec": 0.169823,
+              "yp_arcsec": 0.322499
+            },
+            {
+              "dut1_s": -0.0272696,
+              "status": "final",
+              "utc": "2026-10-07T00:00:00Z",
+              "xp_arcsec": 0.168796,
+              "yp_arcsec": 0.322164
+            },
+            {
+              "dut1_s": -0.0287129,
+              "status": "final",
+              "utc": "2026-10-08T00:00:00Z",
+              "xp_arcsec": 0.168084,
+              "yp_arcsec": 0.322257
+            },
+            {
+              "dut1_s": -0.0301471,
+              "status": "final",
+              "utc": "2026-10-09T00:00:00Z",
+              "xp_arcsec": 0.16725,
+              "yp_arcsec": 0.322735
+            },
+            {
+              "dut1_s": -0.031618,
+              "status": "final",
+              "utc": "2026-10-10T00:00:00Z",
+              "xp_arcsec": 0.166275,
+              "yp_arcsec": 0.323153
+            },
+            {
+              "dut1_s": -0.0329997,
+              "status": "final",
+              "utc": "2026-10-11T00:00:00Z",
+              "xp_arcsec": 0.165222,
+              "yp_arcsec": 0.323525
+            },
+            {
+              "dut1_s": -0.0342543,
+              "status": "final",
+              "utc": "2026-10-12T00:00:00Z",
+              "xp_arcsec": 0.163773,
+              "yp_arcsec": 0.323564
+            },
+            {
+              "dut1_s": -0.0352954,
+              "status": "final",
+              "utc": "2026-10-13T00:00:00Z",
+              "xp_arcsec": 0.161998,
+              "yp_arcsec": 0.322984
+            },
+            {
+              "dut1_s": -0.0361215,
+              "status": "prediction",
+              "utc": "2026-10-14T00:00:00Z",
+              "xp_arcsec": 0.1605,
+              "yp_arcsec": 0.322304
+            },
+            {
+              "dut1_s": -0.0367504,
+              "status": "prediction",
+              "utc": "2026-10-15T00:00:00Z",
+              "xp_arcsec": 0.159127,
+              "yp_arcsec": 0.321537
+            },
+            {
+              "dut1_s": -0.0372531,
+              "status": "prediction",
+              "utc": "2026-10-16T00:00:00Z",
+              "xp_arcsec": 0.157937,
+              "yp_arcsec": 0.320996
+            },
+            {
+              "dut1_s": -0.0377433,
+              "status": "prediction",
+              "utc": "2026-10-17T00:00:00Z",
+              "xp_arcsec": 0.156844,
+              "yp_arcsec": 0.320617
+            },
+            {
+              "dut1_s": -0.0383174,
+              "status": "prediction",
+              "utc": "2026-10-18T00:00:00Z",
+              "xp_arcsec": 0.155814,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.0390386,
+              "status": "prediction",
+              "utc": "2026-10-19T00:00:00Z",
+              "xp_arcsec": 0.154748,
+              "yp_arcsec": 0.320436
+            },
+            {
+              "dut1_s": -0.0399555,
+              "status": "prediction",
+              "utc": "2026-10-20T00:00:00Z",
+              "xp_arcsec": 0.153624,
+              "yp_arcsec": 0.320464
+            },
+            {
+              "dut1_s": -0.0410968,
+              "status": "prediction",
+              "utc": "2026-10-21T00:00:00Z",
+              "xp_arcsec": 0.152455,
+              "yp_arcsec": 0.320488
+            },
+            {
+              "dut1_s": -0.0424657,
+              "status": "prediction",
+              "utc": "2026-10-22T00:00:00Z",
+              "xp_arcsec": 0.151264,
+              "yp_arcsec": 0.320494
+            },
+            {
+              "dut1_s": -0.0440219,
+              "status": "prediction",
+              "utc": "2026-10-23T00:00:00Z",
+              "xp_arcsec": 0.150086,
+              "yp_arcsec": 0.320487
+            },
+            {
+              "dut1_s": -0.0456821,
+              "status": "prediction",
+              "utc": "2026-10-24T00:00:00Z",
+              "xp_arcsec": 0.148909,
+              "yp_arcsec": 0.320461
+            },
+            {
+              "dut1_s": -0.0473614,
+              "status": "prediction",
+              "utc": "2026-10-25T00:00:00Z",
+              "xp_arcsec": 0.147726,
+              "yp_arcsec": 0.320419
+            },
+            {
+              "dut1_s": -0.0489486,
+              "status": "prediction",
+              "utc": "2026-10-26T00:00:00Z",
+              "xp_arcsec": 0.146537,
+              "yp_arcsec": 0.320392
+            },
+            {
+              "dut1_s": -0.0503135,
+              "status": "prediction",
+              "utc": "2026-10-27T00:00:00Z",
+              "xp_arcsec": 0.145354,
+              "yp_arcsec": 0.320398
+            },
+            {
+              "dut1_s": -0.0513988,
+              "status": "prediction",
+              "utc": "2026-10-28T00:00:00Z",
+              "xp_arcsec": 0.144176,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.052262,
+              "status": "prediction",
+              "utc": "2026-10-29T00:00:00Z",
+              "xp_arcsec": 0.142999,
+              "yp_arcsec": 0.320523
+            },
+            {
+              "dut1_s": -0.0530082,
+              "status": "prediction",
+              "utc": "2026-10-30T00:00:00Z",
+              "xp_arcsec": 0.141829,
+              "yp_arcsec": 0.320634
+            },
+            {
+              "dut1_s": -0.0537721,
+              "status": "prediction",
+              "utc": "2026-10-31T00:00:00Z",
+              "xp_arcsec": 0.140665,
+              "yp_arcsec": 0.320777
+            },
+            {
+              "dut1_s": -0.0546885,
+              "status": "prediction",
+              "utc": "2026-11-01T00:00:00Z",
+              "xp_arcsec": 0.139503,
+              "yp_arcsec": 0.320938
+            },
+            {
+              "dut1_s": -0.0558353,
+              "status": "prediction",
+              "utc": "2026-11-02T00:00:00Z",
+              "xp_arcsec": 0.138342,
+              "yp_arcsec": 0.321115
+            },
+            {
+              "dut1_s": -0.0572292,
+              "status": "prediction",
+              "utc": "2026-11-03T00:00:00Z",
+              "xp_arcsec": 0.137181,
+              "yp_arcsec": 0.321307
+            },
+            {
+              "dut1_s": -0.0588261,
+              "status": "prediction",
+              "utc": "2026-11-04T00:00:00Z",
+              "xp_arcsec": 0.136022,
+              "yp_arcsec": 0.321515
+            },
+            {
+              "dut1_s": -0.060549,
+              "status": "prediction",
+              "utc": "2026-11-05T00:00:00Z",
+              "xp_arcsec": 0.134865,
+              "yp_arcsec": 0.321738
+            },
+            {
+              "dut1_s": -0.0622972,
+              "status": "prediction",
+              "utc": "2026-11-06T00:00:00Z",
+              "xp_arcsec": 0.133709,
+              "yp_arcsec": 0.321976
+            },
+            {
+              "dut1_s": -0.0639624,
+              "status": "prediction",
+              "utc": "2026-11-07T00:00:00Z",
+              "xp_arcsec": 0.132553,
+              "yp_arcsec": 0.322232
+            },
+            {
+              "dut1_s": -0.065466,
+              "status": "prediction",
+              "utc": "2026-11-08T00:00:00Z",
+              "xp_arcsec": 0.131398,
+              "yp_arcsec": 0.322509
+            },
+            {
+              "dut1_s": -0.0667605,
+              "status": "prediction",
+              "utc": "2026-11-09T00:00:00Z",
+              "xp_arcsec": 0.130247,
+              "yp_arcsec": 0.322805
+            },
+            {
+              "dut1_s": -0.0678325,
+              "status": "prediction",
+              "utc": "2026-11-10T00:00:00Z",
+              "xp_arcsec": 0.129097,
+              "yp_arcsec": 0.323121
+            },
+            {
+              "dut1_s": -0.0687097,
+              "status": "prediction",
+              "utc": "2026-11-11T00:00:00Z",
+              "xp_arcsec": 0.127951,
+              "yp_arcsec": 0.323456
+            },
+            {
+              "dut1_s": -0.0694539,
+              "status": "prediction",
+              "utc": "2026-11-12T00:00:00Z",
+              "xp_arcsec": 0.12681,
+              "yp_arcsec": 0.32381
+            },
+            {
+              "dut1_s": -0.0701342,
+              "status": "prediction",
+              "utc": "2026-11-13T00:00:00Z",
+              "xp_arcsec": 0.125672,
+              "yp_arcsec": 0.324182
+            },
+            {
+              "dut1_s": -0.0708239,
+              "status": "prediction",
+              "utc": "2026-11-14T00:00:00Z",
+              "xp_arcsec": 0.124539,
+              "yp_arcsec": 0.32457
+            },
+            {
+              "dut1_s": -0.0716012,
+              "status": "prediction",
+              "utc": "2026-11-15T00:00:00Z",
+              "xp_arcsec": 0.12341,
+              "yp_arcsec": 0.324976
+            },
+            {
+              "dut1_s": -0.0725222,
+              "status": "prediction",
+              "utc": "2026-11-16T00:00:00Z",
+              "xp_arcsec": 0.122285,
+              "yp_arcsec": 0.325398
+            },
+            {
+              "dut1_s": -0.0736286,
+              "status": "prediction",
+              "utc": "2026-11-17T00:00:00Z",
+              "xp_arcsec": 0.121164,
+              "yp_arcsec": 0.325837
+            },
+            {
+              "dut1_s": -0.07494,
+              "status": "prediction",
+              "utc": "2026-11-18T00:00:00Z",
+              "xp_arcsec": 0.120049,
+              "yp_arcsec": 0.326293
+            },
+            {
+              "dut1_s": -0.0764468,
+              "status": "prediction",
+              "utc": "2026-11-19T00:00:00Z",
+              "xp_arcsec": 0.118938,
+              "yp_arcsec": 0.326766
+            },
+            {
+              "dut1_s": -0.0781036,
+              "status": "prediction",
+              "utc": "2026-11-20T00:00:00Z",
+              "xp_arcsec": 0.117832,
+              "yp_arcsec": 0.327256
+            },
+            {
+              "dut1_s": -0.079827,
+              "status": "prediction",
+              "utc": "2026-11-21T00:00:00Z",
+              "xp_arcsec": 0.116732,
+              "yp_arcsec": 0.327763
+            },
+            {
+              "dut1_s": -0.0815031,
+              "status": "prediction",
+              "utc": "2026-11-22T00:00:00Z",
+              "xp_arcsec": 0.115638,
+              "yp_arcsec": 0.328287
+            },
+            {
+              "dut1_s": -0.0830177,
+              "status": "prediction",
+              "utc": "2026-11-23T00:00:00Z",
+              "xp_arcsec": 0.11455,
+              "yp_arcsec": 0.328827
+            },
+            {
+              "dut1_s": -0.0842973,
+              "status": "prediction",
+              "utc": "2026-11-24T00:00:00Z",
+              "xp_arcsec": 0.113469,
+              "yp_arcsec": 0.329385
+            },
+            {
+              "dut1_s": -0.085331,
+              "status": "prediction",
+              "utc": "2026-11-25T00:00:00Z",
+              "xp_arcsec": 0.112395,
+              "yp_arcsec": 0.329958
+            },
+            {
+              "dut1_s": -0.0861854,
+              "status": "prediction",
+              "utc": "2026-11-26T00:00:00Z",
+              "xp_arcsec": 0.111328,
+              "yp_arcsec": 0.330548
+            },
+            {
+              "dut1_s": -0.0869915,
+              "status": "prediction",
+              "utc": "2026-11-27T00:00:00Z",
+              "xp_arcsec": 0.110269,
+              "yp_arcsec": 0.331154
+            },
+            {
+              "dut1_s": -0.0878976,
+              "status": "prediction",
+              "utc": "2026-11-28T00:00:00Z",
+              "xp_arcsec": 0.109218,
+              "yp_arcsec": 0.331776
+            },
+            {
+              "dut1_s": -0.0890058,
+              "status": "prediction",
+              "utc": "2026-11-29T00:00:00Z",
+              "xp_arcsec": 0.108175,
+              "yp_arcsec": 0.332414
+            },
+            {
+              "dut1_s": -0.0903435,
+              "status": "prediction",
+              "utc": "2026-11-30T00:00:00Z",
+              "xp_arcsec": 0.10714,
+              "yp_arcsec": 0.333067
+            },
+            {
+              "dut1_s": -0.0918665,
+              "status": "prediction",
+              "utc": "2026-12-01T00:00:00Z",
+              "xp_arcsec": 0.106114,
+              "yp_arcsec": 0.333737
+            },
+            {
+              "dut1_s": -0.0934801,
+              "status": "prediction",
+              "utc": "2026-12-02T00:00:00Z",
+              "xp_arcsec": 0.105097,
+              "yp_arcsec": 0.334422
+            },
+            {
+              "dut1_s": -0.095074,
+              "status": "prediction",
+              "utc": "2026-12-03T00:00:00Z",
+              "xp_arcsec": 0.10409,
+              "yp_arcsec": 0.335122
+            },
+            {
+              "dut1_s": -0.0965545,
+              "status": "prediction",
+              "utc": "2026-12-04T00:00:00Z",
+              "xp_arcsec": 0.103092,
+              "yp_arcsec": 0.335838
+            },
+            {
+              "dut1_s": -0.0978559,
+              "status": "prediction",
+              "utc": "2026-12-05T00:00:00Z",
+              "xp_arcsec": 0.102104,
+              "yp_arcsec": 0.336569
+            },
+            {
+              "dut1_s": -0.0989426,
+              "status": "prediction",
+              "utc": "2026-12-06T00:00:00Z",
+              "xp_arcsec": 0.101126,
+              "yp_arcsec": 0.337315
+            },
+            {
+              "dut1_s": -0.0998101,
+              "status": "prediction",
+              "utc": "2026-12-07T00:00:00Z",
+              "xp_arcsec": 0.100159,
+              "yp_arcsec": 0.338075
+            },
+            {
+              "dut1_s": -0.1004872,
+              "status": "prediction",
+              "utc": "2026-12-08T00:00:00Z",
+              "xp_arcsec": 0.099204,
+              "yp_arcsec": 0.338851
+            },
+            {
+              "dut1_s": -0.1010265,
+              "status": "prediction",
+              "utc": "2026-12-09T00:00:00Z",
+              "xp_arcsec": 0.098259,
+              "yp_arcsec": 0.339641
+            },
+            {
+              "dut1_s": -0.1014955,
+              "status": "prediction",
+              "utc": "2026-12-10T00:00:00Z",
+              "xp_arcsec": 0.097326,
+              "yp_arcsec": 0.340446
+            },
+            {
+              "dut1_s": -0.1019675,
+              "status": "prediction",
+              "utc": "2026-12-11T00:00:00Z",
+              "xp_arcsec": 0.096405,
+              "yp_arcsec": 0.341265
+            },
+            {
+              "dut1_s": -0.1025138,
+              "status": "prediction",
+              "utc": "2026-12-12T00:00:00Z",
+              "xp_arcsec": 0.095495,
+              "yp_arcsec": 0.342098
+            },
+            {
+              "dut1_s": -0.103195,
+              "status": "prediction",
+              "utc": "2026-12-13T00:00:00Z",
+              "xp_arcsec": 0.094599,
+              "yp_arcsec": 0.342945
+            },
+            {
+              "dut1_s": -0.1040503,
+              "status": "prediction",
+              "utc": "2026-12-14T00:00:00Z",
+              "xp_arcsec": 0.093715,
+              "yp_arcsec": 0.343806
+            },
+            {
+              "dut1_s": -0.1050953,
+              "status": "prediction",
+              "utc": "2026-12-15T00:00:00Z",
+              "xp_arcsec": 0.092844,
+              "yp_arcsec": 0.34468
+            },
+            {
+              "dut1_s": -0.1063177,
+              "status": "prediction",
+              "utc": "2026-12-16T00:00:00Z",
+              "xp_arcsec": 0.091987,
+              "yp_arcsec": 0.345568
+            },
+            {
+              "dut1_s": -0.1076763,
+              "status": "prediction",
+              "utc": "2026-12-17T00:00:00Z",
+              "xp_arcsec": 0.091143,
+              "yp_arcsec": 0.346469
+            },
+            {
+              "dut1_s": -0.1091054,
+              "status": "prediction",
+              "utc": "2026-12-18T00:00:00Z",
+              "xp_arcsec": 0.090313,
+              "yp_arcsec": 0.347383
+            },
+            {
+              "dut1_s": -0.1105147,
+              "status": "prediction",
+              "utc": "2026-12-19T00:00:00Z",
+              "xp_arcsec": 0.089498,
+              "yp_arcsec": 0.348311
+            },
+            {
+              "dut1_s": -0.1118023,
+              "status": "prediction",
+              "utc": "2026-12-20T00:00:00Z",
+              "xp_arcsec": 0.088696,
+              "yp_arcsec": 0.34925
+            },
+            {
+              "dut1_s": -0.1128814,
+              "status": "prediction",
+              "utc": "2026-12-21T00:00:00Z",
+              "xp_arcsec": 0.08791,
+              "yp_arcsec": 0.350203
+            },
+            {
+              "dut1_s": -0.1137159,
+              "status": "prediction",
+              "utc": "2026-12-22T00:00:00Z",
+              "xp_arcsec": 0.087139,
+              "yp_arcsec": 0.351167
+            },
+            {
+              "dut1_s": -0.1143445,
+              "status": "prediction",
+              "utc": "2026-12-23T00:00:00Z",
+              "xp_arcsec": 0.086383,
+              "yp_arcsec": 0.352144
+            },
+            {
+              "dut1_s": -0.1148824,
+              "status": "prediction",
+              "utc": "2026-12-24T00:00:00Z",
+              "xp_arcsec": 0.085643,
+              "yp_arcsec": 0.353132
+            },
+            {
+              "dut1_s": -0.1154803,
+              "status": "prediction",
+              "utc": "2026-12-25T00:00:00Z",
+              "xp_arcsec": 0.084919,
+              "yp_arcsec": 0.354132
+            },
+            {
+              "dut1_s": -0.1162714,
+              "status": "prediction",
+              "utc": "2026-12-26T00:00:00Z",
+              "xp_arcsec": 0.084211,
+              "yp_arcsec": 0.355144
+            },
+            {
+              "dut1_s": -0.1173217,
+              "status": "prediction",
+              "utc": "2026-12-27T00:00:00Z",
+              "xp_arcsec": 0.08352,
+              "yp_arcsec": 0.356166
+            },
+            {
+              "dut1_s": -0.1186076,
+              "status": "prediction",
+              "utc": "2026-12-28T00:00:00Z",
+              "xp_arcsec": 0.082845,
+              "yp_arcsec": 0.3572
+            },
+            {
+              "dut1_s": -0.1200351,
+              "status": "prediction",
+              "utc": "2026-12-29T00:00:00Z",
+              "xp_arcsec": 0.082187,
+              "yp_arcsec": 0.358244
+            },
+            {
+              "dut1_s": -0.1214767,
+              "status": "prediction",
+              "utc": "2026-12-30T00:00:00Z",
+              "xp_arcsec": 0.081546,
+              "yp_arcsec": 0.359299
+            },
+            {
+              "dut1_s": -0.1228147,
+              "status": "prediction",
+              "utc": "2026-12-31T00:00:00Z",
+              "xp_arcsec": 0.080923,
+              "yp_arcsec": 0.360364
+            }
+          ],
+          "source": "IERS packaged finals2000A; sha256=03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855"
+        },
+        "erfa_version": "2.0.1.5",
+        "evaluations": 209,
+        "forces": {
+          "ap": 4.0,
+          "atmosphere": "table",
+          "cd": 2.2,
+          "cr": 1.2,
+          "density_scale": 1.0,
+          "drag": false,
+          "drag_area_m2": 1.0,
+          "f107": 150.0,
+          "f107a": 150.0,
+          "j2": false,
+          "mass_kg": 100.0,
+          "srp": false,
+          "srp_area_m2": 1.0,
+          "third_body": false
+        },
+        "integrator": "scipy DOP853",
+        "leap_applicability": "1972-2026 UTC input",
+        "leap_table_sha256": "70d1364f49fe97099063cd8c92c33e8e91a48b6e74957b331322651944429b53",
+        "max_step_sec": 5.0,
+        "model_source_sha256": {
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+          "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+          "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+          "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+        },
+        "numpy_version": "2.2.6",
+        "position_atol_m": 0.0001,
+        "profile": "gcrs-reference/1",
+        "rotation": "ERFA c2t06a; IAU2006/2000A",
+        "rtol": 1e-11,
+        "sample_sec": 1.0,
+        "scipy_version": "1.15.2",
+        "scope": "Newtonian Earth satellite orbit; no burn/ADCS/mission executor qualification",
+        "time": "two-part UTC/TAI/TT/UT1; TAI SI-second arithmetic",
+        "velocity_atol_m_s": 1e-07,
+        "velocity_derivative": "five-point central derivative, h=0.5 SI seconds"
+      },
+      "not_qualified": [
+        "independent perturbation covariance",
+        "long-arc nonlinear uncertainty",
+        "navigation measurement/filter update",
+        "mass/pointing/atmosphere uncertainty",
+        "calibrated process noise"
+      ],
+      "passed": true,
+      "position_covariance_relative_error": 5.974060643814964e-11,
+      "relative_tolerance": 1e-05,
+      "schema": "space-env.covariance-comparison/1",
+      "shared_inputs": [
+        "mu",
+        "initial state/covariance",
+        "central-gravity model"
+      ],
+      "velocity_covariance_relative_error": 1.3374817976549671e-11
+    },
+    "finite_burn": {
+      "comparison": "independent RHS with RK45 versus production DOP853 and mass helper",
+      "duration_sec": 50.0,
+      "mass_error_kg": 0.0,
+      "mass_tolerance_kg": 1e-10,
+      "not_qualified": [
+        "ADCS and pointing error",
+        "thrust calibration",
+        "propulsion power/thermal",
+        "independent perturbation/ephemeris truth",
+        "navigation covariance"
+      ],
+      "passed": true,
+      "position_error_m": 2.7939677238464355e-09,
+      "position_tolerance_m": 0.01,
+      "production_manifest": {
+        "celestial_pole_offsets": "dX/dY not applied",
+        "eop": {
+          "allow_predictions": false,
+          "interpolation": "linear UT1-TAI/xp/yp over TAI seconds",
+          "rows": [
+            {
+              "dut1_s": 0.0115424,
+              "status": "final",
+              "utc": "2026-07-16T00:00:00Z",
+              "xp_arcsec": 0.212967,
+              "yp_arcsec": 0.376427
+            },
+            {
+              "dut1_s": 0.01107,
+              "status": "final",
+              "utc": "2026-07-17T00:00:00Z",
+              "xp_arcsec": 0.213823,
+              "yp_arcsec": 0.37525
+            },
+            {
+              "dut1_s": 0.0104557,
+              "status": "final",
+              "utc": "2026-07-18T00:00:00Z",
+              "xp_arcsec": 0.214843,
+              "yp_arcsec": 0.374315
+            },
+            {
+              "dut1_s": 0.0098758,
+              "status": "final",
+              "utc": "2026-07-19T00:00:00Z",
+              "xp_arcsec": 0.215337,
+              "yp_arcsec": 0.373343
+            },
+            {
+              "dut1_s": 0.0094327,
+              "status": "final",
+              "utc": "2026-07-20T00:00:00Z",
+              "xp_arcsec": 0.215477,
+              "yp_arcsec": 0.372293
+            },
+            {
+              "dut1_s": 0.0092047,
+              "status": "final",
+              "utc": "2026-07-21T00:00:00Z",
+              "xp_arcsec": 0.215988,
+              "yp_arcsec": 0.371392
+            },
+            {
+              "dut1_s": 0.0092116,
+              "status": "final",
+              "utc": "2026-07-22T00:00:00Z",
+              "xp_arcsec": 0.217029,
+              "yp_arcsec": 0.37075
+            },
+            {
+              "dut1_s": 0.0093716,
+              "status": "final",
+              "utc": "2026-07-23T00:00:00Z",
+              "xp_arcsec": 0.217917,
+              "yp_arcsec": 0.370143
+            },
+            {
+              "dut1_s": 0.0097464,
+              "status": "final",
+              "utc": "2026-07-24T00:00:00Z",
+              "xp_arcsec": 0.218631,
+              "yp_arcsec": 0.369535
+            },
+            {
+              "dut1_s": 0.0102796,
+              "status": "final",
+              "utc": "2026-07-25T00:00:00Z",
+              "xp_arcsec": 0.21915,
+              "yp_arcsec": 0.369096
+            },
+            {
+              "dut1_s": 0.0108882,
+              "status": "final",
+              "utc": "2026-07-26T00:00:00Z",
+              "xp_arcsec": 0.219387,
+              "yp_arcsec": 0.368713
+            },
+            {
+              "dut1_s": 0.0115755,
+              "status": "final",
+              "utc": "2026-07-27T00:00:00Z",
+              "xp_arcsec": 0.219367,
+              "yp_arcsec": 0.3682
+            },
+            {
+              "dut1_s": 0.0121805,
+              "status": "final",
+              "utc": "2026-07-28T00:00:00Z",
+              "xp_arcsec": 0.219142,
+              "yp_arcsec": 0.367314
+            },
+            {
+              "dut1_s": 0.0126825,
+              "status": "final",
+              "utc": "2026-07-29T00:00:00Z",
+              "xp_arcsec": 0.219176,
+              "yp_arcsec": 0.366379
+            },
+            {
+              "dut1_s": 0.0129626,
+              "status": "final",
+              "utc": "2026-07-30T00:00:00Z",
+              "xp_arcsec": 0.219641,
+              "yp_arcsec": 0.365805
+            },
+            {
+              "dut1_s": 0.0129405,
+              "status": "final",
+              "utc": "2026-07-31T00:00:00Z",
+              "xp_arcsec": 0.220423,
+              "yp_arcsec": 0.365337
+            },
+            {
+              "dut1_s": 0.0127089,
+              "status": "final",
+              "utc": "2026-08-01T00:00:00Z",
+              "xp_arcsec": 0.221514,
+              "yp_arcsec": 0.364969
+            },
+            {
+              "dut1_s": 0.0122625,
+              "status": "final",
+              "utc": "2026-08-02T00:00:00Z",
+              "xp_arcsec": 0.222424,
+              "yp_arcsec": 0.364632
+            },
+            {
+              "dut1_s": 0.0117555,
+              "status": "final",
+              "utc": "2026-08-03T00:00:00Z",
+              "xp_arcsec": 0.222703,
+              "yp_arcsec": 0.363952
+            },
+            {
+              "dut1_s": 0.0112626,
+              "status": "final",
+              "utc": "2026-08-04T00:00:00Z",
+              "xp_arcsec": 0.22263,
+              "yp_arcsec": 0.36289
+            },
+            {
+              "dut1_s": 0.0108214,
+              "status": "final",
+              "utc": "2026-08-05T00:00:00Z",
+              "xp_arcsec": 0.222696,
+              "yp_arcsec": 0.36172
+            },
+            {
+              "dut1_s": 0.0105946,
+              "status": "final",
+              "utc": "2026-08-06T00:00:00Z",
+              "xp_arcsec": 0.222889,
+              "yp_arcsec": 0.360777
+            },
+            {
+              "dut1_s": 0.0105568,
+              "status": "final",
+              "utc": "2026-08-07T00:00:00Z",
+              "xp_arcsec": 0.22311,
+              "yp_arcsec": 0.360023
+            },
+            {
+              "dut1_s": 0.010738,
+              "status": "final",
+              "utc": "2026-08-08T00:00:00Z",
+              "xp_arcsec": 0.223492,
+              "yp_arcsec": 0.359522
+            },
+            {
+              "dut1_s": 0.0110862,
+              "status": "final",
+              "utc": "2026-08-09T00:00:00Z",
+              "xp_arcsec": 0.223624,
+              "yp_arcsec": 0.35917
+            },
+            {
+              "dut1_s": 0.0114637,
+              "status": "final",
+              "utc": "2026-08-10T00:00:00Z",
+              "xp_arcsec": 0.223253,
+              "yp_arcsec": 0.35866
+            },
+            {
+              "dut1_s": 0.0117133,
+              "status": "final",
+              "utc": "2026-08-11T00:00:00Z",
+              "xp_arcsec": 0.222842,
+              "yp_arcsec": 0.357826
+            },
+            {
+              "dut1_s": 0.0116194,
+              "status": "final",
+              "utc": "2026-08-12T00:00:00Z",
+              "xp_arcsec": 0.222828,
+              "yp_arcsec": 0.356994
+            },
+            {
+              "dut1_s": 0.0111489,
+              "status": "final",
+              "utc": "2026-08-13T00:00:00Z",
+              "xp_arcsec": 0.223002,
+              "yp_arcsec": 0.356174
+            },
+            {
+              "dut1_s": 0.0103867,
+              "status": "final",
+              "utc": "2026-08-14T00:00:00Z",
+              "xp_arcsec": 0.223101,
+              "yp_arcsec": 0.355155
+            },
+            {
+              "dut1_s": 0.0094474,
+              "status": "final",
+              "utc": "2026-08-15T00:00:00Z",
+              "xp_arcsec": 0.223155,
+              "yp_arcsec": 0.354098
+            },
+            {
+              "dut1_s": 0.0085001,
+              "status": "final",
+              "utc": "2026-08-16T00:00:00Z",
+              "xp_arcsec": 0.22304,
+              "yp_arcsec": 0.353008
+            },
+            {
+              "dut1_s": 0.0077269,
+              "status": "final",
+              "utc": "2026-08-17T00:00:00Z",
+              "xp_arcsec": 0.222515,
+              "yp_arcsec": 0.352004
+            },
+            {
+              "dut1_s": 0.0071951,
+              "status": "final",
+              "utc": "2026-08-18T00:00:00Z",
+              "xp_arcsec": 0.221651,
+              "yp_arcsec": 0.351143
+            },
+            {
+              "dut1_s": 0.00689,
+              "status": "final",
+              "utc": "2026-08-19T00:00:00Z",
+              "xp_arcsec": 0.220697,
+              "yp_arcsec": 0.350292
+            },
+            {
+              "dut1_s": 0.0067344,
+              "status": "final",
+              "utc": "2026-08-20T00:00:00Z",
+              "xp_arcsec": 0.219602,
+              "yp_arcsec": 0.349517
+            },
+            {
+              "dut1_s": 0.0067863,
+              "status": "final",
+              "utc": "2026-08-21T00:00:00Z",
+              "xp_arcsec": 0.218549,
+              "yp_arcsec": 0.348738
+            },
+            {
+              "dut1_s": 0.0068563,
+              "status": "final",
+              "utc": "2026-08-22T00:00:00Z",
+              "xp_arcsec": 0.217529,
+              "yp_arcsec": 0.347797
+            },
+            {
+              "dut1_s": 0.0069868,
+              "status": "final",
+              "utc": "2026-08-23T00:00:00Z",
+              "xp_arcsec": 0.216432,
+              "yp_arcsec": 0.346716
+            },
+            {
+              "dut1_s": 0.0070915,
+              "status": "final",
+              "utc": "2026-08-24T00:00:00Z",
+              "xp_arcsec": 0.215302,
+              "yp_arcsec": 0.345638
+            },
+            {
+              "dut1_s": 0.0070607,
+              "status": "final",
+              "utc": "2026-08-25T00:00:00Z",
+              "xp_arcsec": 0.214218,
+              "yp_arcsec": 0.344645
+            },
+            {
+              "dut1_s": 0.0068941,
+              "status": "final",
+              "utc": "2026-08-26T00:00:00Z",
+              "xp_arcsec": 0.213361,
+              "yp_arcsec": 0.343581
+            },
+            {
+              "dut1_s": 0.0064875,
+              "status": "final",
+              "utc": "2026-08-27T00:00:00Z",
+              "xp_arcsec": 0.212998,
+              "yp_arcsec": 0.342396
+            },
+            {
+              "dut1_s": 0.0059022,
+              "status": "final",
+              "utc": "2026-08-28T00:00:00Z",
+              "xp_arcsec": 0.212824,
+              "yp_arcsec": 0.341402
+            },
+            {
+              "dut1_s": 0.0050754,
+              "status": "final",
+              "utc": "2026-08-29T00:00:00Z",
+              "xp_arcsec": 0.212499,
+              "yp_arcsec": 0.340576
+            },
+            {
+              "dut1_s": 0.0041643,
+              "status": "final",
+              "utc": "2026-08-30T00:00:00Z",
+              "xp_arcsec": 0.212087,
+              "yp_arcsec": 0.339942
+            },
+            {
+              "dut1_s": 0.0032721,
+              "status": "final",
+              "utc": "2026-08-31T00:00:00Z",
+              "xp_arcsec": 0.21148,
+              "yp_arcsec": 0.339526
+            },
+            {
+              "dut1_s": 0.0024177,
+              "status": "final",
+              "utc": "2026-09-01T00:00:00Z",
+              "xp_arcsec": 0.210815,
+              "yp_arcsec": 0.33931
+            },
+            {
+              "dut1_s": 0.0017229,
+              "status": "final",
+              "utc": "2026-09-02T00:00:00Z",
+              "xp_arcsec": 0.209899,
+              "yp_arcsec": 0.339098
+            },
+            {
+              "dut1_s": 0.0012147,
+              "status": "final",
+              "utc": "2026-09-03T00:00:00Z",
+              "xp_arcsec": 0.208704,
+              "yp_arcsec": 0.338587
+            },
+            {
+              "dut1_s": 0.0009578,
+              "status": "final",
+              "utc": "2026-09-04T00:00:00Z",
+              "xp_arcsec": 0.207115,
+              "yp_arcsec": 0.337949
+            },
+            {
+              "dut1_s": 0.0009204,
+              "status": "final",
+              "utc": "2026-09-05T00:00:00Z",
+              "xp_arcsec": 0.20523,
+              "yp_arcsec": 0.337127
+            },
+            {
+              "dut1_s": 0.0008859,
+              "status": "final",
+              "utc": "2026-09-06T00:00:00Z",
+              "xp_arcsec": 0.203557,
+              "yp_arcsec": 0.336182
+            },
+            {
+              "dut1_s": 0.0006851,
+              "status": "final",
+              "utc": "2026-09-07T00:00:00Z",
+              "xp_arcsec": 0.20244,
+              "yp_arcsec": 0.335222
+            },
+            {
+              "dut1_s": 0.0002215,
+              "status": "final",
+              "utc": "2026-09-08T00:00:00Z",
+              "xp_arcsec": 0.201823,
+              "yp_arcsec": 0.334462
+            },
+            {
+              "dut1_s": -0.0005075,
+              "status": "final",
+              "utc": "2026-09-09T00:00:00Z",
+              "xp_arcsec": 0.201192,
+              "yp_arcsec": 0.334118
+            },
+            {
+              "dut1_s": -0.0015241,
+              "status": "final",
+              "utc": "2026-09-10T00:00:00Z",
+              "xp_arcsec": 0.200189,
+              "yp_arcsec": 0.333881
+            },
+            {
+              "dut1_s": -0.0026585,
+              "status": "final",
+              "utc": "2026-09-11T00:00:00Z",
+              "xp_arcsec": 0.198562,
+              "yp_arcsec": 0.333421
+            },
+            {
+              "dut1_s": -0.0038584,
+              "status": "final",
+              "utc": "2026-09-12T00:00:00Z",
+              "xp_arcsec": 0.196426,
+              "yp_arcsec": 0.332628
+            },
+            {
+              "dut1_s": -0.0050578,
+              "status": "final",
+              "utc": "2026-09-13T00:00:00Z",
+              "xp_arcsec": 0.194491,
+              "yp_arcsec": 0.331657
+            },
+            {
+              "dut1_s": -0.0061765,
+              "status": "final",
+              "utc": "2026-09-14T00:00:00Z",
+              "xp_arcsec": 0.192935,
+              "yp_arcsec": 0.330541
+            },
+            {
+              "dut1_s": -0.0071289,
+              "status": "final",
+              "utc": "2026-09-15T00:00:00Z",
+              "xp_arcsec": 0.19166,
+              "yp_arcsec": 0.329566
+            },
+            {
+              "dut1_s": -0.0078975,
+              "status": "final",
+              "utc": "2026-09-16T00:00:00Z",
+              "xp_arcsec": 0.190824,
+              "yp_arcsec": 0.329155
+            },
+            {
+              "dut1_s": -0.0085912,
+              "status": "final",
+              "utc": "2026-09-17T00:00:00Z",
+              "xp_arcsec": 0.190044,
+              "yp_arcsec": 0.329082
+            },
+            {
+              "dut1_s": -0.0089631,
+              "status": "final",
+              "utc": "2026-09-18T00:00:00Z",
+              "xp_arcsec": 0.189056,
+              "yp_arcsec": 0.32913
+            },
+            {
+              "dut1_s": -0.0094665,
+              "status": "final",
+              "utc": "2026-09-19T00:00:00Z",
+              "xp_arcsec": 0.187651,
+              "yp_arcsec": 0.329278
+            },
+            {
+              "dut1_s": -0.0099832,
+              "status": "final",
+              "utc": "2026-09-20T00:00:00Z",
+              "xp_arcsec": 0.186195,
+              "yp_arcsec": 0.329068
+            },
+            {
+              "dut1_s": -0.0106337,
+              "status": "final",
+              "utc": "2026-09-21T00:00:00Z",
+              "xp_arcsec": 0.185023,
+              "yp_arcsec": 0.328567
+            },
+            {
+              "dut1_s": -0.0114006,
+              "status": "final",
+              "utc": "2026-09-22T00:00:00Z",
+              "xp_arcsec": 0.183765,
+              "yp_arcsec": 0.328158
+            },
+            {
+              "dut1_s": -0.0123544,
+              "status": "final",
+              "utc": "2026-09-23T00:00:00Z",
+              "xp_arcsec": 0.18245,
+              "yp_arcsec": 0.327683
+            },
+            {
+              "dut1_s": -0.013516,
+              "status": "final",
+              "utc": "2026-09-24T00:00:00Z",
+              "xp_arcsec": 0.181496,
+              "yp_arcsec": 0.327265
+            },
+            {
+              "dut1_s": -0.0148104,
+              "status": "final",
+              "utc": "2026-09-25T00:00:00Z",
+              "xp_arcsec": 0.180837,
+              "yp_arcsec": 0.326958
+            },
+            {
+              "dut1_s": -0.016317,
+              "status": "final",
+              "utc": "2026-09-26T00:00:00Z",
+              "xp_arcsec": 0.180022,
+              "yp_arcsec": 0.326585
+            },
+            {
+              "dut1_s": -0.0178589,
+              "status": "final",
+              "utc": "2026-09-27T00:00:00Z",
+              "xp_arcsec": 0.179154,
+              "yp_arcsec": 0.326129
+            },
+            {
+              "dut1_s": -0.0193322,
+              "status": "final",
+              "utc": "2026-09-28T00:00:00Z",
+              "xp_arcsec": 0.178397,
+              "yp_arcsec": 0.325851
+            },
+            {
+              "dut1_s": -0.0206352,
+              "status": "final",
+              "utc": "2026-09-29T00:00:00Z",
+              "xp_arcsec": 0.177454,
+              "yp_arcsec": 0.325945
+            },
+            {
+              "dut1_s": -0.0217135,
+              "status": "final",
+              "utc": "2026-09-30T00:00:00Z",
+              "xp_arcsec": 0.176115,
+              "yp_arcsec": 0.325828
+            },
+            {
+              "dut1_s": -0.0225344,
+              "status": "final",
+              "utc": "2026-10-01T00:00:00Z",
+              "xp_arcsec": 0.174592,
+              "yp_arcsec": 0.325299
+            },
+            {
+              "dut1_s": -0.0231366,
+              "status": "final",
+              "utc": "2026-10-02T00:00:00Z",
+              "xp_arcsec": 0.173343,
+              "yp_arcsec": 0.324589
+            },
+            {
+              "dut1_s": -0.0236485,
+              "status": "final",
+              "utc": "2026-10-03T00:00:00Z",
+              "xp_arcsec": 0.172581,
+              "yp_arcsec": 0.323944
+            },
+            {
+              "dut1_s": -0.0242194,
+              "status": "final",
+              "utc": "2026-10-04T00:00:00Z",
+              "xp_arcsec": 0.171874,
+              "yp_arcsec": 0.323454
+            },
+            {
+              "dut1_s": -0.0250067,
+              "status": "final",
+              "utc": "2026-10-05T00:00:00Z",
+              "xp_arcsec": 0.170954,
+              "yp_arcsec": 0.322945
+            },
+            {
+              "dut1_s": -0.0260101,
+              "status": "final",
+              "utc": "2026-10-06T00:00:00Z",
+              "xp_arcsec": 0.169823,
+              "yp_arcsec": 0.322499
+            },
+            {
+              "dut1_s": -0.0272696,
+              "status": "final",
+              "utc": "2026-10-07T00:00:00Z",
+              "xp_arcsec": 0.168796,
+              "yp_arcsec": 0.322164
+            },
+            {
+              "dut1_s": -0.0287129,
+              "status": "final",
+              "utc": "2026-10-08T00:00:00Z",
+              "xp_arcsec": 0.168084,
+              "yp_arcsec": 0.322257
+            },
+            {
+              "dut1_s": -0.0301471,
+              "status": "final",
+              "utc": "2026-10-09T00:00:00Z",
+              "xp_arcsec": 0.16725,
+              "yp_arcsec": 0.322735
+            },
+            {
+              "dut1_s": -0.031618,
+              "status": "final",
+              "utc": "2026-10-10T00:00:00Z",
+              "xp_arcsec": 0.166275,
+              "yp_arcsec": 0.323153
+            },
+            {
+              "dut1_s": -0.0329997,
+              "status": "final",
+              "utc": "2026-10-11T00:00:00Z",
+              "xp_arcsec": 0.165222,
+              "yp_arcsec": 0.323525
+            },
+            {
+              "dut1_s": -0.0342543,
+              "status": "final",
+              "utc": "2026-10-12T00:00:00Z",
+              "xp_arcsec": 0.163773,
+              "yp_arcsec": 0.323564
+            },
+            {
+              "dut1_s": -0.0352954,
+              "status": "final",
+              "utc": "2026-10-13T00:00:00Z",
+              "xp_arcsec": 0.161998,
+              "yp_arcsec": 0.322984
+            },
+            {
+              "dut1_s": -0.0361215,
+              "status": "prediction",
+              "utc": "2026-10-14T00:00:00Z",
+              "xp_arcsec": 0.1605,
+              "yp_arcsec": 0.322304
+            },
+            {
+              "dut1_s": -0.0367504,
+              "status": "prediction",
+              "utc": "2026-10-15T00:00:00Z",
+              "xp_arcsec": 0.159127,
+              "yp_arcsec": 0.321537
+            },
+            {
+              "dut1_s": -0.0372531,
+              "status": "prediction",
+              "utc": "2026-10-16T00:00:00Z",
+              "xp_arcsec": 0.157937,
+              "yp_arcsec": 0.320996
+            },
+            {
+              "dut1_s": -0.0377433,
+              "status": "prediction",
+              "utc": "2026-10-17T00:00:00Z",
+              "xp_arcsec": 0.156844,
+              "yp_arcsec": 0.320617
+            },
+            {
+              "dut1_s": -0.0383174,
+              "status": "prediction",
+              "utc": "2026-10-18T00:00:00Z",
+              "xp_arcsec": 0.155814,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.0390386,
+              "status": "prediction",
+              "utc": "2026-10-19T00:00:00Z",
+              "xp_arcsec": 0.154748,
+              "yp_arcsec": 0.320436
+            },
+            {
+              "dut1_s": -0.0399555,
+              "status": "prediction",
+              "utc": "2026-10-20T00:00:00Z",
+              "xp_arcsec": 0.153624,
+              "yp_arcsec": 0.320464
+            },
+            {
+              "dut1_s": -0.0410968,
+              "status": "prediction",
+              "utc": "2026-10-21T00:00:00Z",
+              "xp_arcsec": 0.152455,
+              "yp_arcsec": 0.320488
+            },
+            {
+              "dut1_s": -0.0424657,
+              "status": "prediction",
+              "utc": "2026-10-22T00:00:00Z",
+              "xp_arcsec": 0.151264,
+              "yp_arcsec": 0.320494
+            },
+            {
+              "dut1_s": -0.0440219,
+              "status": "prediction",
+              "utc": "2026-10-23T00:00:00Z",
+              "xp_arcsec": 0.150086,
+              "yp_arcsec": 0.320487
+            },
+            {
+              "dut1_s": -0.0456821,
+              "status": "prediction",
+              "utc": "2026-10-24T00:00:00Z",
+              "xp_arcsec": 0.148909,
+              "yp_arcsec": 0.320461
+            },
+            {
+              "dut1_s": -0.0473614,
+              "status": "prediction",
+              "utc": "2026-10-25T00:00:00Z",
+              "xp_arcsec": 0.147726,
+              "yp_arcsec": 0.320419
+            },
+            {
+              "dut1_s": -0.0489486,
+              "status": "prediction",
+              "utc": "2026-10-26T00:00:00Z",
+              "xp_arcsec": 0.146537,
+              "yp_arcsec": 0.320392
+            },
+            {
+              "dut1_s": -0.0503135,
+              "status": "prediction",
+              "utc": "2026-10-27T00:00:00Z",
+              "xp_arcsec": 0.145354,
+              "yp_arcsec": 0.320398
+            },
+            {
+              "dut1_s": -0.0513988,
+              "status": "prediction",
+              "utc": "2026-10-28T00:00:00Z",
+              "xp_arcsec": 0.144176,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.052262,
+              "status": "prediction",
+              "utc": "2026-10-29T00:00:00Z",
+              "xp_arcsec": 0.142999,
+              "yp_arcsec": 0.320523
+            },
+            {
+              "dut1_s": -0.0530082,
+              "status": "prediction",
+              "utc": "2026-10-30T00:00:00Z",
+              "xp_arcsec": 0.141829,
+              "yp_arcsec": 0.320634
+            },
+            {
+              "dut1_s": -0.0537721,
+              "status": "prediction",
+              "utc": "2026-10-31T00:00:00Z",
+              "xp_arcsec": 0.140665,
+              "yp_arcsec": 0.320777
+            },
+            {
+              "dut1_s": -0.0546885,
+              "status": "prediction",
+              "utc": "2026-11-01T00:00:00Z",
+              "xp_arcsec": 0.139503,
+              "yp_arcsec": 0.320938
+            },
+            {
+              "dut1_s": -0.0558353,
+              "status": "prediction",
+              "utc": "2026-11-02T00:00:00Z",
+              "xp_arcsec": 0.138342,
+              "yp_arcsec": 0.321115
+            },
+            {
+              "dut1_s": -0.0572292,
+              "status": "prediction",
+              "utc": "2026-11-03T00:00:00Z",
+              "xp_arcsec": 0.137181,
+              "yp_arcsec": 0.321307
+            },
+            {
+              "dut1_s": -0.0588261,
+              "status": "prediction",
+              "utc": "2026-11-04T00:00:00Z",
+              "xp_arcsec": 0.136022,
+              "yp_arcsec": 0.321515
+            },
+            {
+              "dut1_s": -0.060549,
+              "status": "prediction",
+              "utc": "2026-11-05T00:00:00Z",
+              "xp_arcsec": 0.134865,
+              "yp_arcsec": 0.321738
+            },
+            {
+              "dut1_s": -0.0622972,
+              "status": "prediction",
+              "utc": "2026-11-06T00:00:00Z",
+              "xp_arcsec": 0.133709,
+              "yp_arcsec": 0.321976
+            },
+            {
+              "dut1_s": -0.0639624,
+              "status": "prediction",
+              "utc": "2026-11-07T00:00:00Z",
+              "xp_arcsec": 0.132553,
+              "yp_arcsec": 0.322232
+            },
+            {
+              "dut1_s": -0.065466,
+              "status": "prediction",
+              "utc": "2026-11-08T00:00:00Z",
+              "xp_arcsec": 0.131398,
+              "yp_arcsec": 0.322509
+            },
+            {
+              "dut1_s": -0.0667605,
+              "status": "prediction",
+              "utc": "2026-11-09T00:00:00Z",
+              "xp_arcsec": 0.130247,
+              "yp_arcsec": 0.322805
+            },
+            {
+              "dut1_s": -0.0678325,
+              "status": "prediction",
+              "utc": "2026-11-10T00:00:00Z",
+              "xp_arcsec": 0.129097,
+              "yp_arcsec": 0.323121
+            },
+            {
+              "dut1_s": -0.0687097,
+              "status": "prediction",
+              "utc": "2026-11-11T00:00:00Z",
+              "xp_arcsec": 0.127951,
+              "yp_arcsec": 0.323456
+            },
+            {
+              "dut1_s": -0.0694539,
+              "status": "prediction",
+              "utc": "2026-11-12T00:00:00Z",
+              "xp_arcsec": 0.12681,
+              "yp_arcsec": 0.32381
+            },
+            {
+              "dut1_s": -0.0701342,
+              "status": "prediction",
+              "utc": "2026-11-13T00:00:00Z",
+              "xp_arcsec": 0.125672,
+              "yp_arcsec": 0.324182
+            },
+            {
+              "dut1_s": -0.0708239,
+              "status": "prediction",
+              "utc": "2026-11-14T00:00:00Z",
+              "xp_arcsec": 0.124539,
+              "yp_arcsec": 0.32457
+            },
+            {
+              "dut1_s": -0.0716012,
+              "status": "prediction",
+              "utc": "2026-11-15T00:00:00Z",
+              "xp_arcsec": 0.12341,
+              "yp_arcsec": 0.324976
+            },
+            {
+              "dut1_s": -0.0725222,
+              "status": "prediction",
+              "utc": "2026-11-16T00:00:00Z",
+              "xp_arcsec": 0.122285,
+              "yp_arcsec": 0.325398
+            },
+            {
+              "dut1_s": -0.0736286,
+              "status": "prediction",
+              "utc": "2026-11-17T00:00:00Z",
+              "xp_arcsec": 0.121164,
+              "yp_arcsec": 0.325837
+            },
+            {
+              "dut1_s": -0.07494,
+              "status": "prediction",
+              "utc": "2026-11-18T00:00:00Z",
+              "xp_arcsec": 0.120049,
+              "yp_arcsec": 0.326293
+            },
+            {
+              "dut1_s": -0.0764468,
+              "status": "prediction",
+              "utc": "2026-11-19T00:00:00Z",
+              "xp_arcsec": 0.118938,
+              "yp_arcsec": 0.326766
+            },
+            {
+              "dut1_s": -0.0781036,
+              "status": "prediction",
+              "utc": "2026-11-20T00:00:00Z",
+              "xp_arcsec": 0.117832,
+              "yp_arcsec": 0.327256
+            },
+            {
+              "dut1_s": -0.079827,
+              "status": "prediction",
+              "utc": "2026-11-21T00:00:00Z",
+              "xp_arcsec": 0.116732,
+              "yp_arcsec": 0.327763
+            },
+            {
+              "dut1_s": -0.0815031,
+              "status": "prediction",
+              "utc": "2026-11-22T00:00:00Z",
+              "xp_arcsec": 0.115638,
+              "yp_arcsec": 0.328287
+            },
+            {
+              "dut1_s": -0.0830177,
+              "status": "prediction",
+              "utc": "2026-11-23T00:00:00Z",
+              "xp_arcsec": 0.11455,
+              "yp_arcsec": 0.328827
+            },
+            {
+              "dut1_s": -0.0842973,
+              "status": "prediction",
+              "utc": "2026-11-24T00:00:00Z",
+              "xp_arcsec": 0.113469,
+              "yp_arcsec": 0.329385
+            },
+            {
+              "dut1_s": -0.085331,
+              "status": "prediction",
+              "utc": "2026-11-25T00:00:00Z",
+              "xp_arcsec": 0.112395,
+              "yp_arcsec": 0.329958
+            },
+            {
+              "dut1_s": -0.0861854,
+              "status": "prediction",
+              "utc": "2026-11-26T00:00:00Z",
+              "xp_arcsec": 0.111328,
+              "yp_arcsec": 0.330548
+            },
+            {
+              "dut1_s": -0.0869915,
+              "status": "prediction",
+              "utc": "2026-11-27T00:00:00Z",
+              "xp_arcsec": 0.110269,
+              "yp_arcsec": 0.331154
+            },
+            {
+              "dut1_s": -0.0878976,
+              "status": "prediction",
+              "utc": "2026-11-28T00:00:00Z",
+              "xp_arcsec": 0.109218,
+              "yp_arcsec": 0.331776
+            },
+            {
+              "dut1_s": -0.0890058,
+              "status": "prediction",
+              "utc": "2026-11-29T00:00:00Z",
+              "xp_arcsec": 0.108175,
+              "yp_arcsec": 0.332414
+            },
+            {
+              "dut1_s": -0.0903435,
+              "status": "prediction",
+              "utc": "2026-11-30T00:00:00Z",
+              "xp_arcsec": 0.10714,
+              "yp_arcsec": 0.333067
+            },
+            {
+              "dut1_s": -0.0918665,
+              "status": "prediction",
+              "utc": "2026-12-01T00:00:00Z",
+              "xp_arcsec": 0.106114,
+              "yp_arcsec": 0.333737
+            },
+            {
+              "dut1_s": -0.0934801,
+              "status": "prediction",
+              "utc": "2026-12-02T00:00:00Z",
+              "xp_arcsec": 0.105097,
+              "yp_arcsec": 0.334422
+            },
+            {
+              "dut1_s": -0.095074,
+              "status": "prediction",
+              "utc": "2026-12-03T00:00:00Z",
+              "xp_arcsec": 0.10409,
+              "yp_arcsec": 0.335122
+            },
+            {
+              "dut1_s": -0.0965545,
+              "status": "prediction",
+              "utc": "2026-12-04T00:00:00Z",
+              "xp_arcsec": 0.103092,
+              "yp_arcsec": 0.335838
+            },
+            {
+              "dut1_s": -0.0978559,
+              "status": "prediction",
+              "utc": "2026-12-05T00:00:00Z",
+              "xp_arcsec": 0.102104,
+              "yp_arcsec": 0.336569
+            },
+            {
+              "dut1_s": -0.0989426,
+              "status": "prediction",
+              "utc": "2026-12-06T00:00:00Z",
+              "xp_arcsec": 0.101126,
+              "yp_arcsec": 0.337315
+            },
+            {
+              "dut1_s": -0.0998101,
+              "status": "prediction",
+              "utc": "2026-12-07T00:00:00Z",
+              "xp_arcsec": 0.100159,
+              "yp_arcsec": 0.338075
+            },
+            {
+              "dut1_s": -0.1004872,
+              "status": "prediction",
+              "utc": "2026-12-08T00:00:00Z",
+              "xp_arcsec": 0.099204,
+              "yp_arcsec": 0.338851
+            },
+            {
+              "dut1_s": -0.1010265,
+              "status": "prediction",
+              "utc": "2026-12-09T00:00:00Z",
+              "xp_arcsec": 0.098259,
+              "yp_arcsec": 0.339641
+            },
+            {
+              "dut1_s": -0.1014955,
+              "status": "prediction",
+              "utc": "2026-12-10T00:00:00Z",
+              "xp_arcsec": 0.097326,
+              "yp_arcsec": 0.340446
+            },
+            {
+              "dut1_s": -0.1019675,
+              "status": "prediction",
+              "utc": "2026-12-11T00:00:00Z",
+              "xp_arcsec": 0.096405,
+              "yp_arcsec": 0.341265
+            },
+            {
+              "dut1_s": -0.1025138,
+              "status": "prediction",
+              "utc": "2026-12-12T00:00:00Z",
+              "xp_arcsec": 0.095495,
+              "yp_arcsec": 0.342098
+            },
+            {
+              "dut1_s": -0.103195,
+              "status": "prediction",
+              "utc": "2026-12-13T00:00:00Z",
+              "xp_arcsec": 0.094599,
+              "yp_arcsec": 0.342945
+            },
+            {
+              "dut1_s": -0.1040503,
+              "status": "prediction",
+              "utc": "2026-12-14T00:00:00Z",
+              "xp_arcsec": 0.093715,
+              "yp_arcsec": 0.343806
+            },
+            {
+              "dut1_s": -0.1050953,
+              "status": "prediction",
+              "utc": "2026-12-15T00:00:00Z",
+              "xp_arcsec": 0.092844,
+              "yp_arcsec": 0.34468
+            },
+            {
+              "dut1_s": -0.1063177,
+              "status": "prediction",
+              "utc": "2026-12-16T00:00:00Z",
+              "xp_arcsec": 0.091987,
+              "yp_arcsec": 0.345568
+            },
+            {
+              "dut1_s": -0.1076763,
+              "status": "prediction",
+              "utc": "2026-12-17T00:00:00Z",
+              "xp_arcsec": 0.091143,
+              "yp_arcsec": 0.346469
+            },
+            {
+              "dut1_s": -0.1091054,
+              "status": "prediction",
+              "utc": "2026-12-18T00:00:00Z",
+              "xp_arcsec": 0.090313,
+              "yp_arcsec": 0.347383
+            },
+            {
+              "dut1_s": -0.1105147,
+              "status": "prediction",
+              "utc": "2026-12-19T00:00:00Z",
+              "xp_arcsec": 0.089498,
+              "yp_arcsec": 0.348311
+            },
+            {
+              "dut1_s": -0.1118023,
+              "status": "prediction",
+              "utc": "2026-12-20T00:00:00Z",
+              "xp_arcsec": 0.088696,
+              "yp_arcsec": 0.34925
+            },
+            {
+              "dut1_s": -0.1128814,
+              "status": "prediction",
+              "utc": "2026-12-21T00:00:00Z",
+              "xp_arcsec": 0.08791,
+              "yp_arcsec": 0.350203
+            },
+            {
+              "dut1_s": -0.1137159,
+              "status": "prediction",
+              "utc": "2026-12-22T00:00:00Z",
+              "xp_arcsec": 0.087139,
+              "yp_arcsec": 0.351167
+            },
+            {
+              "dut1_s": -0.1143445,
+              "status": "prediction",
+              "utc": "2026-12-23T00:00:00Z",
+              "xp_arcsec": 0.086383,
+              "yp_arcsec": 0.352144
+            },
+            {
+              "dut1_s": -0.1148824,
+              "status": "prediction",
+              "utc": "2026-12-24T00:00:00Z",
+              "xp_arcsec": 0.085643,
+              "yp_arcsec": 0.353132
+            },
+            {
+              "dut1_s": -0.1154803,
+              "status": "prediction",
+              "utc": "2026-12-25T00:00:00Z",
+              "xp_arcsec": 0.084919,
+              "yp_arcsec": 0.354132
+            },
+            {
+              "dut1_s": -0.1162714,
+              "status": "prediction",
+              "utc": "2026-12-26T00:00:00Z",
+              "xp_arcsec": 0.084211,
+              "yp_arcsec": 0.355144
+            },
+            {
+              "dut1_s": -0.1173217,
+              "status": "prediction",
+              "utc": "2026-12-27T00:00:00Z",
+              "xp_arcsec": 0.08352,
+              "yp_arcsec": 0.356166
+            },
+            {
+              "dut1_s": -0.1186076,
+              "status": "prediction",
+              "utc": "2026-12-28T00:00:00Z",
+              "xp_arcsec": 0.082845,
+              "yp_arcsec": 0.3572
+            },
+            {
+              "dut1_s": -0.1200351,
+              "status": "prediction",
+              "utc": "2026-12-29T00:00:00Z",
+              "xp_arcsec": 0.082187,
+              "yp_arcsec": 0.358244
+            },
+            {
+              "dut1_s": -0.1214767,
+              "status": "prediction",
+              "utc": "2026-12-30T00:00:00Z",
+              "xp_arcsec": 0.081546,
+              "yp_arcsec": 0.359299
+            },
+            {
+              "dut1_s": -0.1228147,
+              "status": "prediction",
+              "utc": "2026-12-31T00:00:00Z",
+              "xp_arcsec": 0.080923,
+              "yp_arcsec": 0.360364
+            }
+          ],
+          "source": "IERS packaged finals2000A; sha256=03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855"
+        },
+        "erfa_version": "2.0.1.5",
+        "evaluations": 179,
+        "forces": {
+          "ap": 4.0,
+          "atmosphere": "table",
+          "cd": 2.2,
+          "cr": 1.2,
+          "density_scale": 1.0,
+          "drag": false,
+          "drag_area_m2": 1.0,
+          "f107": 150.0,
+          "f107a": 150.0,
+          "j2": false,
+          "mass_kg": 100.0,
+          "srp": false,
+          "srp_area_m2": 1.0,
+          "third_body": false
+        },
+        "integrator": "scipy DOP853",
+        "leap_applicability": "1972-2026 UTC input",
+        "leap_table_sha256": "70d1364f49fe97099063cd8c92c33e8e91a48b6e74957b331322651944429b53",
+        "max_step_sec": 5.0,
+        "model_source_sha256": {
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+          "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+          "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+          "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+        },
+        "numpy_version": "2.2.6",
+        "position_atol_m": 0.0001,
+        "profile": "gcrs-reference/1",
+        "rotation": "ERFA c2t06a; IAU2006/2000A",
+        "rtol": 1e-11,
+        "sample_sec": 1.0,
+        "scipy_version": "1.15.2",
+        "scope": "Newtonian Earth satellite orbit; no burn/ADCS/mission executor qualification",
+        "thrust": {
+          "attitude": "perfect inertial pointing; no ADCS dynamics",
+          "direction_gcrs": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "dry_mass_kg": 90.0,
+          "frame": "GCRS",
+          "isp_s": 300.0,
+          "mass_model": "constant F/(Isp*g0), exact analytic mass; core.propulsion helper",
+          "thrust_n": 2.0
+        },
+        "time": "two-part UTC/TAI/TT/UT1; TAI SI-second arithmetic",
+        "velocity_atol_m_s": 1e-07,
+        "velocity_derivative": "five-point central derivative, h=0.5 SI seconds"
+      },
+      "schema": "space-env.finite-burn-comparison/1",
+      "shared_inputs": [
+        "mu",
+        "g0",
+        "initial state",
+        "constant inertial thrust and specific impulse"
+      ],
+      "velocity_error_m_s": 1.819488935316107e-12,
+      "velocity_tolerance_m_s": 1e-05
+    },
+    "geometry_events": {
+      "checks": [
+        {
+          "actual_windows": [
+            [
+              2680.333015822328,
+              3320.56314029789
+            ]
+          ],
+          "expected_windows": [
+            [
+              2680.333015732467,
+              3320.563122667372
+            ]
+          ],
+          "max_boundary_error_sec": 1.7630517959332792e-05,
+          "name": "station_AOS_LOS",
+          "passed": true,
+          "tolerance_sec": 0.02
+        },
+        {
+          "actual_windows": [
+            [
+              2904.6040327640912,
+              3095.29576775039
+            ]
+          ],
+          "expected_windows": [
+            [
+              2904.6038127318025,
+              3095.295989252627
+            ]
+          ],
+          "max_boundary_error_sec": 0.00022150223685457604,
+          "name": "point_acquisition",
+          "passed": true,
+          "tolerance_sec": 0.02
+        },
+        {
+          "actual_windows": [
+            [
+              1855.3927755172213,
+              3973.1238651633334
+            ]
+          ],
+          "expected_windows": [
+            [
+              1855.3710133954883,
+              3973.1456242874265
+            ]
+          ],
+          "max_boundary_error_sec": 0.021762121732990636,
+          "name": "umbra_against_spherical_apparent_discs",
+          "passed": true,
+          "tolerance_sec": 1.0
+        },
+        {
+          "actual_windows": [
+            [
+              1846.7657544579035,
+              3981.7509926865696
+            ]
+          ],
+          "expected_windows": [
+            [
+              1846.743089146912,
+              3981.7735485360026
+            ]
+          ],
+          "max_boundary_error_sec": 0.02266531099144231,
+          "name": "partial_or_full_against_spherical_apparent_discs",
+          "passed": true,
+          "tolerance_sec": 1.0
+        }
+      ],
+      "eclipse_comparison": "approximate conical production model versus spherical apparent-disc contacts, constant Sun; 1s model-comparison budget",
+      "harness_sha256": "2f15803171b32a61fcd790e537b5e783e0169157a7d68c8906929be102f0869e",
+      "independence": "analytic circular orbit; separately written target/occultation equations and bisection",
+      "nominal_manifest": {
+        "celestial_pole_offsets": "dX/dY not applied",
+        "eop": {
+          "allow_predictions": false,
+          "interpolation": "linear UT1-TAI/xp/yp over TAI seconds",
+          "rows": [
+            {
+              "dut1_s": 0.0115424,
+              "status": "final",
+              "utc": "2026-07-16T00:00:00Z",
+              "xp_arcsec": 0.212967,
+              "yp_arcsec": 0.376427
+            },
+            {
+              "dut1_s": 0.01107,
+              "status": "final",
+              "utc": "2026-07-17T00:00:00Z",
+              "xp_arcsec": 0.213823,
+              "yp_arcsec": 0.37525
+            },
+            {
+              "dut1_s": 0.0104557,
+              "status": "final",
+              "utc": "2026-07-18T00:00:00Z",
+              "xp_arcsec": 0.214843,
+              "yp_arcsec": 0.374315
+            },
+            {
+              "dut1_s": 0.0098758,
+              "status": "final",
+              "utc": "2026-07-19T00:00:00Z",
+              "xp_arcsec": 0.215337,
+              "yp_arcsec": 0.373343
+            },
+            {
+              "dut1_s": 0.0094327,
+              "status": "final",
+              "utc": "2026-07-20T00:00:00Z",
+              "xp_arcsec": 0.215477,
+              "yp_arcsec": 0.372293
+            },
+            {
+              "dut1_s": 0.0092047,
+              "status": "final",
+              "utc": "2026-07-21T00:00:00Z",
+              "xp_arcsec": 0.215988,
+              "yp_arcsec": 0.371392
+            },
+            {
+              "dut1_s": 0.0092116,
+              "status": "final",
+              "utc": "2026-07-22T00:00:00Z",
+              "xp_arcsec": 0.217029,
+              "yp_arcsec": 0.37075
+            },
+            {
+              "dut1_s": 0.0093716,
+              "status": "final",
+              "utc": "2026-07-23T00:00:00Z",
+              "xp_arcsec": 0.217917,
+              "yp_arcsec": 0.370143
+            },
+            {
+              "dut1_s": 0.0097464,
+              "status": "final",
+              "utc": "2026-07-24T00:00:00Z",
+              "xp_arcsec": 0.218631,
+              "yp_arcsec": 0.369535
+            },
+            {
+              "dut1_s": 0.0102796,
+              "status": "final",
+              "utc": "2026-07-25T00:00:00Z",
+              "xp_arcsec": 0.21915,
+              "yp_arcsec": 0.369096
+            },
+            {
+              "dut1_s": 0.0108882,
+              "status": "final",
+              "utc": "2026-07-26T00:00:00Z",
+              "xp_arcsec": 0.219387,
+              "yp_arcsec": 0.368713
+            },
+            {
+              "dut1_s": 0.0115755,
+              "status": "final",
+              "utc": "2026-07-27T00:00:00Z",
+              "xp_arcsec": 0.219367,
+              "yp_arcsec": 0.3682
+            },
+            {
+              "dut1_s": 0.0121805,
+              "status": "final",
+              "utc": "2026-07-28T00:00:00Z",
+              "xp_arcsec": 0.219142,
+              "yp_arcsec": 0.367314
+            },
+            {
+              "dut1_s": 0.0126825,
+              "status": "final",
+              "utc": "2026-07-29T00:00:00Z",
+              "xp_arcsec": 0.219176,
+              "yp_arcsec": 0.366379
+            },
+            {
+              "dut1_s": 0.0129626,
+              "status": "final",
+              "utc": "2026-07-30T00:00:00Z",
+              "xp_arcsec": 0.219641,
+              "yp_arcsec": 0.365805
+            },
+            {
+              "dut1_s": 0.0129405,
+              "status": "final",
+              "utc": "2026-07-31T00:00:00Z",
+              "xp_arcsec": 0.220423,
+              "yp_arcsec": 0.365337
+            },
+            {
+              "dut1_s": 0.0127089,
+              "status": "final",
+              "utc": "2026-08-01T00:00:00Z",
+              "xp_arcsec": 0.221514,
+              "yp_arcsec": 0.364969
+            },
+            {
+              "dut1_s": 0.0122625,
+              "status": "final",
+              "utc": "2026-08-02T00:00:00Z",
+              "xp_arcsec": 0.222424,
+              "yp_arcsec": 0.364632
+            },
+            {
+              "dut1_s": 0.0117555,
+              "status": "final",
+              "utc": "2026-08-03T00:00:00Z",
+              "xp_arcsec": 0.222703,
+              "yp_arcsec": 0.363952
+            },
+            {
+              "dut1_s": 0.0112626,
+              "status": "final",
+              "utc": "2026-08-04T00:00:00Z",
+              "xp_arcsec": 0.22263,
+              "yp_arcsec": 0.36289
+            },
+            {
+              "dut1_s": 0.0108214,
+              "status": "final",
+              "utc": "2026-08-05T00:00:00Z",
+              "xp_arcsec": 0.222696,
+              "yp_arcsec": 0.36172
+            },
+            {
+              "dut1_s": 0.0105946,
+              "status": "final",
+              "utc": "2026-08-06T00:00:00Z",
+              "xp_arcsec": 0.222889,
+              "yp_arcsec": 0.360777
+            },
+            {
+              "dut1_s": 0.0105568,
+              "status": "final",
+              "utc": "2026-08-07T00:00:00Z",
+              "xp_arcsec": 0.22311,
+              "yp_arcsec": 0.360023
+            },
+            {
+              "dut1_s": 0.010738,
+              "status": "final",
+              "utc": "2026-08-08T00:00:00Z",
+              "xp_arcsec": 0.223492,
+              "yp_arcsec": 0.359522
+            },
+            {
+              "dut1_s": 0.0110862,
+              "status": "final",
+              "utc": "2026-08-09T00:00:00Z",
+              "xp_arcsec": 0.223624,
+              "yp_arcsec": 0.35917
+            },
+            {
+              "dut1_s": 0.0114637,
+              "status": "final",
+              "utc": "2026-08-10T00:00:00Z",
+              "xp_arcsec": 0.223253,
+              "yp_arcsec": 0.35866
+            },
+            {
+              "dut1_s": 0.0117133,
+              "status": "final",
+              "utc": "2026-08-11T00:00:00Z",
+              "xp_arcsec": 0.222842,
+              "yp_arcsec": 0.357826
+            },
+            {
+              "dut1_s": 0.0116194,
+              "status": "final",
+              "utc": "2026-08-12T00:00:00Z",
+              "xp_arcsec": 0.222828,
+              "yp_arcsec": 0.356994
+            },
+            {
+              "dut1_s": 0.0111489,
+              "status": "final",
+              "utc": "2026-08-13T00:00:00Z",
+              "xp_arcsec": 0.223002,
+              "yp_arcsec": 0.356174
+            },
+            {
+              "dut1_s": 0.0103867,
+              "status": "final",
+              "utc": "2026-08-14T00:00:00Z",
+              "xp_arcsec": 0.223101,
+              "yp_arcsec": 0.355155
+            },
+            {
+              "dut1_s": 0.0094474,
+              "status": "final",
+              "utc": "2026-08-15T00:00:00Z",
+              "xp_arcsec": 0.223155,
+              "yp_arcsec": 0.354098
+            },
+            {
+              "dut1_s": 0.0085001,
+              "status": "final",
+              "utc": "2026-08-16T00:00:00Z",
+              "xp_arcsec": 0.22304,
+              "yp_arcsec": 0.353008
+            },
+            {
+              "dut1_s": 0.0077269,
+              "status": "final",
+              "utc": "2026-08-17T00:00:00Z",
+              "xp_arcsec": 0.222515,
+              "yp_arcsec": 0.352004
+            },
+            {
+              "dut1_s": 0.0071951,
+              "status": "final",
+              "utc": "2026-08-18T00:00:00Z",
+              "xp_arcsec": 0.221651,
+              "yp_arcsec": 0.351143
+            },
+            {
+              "dut1_s": 0.00689,
+              "status": "final",
+              "utc": "2026-08-19T00:00:00Z",
+              "xp_arcsec": 0.220697,
+              "yp_arcsec": 0.350292
+            },
+            {
+              "dut1_s": 0.0067344,
+              "status": "final",
+              "utc": "2026-08-20T00:00:00Z",
+              "xp_arcsec": 0.219602,
+              "yp_arcsec": 0.349517
+            },
+            {
+              "dut1_s": 0.0067863,
+              "status": "final",
+              "utc": "2026-08-21T00:00:00Z",
+              "xp_arcsec": 0.218549,
+              "yp_arcsec": 0.348738
+            },
+            {
+              "dut1_s": 0.0068563,
+              "status": "final",
+              "utc": "2026-08-22T00:00:00Z",
+              "xp_arcsec": 0.217529,
+              "yp_arcsec": 0.347797
+            },
+            {
+              "dut1_s": 0.0069868,
+              "status": "final",
+              "utc": "2026-08-23T00:00:00Z",
+              "xp_arcsec": 0.216432,
+              "yp_arcsec": 0.346716
+            },
+            {
+              "dut1_s": 0.0070915,
+              "status": "final",
+              "utc": "2026-08-24T00:00:00Z",
+              "xp_arcsec": 0.215302,
+              "yp_arcsec": 0.345638
+            },
+            {
+              "dut1_s": 0.0070607,
+              "status": "final",
+              "utc": "2026-08-25T00:00:00Z",
+              "xp_arcsec": 0.214218,
+              "yp_arcsec": 0.344645
+            },
+            {
+              "dut1_s": 0.0068941,
+              "status": "final",
+              "utc": "2026-08-26T00:00:00Z",
+              "xp_arcsec": 0.213361,
+              "yp_arcsec": 0.343581
+            },
+            {
+              "dut1_s": 0.0064875,
+              "status": "final",
+              "utc": "2026-08-27T00:00:00Z",
+              "xp_arcsec": 0.212998,
+              "yp_arcsec": 0.342396
+            },
+            {
+              "dut1_s": 0.0059022,
+              "status": "final",
+              "utc": "2026-08-28T00:00:00Z",
+              "xp_arcsec": 0.212824,
+              "yp_arcsec": 0.341402
+            },
+            {
+              "dut1_s": 0.0050754,
+              "status": "final",
+              "utc": "2026-08-29T00:00:00Z",
+              "xp_arcsec": 0.212499,
+              "yp_arcsec": 0.340576
+            },
+            {
+              "dut1_s": 0.0041643,
+              "status": "final",
+              "utc": "2026-08-30T00:00:00Z",
+              "xp_arcsec": 0.212087,
+              "yp_arcsec": 0.339942
+            },
+            {
+              "dut1_s": 0.0032721,
+              "status": "final",
+              "utc": "2026-08-31T00:00:00Z",
+              "xp_arcsec": 0.21148,
+              "yp_arcsec": 0.339526
+            },
+            {
+              "dut1_s": 0.0024177,
+              "status": "final",
+              "utc": "2026-09-01T00:00:00Z",
+              "xp_arcsec": 0.210815,
+              "yp_arcsec": 0.33931
+            },
+            {
+              "dut1_s": 0.0017229,
+              "status": "final",
+              "utc": "2026-09-02T00:00:00Z",
+              "xp_arcsec": 0.209899,
+              "yp_arcsec": 0.339098
+            },
+            {
+              "dut1_s": 0.0012147,
+              "status": "final",
+              "utc": "2026-09-03T00:00:00Z",
+              "xp_arcsec": 0.208704,
+              "yp_arcsec": 0.338587
+            },
+            {
+              "dut1_s": 0.0009578,
+              "status": "final",
+              "utc": "2026-09-04T00:00:00Z",
+              "xp_arcsec": 0.207115,
+              "yp_arcsec": 0.337949
+            },
+            {
+              "dut1_s": 0.0009204,
+              "status": "final",
+              "utc": "2026-09-05T00:00:00Z",
+              "xp_arcsec": 0.20523,
+              "yp_arcsec": 0.337127
+            },
+            {
+              "dut1_s": 0.0008859,
+              "status": "final",
+              "utc": "2026-09-06T00:00:00Z",
+              "xp_arcsec": 0.203557,
+              "yp_arcsec": 0.336182
+            },
+            {
+              "dut1_s": 0.0006851,
+              "status": "final",
+              "utc": "2026-09-07T00:00:00Z",
+              "xp_arcsec": 0.20244,
+              "yp_arcsec": 0.335222
+            },
+            {
+              "dut1_s": 0.0002215,
+              "status": "final",
+              "utc": "2026-09-08T00:00:00Z",
+              "xp_arcsec": 0.201823,
+              "yp_arcsec": 0.334462
+            },
+            {
+              "dut1_s": -0.0005075,
+              "status": "final",
+              "utc": "2026-09-09T00:00:00Z",
+              "xp_arcsec": 0.201192,
+              "yp_arcsec": 0.334118
+            },
+            {
+              "dut1_s": -0.0015241,
+              "status": "final",
+              "utc": "2026-09-10T00:00:00Z",
+              "xp_arcsec": 0.200189,
+              "yp_arcsec": 0.333881
+            },
+            {
+              "dut1_s": -0.0026585,
+              "status": "final",
+              "utc": "2026-09-11T00:00:00Z",
+              "xp_arcsec": 0.198562,
+              "yp_arcsec": 0.333421
+            },
+            {
+              "dut1_s": -0.0038584,
+              "status": "final",
+              "utc": "2026-09-12T00:00:00Z",
+              "xp_arcsec": 0.196426,
+              "yp_arcsec": 0.332628
+            },
+            {
+              "dut1_s": -0.0050578,
+              "status": "final",
+              "utc": "2026-09-13T00:00:00Z",
+              "xp_arcsec": 0.194491,
+              "yp_arcsec": 0.331657
+            },
+            {
+              "dut1_s": -0.0061765,
+              "status": "final",
+              "utc": "2026-09-14T00:00:00Z",
+              "xp_arcsec": 0.192935,
+              "yp_arcsec": 0.330541
+            },
+            {
+              "dut1_s": -0.0071289,
+              "status": "final",
+              "utc": "2026-09-15T00:00:00Z",
+              "xp_arcsec": 0.19166,
+              "yp_arcsec": 0.329566
+            },
+            {
+              "dut1_s": -0.0078975,
+              "status": "final",
+              "utc": "2026-09-16T00:00:00Z",
+              "xp_arcsec": 0.190824,
+              "yp_arcsec": 0.329155
+            },
+            {
+              "dut1_s": -0.0085912,
+              "status": "final",
+              "utc": "2026-09-17T00:00:00Z",
+              "xp_arcsec": 0.190044,
+              "yp_arcsec": 0.329082
+            },
+            {
+              "dut1_s": -0.0089631,
+              "status": "final",
+              "utc": "2026-09-18T00:00:00Z",
+              "xp_arcsec": 0.189056,
+              "yp_arcsec": 0.32913
+            },
+            {
+              "dut1_s": -0.0094665,
+              "status": "final",
+              "utc": "2026-09-19T00:00:00Z",
+              "xp_arcsec": 0.187651,
+              "yp_arcsec": 0.329278
+            },
+            {
+              "dut1_s": -0.0099832,
+              "status": "final",
+              "utc": "2026-09-20T00:00:00Z",
+              "xp_arcsec": 0.186195,
+              "yp_arcsec": 0.329068
+            },
+            {
+              "dut1_s": -0.0106337,
+              "status": "final",
+              "utc": "2026-09-21T00:00:00Z",
+              "xp_arcsec": 0.185023,
+              "yp_arcsec": 0.328567
+            },
+            {
+              "dut1_s": -0.0114006,
+              "status": "final",
+              "utc": "2026-09-22T00:00:00Z",
+              "xp_arcsec": 0.183765,
+              "yp_arcsec": 0.328158
+            },
+            {
+              "dut1_s": -0.0123544,
+              "status": "final",
+              "utc": "2026-09-23T00:00:00Z",
+              "xp_arcsec": 0.18245,
+              "yp_arcsec": 0.327683
+            },
+            {
+              "dut1_s": -0.013516,
+              "status": "final",
+              "utc": "2026-09-24T00:00:00Z",
+              "xp_arcsec": 0.181496,
+              "yp_arcsec": 0.327265
+            },
+            {
+              "dut1_s": -0.0148104,
+              "status": "final",
+              "utc": "2026-09-25T00:00:00Z",
+              "xp_arcsec": 0.180837,
+              "yp_arcsec": 0.326958
+            },
+            {
+              "dut1_s": -0.016317,
+              "status": "final",
+              "utc": "2026-09-26T00:00:00Z",
+              "xp_arcsec": 0.180022,
+              "yp_arcsec": 0.326585
+            },
+            {
+              "dut1_s": -0.0178589,
+              "status": "final",
+              "utc": "2026-09-27T00:00:00Z",
+              "xp_arcsec": 0.179154,
+              "yp_arcsec": 0.326129
+            },
+            {
+              "dut1_s": -0.0193322,
+              "status": "final",
+              "utc": "2026-09-28T00:00:00Z",
+              "xp_arcsec": 0.178397,
+              "yp_arcsec": 0.325851
+            },
+            {
+              "dut1_s": -0.0206352,
+              "status": "final",
+              "utc": "2026-09-29T00:00:00Z",
+              "xp_arcsec": 0.177454,
+              "yp_arcsec": 0.325945
+            },
+            {
+              "dut1_s": -0.0217135,
+              "status": "final",
+              "utc": "2026-09-30T00:00:00Z",
+              "xp_arcsec": 0.176115,
+              "yp_arcsec": 0.325828
+            },
+            {
+              "dut1_s": -0.0225344,
+              "status": "final",
+              "utc": "2026-10-01T00:00:00Z",
+              "xp_arcsec": 0.174592,
+              "yp_arcsec": 0.325299
+            },
+            {
+              "dut1_s": -0.0231366,
+              "status": "final",
+              "utc": "2026-10-02T00:00:00Z",
+              "xp_arcsec": 0.173343,
+              "yp_arcsec": 0.324589
+            },
+            {
+              "dut1_s": -0.0236485,
+              "status": "final",
+              "utc": "2026-10-03T00:00:00Z",
+              "xp_arcsec": 0.172581,
+              "yp_arcsec": 0.323944
+            },
+            {
+              "dut1_s": -0.0242194,
+              "status": "final",
+              "utc": "2026-10-04T00:00:00Z",
+              "xp_arcsec": 0.171874,
+              "yp_arcsec": 0.323454
+            },
+            {
+              "dut1_s": -0.0250067,
+              "status": "final",
+              "utc": "2026-10-05T00:00:00Z",
+              "xp_arcsec": 0.170954,
+              "yp_arcsec": 0.322945
+            },
+            {
+              "dut1_s": -0.0260101,
+              "status": "final",
+              "utc": "2026-10-06T00:00:00Z",
+              "xp_arcsec": 0.169823,
+              "yp_arcsec": 0.322499
+            },
+            {
+              "dut1_s": -0.0272696,
+              "status": "final",
+              "utc": "2026-10-07T00:00:00Z",
+              "xp_arcsec": 0.168796,
+              "yp_arcsec": 0.322164
+            },
+            {
+              "dut1_s": -0.0287129,
+              "status": "final",
+              "utc": "2026-10-08T00:00:00Z",
+              "xp_arcsec": 0.168084,
+              "yp_arcsec": 0.322257
+            },
+            {
+              "dut1_s": -0.0301471,
+              "status": "final",
+              "utc": "2026-10-09T00:00:00Z",
+              "xp_arcsec": 0.16725,
+              "yp_arcsec": 0.322735
+            },
+            {
+              "dut1_s": -0.031618,
+              "status": "final",
+              "utc": "2026-10-10T00:00:00Z",
+              "xp_arcsec": 0.166275,
+              "yp_arcsec": 0.323153
+            },
+            {
+              "dut1_s": -0.0329997,
+              "status": "final",
+              "utc": "2026-10-11T00:00:00Z",
+              "xp_arcsec": 0.165222,
+              "yp_arcsec": 0.323525
+            },
+            {
+              "dut1_s": -0.0342543,
+              "status": "final",
+              "utc": "2026-10-12T00:00:00Z",
+              "xp_arcsec": 0.163773,
+              "yp_arcsec": 0.323564
+            },
+            {
+              "dut1_s": -0.0352954,
+              "status": "final",
+              "utc": "2026-10-13T00:00:00Z",
+              "xp_arcsec": 0.161998,
+              "yp_arcsec": 0.322984
+            },
+            {
+              "dut1_s": -0.0361215,
+              "status": "prediction",
+              "utc": "2026-10-14T00:00:00Z",
+              "xp_arcsec": 0.1605,
+              "yp_arcsec": 0.322304
+            },
+            {
+              "dut1_s": -0.0367504,
+              "status": "prediction",
+              "utc": "2026-10-15T00:00:00Z",
+              "xp_arcsec": 0.159127,
+              "yp_arcsec": 0.321537
+            },
+            {
+              "dut1_s": -0.0372531,
+              "status": "prediction",
+              "utc": "2026-10-16T00:00:00Z",
+              "xp_arcsec": 0.157937,
+              "yp_arcsec": 0.320996
+            },
+            {
+              "dut1_s": -0.0377433,
+              "status": "prediction",
+              "utc": "2026-10-17T00:00:00Z",
+              "xp_arcsec": 0.156844,
+              "yp_arcsec": 0.320617
+            },
+            {
+              "dut1_s": -0.0383174,
+              "status": "prediction",
+              "utc": "2026-10-18T00:00:00Z",
+              "xp_arcsec": 0.155814,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.0390386,
+              "status": "prediction",
+              "utc": "2026-10-19T00:00:00Z",
+              "xp_arcsec": 0.154748,
+              "yp_arcsec": 0.320436
+            },
+            {
+              "dut1_s": -0.0399555,
+              "status": "prediction",
+              "utc": "2026-10-20T00:00:00Z",
+              "xp_arcsec": 0.153624,
+              "yp_arcsec": 0.320464
+            },
+            {
+              "dut1_s": -0.0410968,
+              "status": "prediction",
+              "utc": "2026-10-21T00:00:00Z",
+              "xp_arcsec": 0.152455,
+              "yp_arcsec": 0.320488
+            },
+            {
+              "dut1_s": -0.0424657,
+              "status": "prediction",
+              "utc": "2026-10-22T00:00:00Z",
+              "xp_arcsec": 0.151264,
+              "yp_arcsec": 0.320494
+            },
+            {
+              "dut1_s": -0.0440219,
+              "status": "prediction",
+              "utc": "2026-10-23T00:00:00Z",
+              "xp_arcsec": 0.150086,
+              "yp_arcsec": 0.320487
+            },
+            {
+              "dut1_s": -0.0456821,
+              "status": "prediction",
+              "utc": "2026-10-24T00:00:00Z",
+              "xp_arcsec": 0.148909,
+              "yp_arcsec": 0.320461
+            },
+            {
+              "dut1_s": -0.0473614,
+              "status": "prediction",
+              "utc": "2026-10-25T00:00:00Z",
+              "xp_arcsec": 0.147726,
+              "yp_arcsec": 0.320419
+            },
+            {
+              "dut1_s": -0.0489486,
+              "status": "prediction",
+              "utc": "2026-10-26T00:00:00Z",
+              "xp_arcsec": 0.146537,
+              "yp_arcsec": 0.320392
+            },
+            {
+              "dut1_s": -0.0503135,
+              "status": "prediction",
+              "utc": "2026-10-27T00:00:00Z",
+              "xp_arcsec": 0.145354,
+              "yp_arcsec": 0.320398
+            },
+            {
+              "dut1_s": -0.0513988,
+              "status": "prediction",
+              "utc": "2026-10-28T00:00:00Z",
+              "xp_arcsec": 0.144176,
+              "yp_arcsec": 0.320444
+            },
+            {
+              "dut1_s": -0.052262,
+              "status": "prediction",
+              "utc": "2026-10-29T00:00:00Z",
+              "xp_arcsec": 0.142999,
+              "yp_arcsec": 0.320523
+            },
+            {
+              "dut1_s": -0.0530082,
+              "status": "prediction",
+              "utc": "2026-10-30T00:00:00Z",
+              "xp_arcsec": 0.141829,
+              "yp_arcsec": 0.320634
+            },
+            {
+              "dut1_s": -0.0537721,
+              "status": "prediction",
+              "utc": "2026-10-31T00:00:00Z",
+              "xp_arcsec": 0.140665,
+              "yp_arcsec": 0.320777
+            },
+            {
+              "dut1_s": -0.0546885,
+              "status": "prediction",
+              "utc": "2026-11-01T00:00:00Z",
+              "xp_arcsec": 0.139503,
+              "yp_arcsec": 0.320938
+            },
+            {
+              "dut1_s": -0.0558353,
+              "status": "prediction",
+              "utc": "2026-11-02T00:00:00Z",
+              "xp_arcsec": 0.138342,
+              "yp_arcsec": 0.321115
+            },
+            {
+              "dut1_s": -0.0572292,
+              "status": "prediction",
+              "utc": "2026-11-03T00:00:00Z",
+              "xp_arcsec": 0.137181,
+              "yp_arcsec": 0.321307
+            },
+            {
+              "dut1_s": -0.0588261,
+              "status": "prediction",
+              "utc": "2026-11-04T00:00:00Z",
+              "xp_arcsec": 0.136022,
+              "yp_arcsec": 0.321515
+            },
+            {
+              "dut1_s": -0.060549,
+              "status": "prediction",
+              "utc": "2026-11-05T00:00:00Z",
+              "xp_arcsec": 0.134865,
+              "yp_arcsec": 0.321738
+            },
+            {
+              "dut1_s": -0.0622972,
+              "status": "prediction",
+              "utc": "2026-11-06T00:00:00Z",
+              "xp_arcsec": 0.133709,
+              "yp_arcsec": 0.321976
+            },
+            {
+              "dut1_s": -0.0639624,
+              "status": "prediction",
+              "utc": "2026-11-07T00:00:00Z",
+              "xp_arcsec": 0.132553,
+              "yp_arcsec": 0.322232
+            },
+            {
+              "dut1_s": -0.065466,
+              "status": "prediction",
+              "utc": "2026-11-08T00:00:00Z",
+              "xp_arcsec": 0.131398,
+              "yp_arcsec": 0.322509
+            },
+            {
+              "dut1_s": -0.0667605,
+              "status": "prediction",
+              "utc": "2026-11-09T00:00:00Z",
+              "xp_arcsec": 0.130247,
+              "yp_arcsec": 0.322805
+            },
+            {
+              "dut1_s": -0.0678325,
+              "status": "prediction",
+              "utc": "2026-11-10T00:00:00Z",
+              "xp_arcsec": 0.129097,
+              "yp_arcsec": 0.323121
+            },
+            {
+              "dut1_s": -0.0687097,
+              "status": "prediction",
+              "utc": "2026-11-11T00:00:00Z",
+              "xp_arcsec": 0.127951,
+              "yp_arcsec": 0.323456
+            },
+            {
+              "dut1_s": -0.0694539,
+              "status": "prediction",
+              "utc": "2026-11-12T00:00:00Z",
+              "xp_arcsec": 0.12681,
+              "yp_arcsec": 0.32381
+            },
+            {
+              "dut1_s": -0.0701342,
+              "status": "prediction",
+              "utc": "2026-11-13T00:00:00Z",
+              "xp_arcsec": 0.125672,
+              "yp_arcsec": 0.324182
+            },
+            {
+              "dut1_s": -0.0708239,
+              "status": "prediction",
+              "utc": "2026-11-14T00:00:00Z",
+              "xp_arcsec": 0.124539,
+              "yp_arcsec": 0.32457
+            },
+            {
+              "dut1_s": -0.0716012,
+              "status": "prediction",
+              "utc": "2026-11-15T00:00:00Z",
+              "xp_arcsec": 0.12341,
+              "yp_arcsec": 0.324976
+            },
+            {
+              "dut1_s": -0.0725222,
+              "status": "prediction",
+              "utc": "2026-11-16T00:00:00Z",
+              "xp_arcsec": 0.122285,
+              "yp_arcsec": 0.325398
+            },
+            {
+              "dut1_s": -0.0736286,
+              "status": "prediction",
+              "utc": "2026-11-17T00:00:00Z",
+              "xp_arcsec": 0.121164,
+              "yp_arcsec": 0.325837
+            },
+            {
+              "dut1_s": -0.07494,
+              "status": "prediction",
+              "utc": "2026-11-18T00:00:00Z",
+              "xp_arcsec": 0.120049,
+              "yp_arcsec": 0.326293
+            },
+            {
+              "dut1_s": -0.0764468,
+              "status": "prediction",
+              "utc": "2026-11-19T00:00:00Z",
+              "xp_arcsec": 0.118938,
+              "yp_arcsec": 0.326766
+            },
+            {
+              "dut1_s": -0.0781036,
+              "status": "prediction",
+              "utc": "2026-11-20T00:00:00Z",
+              "xp_arcsec": 0.117832,
+              "yp_arcsec": 0.327256
+            },
+            {
+              "dut1_s": -0.079827,
+              "status": "prediction",
+              "utc": "2026-11-21T00:00:00Z",
+              "xp_arcsec": 0.116732,
+              "yp_arcsec": 0.327763
+            },
+            {
+              "dut1_s": -0.0815031,
+              "status": "prediction",
+              "utc": "2026-11-22T00:00:00Z",
+              "xp_arcsec": 0.115638,
+              "yp_arcsec": 0.328287
+            },
+            {
+              "dut1_s": -0.0830177,
+              "status": "prediction",
+              "utc": "2026-11-23T00:00:00Z",
+              "xp_arcsec": 0.11455,
+              "yp_arcsec": 0.328827
+            },
+            {
+              "dut1_s": -0.0842973,
+              "status": "prediction",
+              "utc": "2026-11-24T00:00:00Z",
+              "xp_arcsec": 0.113469,
+              "yp_arcsec": 0.329385
+            },
+            {
+              "dut1_s": -0.085331,
+              "status": "prediction",
+              "utc": "2026-11-25T00:00:00Z",
+              "xp_arcsec": 0.112395,
+              "yp_arcsec": 0.329958
+            },
+            {
+              "dut1_s": -0.0861854,
+              "status": "prediction",
+              "utc": "2026-11-26T00:00:00Z",
+              "xp_arcsec": 0.111328,
+              "yp_arcsec": 0.330548
+            },
+            {
+              "dut1_s": -0.0869915,
+              "status": "prediction",
+              "utc": "2026-11-27T00:00:00Z",
+              "xp_arcsec": 0.110269,
+              "yp_arcsec": 0.331154
+            },
+            {
+              "dut1_s": -0.0878976,
+              "status": "prediction",
+              "utc": "2026-11-28T00:00:00Z",
+              "xp_arcsec": 0.109218,
+              "yp_arcsec": 0.331776
+            },
+            {
+              "dut1_s": -0.0890058,
+              "status": "prediction",
+              "utc": "2026-11-29T00:00:00Z",
+              "xp_arcsec": 0.108175,
+              "yp_arcsec": 0.332414
+            },
+            {
+              "dut1_s": -0.0903435,
+              "status": "prediction",
+              "utc": "2026-11-30T00:00:00Z",
+              "xp_arcsec": 0.10714,
+              "yp_arcsec": 0.333067
+            },
+            {
+              "dut1_s": -0.0918665,
+              "status": "prediction",
+              "utc": "2026-12-01T00:00:00Z",
+              "xp_arcsec": 0.106114,
+              "yp_arcsec": 0.333737
+            },
+            {
+              "dut1_s": -0.0934801,
+              "status": "prediction",
+              "utc": "2026-12-02T00:00:00Z",
+              "xp_arcsec": 0.105097,
+              "yp_arcsec": 0.334422
+            },
+            {
+              "dut1_s": -0.095074,
+              "status": "prediction",
+              "utc": "2026-12-03T00:00:00Z",
+              "xp_arcsec": 0.10409,
+              "yp_arcsec": 0.335122
+            },
+            {
+              "dut1_s": -0.0965545,
+              "status": "prediction",
+              "utc": "2026-12-04T00:00:00Z",
+              "xp_arcsec": 0.103092,
+              "yp_arcsec": 0.335838
+            },
+            {
+              "dut1_s": -0.0978559,
+              "status": "prediction",
+              "utc": "2026-12-05T00:00:00Z",
+              "xp_arcsec": 0.102104,
+              "yp_arcsec": 0.336569
+            },
+            {
+              "dut1_s": -0.0989426,
+              "status": "prediction",
+              "utc": "2026-12-06T00:00:00Z",
+              "xp_arcsec": 0.101126,
+              "yp_arcsec": 0.337315
+            },
+            {
+              "dut1_s": -0.0998101,
+              "status": "prediction",
+              "utc": "2026-12-07T00:00:00Z",
+              "xp_arcsec": 0.100159,
+              "yp_arcsec": 0.338075
+            },
+            {
+              "dut1_s": -0.1004872,
+              "status": "prediction",
+              "utc": "2026-12-08T00:00:00Z",
+              "xp_arcsec": 0.099204,
+              "yp_arcsec": 0.338851
+            },
+            {
+              "dut1_s": -0.1010265,
+              "status": "prediction",
+              "utc": "2026-12-09T00:00:00Z",
+              "xp_arcsec": 0.098259,
+              "yp_arcsec": 0.339641
+            },
+            {
+              "dut1_s": -0.1014955,
+              "status": "prediction",
+              "utc": "2026-12-10T00:00:00Z",
+              "xp_arcsec": 0.097326,
+              "yp_arcsec": 0.340446
+            },
+            {
+              "dut1_s": -0.1019675,
+              "status": "prediction",
+              "utc": "2026-12-11T00:00:00Z",
+              "xp_arcsec": 0.096405,
+              "yp_arcsec": 0.341265
+            },
+            {
+              "dut1_s": -0.1025138,
+              "status": "prediction",
+              "utc": "2026-12-12T00:00:00Z",
+              "xp_arcsec": 0.095495,
+              "yp_arcsec": 0.342098
+            },
+            {
+              "dut1_s": -0.103195,
+              "status": "prediction",
+              "utc": "2026-12-13T00:00:00Z",
+              "xp_arcsec": 0.094599,
+              "yp_arcsec": 0.342945
+            },
+            {
+              "dut1_s": -0.1040503,
+              "status": "prediction",
+              "utc": "2026-12-14T00:00:00Z",
+              "xp_arcsec": 0.093715,
+              "yp_arcsec": 0.343806
+            },
+            {
+              "dut1_s": -0.1050953,
+              "status": "prediction",
+              "utc": "2026-12-15T00:00:00Z",
+              "xp_arcsec": 0.092844,
+              "yp_arcsec": 0.34468
+            },
+            {
+              "dut1_s": -0.1063177,
+              "status": "prediction",
+              "utc": "2026-12-16T00:00:00Z",
+              "xp_arcsec": 0.091987,
+              "yp_arcsec": 0.345568
+            },
+            {
+              "dut1_s": -0.1076763,
+              "status": "prediction",
+              "utc": "2026-12-17T00:00:00Z",
+              "xp_arcsec": 0.091143,
+              "yp_arcsec": 0.346469
+            },
+            {
+              "dut1_s": -0.1091054,
+              "status": "prediction",
+              "utc": "2026-12-18T00:00:00Z",
+              "xp_arcsec": 0.090313,
+              "yp_arcsec": 0.347383
+            },
+            {
+              "dut1_s": -0.1105147,
+              "status": "prediction",
+              "utc": "2026-12-19T00:00:00Z",
+              "xp_arcsec": 0.089498,
+              "yp_arcsec": 0.348311
+            },
+            {
+              "dut1_s": -0.1118023,
+              "status": "prediction",
+              "utc": "2026-12-20T00:00:00Z",
+              "xp_arcsec": 0.088696,
+              "yp_arcsec": 0.34925
+            },
+            {
+              "dut1_s": -0.1128814,
+              "status": "prediction",
+              "utc": "2026-12-21T00:00:00Z",
+              "xp_arcsec": 0.08791,
+              "yp_arcsec": 0.350203
+            },
+            {
+              "dut1_s": -0.1137159,
+              "status": "prediction",
+              "utc": "2026-12-22T00:00:00Z",
+              "xp_arcsec": 0.087139,
+              "yp_arcsec": 0.351167
+            },
+            {
+              "dut1_s": -0.1143445,
+              "status": "prediction",
+              "utc": "2026-12-23T00:00:00Z",
+              "xp_arcsec": 0.086383,
+              "yp_arcsec": 0.352144
+            },
+            {
+              "dut1_s": -0.1148824,
+              "status": "prediction",
+              "utc": "2026-12-24T00:00:00Z",
+              "xp_arcsec": 0.085643,
+              "yp_arcsec": 0.353132
+            },
+            {
+              "dut1_s": -0.1154803,
+              "status": "prediction",
+              "utc": "2026-12-25T00:00:00Z",
+              "xp_arcsec": 0.084919,
+              "yp_arcsec": 0.354132
+            },
+            {
+              "dut1_s": -0.1162714,
+              "status": "prediction",
+              "utc": "2026-12-26T00:00:00Z",
+              "xp_arcsec": 0.084211,
+              "yp_arcsec": 0.355144
+            },
+            {
+              "dut1_s": -0.1173217,
+              "status": "prediction",
+              "utc": "2026-12-27T00:00:00Z",
+              "xp_arcsec": 0.08352,
+              "yp_arcsec": 0.356166
+            },
+            {
+              "dut1_s": -0.1186076,
+              "status": "prediction",
+              "utc": "2026-12-28T00:00:00Z",
+              "xp_arcsec": 0.082845,
+              "yp_arcsec": 0.3572
+            },
+            {
+              "dut1_s": -0.1200351,
+              "status": "prediction",
+              "utc": "2026-12-29T00:00:00Z",
+              "xp_arcsec": 0.082187,
+              "yp_arcsec": 0.358244
+            },
+            {
+              "dut1_s": -0.1214767,
+              "status": "prediction",
+              "utc": "2026-12-30T00:00:00Z",
+              "xp_arcsec": 0.081546,
+              "yp_arcsec": 0.359299
+            },
+            {
+              "dut1_s": -0.1228147,
+              "status": "prediction",
+              "utc": "2026-12-31T00:00:00Z",
+              "xp_arcsec": 0.080923,
+              "yp_arcsec": 0.360364
+            }
+          ],
+          "source": "IERS packaged finals2000A; sha256=03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855"
+        },
+        "erfa_version": "2.0.1.5",
+        "evaluations": 1541,
+        "forces": {
+          "ap": 4.0,
+          "atmosphere": "table",
+          "cd": 2.2,
+          "cr": 1.2,
+          "density_scale": 1.0,
+          "drag": false,
+          "drag_area_m2": 1.0,
+          "f107": 150.0,
+          "f107a": 150.0,
+          "j2": false,
+          "mass_kg": 100.0,
+          "srp": false,
+          "srp_area_m2": 1.0,
+          "third_body": false
+        },
+        "integrator": "scipy DOP853",
+        "leap_applicability": "1972-2026 UTC input",
+        "leap_table_sha256": "70d1364f49fe97099063cd8c92c33e8e91a48b6e74957b331322651944429b53",
+        "max_step_sec": 60.0,
+        "model_source_sha256": {
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+          "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+          "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+          "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+        },
+        "numpy_version": "2.2.6",
+        "position_atol_m": 0.0001,
+        "profile": "gcrs-reference/1",
+        "rotation": "ERFA c2t06a; IAU2006/2000A",
+        "rtol": 1e-11,
+        "sample_sec": 10.0,
+        "scipy_version": "1.15.2",
+        "scope": "Newtonian Earth satellite orbit; no burn/ADCS/mission executor qualification",
+        "time": "two-part UTC/TAI/TT/UT1; TAI SI-second arithmetic",
+        "velocity_atol_m_s": 1e-07,
+        "velocity_derivative": "five-point central derivative, h=0.5 SI seconds"
+      },
+      "not_qualified": [
+        "independent EOP/frames/ephemeris truth",
+        "ellipsoidal occultation/terrain/atmosphere",
+        "real illumination flux, short/grazing-event completeness",
+        "acquisition execution or sensor calibration"
+      ],
+      "passed": true,
+      "qualification_status": "needs_external_evidence",
+      "schema": "space-env.geometry-event-comparison/1",
+      "shared_inputs": [
+        "EOP/ERFA GCRS-ITRS matrices",
+        "initial orbit and constants",
+        "derived target latitude/longitude"
+      ]
+    },
+    "orbit_fixtures": {
+      "cases": [
+        {
+          "duration_sec": 86400.0,
+          "fixture_sha256": "4340232a3e23aa4d958c6205e552b7b787bc4e4b4542fc2acd62b261ca40169b",
+          "not_qualified": [
+            "independent frames/EOP/constants",
+            "combined drag/SRP perturbations",
+            "SRP/eclipse",
+            "atmosphere/weather",
+            "navigation covariance",
+            "flight or mission-wide accuracy"
+          ],
+          "passed": true,
+          "position_error_m": 0.005346958018363761,
+          "position_tolerance_m": 10.0,
+          "production_sources": {
+            "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+            "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+            "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+            "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+            "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+            "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+            "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+            "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+            "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+            "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+            "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+            "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+            "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+            "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+            "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+            "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+            "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+            "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+            "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+            "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+            "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+            "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+            "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+            "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+            "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+            "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+          },
+          "provenance": {
+            "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+            "independence": "external-force-formula/shared-inputs",
+            "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+            "library": "boinor",
+            "license": "MIT",
+            "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+            "shared_inputs": [
+              "ERFA frames",
+              "EOP",
+              "SI constants",
+              "initial state"
+            ],
+            "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+            "source_url": "https://github.com/boinor/boinor",
+            "version": "0.19.0"
+          },
+          "schema": "space-env.external-orbit-comparison/1",
+          "velocity_error_m_s": 5.898632953591653e-06,
+          "velocity_tolerance_m_s": 0.01
+        },
+        {
+          "duration_sec": 86400.0,
+          "fixture_sha256": "b5a1fb9b5df3d3bdc14dbcaeca240a44fc2bc6c4cf4c567c111bcef7185004a9",
+          "not_qualified": [
+            "independent frames/EOP/constants",
+            "combined drag/SRP perturbations",
+            "SRP/eclipse",
+            "atmosphere/weather",
+            "navigation covariance",
+            "flight or mission-wide accuracy"
+          ],
+          "passed": true,
+          "position_error_m": 0.006956438377732578,
+          "position_tolerance_m": 10.0,
+          "production_sources": {
+            "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+            "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+            "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+            "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+            "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+            "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+            "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+            "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+            "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+            "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+            "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+            "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+            "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+            "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+            "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+            "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+            "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+            "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+            "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+            "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+            "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+            "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+            "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+            "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+            "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+            "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+          },
+          "provenance": {
+            "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+            "independence": "external-force-formula/shared-inputs",
+            "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+            "library": "boinor",
+            "license": "MIT",
+            "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+            "shared_inputs": [
+              "ERFA frames",
+              "EOP",
+              "SI constants",
+              "initial state",
+              "ERFA Sun/Moon positions via shared _ephemerides provider"
+            ],
+            "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+            "source_url": "https://github.com/boinor/boinor",
+            "version": "0.19.0"
+          },
+          "schema": "space-env.external-orbit-comparison/1",
+          "velocity_error_m_s": 7.754570208504022e-06,
+          "velocity_tolerance_m_s": 0.01
+        },
+        {
+          "duration_sec": 259200.0,
+          "fixture_sha256": "98cb7b95def68fe36440b663947f5535ed7d9bae8de4be2b6d60c162c55cf76f",
+          "not_qualified": [
+            "independent frames/EOP/constants",
+            "combined drag/SRP perturbations",
+            "SRP/eclipse",
+            "atmosphere/weather",
+            "navigation covariance",
+            "flight or mission-wide accuracy"
+          ],
+          "passed": true,
+          "position_error_m": 0.01924906843470389,
+          "position_tolerance_m": 10.0,
+          "production_sources": {
+            "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+            "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+            "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+            "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+            "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+            "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+            "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+            "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+            "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+            "reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+            "reference/covariance.py": "5bd1a72d5fc645d059995dd43a6aa08df07d52c790587012c89a29160dcee752",
+            "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+            "reference/dynamic.py": "9f9d4b4714d05bd48b08bbee33e6de9cd5cbb1b1de5aeebd1a50fd677f41588b",
+            "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+            "reference/events.py": "2cd294612016936decc151af33a76fda025b78da9d77856187ffafc8f8dc87a8",
+            "reference/frames.py": "2f4f00d116609b18ebe999cbbe497343d4b77d0fddbb2ca3335065dcb91c2683",
+            "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+            "reference/operations.py": "41423a27237970eb42cf8119f0e2ef10b0309625cc6c63d16d29fdf9e8af6b78",
+            "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+            "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+            "reference/orbit.py": "23ee3ba387afaff4d7a414c64f1d666f41c3877b9cee59809299d0e0807bfd7a",
+            "reference/providers.py": "0d42b5837539880eec1c0c9d778cdec91d897e17c217bffb6319f217e3a09875",
+            "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+            "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+            "reference/thrust.py": "805e9f9ed4c03eb4b4ec1e5fa38d4451abcbcd2f44e278df24a5fb95a45e31bb",
+            "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947"
+          },
+          "provenance": {
+            "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+            "independence": "external-force-formula/shared-inputs",
+            "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+            "library": "boinor",
+            "license": "MIT",
+            "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+            "shared_inputs": [
+              "ERFA frames",
+              "EOP",
+              "SI constants",
+              "initial state"
+            ],
+            "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+            "source_url": "https://github.com/boinor/boinor",
+            "version": "0.19.0"
+          },
+          "schema": "space-env.external-orbit-comparison/1",
+          "velocity_error_m_s": 2.061123684084503e-05,
+          "velocity_tolerance_m_s": 0.01
+        }
+      ],
+      "passed": true,
+      "qualification_status": "needs_external_evidence",
+      "schema": "space-env.orbit-fixture-suite/1"
+    },
+    "passed": true,
+    "qualification_status": "needs_external_evidence",
+    "schema": "space-env.physics-qualification/1"
+  },
+  "sdk_demo": {
+    "ok": true,
+    "stale_forecast_rejected": true,
+    "time_sec": 2.0,
+    "opportunities": 1,
+    "eclipse_model": "core.spherical-conical-linear-penumbra/1",
+    "creates_products": false,
+    "qualification_status": "needs_external_evidence"
+  },
+  "installed_sdk_demo": {
+    "ok": true,
+    "stale_forecast_rejected": true,
+    "time_sec": 2.0,
+    "opportunities": 1,
+    "eclipse_model": "core.spherical-conical-linear-penumbra/1",
+    "creates_products": false,
+    "qualification_status": "needs_external_evidence"
+  },
+  "installed_cli_workflow": [
+    {
+      "command": "mission-validate",
+      "ok": true,
+      "revision": 0,
+      "time_sec": 0.0
+    },
+    {
+      "command": "mission-run",
+      "ok": true,
+      "revision": 2,
+      "time_sec": 1.0
+    },
+    {
+      "command": "mission-resume",
+      "ok": true,
+      "revision": 5,
+      "time_sec": 2.0
+    },
+    {
+      "command": "mission-replay",
+      "ok": true,
+      "revision": 5,
+      "time_sec": 2.0
+    }
+  ],
+  "wheel": {
+    "sha256": "8d0acc4fb7683597f759114373845d7ce452d32cbbc6b30c989bf8aad219ca12",
+    "python_modules_matching_source": 183,
+    "frozen_fixtures_matching_source": 3,
+    "isolated_python_I_smoke": true,
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "geometry_forecast": {
+      "verified": true,
+      "opportunities": 1,
+      "binding_checked": true,
+      "model": "WGS84-point/ideal-geocentric-nadir-cone/1"
+    },
+    "qualification": {
+      "passed": true,
+      "status": "needs_external_evidence",
+      "fixture_cases": 3,
+      "covariance_passed": true,
+      "geometry_passed": true
+    }
+  },
+  "remaining": [
+    "B03 request/acquisition/raw-data materialization/processing/delivery execution",
+    "Actual ADCS/slew/tracking, camera/swath/terrain/cloud models",
+    "Independent frames/EOP/ephemeris/atmosphere truth",
+    "No unconditional short/grazing-event completeness certificate",
+    "No solar flux model upgrade or exact-event resource integration",
+    "Calibrated combined-force/uncertainty/mission error budgets and constellation performance qualification"
+  ],
+  "next": "B03 engineering lifecycle; open B02 physical qualification remains a production gate",
+  "git_actions": {
+    "commit": false,
+    "push": false,
+    "publish": false
+  }
+}

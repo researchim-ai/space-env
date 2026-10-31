@@ -76,25 +76,179 @@ def main(argv: list[str] | None = None) -> None:
     ref_plan.add_argument("--report", required=True, help="Schedule verification and unmet-task report")
     ref_plan.add_argument("--decision-sec", type=float, default=5.)
     ref_plan.add_argument("--max-steps", type=int, default=10000)
+    ref_plan.add_argument("--select-products", action="store_true")
+    ref_replan = sub.add_parser("reference-replan", help="Plan remaining work from a verified portable run")
+    ref_replan.add_argument("record")
+    ref_replan.add_argument("output")
+    ref_replan.add_argument("--report", required=True)
+    ref_replan.add_argument("--decision-sec", type=float, default=5.)
+    ref_replan.add_argument("--max-steps", type=int, default=10000)
+    ref_resume = sub.add_parser("reference-resume", help="Append a continuation plan to a verified portable run")
+    ref_resume.add_argument("record")
+    ref_resume.add_argument("plan")
+    ref_resume.add_argument("output")
+    for command in ("reference-events", "reference-adapt"):
+        event_command = sub.add_parser(command, help="Inject causal events into a verified reference run")
+        event_command.add_argument("record")
+        event_command.add_argument("events", help="JSON object with an events list")
+        event_command.add_argument("output")
+        if command == "reference-adapt":
+            event_command.add_argument("--report", required=True)
+            event_command.add_argument("--decision-sec", type=float, default=5.)
+            event_command.add_argument("--max-steps", type=int, default=10000)
+    oracle = sub.add_parser("reference-optimal", help="Bounded exact nonpreemptive calendar optimum and matching-class regret")
+    oracle.add_argument("spec")
+    oracle.add_argument("output", help="Optimal executable plan")
+    oracle.add_argument("--report", required=True)
+    oracle.add_argument("--max-states", type=int, default=65536)
+    calendar = sub.add_parser("reference-benchmark", help="Run a self-contained bounded calendar benchmark")
+    calendar.add_argument("suite")
+    calendar.add_argument("output")
+    calendar.add_argument("--max-states", type=int, default=65536)
+    calendar.add_argument("--total-states", type=int, default=262144)
+    calendar_verify = sub.add_parser("reference-verify-benchmark", help="Recompute and verify a portable calendar benchmark")
+    calendar_verify.add_argument("record")
+    qualification = sub.add_parser("reference-qualify-orbits", help="compare frozen external J2 arcs and finite-thrust equations")
+    qualification.add_argument("output")
+    for name in ("mission-validate", "mission-run", "mission-resume", "mission-replay", "mission-schema"):
+        unified = sub.add_parser(name, help="Scenario v3 unified runtime workflow")
+        if name in {"mission-validate", "mission-run"}:
+            unified.add_argument("scenario")
+        if name in {"mission-resume", "mission-replay"}:
+            unified.add_argument("record")
+        if name in {"mission-run", "mission-resume"}:
+            unified.add_argument("plan")
+        if name in {"mission-schema", "mission-run", "mission-resume"}:
+            unified.add_argument("output")
     args = parser.parse_args(argv)
-    if args.command == "reference-plan":
+    if args.command == "reference-qualify-orbits":
+        from space_env.validation.covariance import covariance_prediction_report
+        from space_env.validation.geometry_events import geometry_event_report
+        from space_env.validation.maneuvers import finite_burn_report
+        from space_env.validation.orbit_fixtures import verify_packaged_orbit_fixtures
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+
+        fixtures = verify_packaged_orbit_fixtures()
+        thrust = finite_burn_report()
+        covariance = covariance_prediction_report()
+        geometry = geometry_event_report()
+        result = {"schema": "space-env.physics-qualification/1",
+                  "passed": fixtures["passed"] and thrust["passed"] and covariance["passed"] and geometry["passed"],
+                  "qualification_status": "needs_external_evidence",
+                  "orbit_fixtures": fixtures, "finite_burn": thrust, "covariance_prediction": covariance, "geometry_events": geometry}
+        atomic_write(args.output, canonical_json(result))
+        print(json.dumps(result, ensure_ascii=False))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command in {"mission-validate", "mission-run", "mission-resume", "mission-replay", "mission-schema"}:
+        from space_env.runtime.cli import run_command
+        from space_env.runtime.mission import RuntimeContractError
+
+        try:
+            result = run_command(args)
+        except RuntimeContractError as exc:
+            print(json.dumps(exc.as_dict(), ensure_ascii=False))
+            raise SystemExit(1) from exc
+        print(json.dumps(result, ensure_ascii=False))
+        return
+    if args.command in {"reference-benchmark", "reference-verify-benchmark"}:
         from pathlib import Path
 
-        from space_env.reference.scheduling import plan_downlinks
+        from space_env.reference.benchmark import (
+            evaluate_calendar_suite,
+            save_calendar_benchmark,
+            verify_calendar_benchmark,
+        )
+
+        if args.command == "reference-verify-benchmark":
+            result = verify_calendar_benchmark(args.record)
+            print(json.dumps(result))
+            if not result["ok"]:
+                raise SystemExit(1)
+            return
+        if Path(args.suite).resolve() == Path(args.output).resolve():
+            parser.error("suite and output paths must differ")
+        suite = json.loads(Path(args.suite).read_text())
+        if set(suite) != {"cases"}:
+            parser.error("benchmark suite requires exactly cases")
+        result = evaluate_calendar_suite(suite["cases"], max_states=args.max_states, total_states=args.total_states)
+        save_calendar_benchmark(args.output, result)
+        print(json.dumps({"sha256": result["sha256"], "summary": result["summary"]}))
+        return
+    if args.command == "reference-optimal":
+        from pathlib import Path
+
+        from space_env.reference.optimal import solve_small_downlinks
         from space_env.simulation.snapshot import atomic_write, canonical_json
 
         paths = [Path(p).resolve() for p in (args.spec, args.output, args.report)]
         if len(set(paths)) != 3:
+            parser.error("oracle spec, plan and report paths must differ")
+        result = solve_small_downlinks(json.loads(paths[0].read_text()), max_states=args.max_states)
+        atomic_write(paths[2], canonical_json(result))
+        atomic_write(paths[1], canonical_json(result["plan"]))
+        print(json.dumps({"scope": result["scope"], "on_time_bits": result["report"]["on_time_bits"],
+                          "regret_bits": result["regret_bits"], "states": result["states_explored"]}))
+        return
+    if args.command in {"reference-events", "reference-adapt"}:
+        from pathlib import Path
+
+        from space_env.data_generators.reference_operations import (
+            ReferenceOperationsRecorder,
+        )
+        from space_env.reference.adaptation import adapt_reference_run
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+
+        paths = [Path(p).resolve() for p in (args.record, args.events, args.output)]
+        if args.command == "reference-adapt":
+            paths.append(Path(args.report).resolve())
+        if len(set(paths)) != len(paths):
+            parser.error("event input and output paths must differ")
+        payload = json.loads(paths[1].read_text())
+        if set(payload) != {"events"}:
+            parser.error("events file requires exactly an events list")
+        if args.command == "reference-adapt":
+            recorder, schedule = adapt_reference_run(paths[0], payload["events"],
+                                                     decision_sec=args.decision_sec, max_steps=args.max_steps)
+            atomic_write(paths[3], canonical_json(schedule))
+        else:
+            recorder = ReferenceOperationsRecorder.from_record(paths[0])
+            recorder.inject(payload["events"])
+        record = recorder.save(paths[2])
+        print(json.dumps({"sha256": record["sha256"], "report": record["final"]}))
+        return
+    if args.command in {"reference-plan", "reference-replan"}:
+        from pathlib import Path
+
+        from space_env.data_generators.reference_operations import (
+            ReferenceOperationsRecorder,
+        )
+        from space_env.reference.scheduling import (
+            plan_downlinks,
+            plan_remaining_downlinks,
+        )
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+
+        paths = [Path(p).resolve() for p in (args.spec if args.command == "reference-plan" else args.record,
+                                            args.output, args.report)]
+        if len(set(paths)) != 3:
             parser.error("spec, plan and report paths must differ")
-        result = plan_downlinks(json.loads(paths[0].read_text()),
-                                decision_sec=args.decision_sec, max_steps=args.max_steps)
+        if args.command == "reference-plan":
+            result = plan_downlinks(json.loads(paths[0].read_text()), select_products=args.select_products,
+                                    decision_sec=args.decision_sec, max_steps=args.max_steps)
+        else:
+            recorder = ReferenceOperationsRecorder.from_record(paths[0])
+            result = plan_remaining_downlinks(recorder.mission, decision_sec=args.decision_sec,
+                                              max_steps=args.max_steps)
         atomic_write(paths[2], canonical_json(result))
         atomic_write(paths[1], canonical_json(result["plan"]))
         print(json.dumps({"verified": result["verified"], "steps": len(result["plan"]["steps"]),
                           "on_time_bits": result["report"]["on_time_bits"],
                           "unfulfilled": result["unfulfilled"]}))
         return
-    if args.command in {"reference-run", "reference-replay"}:
+    if args.command in {"reference-run", "reference-replay", "reference-resume"}:
         from pathlib import Path
 
         from space_env.data_generators.reference_operations import (
@@ -108,15 +262,28 @@ def main(argv: list[str] | None = None) -> None:
             if not result["ok"]:
                 raise SystemExit(1)
             return
-        spec = json.loads(Path(args.spec).read_text())
+        source_path = args.record if args.command == "reference-resume" else args.spec
+        if len({Path(p).resolve() for p in (source_path, args.plan, args.output)}) != 3:
+            parser.error("source, plan and output paths must differ")
         plan = json.loads(Path(args.plan).read_text())
-        if set(plan) != {"steps"} or not isinstance(plan["steps"], list):
+        if ("steps" not in plan or set(plan) - {"steps", "initial_state_sha256", "start_sec"}
+                or not isinstance(plan["steps"], list)):
             parser.error("reference plan requires a steps list")
-        recorder = ReferenceOperationsRecorder(spec, lineage=args.lineage)
+        if args.command == "reference-resume":
+            recorder = ReferenceOperationsRecorder.from_record(args.record)
+        else:
+            recorder = ReferenceOperationsRecorder(json.loads(Path(args.spec).read_text()), lineage=args.lineage)
+        from space_env.reference.scheduling import mission_fingerprint
+
+        if (("initial_state_sha256" in plan or "start_sec" in plan)
+                and (plan.get("initial_state_sha256") != mission_fingerprint(recorder.mission)
+                     or plan.get("start_sec") != recorder.mission.clock)):
+            parser.error("continuation plan does not match the current mission state")
         for step in plan["steps"]:
-            if set(step) != {"dt_sec", "actions"}:
-                parser.error("each reference step requires dt_sec and actions")
-            recorder.step(step["dt_sec"], step["actions"])
+            if not {"dt_sec", "actions"} <= set(step) or set(step) - {"dt_sec", "actions", "products", "processing", "processing_jobs"}:
+                parser.error("each reference step requires dt_sec, actions and optional products/processing")
+            recorder.step(step["dt_sec"], step["actions"], products=step.get("products"), processing=step.get("processing"),
+                          processing_jobs=step.get("processing_jobs"))
         record = recorder.save(args.output)
         print(json.dumps({"sha256": record["sha256"], "report": record["final"]}))
         return

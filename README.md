@@ -4,7 +4,9 @@
 
 Среда, в которой агент учится вести один аппарат на низкой орбите: держать батарею, снимать точки на Земле, говорить со станцией и решать, нужен ли манёвр при сближении. Из того же шага симуляции собираются тексты для языковой модели и траектории для обучения с подкреплением.
 
-Это инженерная модель для обучения, не цифровой двойник конкретной миссии. Граница физики и очередь работ — в [плане развития](docs/DEVELOPMENT_PLAN_V093.md) и [статусе пакета](docs/IMPLEMENTATION_STATUS.md).
+Это инженерная модель для обучения, не цифровой двойник конкретной миссии. Крупные пакеты развития и критерии промышленной приемки — в [основном плане](docs/INDUSTRIAL_AI_SIMULATOR_PLAN.md); реализованные возможности и проверки — в [статусе пакета](docs/IMPLEMENTATION_STATUS.md).
+
+В coupled spacecraft profile доступна [тяга в системе корпуса](docs/validation/BODY_THRUST_CONTRACT.md): chemical/electric engine, конечный gimbal, подготовка, расход топлива и связанные энергия/тепло. Пример: `python examples/actuation/demo.py /tmp/body-thrust chemical`. Моменты и маховики — следующий этап.
 
 Короткая миссия группировки запускается так:
 
@@ -15,6 +17,52 @@ python -m space_env.cli benchmark mission_v1_smoke.yaml
 ```
 
 `benchmark` проверяет обычную сдачу, закрытую станцию, ранний срок и все 12 заявок короткой миссии. 72 часа в этот набор не входят.
+
+Доступен связанный профиль борта `reference-spacecraft-bus/1`: конечные развороты,
+settling/pointing, body-fixed панели, батарейные потери, нагрев и safe/fault/recovery.
+[Контракт и ограничения](docs/validation/SPACECRAFT_PROFILES.md),
+[пример миссии с checkpoint посреди разворота](examples/spacecraft_bus/demo.py).
+Площадные заявки поддерживают rectangular footprints, WGS84 polygon/AOI
+coverage, union без двойного зачета и проверку площади после доставки.
+[Контракт и optional coverage extra](docs/validation/AREA_COVERAGE_CONTRACT.md),
+[сквозной пример](examples/area_coverage/demo.py).
+Добавлены явные optical/SAR модели: пространственные маски облаков и unknown,
+освещённость/GSD, SAR incidence/side/resolution и ограничения мощности/duty.
+[Контракт и пределы точности](docs/validation/PAYLOAD_QUALITY_CONTRACT.md),
+[два примера с qualified delivery](examples/payload_quality/demo.py).
+Revisit/stereo-заявки используют времена съёмки, разные acquisitions и общую
+пригодную площадь. Группировка может доставлять явно названные части ground bundle:
+[контракт](docs/validation/OBSERVATION_REQUIREMENTS.md),
+[два сквозных примера](examples/observations/demo.py).
+Опциональный `resource-lanes/1` допускает одновременные CPU, съёмку и downlink
+с общими ограничениями мощности, памяти и bandwidth:
+[контракт](docs/validation/RESOURCE_LANES_CONTRACT.md),
+[миссия без preloaded data](examples/resource_lanes/demo.py). Serial режим сохранён.
+Это проверенные synthetic surrogates; научная radiometry/SAR focusing,
+continuous swath и динамика исполнительных органов остаются в плане B04.
+
+## Общий runtime миссий
+
+Scenario v3 объединяет явные legacy/reference adapters, команды с revision и
+idempotency, раздельные agent/truth views и проверяемые checkpoint/resume/replay.
+[Контракт и команды CLI](docs/architecture/RUNTIME_V1.md),
+[исполняемый пример](examples/unified_runtime/demo.py).
+Доступен также `reference-dynamic-downlink/1`: импульсные и конечные включения,
+масса/топливо, пересчет окон связи и восстановление посреди включения.
+[Динамический пример](examples/unified_runtime/dynamic_demo.py),
+[матрица точности и незакрытая квалификация B02](docs/validation/PHYSICS_QUALIFICATION_MATRIX.md).
+Фиксированный reference и legacy остаются отдельными явными профилями.
+Опционально доступны Cartesian STM/covariance prediction, acceleration process noise
+и uncertainty импульса: [контракт](docs/validation/NAVIGATION_COVARIANCE_CONTRACT.md),
+[пример](examples/unified_runtime/navigation_demo.py). Это прогноз неопределенности,
+а не навигационный фильтр или автоматически стохастическое исполнение команд.
+Добавлены readonly окна точечной съёмки и затмений с ограничениями сенсора,
+а также привязка команд к актуальному прогнозу: [контракт](docs/validation/GEOMETRY_EVENTS_CONTRACT.md),
+[пример](examples/unified_runtime/geometry_demo.py). Фактическая съёмка и создание
+продуктов теперь поддержаны отдельным `reference-lifecycle/1`: request → acquisition
+→ raw → transform DAG → delivery. [Контракт](docs/validation/PRODUCT_LIFECYCLE_CONTRACT.md),
+[пример без preloaded data](examples/end_to_end_eo/demo.py). Профиль моделирует ресурсы,
+синтетические метаданные и JSON geometry features; это не генератор реальных изображений.
 
 ## Переносимый эксперимент
 
@@ -48,6 +96,49 @@ third-body формулы с Boinor, а J2 дуги — с LSODA при объя
 Generate an executable, simulator-verified multi-satellite downlink baseline with
 `space-env reference-plan spec.json plan.json --report schedule.json`.
 See [scheduling contract and limitations](docs/validation/REFERENCE_SCHEDULING_V1.md).
+Use `reference-replan` and `reference-resume` to continue a verified partial run;
+[product selection and rolling planning](docs/validation/REFERENCE_REPLANNING_V2.md)
+also cover the optional expanded Gym action space.
+
+[Dynamic reference operations](docs/validation/REFERENCE_DYNAMIC_OPERATIONS_V3.md)
+add audited data arrivals, priority changes and station faults/recovery, one-command
+`reference-adapt`, and fixed-capacity RL episodes with events during execution.
+Run `python examples/reference_operations/dynamic_demo.py /tmp/space-env-dynamic-demo`.
+
+[Service lifecycle v4](docs/validation/REFERENCE_SERVICE_LIFECYCLE_V4.md) adds
+cancellation/discard accounting, deadline changes, degraded transmitter/station
+throughput and matching planner/RL/replay behavior. Runnable scenario:
+`python examples/reference_operations/lifecycle_demo.py /tmp/space-env-lifecycle`.
+
+[Ground booking v5](docs/validation/REFERENCE_GROUND_BOOKING_V5.md) adds conflict-checked
+terminal reservations, single-radio booking limits, exclusive service policies,
+cancellation, service-window diagnostics and reservation utilization.
+Run `python examples/reference_operations/booking_demo.py /tmp/space-env-bookings`.
+
+[Transmitter health v6](docs/validation/REFERENCE_TRANSMITTER_HEALTH_V6.md) adds
+opt-in one-node thermal trip/cooling and cumulative TX quotas, resource-aware
+station handover, heat accounting and matching Gym/replay telemetry.
+Run `python examples/reference_operations/thermal_demo.py /tmp/space-env-thermal`.
+
+[Onboard processing v7](docs/validation/REFERENCE_ONBOARD_PROCESSING_V7.md) adds
+in-place processing queues, CPU energy/scratch memory, pause/preemption, raw-data
+downlink gating and matching planner/Gym/replay controls.
+Run `python examples/reference_operations/processing_demo.py /tmp/space-env-processing`.
+
+[Processing dependencies v8](docs/validation/REFERENCE_PROCESSING_DEPENDENCIES_V8.md)
+adds validated same-actor prerequisites, cycle rejection, retained input inventory,
+dynamic graph admission and graph telemetry for agents.
+Run `python examples/reference_operations/dependency_demo.py /tmp/space-env-dependencies`.
+
+[Calendar qualification v9](docs/validation/REFERENCE_CALENDAR_QUALIFICATION_V9.md)
+adds a bounded exact subset-DP oracle, fair matching-class regret and portable
+benchmark recomputation with declared train/test lineage checks.
+Run `python examples/reference_operations/optimal_demo.py /tmp/space-env-calendar`.
+
+[Explicit CPU dispatch v10](docs/validation/REFERENCE_CPU_DISPATCH_V10.md) adds
+per-step job selection, admission diagnostics and optional Dict radio/CPU Gym
+actions, with CLI recording and replay.
+Run `python examples/reference_operations/cpu_selection_demo.py /tmp/space-env-cpu-choice`.
 Пример с двумя аппаратами, общим терминалом и outage:
 `python examples/reference_operations/demo.py /tmp/reference-downlink`.
 

@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 reference = ["scipy>=1.10", "pyerfa>=2.0"]
+coverage = ["shapely>=2.0", "pyproj>=3.6"]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -45,6 +46,9 @@ all-industry = [
 
 [project.entry-points."gymnasium.envs"]
 space_env = "space_env.envs"
+
+[project.scripts]
+space-env = "space_env.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/space_env"]

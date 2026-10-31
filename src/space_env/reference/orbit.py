@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -20,6 +20,7 @@ from space_env.core.constants import (
     SOLAR_PRESSURE_1AU_N_M2,
 )
 from space_env.reference.frames import FrameContext, _vector
+from space_env.reference.thrust import FiniteThrust
 from space_env.reference.time import Epoch, erfa_backend
 
 
@@ -138,6 +139,7 @@ def propagate(
     initial: ReferenceState, duration_sec: float, context: FrameContext, *,
     model: ForceModel | None = None, sample_sec: float = 60., rtol: float = 1e-11,
     position_atol_m: float = 1e-4, velocity_atol_m_s: float = 1e-7, max_step_sec: float = 60.,
+    thrust: FiniteThrust | None = None,
 ) -> dict:
     """DOP853; numerical tolerances are not physical accuracy guarantees."""
     try:
@@ -152,6 +154,10 @@ def propagate(
         raise ValueError("reference profile supports arcs <=72h and 1e-13 <= rtol <= 1e-5")
     if math.ceil(duration_sec/sample_sec) > 100_000:
         raise ValueError("reference output exceeds 100000 samples")
+    if thrust is not None and (not isinstance(thrust, FiniteThrust)
+                               or model.mass_kg <= thrust.dry_mass_kg
+                               or duration_sec > thrust.fuel_seconds(model.mass_kg)+1e-9):
+        raise ValueError("finite thrust arc exceeds declared propellant budget")
     context.matrix(initial.epoch)
     context.matrix(initial.epoch.shifted(duration_sec))
     if model.drag:
@@ -167,7 +173,11 @@ def propagate(
                 raise ValueError("Earth intersection is outside this orbit profile")
             a = -MU_EARTH * state[:3] / radius**3
         else:
-            a = acceleration(state, initial.epoch.shifted(float(clock)), context, model)
+            current_model = replace(model, mass_kg=thrust.mass(model.mass_kg, clock)) if thrust else model
+            a = acceleration(state, initial.epoch.shifted(float(clock)), context, current_model)
+        if thrust is not None:
+            mass = thrust.mass(model.mass_kg, clock)
+            a += thrust.thrust_n / mass * np.asarray(thrust.direction_gcrs)
         return np.concatenate((state[3:], a))
 
     solution = solve_ivp(derivative, (0., duration_sec), np.concatenate((initial.r_m, initial.v_m_s)),
@@ -181,7 +191,7 @@ def propagate(
     sources = [*sorted((root / "reference").glob("*.py")),
                *[root / "core" / name for name in ("constants.py", "frames.py", "gravity.py", "environment.py")]]
     hashes = {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
-    return {"schema": "space-env.reference-orbit/1", "frame": "GCRS", "epoch_utc": initial.epoch.iso(),
+    result = {"schema": "space-env.reference-orbit/1", "frame": "GCRS", "epoch_utc": initial.epoch.iso(),
             "epoch_tai_jd": [initial.epoch.tai1, initial.epoch.tai2],
             "times_sec": solution.t.tolist(), "states_si": solution.y.T.tolist(),
             "manifest": {**context.manifest(), "forces": asdict(model),
@@ -191,3 +201,10 @@ def propagate(
                          "position_atol_m": position_atol_m, "velocity_atol_m_s": velocity_atol_m_s,
                          "sample_sec": sample_sec, "max_step_sec": max_step_sec, "evaluations": solution.nfev,
                          "scope": "Newtonian Earth satellite orbit; no burn/ADCS/mission executor qualification"}}
+
+    if thrust is not None:
+        result["masses_kg"] = [thrust.mass(model.mass_kg, float(t)) for t in solution.t]
+        result["manifest"]["thrust"] = {**asdict(thrust), "frame": "GCRS",
+            "attitude": "perfect inertial pointing; no ADCS dynamics",
+            "mass_model": "constant F/(Isp*g0), exact analytic mass; core.propulsion helper"}
+    return result

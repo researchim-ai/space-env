@@ -24,8 +24,7 @@ from space_env.rl.trajectories import rollout_episode
 from space_env.simulation.snapshot import digest
 
 
-def main(directory: Path):
-    directory.mkdir(parents=True, exist_ok=True)
+def build_spec():
     context, epoch = FrameContext(EOPSeries.packaged()), Epoch.utc("2026-07-18T12:00:00Z")
     records = {}
     for name, angle in (("a", 0), ("b", .005)):
@@ -40,6 +39,12 @@ def main(directory: Path):
             "products": [{"id": "scene-a", "actor": "a", "size_bits": 2e6, "deadline_sec": 10},
                          {"id": "scene-b", "actor": "b", "size_bits": 3e6, "deadline_sec": 10}],
             "outages": [{"station": "Ground", "start_sec": 2, "end_sec": 4}]}
+    return spec
+
+
+def main(directory: Path):
+    directory.mkdir(parents=True, exist_ok=True)
+    spec = build_spec()
     recorder = ReferenceOperationsRecorder(spec, lineage="two-reference-downlink-demo")
     report = recorder.step(10, {"a": "Ground", "b": "Ground"})
     path = directory / "run.json"

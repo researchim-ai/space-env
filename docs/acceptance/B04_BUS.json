@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-31",
+  "package": "B04-A",
+  "status": "verified",
+  "parent_B04_status": "in_progress",
+  "scope": "Synthetic coupled-bus engineering contract; not flight calibrated or full B04 qualification",
+  "backend": "reference-spacecraft",
+  "profile": "reference-spacecraft-bus/1",
+  "objective": "fulfilled_requests",
+  "trajectory": "propagated-gcrs-coast",
+  "tests": {
+    "new_bus_cases": 29,
+    "reference": 417,
+    "fast": 110,
+    "legacy_attitude_operations_pass_record": 19,
+    "collected": 847,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed"
+  },
+  "commands": [
+    "python -m pytest -q tests/test_spacecraft_bus.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest -q tests/test_slew_profile.py tests/test_operations.py tests/test_pass_record.py",
+    "python -m pytest --collect-only -q",
+    "python examples/spacecraft_bus/demo.py OUTPUT",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/spacecraft_bus/demo.py OUTPUT",
+    "installed console mission-validate/run/resume/replay"
+  ],
+  "coverage": [
+    "Finite slew and paid settling; no zero-time or zero-authority teleport",
+    "Prepointing and rate-limited tracking; sampled pointing, Sun keep-out and radio boresight",
+    "Body-fixed PV with conical eclipse and explicit two-port conversion efficiency",
+    "Independent constant-load battery and analytic RC equations",
+    "Battery, PV, discharge and thermal balance residuals",
+    "Fault-local CPU pause, acquisition abort and radio gating",
+    "Latched safe mode, threshold recovery without resource healing, monotonic degradation",
+    "Distinct synthetic presets under identical load and rotation",
+    "Partial slew/settling and pipeline checkpoint/replay",
+    "Atomic rollback preserving shared bus/resource graph aliases",
+    "Actor-local bus state, invalid configuration rejection and denied uncoupled maneuvers"
+  ],
+  "sdk_demo": {
+    "ok": true,
+    "metrics": {
+      "fulfilled_requests": 1,
+      "total_requests": 2
+    },
+    "failed_request_reason": "geometry",
+    "inventory_ledger": {
+      "a": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 1000000,
+        "transformed_out": 500000,
+        "transformed_in": 1000000.0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 500000.0,
+        "remaining": 0.0,
+        "balance_error_bits": 0.0,
+        "acked": 500000
+      },
+      "b": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 0,
+        "transformed_out": 0,
+        "transformed_in": 0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 0,
+        "remaining": 0,
+        "balance_error_bits": 0,
+        "acked": 0
+      }
+    },
+    "bus_ledgers": {
+      "a": {
+        "battery_balance_error_wh": 0.0,
+        "thermal_stored_j": 78.83587603854494,
+        "thermal_balance_error_j": -1.4210854715202004e-14,
+        "pv_balance_error_wh": 0.0,
+        "discharge_balance_error_wh": 6.938893903907228e-18
+      },
+      "b": {
+        "battery_balance_error_wh": -1.7763568394002505e-15,
+        "thermal_stored_j": 32.23979447474221,
+        "thermal_balance_error_j": 0.0,
+        "pv_balance_error_wh": 0.0,
+        "discharge_balance_error_wh": 6.938893903907228e-18
+      }
+    },
+    "acknowledgements": [
+      {
+        "product_id": "final-a",
+        "actor": "a",
+        "destination_id": "Ground",
+        "bits": 500000,
+        "acknowledged_sec": 7.5,
+        "fulfilled_request_ids": [
+          "customer-a"
+        ]
+      }
+    ]
+  },
+  "installed_smoke": {
+    "verified": true,
+    "metrics": {
+      "fulfilled_requests": 1,
+      "total_requests": 1
+    },
+    "ledgers": {
+      "a": {
+        "battery_balance_error_wh": 1.1102230246251565e-16,
+        "thermal_stored_j": -943.8692306100165,
+        "thermal_balance_error_j": 0.0,
+        "pv_balance_error_wh": 0.0,
+        "discharge_balance_error_wh": 0.0
+      }
+    },
+    "checkpoint_replay": true
+  },
+  "wheel": {
+    "version": "0.134.0",
+    "sha256": "a3566ba19bd971218322f12d88b583eca459b570ddcce3c3a86637616ba835c9",
+    "python_modules_byte_matched": 185,
+    "frozen_orbit_fixtures_byte_matched": 3,
+    "isolated_python_I": true,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "cli_validate_run_resume_replay": true
+  },
+  "not_implemented": [
+    "Polygon AOI footprints and area coverage/revisit/stereo",
+    "Optical/cloud/SAR quality and rendered scientific imagery",
+    "General parallel CPU/payload/radio scheduling and memory bandwidth",
+    "Rigid-body torque/wheel momentum and thrust/attitude/health coupling",
+    "Multinode environmental thermal radiation, calibration and error budgets",
+    "Automatic flight-qualified FDIR and hardware interfaces",
+    "Scalability/SLA or constant-time checkpoint recovery"
+  ],
+  "numerical_limits": [
+    "Sampled pointing/protection; within-substep violations or thermal/SOC threshold overshoot are possible",
+    "PV held per integration interval; timestep influences error",
+    "One RC electronics node, fixed ambient, two-port battery rather than net electrical circuit",
+    "Geometry forecast does not guarantee current bus/resource feasibility"
+  ],
+  "next": "B04-B: polygon footprint/AOI, coverage and explicit payload applicability",
+  "physical_qualification": "needs_external_evidence",
+  "commit_push_deploy_performed": false
+}

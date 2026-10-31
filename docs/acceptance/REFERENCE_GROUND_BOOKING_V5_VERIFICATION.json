@@ -1,0 +1,131 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-ground-booking/5",
+  "completed_tasks": 12,
+  "tests": {
+    "operations": 97,
+    "reference": 161,
+    "fast": 110,
+    "collected": 591,
+    "new_cases": 21,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "on_time_bits": 5000000.0,
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "booking_utilization": [
+      {
+        "booking_id": "b-pass",
+        "elapsed_reserved_sec": 6.0,
+        "transmitting_sec": 3.0,
+        "idle_reserved_sec": 3.0,
+        "utilization": 0.5
+      },
+      {
+        "booking_id": "a-pass",
+        "elapsed_reserved_sec": 1.0,
+        "transmitting_sec": 1.0,
+        "idle_reserved_sec": 0.0,
+        "utilization": 1.0
+      }
+    ],
+    "rl_steps": 2
+  },
+  "wheel": {
+    "sha256": "49eea1c6b54d3f1bc8e0a94ed2aa5756b1c8b4c749595f72e26f84a41ed48017",
+    "modules": 164,
+    "source_mismatches": []
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "lifecycle_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "booking_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "90c0c71a825dc727233b1fa9ca23feba95c388a1a687c83ea373c20c2c730803"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "c416b80f84226256958020f88aab7bc6a6d4ef30102937de6123ae18ef246ad7",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/reference/booking.py": "630a58911118081396114f9c061a4d2a018ed1f145d23a0cb760d5ab80d548c5",
+    "src/space_env/reference/operations.py": "9b9b533fa835e50c2039df77feff565c10a0f1c58c46a48d3404a1da2feec214",
+    "src/space_env/reference/events.py": "0a73549bb573ea7407e4210aeb8ea8c2df1571b218059a67edef3206693e3476",
+    "src/space_env/reference/scheduling.py": "0f15a93ef0550ff06de0960025ed7325d49d0ca40e696c33d33929a671eeb551",
+    "src/space_env/reference/event_env.py": "f1b905ab169ff0f941097c39e324693bef41372c0f58048d33f2d496c13ea4d4",
+    "src/space_env/reference/operations_env.py": "48c2b257e0453416b1bdd351934e626219d3bfc8df3f8076d5c91ac1d745cf58",
+    "tests/test_reference_operations.py": "2deece89328be5ffe0659d0fe2b223095c89fbdb263f9c07cd0fee0dd2176dc2",
+    "scripts/verify_installed.py": "00ef42edab72ed8ae9f0c4311b06c4939868dd902f9a12fd708559ebff43df4b",
+    "examples/reference_operations/booking_demo.py": "9a2bccc5f09c9009684defdb9e01493fa56698150a153f6d6da234fdada5976c"
+  },
+  "unqualified": [
+    "external station service integration",
+    "antenna setup and slew",
+    "large fleet endurance",
+    "independent planner optimum"
+  ]
+}

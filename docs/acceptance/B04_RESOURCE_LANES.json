@@ -1,0 +1,340 @@
+{
+  "date": "2026-10-31",
+  "package": "B04-C",
+  "status": "verified",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "profile": "reference-spacecraft-bus/1",
+  "execution": "resource-lanes/1",
+  "scope": "Deterministic one managed CPU/payload/radio lane per actor, common resource admission and sampled execution; not multicore/hardware calibration, optimal scheduling or mission-scale SLA",
+  "tests": {
+    "new_resource_lane_cases": 34,
+    "reference": 559,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 989,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/resource_lanes/demo.py OUTPUT wide",
+    "python examples/resource_lanes/demo.py OUTPUT constrained",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/resource_lanes/demo.py OUTPUT wide/constrained",
+    "installed console mission-validate/run/resume/replay for both modes"
+  ],
+  "coverage": [
+    "Atomic runtime lane/attitude ownership and disabled-lane rejection",
+    "Global managed request/job ownership across actors and separate submissions",
+    "Serial profile preserved; native in-place processing explicitly unsupported only in opt-in parallel mode",
+    "CPU/payload/radio progress during the same wall-clock interval",
+    "Shared peak/SOC admission and native station terminal/outage/booking selection",
+    "Normalized CPU work under memory bandwidth, radio rate throttle, switching power without work I/O",
+    "Peak memory reservations across capture/workspace/output; no overcommit before input consumption",
+    "Single base/ADCS/PV/battery accounting, individual managed loads, preserved CPU energy after image failure",
+    "SAR pulse/DC/RF heat/session history coherent with concurrent CPU/radio",
+    "Fault/cancel/resume/preemption, persistent paid work and no invented continuous raw",
+    "Per-actor copied grants with no peer command leak",
+    "Unexpected post-native exception rolls back inventory/energy/bus/jobs/scheduler together",
+    "Mid-three-unfinished-lanes checkpoint and installed CLI replay"
+  ],
+  "engineering_checks": {
+    "wide_useful_energy_formula": "base 2W*2s + payload 10W*2s + CPU 5W*2s + radio 8W*1s + actual ADCS, divided by discharge efficiency for battery withdrawal",
+    "parallel_stage_memory_io_bits": 3500000,
+    "whole_demo_memory_io_bits": 7000000,
+    "normalized_cpu_work_sec": 2.0,
+    "discharge_efficiency_test": 0.9,
+    "energy_absolute_tolerance_wh": 1e-12,
+    "thermal_ledger_absolute_tolerance_j": 1e-08,
+    "bandwidth_interval_bits_tolerance": 1e-06
+  },
+  "installed_sdk_demos": {
+    "wide": {
+      "ok": true,
+      "mode": "wide",
+      "metrics": {
+        "fulfilled_requests": 3,
+        "total_requests": 3
+      },
+      "time_sec": 8.0,
+      "overlap_intervals": 3,
+      "memory_io_bits": 7000000.0,
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 3000000,
+          "transformed_out": 500000,
+          "transformed_in": 1000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 2500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 2500000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 0,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 0,
+          "remaining": 0,
+          "balance_error_bits": 0,
+          "acked": 0
+        }
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 8.881784197001252e-16,
+          "thermal_stored_j": 154.32980580468438,
+          "thermal_balance_error_j": -2.842170943040401e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-18
+        },
+        "b": {
+          "battery_balance_error_wh": -1.3322676295501878e-15,
+          "thermal_stored_j": 32.23979447475358,
+          "thermal_balance_error_j": 0.0,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-18
+        }
+      },
+      "cpu_work": {
+        "features-a": {
+          "status": "completed",
+          "remaining_sec": 0.0,
+          "work_sec": 1.5,
+          "switching_sec": 0.5,
+          "setup_remaining_sec": 0.0,
+          "reserved": false,
+          "actor": "a",
+          "reason": null
+        }
+      },
+      "qualified_requests": {
+        "archive-request": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 48,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        },
+        "customer-a": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 48,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        },
+        "new-request": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 60,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        }
+      },
+      "scope": "managed CPU/payload/radio, sampled resources, no measured hardware or SLA claim"
+    },
+    "constrained": {
+      "ok": true,
+      "mode": "constrained",
+      "metrics": {
+        "fulfilled_requests": 3,
+        "total_requests": 3
+      },
+      "time_sec": 10.0,
+      "overlap_intervals": 2,
+      "memory_io_bits": 7000000.0,
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 3000000,
+          "transformed_out": 500000,
+          "transformed_in": 1000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 2500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 2500000
+        },
+        "b": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 0,
+          "transformed_out": 0,
+          "transformed_in": 0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 0,
+          "remaining": 0,
+          "balance_error_bits": 0,
+          "acked": 0
+        }
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 8.881784197001252e-16,
+          "thermal_stored_j": 169.19803768697648,
+          "thermal_balance_error_j": 0.0,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 0.0
+        },
+        "b": {
+          "battery_balance_error_wh": -1.3322676295501878e-15,
+          "thermal_stored_j": 40.100250966077056,
+          "thermal_balance_error_j": 0.0,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 1.0408340855860843e-17
+        }
+      },
+      "cpu_work": {
+        "features-a": {
+          "status": "completed",
+          "remaining_sec": 0.0,
+          "work_sec": 1.5,
+          "switching_sec": 0.5,
+          "setup_remaining_sec": 0.0,
+          "reserved": false,
+          "actor": "a",
+          "reason": null
+        }
+      },
+      "qualified_requests": {
+        "archive-request": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 48,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        },
+        "customer-a": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 48,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        },
+        "new-request": {
+          "usable_area_m2": 1230903.1234358882,
+          "usable_fraction": 0.9999999999999998,
+          "evidence_records": 60,
+          "criterion": {
+            "kind": "optical",
+            "min_sun_elevation_deg": 5.0,
+            "max_gsd_m": 25.0,
+            "max_ground_range_resolution_m": null,
+            "max_azimuth_resolution_m": null
+          },
+          "delivered_and_fulfilled": true
+        }
+      },
+      "scope": "managed CPU/payload/radio, sampled resources, no measured hardware or SLA claim"
+    }
+  },
+  "installed_smoke": {
+    "wide": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 3,
+        "total_requests": 3
+      },
+      "overlap_intervals": 3,
+      "memory_io_bits": 7000000.0,
+      "three_unfinished_lanes_replay": true
+    },
+    "constrained": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 3,
+        "total_requests": 3
+      },
+      "overlap_intervals": 2,
+      "memory_io_bits": 7000000.0,
+      "three_unfinished_lanes_replay": true
+    }
+  },
+  "wheel": {
+    "sha256": "50ee22a4612225d976b3216d1272d1e2995d9e8d3a06626ddb0a660227db0eb5",
+    "python_modules_byte_matched": 189,
+    "frozen_orbit_fixtures_byte_matched": 3,
+    "isolated_python_I": true,
+    "installed_package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "console_validate_run_resume_replay_for_both_modes": true,
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "geometry_manifest": {
+      "pyproj": "3.8.0",
+      "proj": "9.8.1",
+      "shapely": "2.2.0",
+      "geos": "3.14.1"
+    }
+  },
+  "not_implemented": [
+    "Multicore/GPU/parallel native in-place CPU, multiple payloads or radio chains",
+    "Measured DRAM/cache/DMA traffic, memory latency or workspace random I/O",
+    "Optimal/work-conserving scheduling, instantaneous backfill or starvation guarantee",
+    "Changed RF link budget, antenna gimbals or shared-band interference physics",
+    "Continuous sensor guarantees, detailed thermal nodes, actuator/thrust coupling",
+    "Hardware calibration, large-mission throughput/SLA or constant-time checkpoints"
+  ],
+  "policy_notes": [
+    "One lane for each enabled managed subsystem; priority is explicit and independent of batch order",
+    "CPU/radio active power remains constant when bandwidth throttles speed",
+    "Imaging waits before first progress but fails an interrupted continuous exposure after progress",
+    "Native reliable drain/ACK and station scheduling semantics remain the transport contract",
+    "Radio control window may own a lane after its product completes until cancel/window expiry, without charging inactive TX",
+    "Declared bit sizes and normalized work estimate I/O; metadata JSON byte length is a separate quantity",
+    "Demo modes use different control-window durations and are not a fair scheduler benchmark"
+  ],
+  "physical_qualification": "needs_external_evidence",
+  "next": "B04-D: actuator/thrust/attitude/health coupling before enabling maneuvers in the coupled profile",
+  "commit_push_deploy_performed": false
+}

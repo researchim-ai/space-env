@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-31",
+  "scope": "reference-service-lifecycle/4",
+  "tasks_completed": 10,
+  "tests": {
+    "operations": 76,
+    "reference": 140,
+    "fast": 110,
+    "collected": 570,
+    "new_cases": 18,
+    "counts_overlap": true,
+    "full_suite_run": false
+  },
+  "demo": {
+    "on_time_bits": 3000000.0,
+    "discarded_bits": 3000000.0,
+    "products": [
+      {
+        "id": "scene-a",
+        "status": "delivered_on_time",
+        "completed_sec": 6.333333333333333,
+        "cancelled_sec": null,
+        "discarded_bits": 0.0,
+        "delivered_bits": 2000000.0,
+        "remaining_bits": 0.0
+      },
+      {
+        "id": "scene-b",
+        "status": "cancelled",
+        "completed_sec": null,
+        "cancelled_sec": 1.0,
+        "discarded_bits": 3000000.0,
+        "delivered_bits": 0,
+        "remaining_bits": 0.0
+      },
+      {
+        "id": "replacement",
+        "status": "delivered_on_time",
+        "completed_sec": 4.333333333333333,
+        "cancelled_sec": null,
+        "discarded_bits": 0.0,
+        "delivered_bits": 1000000.0,
+        "remaining_bits": 0.0
+      }
+    ],
+    "rate_limits": {
+      "transmitters_bps": {
+        "a": 500000.0,
+        "b": 1000000.0
+      },
+      "station_per_terminal_bps": {
+        "Ground": 750000.0
+      }
+    },
+    "replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "rl_steps": 2,
+    "rl_reward_mbit": 3.0
+  },
+  "wheel": {
+    "sha256": "641a0e995777671ac5e93e5ae7a99676d3581c84457e5e647e2c7e0648652ecd",
+    "modules": 163,
+    "mismatches": []
+  },
+  "installed_smoke": {
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dict_steps": 2,
+    "suite_passed": true,
+    "cases": 4,
+    "reference_access_windows": 1,
+    "reference_reward_mbit": 2.0,
+    "reference_operations_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "dynamic_rl_steps": 2,
+    "lifecycle_reference_replay": {
+      "ok": true,
+      "reason": "verified",
+      "mismatches": []
+    },
+    "external_force_crosscheck": true,
+    "gcrs_reference": {
+      "passed": true,
+      "checks": 7,
+      "scope": "upstream rotation and circular two-body 600/24h/72h"
+    },
+    "studio_status": 200,
+    "restored_time_sec": 1.0,
+    "portable_replay": {
+      "ok": true,
+      "reason": "verified",
+      "steps_verified": 1,
+      "mismatches": [],
+      "lineage": "installed-wheel-smoke",
+      "run_sha256": "770003b32ebe751b706e1ce565ce4b570db254bca585020eb664e18211c27eaa"
+    },
+    "agent_replay": {
+      "ok": true,
+      "reason": "verified",
+      "events_verified": 2,
+      "mismatches": [],
+      "run_sha256": "8a657d53b2549e8cce4f8b6bafb9376782694a60f09dd20c4b73f29eedbf36c0",
+      "lineage": "installed-tool-smoke"
+    },
+    "dialogue_messages": 5,
+    "transition_rows": 1,
+    "cli_validate": {
+      "instances": [
+        "sentinel-a"
+      ],
+      "requests": [
+        "kiruna-pass"
+      ]
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  },
+  "source_sha256": {
+    "src/space_env/reference/operations.py": "3f5f3f61eb38435d298d0ef0d6e4d5ecb076d2008752ff53217db980474e56a7",
+    "src/space_env/reference/events.py": "fa904c013d96a3ea1d12f6c8554f21a0888bfc35c7162f7444b340bc641d0782",
+    "src/space_env/reference/event_env.py": "6b3f50d596170c2920701f74c69c2a927ec8f29aa1c41b49f397aeff123445d6",
+    "src/space_env/reference/scheduling.py": "60c76cfcea3cae00b8c20110581030ea8e868156301a8d17adc1e3c0cd31364a",
+    "tests/test_reference_operations.py": "3c0aac7775755ee4eba46d07fa8455211882a710a6f30ab308bb0900aabf825b",
+    "scripts/verify_installed.py": "3f486a7eb44abc5c8abf757263a584ef3752fccee762feaf991ebe84a0cfba08",
+    "examples/reference_operations/lifecycle_demo.py": "c494ce52039041f698c7475adad284f32f5e044297a9e73a0296d683158fa03d"
+  },
+  "unqualified": [
+    "calibrated RF model",
+    "independent planner optimum",
+    "large fleet endurance",
+    "full pytest suite"
+  ]
+}

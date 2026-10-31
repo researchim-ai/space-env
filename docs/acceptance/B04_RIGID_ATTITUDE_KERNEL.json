@@ -1,0 +1,136 @@
+{
+  "date": "2026-11-01",
+  "package": "B04-D2a",
+  "status": "verified_standalone_kernel",
+  "version": "0.134.0",
+  "parent_B04_D2_status": "in_progress",
+  "parent_B04_status": "in_progress",
+  "mission_bus_integration": false,
+  "contract": "../validation/RIGID_ATTITUDE_CONTRACT.md",
+  "tests": {
+    "new_cases": 21,
+    "actuation_plus_rigid": 60,
+    "fast": 110,
+    "collected": 1049,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed",
+    "reference": 619,
+    "reference_warnings": 13,
+    "fast_warnings": 2
+  },
+  "wheel": {
+    "python_modules_byte_matched": 191,
+    "frozen_orbit_fixtures": 3,
+    "sha256": "83f2a807ba1ad36458cb3179b3933aa49f65f4265ad1a16f525ca4e7a82df4bc"
+  },
+  "installed_standalone_demo": {
+    "ok": true,
+    "scope": "standalone kernel, not integrated mission ADCS",
+    "saturation": {
+      "substeps": 400,
+      "capacity_limited_sec": [
+        2.0000000000000013,
+        0.0,
+        0.0
+      ],
+      "scope": "standalone ideal 3-wheel rigid dynamics; not mission bus integration"
+    },
+    "saturated_state": {
+      "quaternion_wxyz": [
+        0.9887710779360424,
+        -0.1494381324735993,
+        0.0,
+        0.0
+      ],
+      "omega_body_rad_s": [
+        -0.1,
+        0.0,
+        0.0
+      ],
+      "wheel_momentum_nms": [
+        0.2,
+        0.0,
+        0.0
+      ],
+      "elapsed_sec": 4.0,
+      "dc_energy_j": 2.532499999999998,
+      "heat_j": 0.5224999999999994,
+      "motor_work_j": 2.009999999999999,
+      "external_work_j": 0.0
+    },
+    "unloaded_state": {
+      "quaternion_wxyz": [
+        0.9689124217106447,
+        -0.2474039592545232,
+        0.0,
+        0.0
+      ],
+      "omega_body_rad_s": [
+        -0.1,
+        0.0,
+        0.0
+      ],
+      "wheel_momentum_nms": [
+        -1.5959455978986625e-16,
+        0.0,
+        0.0
+      ],
+      "elapsed_sec": 6.0,
+      "dc_energy_j": 5.077499999999995,
+      "heat_j": 5.087499999999996,
+      "motor_work_j": -0.009999999999999778,
+      "external_work_j": 0.019999999999999934
+    },
+    "unloaded_invariants": {
+      "momentum_inertial_nms": [
+        -0.20000000000000018,
+        0.0,
+        0.0
+      ],
+      "kinetic_energy_j": 0.010000000000000002
+    },
+    "electrical_balance_error_j": -8.968520370800093e-16
+  },
+  "limits": [
+    "Standalone kernel only; mission slew and held-body burns unchanged",
+    "Three orthogonal ideal wheels; effective carrier inertia excludes modeled axial rotor spin contribution",
+    "Constant body torque input, fixed RK4 substeps, normalized quaternion",
+    "Saturation average torque within a substep; no exact event-time claim",
+    "No flight calibration, estimator, controller, magnetic or gravity-gradient torque",
+    "External desaturation torque is caller-supplied; no automatic actuator resource model",
+    "JSON kernel state roundtrip is not integrated mission checkpoint acceptance"
+  ],
+  "next": "B04-D2b: opt-in mission controller, resource admission, faults, rotating/off-center thrust, ownership and replay",
+  "installed_existing_sdk_regression": {
+    "passed": true,
+    "body_actuation": {
+      "chemical": {
+        "verified": true,
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "mid_gimbal_and_firing_replay": true,
+        "fuel_kg": 0.0003399054043313754
+      },
+      "electric": {
+        "verified": true,
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "mid_gimbal_and_firing_replay": true,
+        "fuel_kg": 3.399054037345195e-06
+      }
+    },
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    }
+  }
+}

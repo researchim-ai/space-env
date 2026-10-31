@@ -6,6 +6,7 @@ from space_env.reference.orbit import (
     acceleration,
     propagate,
 )
+from space_env.reference.thrust import FiniteThrust
 from space_env.reference.time import EOPSeries, Epoch, Orientation
 
-__all__ = ["EOPSeries", "Epoch", "ForceModel", "FrameContext", "Orientation", "ReferenceState", "acceleration", "propagate"]
+__all__ = ["EOPSeries", "Epoch", "FiniteThrust", "ForceModel", "FrameContext", "Orientation", "ReferenceState", "acceleration", "propagate"]

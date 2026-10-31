@@ -206,3 +206,43 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 datasets/
+
+# Local credentials (keep shareable environment templates)
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+/.aws/
+
+# Built Python distributions
+*.whl
+*.tar.gz
+
+# Local editor / operating-system files
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Frontend dependencies and tooling caches (keep lockfiles and viz assets)
+node_modules/
+.vite/
+.playwright/
+playwright-report/
+test-results/
+
+# Generated local runs / exports; source fixtures and acceptance evidence stay visible
+/outputs/
+/artifacts/
+/runs/
+/checkpoints/
+/benchmark-results/
+/tmp/
+/temp/
+
+# Test reporting output
+junit.xml
+pytest-report.xml
+coverage.json

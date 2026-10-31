@@ -39,7 +39,7 @@ def runtime_manifest() -> dict:
         "python": platform.python_version(),
         "dependencies": {name: _version(name) for name in (
             "space-env", "numpy", "pydantic", "boinor", "astropy", "pyerfa",
-            "scipy", "nrlmsise00", "sgp4", "astropy-iers-data",
+            "scipy", "nrlmsise00", "sgp4", "astropy-iers-data", "shapely", "pyproj",
         )},
         "source_sha256": digest({str(path.relative_to(root)): digest(path.read_text(encoding="utf-8"))
                                  for path in sorted(root.rglob("*.py"))}),

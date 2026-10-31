@@ -1,0 +1,261 @@
+{
+  "date": "2026-10-31",
+  "package": "B03",
+  "status": "verified",
+  "scope": "Point/dwell/resource lifecycle engineering surrogate; not calibrated imaging or flight qualification",
+  "profile": "reference-lifecycle/1",
+  "backend": "reference-lifecycle",
+  "objective": "fulfilled_requests",
+  "tests": {
+    "new_lifecycle_cases": 31,
+    "reference": 388,
+    "fast": 110,
+    "collected": 818,
+    "counts_overlap": true,
+    "full_regression_rerun": false
+  },
+  "commands": [
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/end_to_end_eo/demo.py /tmp/space-env-b03-demo",
+    "installed Python -I scripts/verify_installed.py --expected-prefix /tmp/space-env-events-installed",
+    "installed Python -I examples/end_to_end_eo/demo.py and console validate/run/resume/replay"
+  ],
+  "coverage": [
+    "No preloaded data request/acquire/raw/transform/final/full-receipt path",
+    "Two spacecraft contend for one station",
+    "No raw/processing/partial-radio fulfillment credit",
+    "Independent declared demand, release/priority/deadline/cancel/add events and impossible demand denominator",
+    "Geometry/power/memory failures without fabricated products",
+    "Mid-acquisition and mid-transform checkpoint/replay",
+    "Consuming fan-in/out and changing output sizes, atomic multioutput materialization",
+    "Persistent workspace, unpaid setup remainder, pause/resume and actor ownership",
+    "TTL/pinning, explicit protected-final discard policy and terminal-horizon housekeeping",
+    "Expected materialization failure retains spent work; unexpected exception rolls back whole advance",
+    "Injected native products cannot spoof managed outputs or bypass reserved memory",
+    "Full receipt/request/destination lineage, unique physical ACK and ledger closure",
+    "Versioned transformer registry and explicit matching external fingerprints on restore",
+    "Local released eligible job definitions, no peer-input observation leak",
+    "Correct GCRS/ITRS run manifest for all reference backends",
+    "External injection validation before reserved-memory arithmetic"
+  ],
+  "sdk_demo": {
+    "ok": true,
+    "profile": "reference-lifecycle/1",
+    "metrics": {
+      "fulfilled_requests": 1,
+      "total_requests": 2
+    },
+    "ledger": {
+      "a": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 1000000,
+        "transformed_out": 500000,
+        "transformed_in": 1000000.0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 500000.0,
+        "remaining": 0.0,
+        "balance_error_bits": 0.0,
+        "acked": 500000
+      },
+      "b": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 0,
+        "transformed_out": 0,
+        "transformed_in": 0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 0,
+        "remaining": 0,
+        "balance_error_bits": 0,
+        "acked": 0
+      }
+    },
+    "acknowledgements": [
+      {
+        "product_id": "final-a",
+        "actor": "a",
+        "destination_id": "Ground",
+        "bits": 500000,
+        "acknowledged_sec": 4.5,
+        "fulfilled_request_ids": [
+          "customer-a"
+        ]
+      }
+    ],
+    "failed_request_reason": "geometry",
+    "representation": "synthetic resource metadata; no rendered image or scientific compression",
+    "qualification_status": "needs_external_evidence"
+  },
+  "installed_sdk_demo": {
+    "ok": true,
+    "profile": "reference-lifecycle/1",
+    "metrics": {
+      "fulfilled_requests": 1,
+      "total_requests": 2
+    },
+    "ledger": {
+      "a": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 1000000,
+        "transformed_out": 500000,
+        "transformed_in": 1000000.0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 500000.0,
+        "remaining": 0.0,
+        "balance_error_bits": 0.0,
+        "acked": 500000
+      },
+      "b": {
+        "initial": 0,
+        "injected": 0,
+        "acquired": 0,
+        "transformed_out": 0,
+        "transformed_in": 0,
+        "expired": 0,
+        "discarded": 0,
+        "transmitted": 0,
+        "remaining": 0,
+        "balance_error_bits": 0,
+        "acked": 0
+      }
+    },
+    "acknowledgements": [
+      {
+        "product_id": "final-a",
+        "actor": "a",
+        "destination_id": "Ground",
+        "bits": 500000,
+        "acknowledged_sec": 4.5,
+        "fulfilled_request_ids": [
+          "customer-a"
+        ]
+      }
+    ],
+    "failed_request_reason": "geometry",
+    "representation": "synthetic resource metadata; no rendered image or scientific compression",
+    "qualification_status": "needs_external_evidence"
+  },
+  "installed_cli_workflow": [
+    {
+      "command": "mission-validate",
+      "ok": true,
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      }
+    },
+    {
+      "command": "mission-run",
+      "ok": true,
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      }
+    },
+    {
+      "command": "mission-resume",
+      "ok": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      }
+    },
+    {
+      "command": "mission-replay",
+      "ok": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      }
+    }
+  ],
+  "wheel": {
+    "sha256": "4a892251e4ee1b00dab735368ed31e76e356a61ce3ac005bdfd04463c662c142",
+    "python_modules_matching_source": 184,
+    "frozen_orbit_fixtures_matching_source": 3,
+    "isolated_python_I_smoke": true,
+    "package": "/tmp/space-env-events-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "boinor": "0.20.0",
+      "gymnasium": "1.4.0",
+      "astropy": "8.0.2",
+      "pydantic": "2.14.2"
+    },
+    "product_lifecycle": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 1
+      },
+      "ledger": {
+        "a": {
+          "initial": 0,
+          "injected": 0,
+          "acquired": 1000000,
+          "transformed_out": 500000,
+          "transformed_in": 1000000.0,
+          "expired": 0,
+          "discarded": 0,
+          "transmitted": 500000.0,
+          "remaining": 0.0,
+          "balance_error_bits": 0.0,
+          "acked": 500000
+        }
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final",
+          "actor": "a",
+          "destination_id": "ReferenceGround",
+          "bits": 500000,
+          "acknowledged_sec": 602.5,
+          "fulfilled_request_ids": [
+            "customer"
+          ]
+        }
+      ]
+    },
+    "physics_checks": {
+      "passed": true,
+      "status": "needs_external_evidence",
+      "fixture_cases": 3,
+      "covariance_passed": true,
+      "geometry_passed": true
+    }
+  },
+  "contracts": {
+    "acquisition": "Sampled point/dwell geometry, start/mid/left-end checks on bounded execution grid",
+    "materialization": "Synthetic resource metadata or JSON geometry features; not rendered/scientific image data",
+    "transform_cost": "Declared work/switch/power/workspace separate from atomic plugin execution",
+    "storage": "Physical remaining resource bits backed by native inventory; persistent virtual reservations",
+    "transport": "Existing reliable fixed-rate drain-on-send inventory with instant full station ACK",
+    "ledger": "initial+external_injected+acquired+transformed_out = transformed_in+transmitted+expired+discarded+remaining; acked is subset",
+    "plugins": "Trusted deterministic JSON/deepcopyable plugins; fingerprints self-declared, no external I/O rollback",
+    "checkpoint": "Verified prefix replay; resource progress, not suspended real algorithm process"
+  },
+  "known_limits": [
+    "No continuous/grazing geometry completeness proof",
+    "Ideal steering and independent solar pointing; attitude/payload/thermal coupling is B04",
+    "No pixel/image generator or scientific compression qualification",
+    "Same-actor transform inputs only; crosslinks/routing are B05",
+    "No packet retransmission/delayed ACK/ground processing",
+    "One active control window per actor",
+    "Dense workload, bounded memory and latency qualification remain B08/B09",
+    "External plugin registration must be supplied by trusted SDK bootstrap; CLI does not auto-import scenario code",
+    "Physical mission/data calibration B02/B12 remains open; full repository regression not rerun"
+  ],
+  "next": "B04 coupled spacecraft attitude/payload/power/health",
+  "git_actions": {
+    "commit": false,
+    "push": false,
+    "publish": false
+  }
+}

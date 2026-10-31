@@ -102,6 +102,8 @@ class EOPSeries:
     Predictions require explicit opt-in and remain marked in metadata.
     """
     def __init__(self, rows: list[dict], *, source: str, allow_predictions: bool = False):
+        if type(allow_predictions) is not bool:
+            raise ValueError("EOP prediction policy must be boolean")
         if len(rows) < 2 or not source:
             raise ValueError("EOP requires at least two nodes and a source")
         self._rows = []
