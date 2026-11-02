@@ -68,7 +68,7 @@ def state_jacobian(
     position_step_m=1.0,
     velocity_step_m_s=0.001,
 ):
-    """df/dx in Cartesian GCRS SI. Mass and inertial pointing are deterministic."""
+    """df/dx in Cartesian GCRS SI. Mass and prescribed thrust attitude are deterministic."""
     state = np.asarray(state, dtype=float)
     if state.shape != (6,) or not np.isfinite(state).all():
         raise ValueError("linearization requires finite Cartesian r/v")
@@ -150,15 +150,7 @@ class CovarianceArc:
         declared_thrust = ephemeris._manifest.get("thrust")
         if (declared_thrust is None) != (thrust is None):
             raise ValueError("covariance thrust model differs from nominal arc")
-        if thrust is not None and (
-            declared_thrust.get("frame") != "GCRS"
-            or any(
-                declared_thrust.get(key) != getattr(thrust, key)
-                for key in ("thrust_n", "isp_s", "dry_mass_kg")
-            )
-            or list(declared_thrust.get("direction_gcrs", []))
-            != list(thrust.direction_gcrs)
-        ):
+        if thrust is not None and digest(declared_thrust) != digest(thrust.manifest()):
             raise ValueError("covariance thrust model differs from nominal arc")
         noise = np.zeros((6, 6))
         noise[3:, 3:] = psd_matrix(settings.acceleration_psd_m2_s3, 3)

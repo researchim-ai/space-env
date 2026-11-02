@@ -43,6 +43,8 @@ def command_claims(command, config, bus_models):
     lane = {"transform": "cpu", "imaging": "payload", "downlink": "radio"}.get(kind)
     if lane is not None and not getattr(config.actors[actor], lane):
         raise ValueError(f"actor {lane} lane is disabled")
+    if kind == "relay":
+        return ("cpu", "payload", "radio", "attitude", "propulsion")
     if kind == "transform":
         return ("cpu",)
     if kind == "imaging":
@@ -53,9 +55,9 @@ def command_claims(command, config, bus_models):
             if bus_models[actor].attitude.radio_tolerance_deg < 180
             else ("radio",)
         )
-    if kind == "body_burn":
+    if kind in {"body_burn", "momentum_unload"}:
         return ("propulsion", "attitude")
-    if kind == "slew":
+    if kind in {"slew", "wheel_torque"}:
         return ("attitude",)
     if kind == "wait":
         return ("cpu", "payload", "radio", "attitude", "propulsion")
@@ -105,10 +107,15 @@ class ResourceLanes:
                         a, bus.base_power(a, v.base_power_w) + bus.extra_power(a) + life.actuation_power(a)
                     ),
                     "tx_power_w": bus.battery_load(a, v.tx_power_w),
+                    "min_tx_soc": max(v.min_tx_soc, life.thermal_heater_floor(a)),
                 }
             )
             for a, v in mission.vehicles.items()
         }
+        if mission.radio_network is not None:
+            candidates = mission.select_transmissions(actions, products, generation=bus.generation_w, vehicles=vehicles, ignore_radio=True)
+            mission.radio_network.prepare(mission, candidates)
+            right = mission.radio_network.boundary(now, right)
         selected = mission.select_transmissions(
             actions, products, generation=bus.generation_w, vehicles=vehicles
         )
@@ -126,7 +133,7 @@ class ResourceLanes:
             floor = (
                 bus.models[a].attitude.slew_min_soc if bus.extra_power(a) > 0 else 0.0
             )
-            floor = max(floor, life.actuation.floor(a) if life.actuation is not None else 0.0)
+            floor = max(floor, life.actuation_floor(a))
             for lane in config.priority:
                 item = by_actor[a].get(lane)
                 if item is None:
@@ -239,6 +246,7 @@ class ResourceLanes:
             for row in ordinary
             if row["command"]["kind"] != "downlink"
             or row["command"]["actor_id"] in radio_rates
+            or (mission.radio_network is not None and mission.radio_network.links.get(row["command"]["actor_id"], {}).get("state") == "acquiring")
         ]
         # Native boundaries include geometry/outages/bookings and rate transitions.
         right = min(

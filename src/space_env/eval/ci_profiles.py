@@ -1,4 +1,5 @@
 """Contract, reference and complete repository regression profiles."""
+
 from __future__ import annotations
 
 import subprocess
@@ -37,25 +38,76 @@ PROFILES = {
         "tests/test_resource_lanes.py",
         "tests/test_actuation.py",
         "tests/test_rigid_attitude.py",
+        "tests/test_rigid_mission.py",
+        "tests/test_rotating_thrust.py",
+        "tests/test_momentum_unloading.py",
+        "tests/test_thermal_network.py",
+        "tests/test_radio_network.py",
+        "tests/test_custody_network.py",
+        "tests/test_runtime_tasks.py",
+        "tests/test_planning.py",
+        "tests/test_factory.py",
+        "tests/test_scaling.py",
+        "tests/test_fleet_scaling.py",
+        "tests/test_verified_exports.py",
+        "tests/test_operator.py",
+        "tests/test_operator_durable.py",
     ),
-    "full": tuple(str(path.relative_to(_ROOT)) for path in sorted((_ROOT / "tests").glob("test_*.py"))),
+    "full": tuple(
+        str(path.relative_to(_ROOT))
+        for path in sorted((_ROOT / "tests").glob("test_*.py"))
+    ),
 }
 
 
-def command(profile: str) -> list[str]:
+def command(profile: str, shard: str | None = None) -> list[str]:
     files = PROFILES[profile]
+    extra = []
+    if shard is not None:
+        if profile != "full" or shard not in {
+            "other",
+            "campaign",
+            "tasking-base",
+            "tasking-sixteen",
+        }:
+            raise ValueError("shard requires full and one declared partition")
+        if shard == "other":
+            files = tuple(
+                f
+                for f in files
+                if f not in {"tests/test_campaign.py", "tests/test_tasking.py"}
+            )
+        elif shard == "campaign":
+            files = ("tests/test_campaign.py",)
+        else:
+            files = ("tests/test_tasking.py",)
+            extra = [
+                "-k",
+                "not sixteen_vehicles"
+                if shard == "tasking-base"
+                else "sixteen_vehicles",
+            ]
     if not files:
         raise ValueError("тесты профиля отсутствуют; запускайте из исходного checkout")
-    return [sys.executable, "-m", "pytest", "-q", *files]
+    return [sys.executable, "-m", "pytest", "-q", *files, *extra]
 
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
-    if len(args) != 1 or args[0] not in PROFILES:
+    if (
+        len(args) not in {1, 3}
+        or args[0] not in PROFILES
+        or (len(args) == 3 and args[1] != "--shard")
+    ):
         names = ", ".join(PROFILES)
         print(f"нужен один профиль: {names}", file=sys.stderr)
         return 2
-    return subprocess.call(command(args[0]))
+    try:
+        invocation = command(args[0], args[2] if len(args) == 3 else None)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    return subprocess.call(invocation)
 
 
 if __name__ == "__main__":

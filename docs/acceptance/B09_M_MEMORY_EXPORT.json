@@ -1,0 +1,167 @@
+{
+  "schema": "space-env.acceptance/1",
+  "date": "2026-11-02",
+  "package": "B09-M1",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "contract": "../VERIFIED_EXPORT_CONTRACT.md",
+  "scope": "owned append-only task evidence and replay-once multi-format export; independent policy/native cold replay retained; no constant-memory/flight qualification",
+  "checks": {
+    "new_verified_export_cases": 18,
+    "targeted": {
+      "passed": 234,
+      "warnings": 2,
+      "seconds": 126.69,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09m-unit-final.log"
+    },
+    "reference": {
+      "passed": 1105,
+      "warnings": 15,
+      "seconds": 257.61,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09m-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 24.83,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09m-fast.log"
+    },
+    "counts_overlap": true,
+    "collection": "1535 tests collected in 1.39s",
+    "expanded_full": "not rerun this change; B09 expanded regression is historical, not final B09-M1 coverage",
+    "wheel": {
+      "modules": 228,
+      "boinor_fixtures": 3,
+      "sha256": "81795c17be068267a75396149c8f114cbf1f4f10b42d34cbdf670ca43015af51",
+      "byte_parity": true
+    },
+    "installed_sdk_outside_checkout": {
+      "ok": true,
+      "module": "/tmp/space-env-b09m-installed/lib/python3.12/site-packages/space_env/__init__.py",
+      "fulfilled": 12,
+      "files": 2,
+      "rows": 8,
+      "legacy_byte_parity": true,
+      "quality": {
+        "passed": true,
+        "checks": [
+          "inventory_bits",
+          "battery_wh",
+          "native_ACK_reward",
+          "causal_public_views",
+          "physical_dt_discount",
+          "accepted_masks"
+        ],
+        "conditional_after_cancel": 0,
+        "transitions": 4
+      }
+    },
+    "installed_factory_outside_checkout": {
+      "ok": true,
+      "status": "ready",
+      "rows": {
+        "rl": 48,
+        "sft": 20
+      },
+      "episodes": 36,
+      "sha256": "6654e12de083bef12ab1ce79458a052509b19dcc34c84233a5cc1932d9586021",
+      "content_sha256": "0ac74a9633e423f2938e724bb7dbe8a45425abda88ef861fa3b834345393fef0",
+      "expert_qualified": false,
+      "verified": true,
+      "coupled_eo": false
+    },
+    "installed_coupled_eo_outside_checkout": {
+      "ok": true,
+      "status": "ready",
+      "rows": {
+        "rl": 10,
+        "sft": 10
+      },
+      "episodes": 1,
+      "sha256": "94f8ba2683ad6340351f2dc91e987236fbdff4d92ff78e385d896fb979e3c037",
+      "content_sha256": "1025235fd912cd75f2f2d23ec03f33b6f17eeb11019b91a08c04375438f9c6c3",
+      "expert_qualified": false,
+      "verified": true,
+      "coupled_eo": true
+    },
+    "installed_example": {
+      "ok": true,
+      "episode_sha256": "35b3458a4431b6e3c2745292cc518bfefea60e4c8baf323c3f1b9fea85185854",
+      "files": 2,
+      "rows": 8
+    },
+    "environment": "venv uses system-site-packages, user-site disabled with -I; byte parity verified. Not dependency-clean installation.",
+    "remote_ci": "replay-once installed smoke configured; not executed locally"
+  },
+  "comparison": {
+    "baseline": "B09_Q_64_1000_C64.json",
+    "after": "B09_M_64_1000.json",
+    "same_frozen_manifest": true,
+    "frozen_manifest_sha256": "b233ae969472f32e0f0c92e14712f7645b74a210dc897c8c21711e7e497d4b7f",
+    "manifest_gzip": "B09_M_64_1000.manifest.json.gz",
+    "manifest_file_sha256": "baa5b0ab938f653d20e2ab3f08008cc70c2cd6d6f3ae192932cdae027ef6d6d7",
+    "repeats": [
+      {
+        "before": {
+          "peak_rss_bytes": 1852321792,
+          "execution_sec": 43.06499979,
+          "checkpoint_bytes": 11097405,
+          "replay_sec": 45.047590631002095,
+          "export_sec": 86.9736815010001,
+          "end_to_end_wall_sec": 180.66434398799902,
+          "verified_export_rows": 34
+        },
+        "after": {
+          "peak_rss_bytes": 503824384,
+          "execution_sec": 62.471553657000186,
+          "checkpoint_bytes": 11097393,
+          "replay_sec": 51.13039334200221,
+          "export_sec": 1.228180951999093,
+          "end_to_end_wall_sec": 122.48946216400145,
+          "verified_export_rows": 34
+        },
+        "native_and_trace_identical": true
+      },
+      {
+        "before": {
+          "peak_rss_bytes": 1853603840,
+          "execution_sec": 42.02515701899756,
+          "checkpoint_bytes": 11097405,
+          "replay_sec": 44.57819249599925,
+          "export_sec": 103.67224931199962,
+          "end_to_end_wall_sec": 195.68609066799763,
+          "verified_export_rows": 34
+        },
+        "after": {
+          "peak_rss_bytes": 503906304,
+          "execution_sec": 42.27292670099996,
+          "checkpoint_bytes": 11097398,
+          "replay_sec": 44.05253603800156,
+          "export_sec": 1.2631604920024984,
+          "end_to_end_wall_sec": 92.55146123799932,
+          "verified_export_rows": 34
+        },
+        "native_and_trace_identical": true
+      }
+    ],
+    "timing_scope": "two repeated synthetic workloads on shared host concurrent with regression, not pinned-core SLA/statistical tail qualification. New replay_sec includes verification/quality once; export_sec measures writing from owned verified state. Old export_sec included two additional native replays. Compare whole-pipeline wall time for overall QA cost; no universal export-rate claim."
+  },
+  "changes": [
+    "Committed task views/history/idempotency responses share append-only internal evidence; public mutation remains isolated",
+    "VerifiedEpisode freezes caller record, cold-replays once and yields independent rows; single-export APIs preserved",
+    "Atomic export directory with bounded payload+receipt, safe role slot paths and cleanup on late failure",
+    "Factory verifies each planning episode once for all role/format exports; all original gates and quarantine kept",
+    "Scale worker releases original runtime before independent replay and reuses verified replay for RL+SFT writing"
+  ],
+  "open_gates": [
+    "Native mutable history/backend capture and per-episode task transitions remain in RAM",
+    "Full JSON checkpoints can expand shared references; cold replay remains linear",
+    "Durable per-phase recovery and scale repeated on pinned hardware remain open",
+    "Long heterogeneous coupled missions and 256/10000 profiles need separate qualified contracts",
+    "B10 unified Studio/operator, B11 clean release matrix and B12 independent industrial/hardware calibration remain open"
+  ],
+  "git_operations": "no staging, commit, push, PR or deployment"
+}

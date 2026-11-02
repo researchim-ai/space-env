@@ -51,6 +51,7 @@ from space_env.reference.payload_quality import (
     usable_coverage,
 )
 from space_env.reference.resource_lanes import ResourceLanes
+from space_env.reference.unloading import MomentumUnloader
 from space_env.runtime.schema import StrictModel
 from space_env.simulation.snapshot import digest
 
@@ -323,7 +324,9 @@ def graph(requests, jobs):
 class ProductLifecycle:
     def __init__(self, spec: LifecycleSpec, backend):
         self.spec = spec
+        self.thermal_network = None
         self.actuation = None if backend.config.actuation is None else CoupledActuation(backend.config.actuation, backend)
+        self.unloader = None if backend.config.unloading is None else MomentumUnloader(backend.config.unloading, backend)
         self.scheduler = None if backend.config.execution is None else ResourceLanes(backend.config.execution)
         self.aois = {a.id: a for a in spec.areas_of_interest}
         if len(self.aois) != len(spec.areas_of_interest):
@@ -374,6 +377,7 @@ class ProductLifecycle:
             }
             for j in spec.jobs
         }
+        self.transport = backend.mission.dtn
         self.artifacts = {}
         self.operations = {}
         self.events = []
@@ -450,7 +454,7 @@ class ProductLifecycle:
             backend.mission.remaining[p.id]
             for p in backend.mission.products.values()
             if p.actor == actor
-        )
+        ) + backend.mission.transport_memory(actor)
 
     def reservations(self, actor, *, exclude=None):
         jobs = sum(
@@ -468,7 +472,8 @@ class ProductLifecycle:
         return jobs + acquisitions
 
     def pinned(self, pid):
-        return [
+        transport = ["@custody"] if self.transport is not None and self.transport.pinned(pid) else []
+        return transport + [
             j
             for j, row in self.job_state.items()
             if pid in self.jobs[j].inputs and row["reserved"]
@@ -522,6 +527,8 @@ class ProductLifecycle:
                 for p in self.jobs[command.job_id].inputs
             ):
                 raise ValueError("transform inputs must belong to command actor")
+        elif command.kind == "relay" and not self.deliverable(command.product_id):
+            raise ValueError("managed relay requires an unretained final deliverable")
         elif (
             command.kind == "downlink"
             and command.product_id
@@ -718,7 +725,10 @@ class ProductLifecycle:
             if not math.isclose(math.fsum(row["bits"] for row in receipts), artifact["size_bits"],
                                 rel_tol=0, abs_tol=4 * math.ulp(float(artifact["size_bits"]))):
                 return None
-            times.append(max(row["end_sec"] for row in receipts))
+            ack = backend.mission.acknowledged_time(pid)
+            if ack is None:
+                return None
+            times.append(ack)
         return max(times)
 
     def request_product(self, request):
@@ -745,6 +755,14 @@ class ProductLifecycle:
     def settle(self, backend):
         now = backend.now()
         mission = backend.mission
+        if self.transport is not None:
+            self.transport.settle(mission)
+            self.transport.sync_artifacts(mission,self.artifacts)
+            for pid, expired in self.transport.expired_products.items():
+                if pid in self.artifacts and self.artifacts[pid]["status"] == "resident":
+                    self.removals.append({"product_id":pid,"actor":expired["actor"],"category":"expired","bits":expired["bits"],"time_sec":expired["time_sec"]})
+                    self.artifacts[pid]["status"] = "expired"
+                    self.fail_unreachable(backend,"required_artifact_expired",product_id=pid)
         for rid, r in self.requests.items():
             state = self.request_state[rid]
             if state["status"] == "pending" and now >= r.release_sec:
@@ -771,7 +789,7 @@ class ProductLifecycle:
         for pid, artifact in self.artifacts.items():
             if artifact["status"] != "resident":
                 continue
-            if mission.remaining[pid] == 0 and pid not in mission.cancelled:
+            if mission.acknowledged_time(pid) is not None:
                 artifact["status"] = "delivered"
             elif (
                 artifact["expires_sec"] is not None
@@ -906,7 +924,13 @@ class ProductLifecycle:
         self._consume_ready(backend)
 
     def actuation_power(self, actor):
-        return 0.0 if self.actuation is None else self.actuation.power(actor)
+        return sum(m.power(actor) for m in (self.actuation, self.unloader) if m is not None)
+
+    def actuation_floor(self, actor):
+        return max([m.floor(actor) for m in (self.actuation, self.unloader) if m is not None]+[self.thermal_heater_floor(actor)])
+
+    def thermal_heater_floor(self, actor):
+        return self.thermal_network.heater_floor(actor) if self.thermal_network is not None else 0.
 
     def imaging_power(self, actor):
         base = self.spec.payloads[actor].power_w
@@ -930,10 +954,14 @@ class ProductLifecycle:
             self.settle(backend)
             now = backend.now()
             mission = backend.mission
+            if self.transport is not None:
+                self.transport.managed_blocked = {r["command"]["actor_id"] for r in active if r["command"]["kind"] not in {"relay","wait"}}
             if bus is not None:
                 bus.prepare(backend, active)
             if self.actuation is not None:
                 self.actuation.prepare(backend, active)
+            if self.unloader is not None:
+                self.unloader.prepare(backend, active)
             right = min(
                 end,
                 (math.floor((now + 1e-9) / self.spec.execution_step_sec) + 1)
@@ -960,6 +988,12 @@ class ProductLifecycle:
                 right = bus.boundary(backend, right)
             if self.actuation is not None:
                 right = self.actuation.boundary(backend, right)
+            if self.unloader is not None:
+                right = self.unloader.boundary(backend, right)
+            if mission.radio_network is not None:
+                right = mission.radio_network.boundary(now, right)
+            if self.transport is not None:
+                right = self.transport.boundary(mission,right)
             powered = {}
             operation_power = {}
             work_rates = {}
@@ -973,7 +1007,7 @@ class ProductLifecycle:
                 cid, actor = c["command_id"], c["actor_id"]
                 op = self.operations.get(cid)
                 if op is None:
-                    if bus is not None and not bus.ordinary_allowed(row, backend):
+                    if bus is not None and not bus.ordinary_allowed(row, backend, span=right-now):
                         continue
                     if c["kind"] == "downlink" and not c["product_id"]:
                         ready = [
@@ -1101,6 +1135,7 @@ class ProductLifecycle:
                     + bus.extra_power(actor)
                     + self.actuation_power(actor)
                 )
+                floor = max(floor, self.thermal_heater_floor(actor))
                 load = base + power
                 net = mission._generation(actor, sample) - (
                     load if bus is None else bus.battery_load(actor, load)
@@ -1211,6 +1246,8 @@ class ProductLifecycle:
                                 evidence["observation_id"] = by_time[evidence["time_sec"]]
                                 evidence["id"] = digest({key: value for key, value in evidence.items() if key != "id"})
                 valid.append(op)
+            if self.transport is not None:
+                mission.dtn_managed_memory = {a:self.reservations(a) for a in backend.actors}
             original = mission.vehicles
             cpu_actors = {
                 r["command"]["actor_id"]
@@ -1226,6 +1263,8 @@ class ProductLifecycle:
                             else bus.base_power(a, v.base_power_w) + bus.extra_power(a) + self.actuation_power(a)
                         )
                         + powered.get(a, 0.0),
+                        "min_tx_soc": max(v.min_tx_soc, self.thermal_heater_floor(a)),
+                        "min_processing_soc": max(v.min_processing_soc, self.thermal_heater_floor(a)),
                         "memory_bits": max(1e-9, v.memory_bits - self.reservations(a))
                         if a in cpu_actors
                         else v.memory_bits,
@@ -1234,6 +1273,11 @@ class ProductLifecycle:
                 for a, v in original.items()
             }
             sar_active = {op["actor"] for op in valid if op["kind"] == "imaging"}
+            managed_heat_power = {a:{"cpu":0.,"payload":0.} for a in backend.actors}
+            valid_ids = {id(op) for op in valid}
+            for cid, op in self.operations.items():
+                if id(op) in valid_ids:
+                    managed_heat_power[op["actor"]]["cpu" if op["kind"]=="transform" else "payload"] += operation_power[cid]
             before = {
                 a: (
                     mission.generated_wh[a],
@@ -1242,7 +1286,12 @@ class ProductLifecycle:
                     (self.quality.heat_adjustment_w(a, bus.models[a].electrical_heat_fraction)
                      if self.quality is not None and bus is not None and a in sar_active else 0.0)
                     + (self.actuation.heat_adjustment(a, bus.models[a].electrical_heat_fraction)
-                       if self.actuation is not None else 0.0),
+                       if self.actuation is not None else 0.0)
+                    + (self.unloader.heat_adjustment(a, bus.models[a].electrical_heat_fraction) if self.unloader is not None else 0.)
+                    + (bus.rigid.heat_adjustment(a, span, bus.models[a].electrical_heat_fraction)
+                       if bus is not None else 0.0),
+                    None if bus is None else bus.network.capture(backend,a,span,managed_heat_power[a],
+                        self.quality.heat_adjustment_w(a,bus.models[a].electrical_heat_fraction) if self.quality is not None and a in sar_active else 0.),
                 )
                 for a in backend.actors
             }
@@ -1253,6 +1302,8 @@ class ProductLifecycle:
             try:
                 if self.actuation is not None:
                     self.actuation.apply(backend, span)
+                if self.unloader is not None:
+                    self.unloader.apply(backend, span)
                 native_advance(span, ordinary)
             finally:
                 mission.vehicles = original
@@ -1261,6 +1312,8 @@ class ProductLifecycle:
                 bus.integrate(backend, now, span, before)
             if self.actuation is not None:
                 self.actuation.finish(backend, now, span)
+            if self.unloader is not None:
+                self.unloader.finish(backend, now, span)
             if self.scheduler is not None:
                 self.scheduler.record(backend, now, backend.now(), valid, powered, work_rates, lane_loads, lane_denied, lane_before)
             for op in valid:
@@ -1276,6 +1329,10 @@ class ProductLifecycle:
                     }
                 )
                 if op["kind"] == "imaging":
+                    if bus is not None and bus.network.recent.get(op["actor"]):
+                        op["progress_sec"] += span
+                        self.fail_acquisition(op, backend, "thermal_limit")
+                        continue
                     if self.quality is not None:
                         self.quality.record_sar(op["actor"], now, backend.now())
                     if op["request_id"] in observation_samples:
@@ -1305,6 +1362,8 @@ class ProductLifecycle:
                         state["work_sec"] += work
                     if state["remaining_sec"] <= 4 * math.ulp(backend.now()):
                         try:
+                            if bus is not None and bus.network.recent.get(op["actor"]):
+                                raise MaterializationError("thermal_limit")
                             self._finish_job(op, backend)
                         except MaterializationError as error:
                             state.update(
@@ -1341,6 +1400,8 @@ class ProductLifecycle:
             statuses.update({cid: op["status"] for cid, op in bus.operations.items()})
         if self.actuation is not None:
             statuses.update({cid: op["status"] for cid, op in self.actuation.operations.items()})
+        if self.unloader is not None:
+            statuses.update({cid: op["status"] for cid,op in self.unloader.operations.items()})
         return statuses
 
     def inject(self, backend, events):
@@ -1562,6 +1623,7 @@ class ProductLifecycle:
         return {
             **({"payload_quality": self.quality.observation(actor, now, visible_areas)} if self.quality is not None else {}),
             **({"actuation": self.actuation.observation(actor)} if self.actuation is not None else {}),
+            **({"unloading": self.unloader.observation(actor)} if self.unloader is not None else {}),
             **({"resource_lanes": self.scheduler.observation(actor)} if self.scheduler is not None else {}),
             **({"areas_of_interest": {name: self.aois[name].model_dump(mode="json")
                                       for name in sorted(visible_areas)},
@@ -1621,7 +1683,7 @@ class ProductLifecycle:
                 k: sum(
                     p["size_bits"]
                     for p in self.artifacts.values()
-                    if p["actor"] == actor and p["source"] == k
+                    if p.get("origin_actor",p["actor"]) == actor and p["source"] == k
                 )
                 for k in ("acquired", "transformed_out")
             }
@@ -1650,11 +1712,13 @@ class ProductLifecycle:
             transmitted = sum(
                 r["bits"] for r in backend.mission.receipts if r["actor"] == actor
             )
-            remaining = self.occupied(backend, actor)
+            remaining = sum(backend.mission.remaining[p.id] for p in backend.mission.products.values() if p.actor == actor)
+            custody_in,custody_out = (0.,0.) if self.transport is None else self.transport.custody(actor)
             balance = (
                 initial
                 + injected
                 + sum(created.values())
+                + custody_in - custody_out
                 - sum(removed.values())
                 - transmitted
                 - remaining
@@ -1666,6 +1730,7 @@ class ProductLifecycle:
                 **removed,
                 "transmitted": transmitted,
                 "remaining": remaining,
+                **({"custody_in":custody_in,"custody_out":custody_out,"transport_reserved":self.transport.reserved(actor)} if self.transport is not None else {}),
                 "balance_error_bits": balance,
             }
         linked_receipts = []
@@ -1691,7 +1756,7 @@ class ProductLifecycle:
                     "actor": artifact["actor"],
                     "destination_id": self.destinations[pid],
                     "bits": artifact["size_bits"],
-                    "acknowledged_sec": max(r["end_sec"] for r in slips),
+                    "acknowledged_sec": max(r.get("ack_due_sec", r["end_sec"]) for r in slips),
                     "fulfilled_request_ids": [
                         r
                         for r in self.requests
@@ -1722,6 +1787,7 @@ class ProductLifecycle:
             "acknowledgements": acknowledgements,
             "metrics": self.metrics(),
             **({"actuation": self.actuation.report(backend)} if self.actuation is not None else {}),
+            **({"unloading": self.unloader.report(backend)} if self.unloader is not None else {}),
             **({"resource_lanes": self.scheduler.report()} if self.scheduler is not None else {}),
             **({"observation_requirements": {rid: {**self.evaluate_request(r, self.request_product(r)),
                   "delivery_product_ids": list(self.delivery_ids(r)), "full_delivery": self.receipt_time(r, backend) is not None,
@@ -1730,6 +1796,6 @@ class ProductLifecycle:
                if any(r.observations is not None for r in self.requests.values()) else {}),
             **({"payload_quality": self.quality_report()} if self.quality is not None else {}),
             **({"area_coverage": area_report(self.aois, self.artifacts)} if self.aois else {}),
-            "delivery_ack_model": "instant-on-complete-station-receipt/1",
+            "delivery_ack_model": ("ideal-round-trip-plus-processing/1" if backend.mission.radio_network is not None else "instant-on-complete-station-receipt/1"),
             "representation": "synthetic resource metadata; no rendered image or scientific compression",
         }

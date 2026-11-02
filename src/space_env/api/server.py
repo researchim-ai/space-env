@@ -1,7 +1,10 @@
 """Студия, снимок группировки и пульт живой смены."""
+
 from __future__ import annotations
 
 import json
+import os
+import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -37,7 +40,12 @@ _MISSION: dict | None = None
 
 
 def _mission_file() -> Path:
-    root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "mission_short.yaml"
+    root = (
+        Path(__file__).resolve().parents[3]
+        / "configs"
+        / "scenarios"
+        / "mission_short.yaml"
+    )
     if root.is_file():
         return root
     return Path(__file__).resolve().parents[1] / "configs" / "mission_short.yaml"
@@ -55,14 +63,25 @@ def _json_bytes(payload: dict, status: int = 200) -> tuple[int, bytes, str]:
     return status, body, "application/json; charset=utf-8"
 
 
-def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]:
+def handle_get(
+    path: str, query: dict[str, list[str]], *, token=None
+) -> tuple[int, bytes, str]:
     """Ответ на GET. Путь без хоста."""
+    if path.startswith("/api/operator/"):
+        return _operator_response("GET", path, token=token)
+    if path == "/operator":
+        return _file(studio_root() / "operator.html")
     if path == "/api/health":
         return _json_bytes({"status": "ok", "version": __version__})
     if path == "/api/scenario":
         return _json_bytes(load_shift_scenario())
     if path == "/api/tasking":
-        root = Path(__file__).resolve().parents[3] / "configs" / "scenarios" / "eo_72h_16.yaml"
+        root = (
+            Path(__file__).resolve().parents[3]
+            / "configs"
+            / "scenarios"
+            / "eo_72h_16.yaml"
+        )
         if not root.is_file():
             root = Path(__file__).resolve().parents[1] / "configs" / "eo_72h_16.yaml"
         return _json_bytes(scenario_manifest(root))
@@ -98,14 +117,20 @@ def handle_get(path: str, query: dict[str, list[str]]) -> tuple[int, bytes, str]
     return _json_bytes({"error": "нет такого пути"}, 404)
 
 
-def handle_post(path: str, body: bytes) -> tuple[int, bytes, str]:
+def handle_post(path: str, body: bytes, *, token=None) -> tuple[int, bytes, str]:
     """Команды пульта и сессии миссии."""
+    if path.startswith("/api/operator/") and len(body) > 8 * 1024 * 1024:
+        return _json_bytes(
+            {"error": {"code": "body_limit", "message": "request exceeds 8 MiB"}}, 413
+        )
     try:
         payload = json.loads(body.decode("utf-8") or "{}")
-    except json.JSONDecodeError:
+    except (ValueError, UnicodeError, RecursionError):
         return _json_bytes({"error": "нужен словарь JSON"}, 400)
     if not isinstance(payload, dict):
         return _json_bytes({"error": "нужен словарь JSON"}, 400)
+    if path.startswith("/api/operator/"):
+        return _operator_response("POST", path, payload=payload, token=token)
     if path == "/api/sessions":
         name = str(payload.get("scenario", "mission_short.yaml"))
         if Path(name).name != name or name not in _SESSION_FILES:
@@ -116,7 +141,9 @@ def handle_post(path: str, body: bytes) -> tuple[int, bytes, str]:
         _SESSIONS[session.session_id] = session
         return _json_bytes(session.report())
     if path.startswith("/api/sessions/") and path.endswith("/advance"):
-        session_id = path.removeprefix("/api/sessions/").removesuffix("/advance").strip("/")
+        session_id = (
+            path.removeprefix("/api/sessions/").removesuffix("/advance").strip("/")
+        )
         session = _SESSIONS.get(session_id)
         if session is None:
             return _json_bytes({"error": "нет такой сессии"}, 404)
@@ -181,33 +208,201 @@ def _file(path: Path) -> tuple[int, bytes, str]:
     return 200, target.read_bytes(), kind
 
 
+def _operator_response(method, path, *, payload=None, token=None):
+    try:
+        from space_env.api.operator import OperatorError, dispatch
+    except ImportError:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {
+                    "code": "missing_dependency",
+                    "message": "operator mode requires space-env[reference]",
+                },
+            },
+            503,
+        )
+    from space_env.runtime import RuntimeContractError
+    from space_env.simulation.snapshot import canonical_json
+
+    try:
+        if payload is not None:
+            canonical_json(payload)
+        result = dispatch(method, path, payload, token)
+        if isinstance(result, bytes):
+            return 200, result, "application/zip"
+        return _json_bytes(result)
+    except OperatorError as exc:
+        return _json_bytes(
+            {"ok": False, "error": {"code": exc.code, "message": str(exc)}}, exc.status
+        )
+    except RuntimeContractError as exc:
+        status = (
+            409
+            if exc.code
+            in {
+                "stale_revision",
+                "idempotency_conflict",
+                "episode_done",
+                "external_mutation",
+            }
+            else 400
+        )
+        return _json_bytes(exc.as_dict(), status)
+    except ImportError:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {
+                    "code": "missing_dependency",
+                    "message": "operator mode requires space-env[reference]",
+                },
+            },
+            503,
+        )
+    except sqlite3.Error:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {
+                    "code": "storage_unavailable",
+                    "message": "durable repository unavailable",
+                },
+            },
+            503,
+        )
+    except OSError:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {
+                    "code": "artifact_io",
+                    "message": "local native artifact IO failure",
+                },
+            },
+            500,
+        )
+    except (ValueError, KeyError, TypeError, RecursionError) as exc:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {"code": "invalid_request", "message": str(exc)[:1000]},
+            },
+            400,
+        )
+
+
 class _Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:
-        parsed = urlparse(self.path)
-        status, body, kind = handle_get(parsed.path, parse_qs(parsed.query))
+    def _send(self, response):
+        status, body, kind = response
         self.send_response(status)
         self.send_header("Content-Type", kind)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        if self.path.startswith(("/api/operator/", "/operator")):
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(body)
 
-    def do_POST(self) -> None:
-        parsed = urlparse(self.path)
-        length = int(self.headers.get("Content-Length", "0") or "0")
-        body = self.rfile.read(length) if length else b""
-        status, payload, kind = handle_post(parsed.path, body)
-        self.send_response(status)
-        self.send_header("Content-Type", kind)
-        self.send_header("Content-Length", str(len(payload)))
-        self.end_headers()
-        self.wfile.write(payload)
+    def _token(self):
+        value = self.headers.get("Authorization", "")
+        return value[7:] if value.startswith("Bearer ") else None
 
-    def log_message(self, fmt: str, *args) -> None:
+    def _operator_origin(self):
+        if not self.path.startswith("/api/operator/"):
+            return True
+        host = self.headers.get("Host", "")
+        try:
+            hostname = urlparse("http://" + host).hostname
+        except ValueError:
+            return False
+        if hostname not in {"localhost", "127.0.0.1", "::1"}:
+            return False
+        origin = self.headers.get("Origin")
+        return (
+            not origin
+            or urlparse(origin).scheme in {"http", "https"}
+            and urlparse(origin).netloc == host
+        )
+
+    def do_GET(self):
+        if not self._operator_origin():
+            self._send(
+                _json_bytes(
+                    {
+                        "error": {
+                            "code": "origin",
+                            "message": "local same-origin API required",
+                        }
+                    },
+                    403,
+                )
+            )
+            return
+        parsed = urlparse(self.path)
+        self._send(handle_get(parsed.path, parse_qs(parsed.query), token=self._token()))
+
+    def do_POST(self):
+        if not self._operator_origin():
+            self.close_connection = True
+            self._send(
+                _json_bytes(
+                    {
+                        "error": {
+                            "code": "origin",
+                            "message": "local same-origin API required",
+                        }
+                    },
+                    403,
+                )
+            )
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if length < 0:
+                raise ValueError("negative length")
+        except ValueError:
+            self.close_connection = True
+            self._send(_json_bytes({"error": "invalid Content-Length"}, 400))
+            return
+        if length > 8 * 1024 * 1024:
+            self.close_connection = True
+            self._send(_json_bytes({"error": "request exceeds 8 MiB"}, 413))
+            return
+        if (
+            self.path.startswith("/api/operator/")
+            and self.headers.get_content_type() != "application/json"
+        ):
+            self.close_connection = True
+            self._send(_json_bytes({"error": "application/json required"}, 415))
+            return
+        self.connection.settimeout(15)
+        try:
+            body = self.rfile.read(length)
+        except TimeoutError:
+            self.close_connection = True
+            self._send(_json_bytes({"error": "request body timeout"}, 408))
+            return
+        parsed = urlparse(self.path)
+        self._send(handle_post(parsed.path, body, token=self._token()))
+
+    def log_message(self, fmt, *args):
         return
 
 
-def serve(host: str = "127.0.0.1", port: int = 8766) -> None:
+def serve(host: str = "127.0.0.1", port: int = 8766, *, storage=None) -> None:
     """Слушает студию, пока процесс не остановят."""
+    from space_env.api import operator
+
+    path = (
+        storage
+        if storage is not None
+        else os.environ.get(
+            "SPACE_ENV_OPERATOR_DB", str(Path.cwd() / ".space-env" / "operator.sqlite3")
+        )
+    )
+    operator.STORE = operator.OperatorStore(path)
     server = ThreadingHTTPServer((host, port), _Handler)
     try:
         server.serve_forever()

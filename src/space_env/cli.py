@@ -8,6 +8,8 @@ from space_env.mission.session import mission_report
 
 
 def main(argv: list[str] | None = None) -> None:
+    from pathlib import Path
+
     parser = argparse.ArgumentParser(prog="space_env")
     sub = parser.add_subparsers(dest="command", required=True)
     run = sub.add_parser("run")
@@ -120,13 +122,95 @@ def main(argv: list[str] | None = None) -> None:
             unified.add_argument("plan")
         if name in {"mission-schema", "mission-run", "mission-resume"}:
             unified.add_argument("output")
+    for name in ("task-run","task-resume","task-replay","task-schema","task-export"):
+        task_parser=sub.add_parser(name,help="Verified runtime-backed task workflow")
+        if name=="task-run":
+            task_parser.add_argument("scenario")
+            task_parser.add_argument("task")
+        if name in {"task-resume","task-replay","task-export"}:task_parser.add_argument("record")
+        if name in {"task-run","task-resume"}:task_parser.add_argument("plan")
+        if name!="task-replay":task_parser.add_argument("output")
+        if name=="task-export":
+            task_parser.add_argument("--format",choices=["rl","sft"],default="rl")
+            task_parser.add_argument("--role",default="@central")
+    for name in ("planning-run", "planning-resume", "planning-replay", "planning-evaluate", "planning-verify-evaluation"):
+        planning_parser = sub.add_parser(name, help="Causal baseline planning and evaluation")
+        if name == "planning-run":
+            for argument in ("scenario", "task", "policy"):
+                planning_parser.add_argument(argument)
+            planning_parser.add_argument("--seed", type=int, default=None)
+        elif name == "planning-evaluate":
+            planning_parser.add_argument("manifest")
+            planning_parser.add_argument("--artifacts", default=None)
+        else:
+            planning_parser.add_argument("record")
+        if name not in {"planning-replay", "planning-verify-evaluation"}:
+            planning_parser.add_argument("output")
+        if name in {"planning-run", "planning-resume"}:
+            planning_parser.add_argument("--decisions", type=int, default=None)
+    for name in ("factory-schema", "factory-compile", "factory-build", "factory-verify", "factory-register"):
+        factory_parser = sub.add_parser(name, help="Versioned synthetic mission/data factory")
+        if name in {"factory-verify", "factory-register"}:
+            factory_parser.add_argument("bundle")
+            if name == "factory-verify": factory_parser.add_argument("--integrity-only", action="store_true")
+            else: factory_parser.add_argument("registry")
+        else:
+            if name != "factory-schema": factory_parser.add_argument("spec")
+            factory_parser.add_argument("output")
+    scale_parser = sub.add_parser("scale-benchmark", help="Frozen isolated-process scale measurements")
+    scale_parser.add_argument("manifest")
+    scale_parser.add_argument("output")
     args = parser.parse_args(argv)
+    if args.command == "scale-benchmark":
+        from space_env.scaling.benchmark import run_scale
+        try:
+            result = run_scale(json.loads(Path(args.manifest).read_text()), args.output)
+        except ValueError as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}))
+            raise SystemExit(1) from exc
+        print(json.dumps(result, ensure_ascii=False))
+        if not result["ok"]:
+            raise SystemExit(1)
+        return
+    if args.command.startswith("factory-"):
+        from space_env.factory.cli import run_command as factory_command
+
+        try:
+            result = factory_command(args)
+        except ValueError as exc:
+            print(json.dumps({"ok": False, "error": {"code": "factory_contract_error", "message": str(exc)}}))
+            raise SystemExit(1) from exc
+        print(json.dumps(result, ensure_ascii=False))
+        if not result.get("ok", True): raise SystemExit(1)
+        return
+    if args.command.startswith("planning-"):
+        from space_env.planning.cli import run_command as planning_command
+
+        try:
+            result = planning_command(args)
+        except ValueError as exc:
+            print(json.dumps({"ok": False, "error": {"code": "planning_contract_error", "message": str(exc)}}))
+            raise SystemExit(1) from exc
+        print(json.dumps(result, ensure_ascii=False))
+        if not result.get("ok", True):
+            raise SystemExit(1)
+        return
+    if args.command.startswith("task-"):
+        from space_env.tasks.cli import run_command as task_command
+        try:
+            result=task_command(args)
+        except ValueError as exc:
+            print(json.dumps({"ok":False,"error":{"code":"task_contract_error","message":str(exc)}}))
+            raise SystemExit(1) from exc
+        print(json.dumps(result,ensure_ascii=False))
+        return
+
     if args.command == "reference-qualify-orbits":
+        from space_env.simulation.snapshot import atomic_write, canonical_json
         from space_env.validation.covariance import covariance_prediction_report
         from space_env.validation.geometry_events import geometry_event_report
         from space_env.validation.maneuvers import finite_burn_report
         from space_env.validation.orbit_fixtures import verify_packaged_orbit_fixtures
-        from space_env.simulation.snapshot import atomic_write, canonical_json
 
         fixtures = verify_packaged_orbit_fixtures()
         thrust = finite_burn_report()

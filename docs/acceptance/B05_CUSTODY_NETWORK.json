@@ -1,0 +1,938 @@
+{
+  "date": "2026-11-02",
+  "package": "B05-B",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "parent_B05_status": "verified_declared_engineering_profile",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "contract": "../validation/CUSTODY_NETWORK_CONTRACT.md",
+  "tests": {
+    "new_custody_cases": 44,
+    "focused_with_legacy_case": 45,
+    "reference": 871,
+    "reference_warnings": 13,
+    "reference_duration_seconds": 125.7,
+    "fast": 110,
+    "fast_warnings": 2,
+    "fast_duration_seconds": 13.69,
+    "collected": 1301,
+    "counts_overlap": true,
+    "full_regression": {
+      "status": "passed",
+      "passed": 1301,
+      "warnings": 58,
+      "duration_seconds": 1554.35,
+      "exit_code": 0,
+      "loopback_enabled": true,
+      "uninterrupted_on_final_source": true,
+      "summary": "1301 passed, 58 warnings in 1554.35s (0:25:54)"
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 198,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "839e244964d9f1e8878f72aced3a4552173d7339961787d3bc8f6f94a7d2ab30",
+    "runtime_payload_identical_to_installed_sdk_tested_wheel": true,
+    "metadata_only_refresh": {
+      "changed_files": [
+        "space_env-0.134.0.dist-info/METADATA",
+        "space_env-0.134.0.dist-info/RECORD"
+      ],
+      "sdk_tested_wheel_sha256": "f79b5ae38245fdeb12851151d77fa0758b75d8557152fc2a5ce3257885ea58c8"
+    },
+    "final_metadata_refresh_installed_replay": "passed_all_four_modes"
+  },
+  "demos": {
+    "nominal": {
+      "ok": true,
+      "mode": "nominal",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "b",
+          "bits": 1000000.0,
+          "time_sec": 9.242088310244814
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1500000.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 2.4020883102448174,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "b",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 14.517938264842723,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "reroute": {
+      "ok": true,
+      "mode": "reroute",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "cancelled",
+        "reroute": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.910962679304293
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "c",
+          "bits": 1000000.0,
+          "time_sec": 11.243850465038143
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1539037.316383078,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 3.7838504607255192
+      },
+      "wire_balance_error_bits": -4.656612873077393e-10,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.554289352690251,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 15.089853104377442,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "loss": {
+      "ok": true,
+      "mode": "loss",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "b",
+          "bits": 1000000.0,
+          "time_sec": 9.752610379069226
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 250000.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1750000.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 3.002610379069232,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "b",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 14.517938264842723,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "ttl": {
+      "ok": true,
+      "mode": "ttl",
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "expired"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 789477.9196530166,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 0.7794779196530186,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    }
+  },
+  "installed_sdk": {
+    "status": "passed",
+    "network": {
+      "nominal": {
+        "ok": true,
+        "mode": "nominal",
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "transfer_status": {
+          "relay-first": "completed",
+          "relay-second": "completed"
+        },
+        "custody_history": [
+          {
+            "product_id": "final-a",
+            "source": "a",
+            "destination": "c",
+            "bits": 500000.0,
+            "time_sec": 4.621925364400944
+          },
+          {
+            "product_id": "raw-after",
+            "source": "a",
+            "destination": "b",
+            "bits": 1000000.0,
+            "time_sec": 9.242088310244814
+          }
+        ],
+        "rx_duplicate_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "tx_serialized_bits": {
+          "a": 1500000.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "rx_dc_energy_j": {
+          "a": 0.0,
+          "b": 2.4020883102448174,
+          "c": 1.2019253644009442
+        },
+        "wire_balance_error_bits": 0.0,
+        "receiver_balance_error_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "c",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 9.354287663648448,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          },
+          {
+            "product_id": "raw-after",
+            "actor": "b",
+            "destination_id": "Ground",
+            "bits": 1000000,
+            "acknowledged_sec": 14.517938264842723,
+            "fulfilled_request_ids": [
+              "after-thermal"
+            ]
+          }
+        ],
+        "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP",
+        "installed_console_replay": true,
+        "mid_fragment_and_inflight_replay": true
+      },
+      "reroute": {
+        "ok": true,
+        "mode": "reroute",
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "transfer_status": {
+          "relay-first": "completed",
+          "relay-second": "cancelled",
+          "reroute": "completed"
+        },
+        "custody_history": [
+          {
+            "product_id": "final-a",
+            "source": "a",
+            "destination": "c",
+            "bits": 500000.0,
+            "time_sec": 4.910962679304293
+          },
+          {
+            "product_id": "raw-after",
+            "source": "a",
+            "destination": "c",
+            "bits": 1000000.0,
+            "time_sec": 11.243850465038143
+          }
+        ],
+        "rx_duplicate_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "tx_serialized_bits": {
+          "a": 1539037.316383078,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "rx_dc_energy_j": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 3.7838504607255192
+        },
+        "wire_balance_error_bits": -4.656612873077393e-10,
+        "receiver_balance_error_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "c",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 9.554289352690251,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          },
+          {
+            "product_id": "raw-after",
+            "actor": "c",
+            "destination_id": "Ground",
+            "bits": 1000000,
+            "acknowledged_sec": 15.089853104377442,
+            "fulfilled_request_ids": [
+              "after-thermal"
+            ]
+          }
+        ],
+        "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP",
+        "installed_console_replay": true,
+        "mid_fragment_and_inflight_replay": true
+      },
+      "loss": {
+        "ok": true,
+        "mode": "loss",
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "transfer_status": {
+          "relay-first": "completed",
+          "relay-second": "completed"
+        },
+        "custody_history": [
+          {
+            "product_id": "final-a",
+            "source": "a",
+            "destination": "c",
+            "bits": 500000.0,
+            "time_sec": 4.621925364400944
+          },
+          {
+            "product_id": "raw-after",
+            "source": "a",
+            "destination": "b",
+            "bits": 1000000.0,
+            "time_sec": 9.752610379069226
+          }
+        ],
+        "rx_duplicate_bits": {
+          "a": 0.0,
+          "b": 250000.0,
+          "c": 0.0
+        },
+        "tx_serialized_bits": {
+          "a": 1750000.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "rx_dc_energy_j": {
+          "a": 0.0,
+          "b": 3.002610379069232,
+          "c": 1.2019253644009442
+        },
+        "wire_balance_error_bits": 0.0,
+        "receiver_balance_error_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "c",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 9.354287663648448,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          },
+          {
+            "product_id": "raw-after",
+            "actor": "b",
+            "destination_id": "Ground",
+            "bits": 1000000,
+            "acknowledged_sec": 14.517938264842723,
+            "fulfilled_request_ids": [
+              "after-thermal"
+            ]
+          }
+        ],
+        "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP",
+        "installed_console_replay": true,
+        "mid_fragment_and_inflight_replay": true
+      },
+      "ttl": {
+        "ok": true,
+        "mode": "ttl",
+        "metrics": {
+          "fulfilled_requests": 1,
+          "total_requests": 2
+        },
+        "transfer_status": {
+          "relay-first": "completed",
+          "relay-second": "expired"
+        },
+        "custody_history": [
+          {
+            "product_id": "final-a",
+            "source": "a",
+            "destination": "c",
+            "bits": 500000.0,
+            "time_sec": 4.621925364400944
+          }
+        ],
+        "rx_duplicate_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "tx_serialized_bits": {
+          "a": 789477.9196530166,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "rx_dc_energy_j": {
+          "a": 0.0,
+          "b": 0.7794779196530186,
+          "c": 1.2019253644009442
+        },
+        "wire_balance_error_bits": 0.0,
+        "receiver_balance_error_bits": {
+          "a": 0.0,
+          "b": 0.0,
+          "c": 0.0
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "c",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 9.354287663648448,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          }
+        ],
+        "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP",
+        "installed_console_replay": true,
+        "mid_fragment_and_inflight_replay": true
+      }
+    },
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "package": "/tmp/space-env-custody-installed/lib/python3.12/site-packages/space_env",
+    "source_isolation": "python -I outside source checkout; console PYTHONNOUSERSITE=1",
+    "extended_existing_profiles": "passed"
+  },
+  "installed_console": {
+    "nominal": {
+      "validate_run_resume_replay": true,
+      "sdk_cli_checkpoints_identical": true
+    },
+    "reroute": {
+      "validate_run_resume_replay": true,
+      "sdk_cli_checkpoints_identical": true
+    },
+    "loss": {
+      "validate_run_resume_replay": true,
+      "sdk_cli_checkpoints_identical": true
+    },
+    "ttl": {
+      "validate_run_resume_replay": true,
+      "sdk_cli_checkpoints_identical": true
+    }
+  },
+  "independent_checks": [
+    "independent wire, receiver staging, logical custody inventory and battery/thermal residuals",
+    "disjoint pairs and mixed direct/relay execute concurrently",
+    "half-duplex shared receiver queue",
+    "full destination reservation prevents memory overcommit",
+    "data unavailable before propagation/custody ACK",
+    "actual two-endpoint power/SOC/peak/quota and radio heat",
+    "data/ACK loss, dedup, paid retry and tail outage",
+    "TTL cannot be extended by a hop/reroute",
+    "partial cancel and in-flight drain preserve already spent resources",
+    "origin remains stable across transport owner changes",
+    "final ground ACK gates exactly-once customer credit",
+    "native and runtime budget rollback including expiry/discard and shared aliases",
+    "mid-fragment/in-flight and full cold replay"
+  ],
+  "limits": [
+    "synthetic parameters; no hardware/flight or protocol qualification",
+    "whole-product reassembly/store-and-forward",
+    "managed final deliverables only; remote CPU/raw intermediate transport not implemented",
+    "one shared half-duplex radio per actor; no multi-radio or spectral interference",
+    "nominal sampled geometry/pointing; no RF uncertainty covariance propagation",
+    "per-attempt acquisition and conservative RX listening through propagation",
+    "fixed bounded retry/backoff; per-hop/session fragment dedup, no multipath replication/multicast",
+    "ideal out-of-band lossy ACK; no reverse RF/ACK energy/encoding/security",
+    "central current/past control-plane observations; no physical distributed telemetry latency",
+    "B09 fleet performance and B12 independent industrial evidence remain open"
+  ],
+  "next": "B06: causal task entities/actions/masks, Runtime Gym/MARL facade, physical-time transitions, LLM/human adapter and verified SFT/RL exports",
+  "source_installed_demos_identical": true,
+  "content_hash_preserved_across_custody": true,
+  "installed_standalone": {
+    "nominal": {
+      "ok": true,
+      "mode": "nominal",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "b",
+          "bits": 1000000.0,
+          "time_sec": 9.242088310244814
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1500000.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 2.4020883102448174,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "b",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 14.517938264842723,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "reroute": {
+      "ok": true,
+      "mode": "reroute",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "cancelled",
+        "reroute": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.910962679304293
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "c",
+          "bits": 1000000.0,
+          "time_sec": 11.243850465038143
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1539037.316383078,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 3.7838504607255192
+      },
+      "wire_balance_error_bits": -4.656612873077393e-10,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.554289352690251,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 15.089853104377442,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "loss": {
+      "ok": true,
+      "mode": "loss",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "completed"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        },
+        {
+          "product_id": "raw-after",
+          "source": "a",
+          "destination": "b",
+          "bits": 1000000.0,
+          "time_sec": 9.752610379069226
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 250000.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 1750000.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 3.002610379069232,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "b",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 14.517938264842723,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    },
+    "ttl": {
+      "ok": true,
+      "mode": "ttl",
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "transfer_status": {
+        "relay-first": "completed",
+        "relay-second": "expired"
+      },
+      "custody_history": [
+        {
+          "product_id": "final-a",
+          "source": "a",
+          "destination": "c",
+          "bits": 500000.0,
+          "time_sec": 4.621925364400944
+        }
+      ],
+      "rx_duplicate_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "tx_serialized_bits": {
+        "a": 789477.9196530166,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "rx_dc_energy_j": {
+        "a": 0.0,
+        "b": 0.7794779196530186,
+        "c": 1.2019253644009442
+      },
+      "wire_balance_error_bits": 0.0,
+      "receiver_balance_error_bits": {
+        "a": 0.0,
+        "b": 0.0,
+        "c": 0.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "c",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 9.354287663648448,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        }
+      ],
+      "scope": "synthetic whole-product custody; ideal isolated RF/central control and out-of-band ACK; not BPv7/BIBE/LTP"
+    }
+  }
+}

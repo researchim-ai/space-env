@@ -177,9 +177,11 @@ def propagate(
             a = acceleration(state, initial.epoch.shifted(float(clock)), context, current_model)
         if thrust is not None:
             mass = thrust.mass(model.mass_kg, clock)
-            a += thrust.thrust_n / mass * np.asarray(thrust.direction_gcrs)
+            a += thrust.thrust_n / mass * np.asarray(thrust.direction_at(clock))
         return np.concatenate((state[3:], a))
 
+    if thrust is not None and hasattr(thrust, "direction_step_sec"):
+        max_step_sec = min(max_step_sec, thrust.direction_step_sec)
     solution = solve_ivp(derivative, (0., duration_sec), np.concatenate((initial.r_m, initial.v_m_s)),
                          method="DOP853", t_eval=times, rtol=rtol,
                          atol=[position_atol_m]*3 + [velocity_atol_m_s]*3, max_step=max_step_sec)
@@ -189,7 +191,7 @@ def propagate(
 
     root = Path(__file__).resolve().parents[1]
     sources = [*sorted((root / "reference").glob("*.py")),
-               *[root / "core" / name for name in ("constants.py", "frames.py", "gravity.py", "environment.py")]]
+               *[root / "core" / name for name in ("constants.py", "frames.py", "gravity.py", "environment.py", "attitude.py")]]
     hashes = {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     result = {"schema": "space-env.reference-orbit/1", "frame": "GCRS", "epoch_utc": initial.epoch.iso(),
             "epoch_tai_jd": [initial.epoch.tai1, initial.epoch.tai2],
@@ -204,7 +206,5 @@ def propagate(
 
     if thrust is not None:
         result["masses_kg"] = [thrust.mass(model.mass_kg, float(t)) for t in solution.t]
-        result["manifest"]["thrust"] = {**asdict(thrust), "frame": "GCRS",
-            "attitude": "perfect inertial pointing; no ADCS dynamics",
-            "mass_model": "constant F/(Isp*g0), exact analytic mass; core.propulsion helper"}
+        result["manifest"]["thrust"] = thrust.manifest()
     return result

@@ -89,7 +89,7 @@ class ReferenceDownlinkMission:
 
     def __init__(self, spec: dict):
         required = {"schema", "ephemerides", "vehicles", "stations", "products"}
-        if not required <= spec.keys() or spec.keys() - required - {"outages", "resource_step_sec", "horizon_sec"}:
+        if not required <= spec.keys() or spec.keys() - required - {"outages", "resource_step_sec", "horizon_sec", "radio_network", "dtn_network"}:
             raise ValueError("invalid reference operations spec fields")
         if spec["schema"] != "space-env.reference-downlink-spec/1":
             raise ValueError("unsupported reference operations spec")
@@ -176,6 +176,7 @@ class ReferenceDownlinkMission:
         self.transmitter_rates = {a: v.rate_bps for a, v in self.vehicles.items()}
         self.station_rates: dict[str, float | None] = dict.fromkeys(self.stations)
         self.bookings = {}
+        self.external_reservations = {}
         self.booking_cancelled = {}
         self.reservation_required = dict.fromkeys(self.stations, False)
         self.tx_seconds = dict.fromkeys(self.actors, 0.)
@@ -187,6 +188,19 @@ class ReferenceDownlinkMission:
         self.processing_seconds = dict.fromkeys(self.actors, 0.)
         self.processing_completed = {p.id: None for p in self.products.values()}
         self.processing_intervals: list[dict] = []
+        self.radio_network = None
+        if spec.get("radio_network") is not None:
+            from space_env.reference.radio_network import RadioGroundNetwork
+            self.radio_network = RadioGroundNetwork(spec["radio_network"], self)
+        self.dtn = None
+        self.rx_seconds = dict.fromkeys(self.actors, 0.)
+        self.dtn_lane_bandwidth = {}
+        if spec.get("dtn_network") is not None:
+            from space_env.reference.dtn import CustodyNetwork
+            self.dtn = CustodyNetwork(spec["dtn_network"], self)
+
+    def transport_memory(self, actor):
+        return 0. if self.dtn is None else self.dtn.reserved(actor)
 
     def processed_products(self) -> set[str]:
         completed = set()
@@ -216,7 +230,7 @@ class ReferenceDownlinkMission:
             reason = "not_ready"
         elif p.depends_on and not set(p.depends_on) <= self.processed_products():
             reason = "dependency"
-        elif sum(self.remaining[q.id] for q in self.products.values() if q.actor == p.actor)+p.workspace_bits > config.memory_bits:
+        elif sum(self.remaining[q.id] for q in self.products.values() if q.actor == p.actor)+self.transport_memory(p.actor)+p.workspace_bits > config.memory_bits:
             reason = "memory"
         else:
             floor = config.min_processing_soc*config.battery_wh
@@ -231,7 +245,7 @@ class ReferenceDownlinkMission:
         if self.energy_wh[actor] < floor-1e-12 or (self.energy_wh[actor] <= floor+1e-12
                 and generation_w-config.base_power_w-config.processing_power_w < 0):
             return None
-        occupied = sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor)
+        occupied = sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor)+self.transport_memory(actor)
         processed = self.processed_products()
         jobs = [p for p in self.products.values() if p.actor == actor and self.remaining[p.id] > 0
                 and self.processing_remaining[p.id] > 0 and p.ready_sec <= self.clock+1e-9
@@ -272,7 +286,7 @@ class ReferenceDownlinkMission:
         """
         if actor not in self.vehicles or station not in self.stations:
             raise ValueError("unknown service-window actor or station")
-        if self.effective_rate(actor, station) == 0:
+        if self.radio_network is None and self.effective_rate(actor, station) == 0:
             return []
         edges = sorted({self.clock, self.horizon_sec,
                         *[t for t in self._boundaries if self.clock < t < self.horizon_sec]})
@@ -294,7 +308,8 @@ class ReferenceDownlinkMission:
     def effective_rate(self, actor: str, station: str) -> float:
         """Configured per-terminal throughput ceiling, not a calibrated RF model."""
         cap = self.station_rates[station]
-        return min(self.transmitter_rates[actor], cap) if cap is not None else self.transmitter_rates[actor]
+        baseline = min(self.transmitter_rates[actor], cap) if cap is not None else self.transmitter_rates[actor]
+        return baseline if self.radio_network is None else min(baseline, self.radio_network.rate(actor, station))
 
     def apply_events(self, events: list[dict]) -> dict:
         from space_env.reference.events import apply_events
@@ -307,6 +322,8 @@ class ReferenceDownlinkMission:
             "stored_bits": sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor),
             "contacts": [name for name in self.stations if self._visible(actor, name)],
             "transmitter_rate_bps": self.transmitter_rates[actor],
+            **({"dtn":self.dtn.observation(actor)} if self.dtn is not None else {}),
+            **({"radio_network":self.radio_network.observation(self, actor)} if self.radio_network is not None else {}),
         } for actor in self.actors}}
 
     def _visible(self, actor: str, station: str) -> bool:
@@ -330,7 +347,7 @@ class ReferenceDownlinkMission:
         # Explicit ideal independent Sun tracking; no attitude/slew/RF pointing claim.
         return config.solar_area_m2*config.solar_efficiency*SOLAR_CONSTANT*(AU/float((sum(x*x for x in sun))**.5))**2*shadow_state(r, sun).flux_fraction
 
-    def select_transmissions(self, actions, selections, *, processors=(), generation, vehicles=None):
+    def select_transmissions(self, actions, selections, *, processors=(), generation, vehicles=None, ignore_radio=False):
         """Readonly native station/booking/rate/SOC admission shared by executors."""
         vehicles = self.vehicles if vehicles is None else vehicles
         chosen, used = {}, dict.fromkeys(self.stations, 0)
@@ -338,18 +355,23 @@ class ReferenceDownlinkMission:
         for actor in sorted(actions):
             station = actions[actor]
             config = vehicles[actor]
-            if station is None or not self._visible(actor, station) or not self.transmitter_ready(actor) or actor in processors:
+            if station is None or not self._visible(actor, station) or not self.transmitter_ready(actor) or actor in processors or (self.dtn is not None and self.dtn.receiving(actor)):
                 continue
             reserved, free = self.booking_capacity(actor, station)
             if not reserved and (self.reservation_required[station] or open_used[station] >= free):
                 continue
             product = self.products[selections[actor]] if actor in selections else self._product(actor, station)
+            if product is not None and self.dtn is not None and self.dtn.pinned(product.id):
+                product = None
             if product is not None and (self.remaining[product.id] <= 0 or product.ready_sec > self.clock+1e-9
                                         or self.processing_remaining[product.id] > 0 or self.retained_for(product.id)):
                 product = None
             net = generation[actor]-config.base_power_w-config.tx_power_w
             floor = config.min_tx_soc*config.battery_wh
-            if product is None or used[station] >= self.stations[station].terminals or self.effective_rate(actor, station) == 0:
+            rate = self.transmitter_rates[actor] if ignore_radio else self.effective_rate(actor, station)
+            if ignore_radio and self.radio_network is not None:
+                rate = self.radio_network.budget(self, actor, station)["rate_bps"]
+            if product is None or used[station] >= self.stations[station].terminals or rate == 0:
                 continue
             if self.energy_wh[actor] < floor-1e-12 or (self.energy_wh[actor] <= floor+1e-12 and net < 0):
                 continue
@@ -361,11 +383,15 @@ class ReferenceDownlinkMission:
 
     def step(self, dt_sec: float, actions: dict[str, str | None], *,
              products: dict[str, str] | None = None, processing: dict[str, bool] | None = None,
-             processing_jobs: dict[str, str] | None = None) -> dict:
+             processing_jobs: dict[str, str] | None = None, relay_controls=(), relay_blocked=()) -> dict:
         if isinstance(dt_sec, bool) or not math.isfinite(dt_sec) or dt_sec <= 1e-9 or self.clock+dt_sec > self.horizon_sec+1e-9:
             raise ValueError("step must exceed 1ns, be finite and within horizon")
         if actions.keys() - self.vehicles.keys() or any(s is not None and s not in self.stations for s in actions.values()):
             raise ValueError("unknown actor or station action")
+        if relay_controls and (self.dtn is None or any(t not in self.dtn.transfers for t in relay_controls)):
+            raise ValueError("relay controls require configured admitted transfer IDs")
+        if set(relay_blocked)-set(self.actors):
+            raise ValueError("unknown blocked relay endpoint")
         selections = {} if products is None else dict(products)
         processing = {} if processing is None else dict(processing)
         jobs = {} if processing_jobs is None else dict(processing_jobs)
@@ -386,9 +412,15 @@ class ReferenceDownlinkMission:
                       dict(self.tx_seconds), dict(self.temperature), dict(self.thermal_locked), dict(self.heat_j), dict(self.rejected_heat_j),
                       dict(self.processing_remaining), dict(self.processing_seconds), dict(self.processing_completed), len(self.processing_intervals),
                       len(self.receipts), len(self.intervals))
+        radio_checkpoint = None if self.radio_network is None else copy.deepcopy(self.radio_network.__dict__)
+        dtn_checkpoint = None if self.dtn is None else copy.deepcopy(self.dtn.__dict__)
+        product_checkpoint, rx_checkpoint = dict(self.products), dict(self.rx_seconds)
+        custody_inventory = None if self.dtn is None else (dict(self.cancelled),dict(self.discarded))
         try:
             end = min(self.clock+dt_sec, self.horizon_sec)
             while self.clock < end-1e-9:
+                if self.dtn is not None:
+                    self.dtn.settle(self)
                 right = min(end, (math.floor((self.clock+1e-9)/self.resource_step_sec)+1)*self.resource_step_sec,
                             *[t for t in self._boundaries if t > self.clock+1e-9])
                 span = right-self.clock
@@ -398,6 +430,7 @@ class ReferenceDownlinkMission:
                              self.horizon_sec)
                 generation = {a: self._generation(a, sample) for a in self.actors}
                 processors = {a: job for a in self.actors if processing.get(a, True)
+                              and not (self.dtn is not None and self.dtn.receiving(a))
                               and (job := self.processing_job(a, generation[a], jobs.get(a))) is not None}
                 for actor, job in processors.items():
                     config = self.vehicles[actor]
@@ -405,7 +438,29 @@ class ReferenceDownlinkMission:
                     net = generation[actor]-config.base_power_w-config.processing_power_w
                     if net < 0:
                         span = min(span, max(0., (self.energy_wh[actor]-config.min_processing_soc*config.battery_wh)*3600/-net))
+                if self.radio_network is not None:
+                    candidates = self.select_transmissions(actions, selections, processors=processors, generation=generation, ignore_radio=True)
+                    self.radio_network.prepare(self, candidates)
+                    right = self.radio_network.boundary(self.clock, right)
+                    span = min(span, right-self.clock)
                 chosen = self.select_transmissions(actions, selections, processors=processors, generation=generation)
+                relay_active = {}
+                if self.dtn is not None:
+                    relay_active = self.dtn.prepare(self, relay_controls, chosen, processors, generation, relay_blocked)
+                    span = min(span,self.dtn.boundary(self,self.clock+span)-self.clock)
+                    for a,item in relay_active.items():
+                        bus = getattr(self,'bus',None)
+                        if bus is not None:
+                            item['floor'] = max(item['floor'],bus.network.heater_floor(a))
+                        net = generation[a]-self.vehicles[a].base_power_w-item['power_w']
+                        if net < 0:
+                            span = min(span,max(0.,(self.energy_wh[a]-item['floor']*self.vehicles[a].battery_wh)*3600/-net))
+                        if item['role']=='tx':
+                            v=self.vehicles[a]
+                            if v.max_tx_sec is not None:
+                                span=min(span,v.max_tx_sec-self.tx_seconds[a])
+                            if v.thermal is not None:
+                                span=min(span,v.thermal.crossing(self.temperature[a],v.thermal.trip_k,True))
                 for actor, (station, product) in chosen.items():
                     config = self.vehicles[actor]
                     rate = self.effective_rate(actor, station)
@@ -431,12 +486,16 @@ class ReferenceDownlinkMission:
                     raise RuntimeError("resource boundary made no progress")
                 for actor in self.actors:
                     config = self.vehicles[actor]
-                    if actor in chosen:
+                    relay = relay_active.get(actor)
+                    transmitting = actor in chosen or (relay is not None and relay['role']=='tx')
+                    if transmitting:
                         self.tx_seconds[actor] += span
+                    if relay is not None and relay['role']=='rx':
+                        self.rx_seconds[actor] += span
                     if config.thermal:
                         old = self.temperature[actor]
-                        new = config.thermal.advance(old, span, actor in chosen)
-                        heat = config.thermal.heat_tx_w*span if actor in chosen else 0.
+                        new = config.thermal.advance(old, span, transmitting)
+                        heat = config.thermal.heat_tx_w*span if transmitting else 0.
                         self.heat_j[actor] += heat
                         self.rejected_heat_j[actor] += heat-config.thermal.capacity_j_per_k*(new-old)
                         self.temperature[actor] = new
@@ -444,7 +503,7 @@ class ReferenceDownlinkMission:
                             self.thermal_locked[actor] = True
                         elif new <= config.thermal.resume_k+1e-9:
                             self.thermal_locked[actor] = False
-                    load = config.base_power_w+(config.tx_power_w if actor in chosen else 0)+(config.processing_power_w if actor in processors else 0)
+                    load = config.base_power_w+(config.tx_power_w if actor in chosen else 0)+(config.processing_power_w if actor in processors else 0)+(relay["power_w"] if relay is not None else 0)
                     net = generation[actor]-load
                     generated = generation[actor]*span/3600
                     demand = load*span/3600
@@ -463,10 +522,11 @@ class ReferenceDownlinkMission:
                     self.processing_seconds[actor] += span
                     if complete:
                         self.processing_completed[job.id] = self.clock+span
-                    occupied = sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor)
+                    occupied = sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor)+self.transport_memory(actor)
                     self.processing_intervals.append({"actor": actor, "product_id": job.id, "start_sec": self.clock,
                                                       "end_sec": self.clock+span, "workspace_bits": job.workspace_bits,
                                                       "inventory_bits": occupied, "total_memory_bits": occupied+job.workspace_bits})
+                receipt_start = len(self.receipts)
                 for actor, (station, product) in chosen.items():
                     rate = self.effective_rate(actor, station)
                     duration = self.remaining[product.id]/rate
@@ -481,9 +541,22 @@ class ReferenceDownlinkMission:
                                           "start_sec": self.clock, "end_sec": self.clock+span, "bits": bits})
                 self.intervals.append({"start_sec": self.clock, "end_sec": self.clock+span,
                                        "transmitters": {a: pair[0] for a, pair in chosen.items()}})
+                if self.radio_network is not None:
+                    self.radio_network.integrate(self, self.clock, span, chosen, receipt_start)
+                if self.dtn is not None:
+                    self.dtn.integrate(self,self.clock,span,relay_active)
                 self.clock += span
+            if self.dtn is not None:
+                self.dtn.settle(self)
             return self.report()
         except Exception:
+            self.products, self.rx_seconds = product_checkpoint, rx_checkpoint
+            if custody_inventory is not None:
+                self.cancelled,self.discarded = custody_inventory
+            if dtn_checkpoint is not None:
+                self.dtn.__dict__ = dtn_checkpoint
+            if radio_checkpoint is not None:
+                self.radio_network.__dict__ = radio_checkpoint
             (self.clock, self.remaining, self.energy_wh, self.unserved_base_wh,
              self.generated_wh, self.consumed_wh, self.curtailed_wh,
              self.tx_seconds, self.temperature, self.thermal_locked, self.heat_j, self.rejected_heat_j,
@@ -493,13 +566,22 @@ class ReferenceDownlinkMission:
             del self.intervals[intervals:]
             raise
 
+    def acknowledged_time(self, product_id):
+        if self.remaining[product_id] != 0 or product_id in self.cancelled:
+            return None
+        slips = [r for r in self.receipts if r["product_id"] == product_id]
+        if not slips:
+            return None
+        due = max(r.get("ack_due_sec", r["end_sec"]) for r in slips)
+        return due if due <= self.clock+4*math.ulp(self.clock) else None
+
     def report(self) -> dict:
         outcomes = []
         processed = self.processed_products()
         for product in self.products.values():
             slips = [r for r in self.receipts if r["product_id"] == product.id]
-            complete = self.remaining[product.id] == 0 and product.id not in self.cancelled
-            completed_at = max((r["end_sec"] for r in slips), default=None) if complete else None
+            completed_at = self.acknowledged_time(product.id)
+            complete = completed_at is not None
             status = ("delivered_on_time" if completed_at <= product.deadline_sec+1e-9 else "delivered_late") if complete else "incomplete"
             if product.id in self.cancelled:
                 status = "cancelled"
@@ -525,10 +607,11 @@ class ReferenceDownlinkMission:
             delivered = sum(r["bits"] for r in self.receipts if r["actor"] == actor)
             remaining = sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor)
             discarded = sum(self.discarded[p.id] for p in self.products.values() if p.actor == actor)
-            inventory[actor] = {"initial_bits": initial, "injected_bits": injected,
+            custody_in,custody_out = (0.,0.) if self.dtn is None else self.dtn.custody(actor)
+            inventory[actor] = {**({"custody_in_bits":custody_in,"custody_out_bits":custody_out} if self.dtn is not None else {}),"initial_bits": initial, "injected_bits": injected,
                                 "delivered_bits": delivered, "remaining_bits": remaining,
                                 "discarded_bits": discarded,
-                                "balance_error_bits": initial+injected-delivered-remaining-discarded}
+                                "balance_error_bits": initial+injected+custody_in-custody_out-delivered-remaining-discarded}
         utilization = []
         for b in self.bookings.values():
             end = min(self.clock, b.end_sec, self.booking_cancelled.get(b.id, b.end_sec))
@@ -539,6 +622,8 @@ class ReferenceDownlinkMission:
                                 "transmitting_sec": transmitting, "idle_reserved_sec": elapsed-transmitting,
                                 "utilization": transmitting/elapsed if elapsed else None})
         return {"profile": PROFILE, "time_sec": self.clock, "observation": self.observation(),
+                **({"dtn":self.dtn.report(self)} if self.dtn is not None else {}),
+                **({"radio_network":self.radio_network.report(self)} if self.radio_network is not None else {}),
                 "products": outcomes, "receipts": copy.deepcopy(self.receipts),
                 "events": copy.deepcopy(self.events),
                 "inventory_ledger": inventory,
@@ -546,6 +631,7 @@ class ReferenceDownlinkMission:
                                 "station_per_terminal_bps": dict(self.station_rates)},
                 "bookings": [dict(b.model_dump(), cancelled_sec=self.booking_cancelled.get(b.id)) for b in self.bookings.values()],
                 "reservation_required": dict(self.reservation_required),
+                "external_reservations": copy.deepcopy(self.external_reservations),
                 "booking_utilization": utilization,
                 "processing": {"seconds": dict(self.processing_seconds),
                                "energy_wh": {a: self.processing_seconds[a]*v.processing_power_w/3600 for a, v in self.vehicles.items()},

@@ -71,6 +71,12 @@ class ReferenceBackend:
             "horizon_sec": self.mission.horizon_sec,
             "resource_step_sec": self.mission.resource_step_sec,
         }
+        if self.mission.radio_network is not None:
+            self.definition["radio_network"] = self.mission.radio_network.config.model_dump(mode="json")
+            self.capabilities = self.capabilities | {"physics.sampled_rf", "ground.acquisition", "ground.aggregate_capacity"}
+        if self.mission.dtn is not None:
+            self.definition["dtn_network"] = self.mission.dtn.config.model_dump(mode="json")
+            self.capabilities = self.capabilities | {"commands.relay", "network.custody", "network.concurrent_isl"}
         # Effective and executed configuration are identical, including defaults.
         self.mission = factory(self.definition)
 
@@ -81,7 +87,13 @@ class ReferenceBackend:
         return self.mission.horizon_sec
 
     def validate_command(self, c):
-        if c.kind == "downlink":
+        if self.mission.dtn is not None and self.mission.dtn.receiving(c.actor_id) and c.kind not in {"relay","wait"}:
+            raise ValueError("actor receiver is busy draining an in-flight fragment")
+        if c.kind == "relay":
+            if self.mission.dtn is None:
+                raise ValueError("relay requires DTN configuration")
+            self.mission.dtn.validate(c,self.mission)
+        elif c.kind == "downlink":
             if c.destination_id not in self.mission.stations:
                 raise ValueError("reference downlink requires a known destination")
             if c.product_id:
@@ -96,6 +108,15 @@ class ReferenceBackend:
             p = self.mission.products.get(c.product_id)
             if p is None or p.actor != c.actor_id:
                 raise ValueError("CPU product must belong to actor")
+
+    def admit(self, c):
+        if c.kind == "relay":
+            expiry = None
+            life = getattr(self,"lifecycle",None)
+            if life is not None:
+                artifact = life.artifacts.get(c.product_id)
+                expiry = None if artifact is None else artifact.get("expires_sec")
+            self.mission.dtn.admit(c,self.mission,expiry)
 
     def advance(self, dt, active):
         actions, products, processing, jobs = (
@@ -116,7 +137,9 @@ class ReferenceBackend:
                 if c["product_id"]:
                     jobs[a] = c["product_id"]
         self.mission.step(
-            dt, actions, products=products, processing=processing, processing_jobs=jobs
+            dt, actions, products=products, processing=processing, processing_jobs=jobs,
+            relay_controls=[r["command"]["command_id"] for r in active if r["command"]["kind"]=="relay"],
+            relay_blocked=[r["command"]["actor_id"] for r in active if r["command"]["kind"] not in {"relay","wait"}],
         )
         return {}
 
@@ -124,8 +147,8 @@ class ReferenceBackend:
         self.mission.apply_events(events)
 
     def cancel(self, command_id):
-        # No persistent actuator outside this adapter's active action mapping.
-        return None
+        if self.mission.dtn is not None:
+            self.mission.dtn.cancel(command_id,self.now())
 
     def observe(self, actor):
         view = self.mission.observation()["actors"][actor]

@@ -53,8 +53,15 @@ class Runtime(Protocol):
 
 class MissionRuntime:
     def __init__(
-        self, scenario: dict | ScenarioSpec, *, access: AccessPolicy | None = None
+        self,
+        scenario: dict | ScenarioSpec,
+        *,
+        access: AccessPolicy | None = None,
+        audit_mode: str = "full",
     ):
+        if audit_mode not in {"full", "compact"}:
+            raise ValueError("unknown runtime audit mode")
+        self._audit_mode = audit_mode
         self._lock = RLock()
         self._original = copy.deepcopy(
             scenario.model_dump(mode="json")
@@ -94,6 +101,123 @@ class MissionRuntime:
     def time_sec(self):
         return self._backend.now()
 
+    @property
+    @_synchronized
+    def horizon_sec(self):
+        """Declared physical horizon; no outcome/report computation."""
+        return self._backend.horizon()
+
+    @_synchronized
+    def command_status(self):
+        """Owned current command records without computing native outcome metrics."""
+        return copy.deepcopy(list(self._commands.values()))
+
+    @_synchronized
+    def fork(self):
+        """Control-plane transaction fork; preserves backend alias/RNG contracts.
+
+        This does not replay history or advance physics. Agent tools do not expose
+        the fork or its truth/control-plane checkpoint permissions.
+        """
+        self._require_truth()
+        result = object.__new__(type(self))
+        values = copy.deepcopy(
+            {
+                k: v
+                for k, v in self.__dict__.items()
+                if k not in {"_lock", "_backend", "_operations", "_cache"}
+            }
+        )
+        result.__dict__.update(values)
+        # Committed evidence is append-only. Public readers return copies.
+        result._operations = self._operations.copy()
+        result._cache = self._cache.copy()
+        result._lock = RLock()
+        result._backend = copy.copy(self._backend)
+        result._backend.restore(self._backend.capture())
+        return result
+
+    @_synchronized
+    def command_claims(self, command):
+        """Declared resource ownership, not state-dependent command admission."""
+        c = RuntimeCommand.model_validate(command)
+        if c.actor_id not in self._spec.actor_order:
+            raise RuntimeContractError("unknown_actor", "unknown actor")
+        claims = getattr(self._backend, "command_claims", lambda c: ("actor",))
+        return {"actor_id": c.actor_id, "resources": list(claims(c))}
+
+    @_synchronized
+    def inventory(self, actor):
+        """Current locally owned reference inventory; no future state query."""
+        if actor not in self._spec.actor_order:
+            raise RuntimeContractError("unknown_actor", "unknown actor")
+        mission = getattr(self._backend, "mission", None)
+        if mission is None:
+            raise RuntimeContractError(
+                "unsupported_capability", "reference inventory required"
+            )
+        life = getattr(self._backend, "lifecycle", None)
+        return {
+            "actor_id": actor,
+            "time_sec": self.time_sec,
+            "memory_capacity_bits": mission.vehicles[actor].memory_bits,
+            "battery_wh": mission.vehicles[actor].battery_wh,
+            "transmitter": {
+                "ready": mission.transmitter_ready(actor),
+                "seconds": mission.tx_seconds[actor],
+                "temperature_k": mission.temperature[actor]
+                if mission.vehicles[actor].thermal is not None
+                else None,
+            },
+            "products": [
+                {
+                    **p.model_dump(mode="json"),
+                    "remaining_bits": mission.remaining[p.id],
+                    "processing_remaining_sec": mission.processing_remaining[p.id],
+                    "cancelled": p.id in mission.cancelled,
+                    "acknowledged": mission.acknowledged_time(p.id) is not None,
+                    "custody_pinned": mission.dtn is not None
+                    and mission.dtn.pinned(p.id),
+                    "deliverable": life is None or life.deliverable(p.id),
+                    "retained": bool(mission.retained_for(p.id))
+                    or (life is not None and bool(life.retained(p.id))),
+                }
+                for p in mission.products.values()
+                if p.actor == actor
+            ],
+        }
+
+    @_synchronized
+    def station_observation(self, station):
+        """Current ideal operator telemetry; scheduled future outages are omitted."""
+        mission = getattr(self._backend, "mission", None)
+        if mission is None or station not in mission.stations:
+            raise RuntimeContractError("invalid_request", "unknown reference station")
+        return {
+            "id": station,
+            "time_sec": self.time_sec,
+            "terminals": mission.stations[station].terminals,
+            "outage": any(
+                o.station == station and o.start_sec <= self.time_sec < o.end_sec
+                for o in mission.outages
+            ),
+            "reservation_required": mission.reservation_required[station],
+            "rate_cap_bps": mission.station_rates[station],
+            "bookings": [
+                {"id": b.id, "actor": b.actor, "end_sec": b.end_sec}
+                for b in sorted(mission.bookings.values(), key=lambda b: b.id)
+                if b.station == station
+                and b.start_sec
+                <= self.time_sec
+                < min(b.end_sec, mission.booking_cancelled.get(b.id, b.end_sec))
+            ],
+            "external_revisions": {
+                k: {"revision": v["revision"], "status": v["record"]["status"]}
+                for k, v in sorted(mission.external_reservations.items())
+                if v["record"]["station"] == station
+            },
+        }
+
     def describe_capabilities(self):
         reference = self._spec.backend.startswith("reference-")
         return {
@@ -115,7 +239,9 @@ class MissionRuntime:
             ),
             "seed_role": "experiment metadata; backend RNG state embedded",
             "limits": self._spec.limits.model_dump(),
-            "concurrency": getattr(self._backend, "concurrency", "one active control window per actor"),
+            "concurrency": getattr(
+                self._backend, "concurrency", "one active control window per actor"
+            ),
             "checkpoint_strategy": "verified-prefix-replay/1",
         }
 
@@ -168,7 +294,11 @@ class MissionRuntime:
             "revision": self.revision,
             "geometry_revision": getattr(self._backend, "geometry_revision", 0),
             "binding": self._forecast_binding(actor),
-            "scope": getattr(self._backend, "forecast_scope", "known geometry/resources; conditional on accepted maneuvers; no future operator events"),
+            "scope": getattr(
+                self._backend,
+                "forecast_scope",
+                "known geometry/resources; conditional on accepted maneuvers; no future operator events",
+            ),
             "windows": windows,
         }
 
@@ -223,7 +353,11 @@ class MissionRuntime:
             "geometry_revision": getattr(self._backend, "geometry_revision", 0),
             "binding": self._forecast_binding(actor),
             "result": result,
-            **({"trajectory_scope": self._backend.forecast_scope} if hasattr(self._backend, "forecast_scope") else {}),
+            **(
+                {"trajectory_scope": self._backend.forecast_scope}
+                if hasattr(self._backend, "forecast_scope")
+                else {}
+            ),
         }
 
     @_synchronized
@@ -337,6 +471,8 @@ class MissionRuntime:
             ):
                 raise RuntimeContractError("invalid_request", str(exc)) from exc
             raise
+        if self._audit_mode == "compact":
+            row = self._compact_row(row)
         self._operations.append(copy.deepcopy(row))
         self._cache[key] = {"body_sha256": sha, "response": copy.deepcopy(response)}
         return copy.deepcopy(response)
@@ -387,7 +523,7 @@ class MissionRuntime:
                 if requested & occupied.get(c.actor_id, set()):
                     raise RuntimeContractError(
                         "actor_busy" if requested == {"actor"} else "resource_busy",
-                        "actor has a conflicting active control window/resource lane"
+                        "actor has a conflicting active control window/resource lane",
                     )
                 occupied.setdefault(c.actor_id, set()).update(requested)
                 if self.time_sec + c.duration_sec > self._backend.horizon():
@@ -397,8 +533,14 @@ class MissionRuntime:
                 self._backend.validate_command(c)
                 ids.add(c.command_id)
             if hasattr(self._backend, "validate_batch"):
-                self._backend.validate_batch(parsed, [r["command"] for r in self._commands.values()
-                                                     if r["status"] in {"accepted", "running"}])
+                self._backend.validate_batch(
+                    parsed,
+                    [
+                        r["command"]
+                        for r in self._commands.values()
+                        if r["status"] in {"accepted", "running"}
+                    ],
+                )
             for c in parsed:
                 if hasattr(self._backend, "admit"):
                     self._backend.admit(c)
@@ -529,25 +671,42 @@ class MissionRuntime:
             "has_more": end < len(self._operations),
         }
 
-    def _artifact(self):
+    @staticmethod
+    def _compact_row(row):
+        return {
+            "request": row["request"],
+            "expected_revision": row["expected_revision"],
+            "idempotency_key": row["idempotency_key"],
+            "response": row["response"],
+            "evidence_sha256": digest(row),
+        }
+
+    def _artifact(self, compact=False):
+        compact = compact or self._audit_mode == "compact"
         body = {
-            "schema": "space-env.runtime-checkpoint/1",
+            "schema": "space-env.runtime-checkpoint/2"
+            if compact
+            else "space-env.runtime-checkpoint/1",
             "original_scenario": self._original,
             "effective_scenario": self._spec.model_dump(mode="json"),
             "runtime": self._runtime,
-            "operations": self._operations,
+            "operations": [self._compact_row(r) for r in self._operations]
+            if compact and self._audit_mode == "full"
+            else self._operations,
             "report": self.report(),
             "backend_report": self._backend.report(),
         }
         return {**copy.deepcopy(body), "sha256": digest(body)}
 
     @_synchronized
-    def checkpoint(self):
+    def checkpoint(self, *, compact=False):
+        if type(compact) is not bool:
+            raise TypeError("compact must be boolean")
         self._require_truth()
-        return self._artifact()
+        return self._artifact(compact)
 
-    def save(self, path: str | Path):
-        payload = self.checkpoint()
+    def save(self, path: str | Path, *, compact=False):
+        payload = self.checkpoint(compact=compact)
         atomic_write(path, canonical_json(payload))
         return payload
 
@@ -567,13 +726,19 @@ class MissionRuntime:
                 "corrupt_checkpoint", "invalid checkpoint fields"
             )
         body = {k: v for k, v in payload.items() if k != "sha256"}
-        if payload.get("schema") != "space-env.runtime-checkpoint/1" or payload.get(
-            "sha256"
-        ) != digest(body):
+        if payload.get("schema") not in {
+            "space-env.runtime-checkpoint/1",
+            "space-env.runtime-checkpoint/2",
+        } or payload.get("sha256") != digest(body):
             raise RuntimeContractError(
                 "corrupt_checkpoint", "unsupported or corrupt runtime checkpoint"
             )
-        runtime = cls(payload["original_scenario"], access=access)
+        compact = payload["schema"] == "space-env.runtime-checkpoint/2"
+        runtime = cls(
+            payload["original_scenario"],
+            access=access,
+            audit_mode="compact" if compact else "full",
+        )
         if runtime._runtime != payload["runtime"]:
             raise RuntimeContractError(
                 "runtime_mismatch", "runtime/source/data versions differ"
@@ -590,16 +755,27 @@ class MissionRuntime:
         ):
             raise RuntimeContractError("corrupt_checkpoint", "invalid operation count")
         for i, expected in enumerate(payload["operations"]):
-            if not isinstance(expected, dict) or set(expected) != {
-                "request",
-                "expected_revision",
-                "idempotency_key",
-                "observation",
-                "response",
-                "next_observation",
-                "report",
-                "backend_report",
-            }:
+            fields_expected = (
+                {
+                    "request",
+                    "expected_revision",
+                    "idempotency_key",
+                    "response",
+                    "evidence_sha256",
+                }
+                if compact
+                else {
+                    "request",
+                    "expected_revision",
+                    "idempotency_key",
+                    "observation",
+                    "response",
+                    "next_observation",
+                    "report",
+                    "backend_report",
+                }
+            )
+            if not isinstance(expected, dict) or set(expected) != fields_expected:
                 raise RuntimeContractError("corrupt_checkpoint", "invalid journal row")
             req = expected["request"]
             fields = {

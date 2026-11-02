@@ -1,0 +1,180 @@
+{
+  "schema": "space-env.acceptance/1",
+  "date": "2026-11-02",
+  "package": "B08",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "scope": "bounded synthetic reference-template generation and native-verified RL/SFT corpora; no calibration/expert/streaming/fleet-throughput qualification",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "contract": "../FACTORY_CONTRACT.md",
+  "checks": {
+    "new_factory_cases": 61,
+    "unit_with_B06_B07": {
+      "passed": 161,
+      "warnings": 2,
+      "seconds": 79.38,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b08-unit-final.log"
+    },
+    "reference": {
+      "passed": 1032,
+      "warnings": 15,
+      "seconds": 201.41,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b08-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.96,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b08-fast.log"
+    },
+    "expanded_regression": {
+      "passed": 1433,
+      "warnings": 46,
+      "seconds": 605.63,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b08-expanded.log",
+      "excluded_current_run": [
+        "tests/test_campaign.py (14 unchanged legacy cases)",
+        "tests/test_tasking.py (15 unchanged legacy cases)"
+      ],
+      "note": "Long legacy physics files were not rerun for B08; separate CI jobs remain configured."
+    },
+    "collection": {
+      "tests": 1462,
+      "seconds": 1.04
+    },
+    "wheel": {
+      "sha256": "2a1fa49ff989c0cb77532a8bd8cadad1cfb34a4be908339855d98f65445c395a",
+      "modules": 221,
+      "source_byte_parity": true,
+      "boinor_fixture_byte_parity": true
+    },
+    "installed_corpus": {
+      "installed_path": "/tmp/space-env-b08-installed/lib/python3.12/site-packages/space_env/__init__.py",
+      "cli_build_compile_verify": true,
+      "content_reproducible": true,
+      "rows": {
+        "rl": 48,
+        "sft": 20
+      },
+      "episodes": 36,
+      "content_sha256": "ea2085debdf4d854b64965346f91d1aee078ad9ff3301a31e15781decbf5ed65",
+      "exit_code": 0,
+      "full_native_and_row_replay": true,
+      "coverage": {
+        "configuration_errors": 0,
+        "draws": 12,
+        "families": {
+          "closed-ground": [
+            "train"
+          ],
+          "ground": [
+            "holdout",
+            "train"
+          ],
+          "small-memory": [
+            "ood"
+          ]
+        },
+        "geometry_groups": 6,
+        "unique_missions": 6
+      },
+      "teacher": {
+        "candidate_rows": 8,
+        "expert_qualified": false,
+        "failures": [],
+        "scope": "only predeclared manifest thresholds; no expert/global-optimality or flight qualification",
+        "status": "passed_declared_gates"
+      },
+      "expert_qualified": false,
+      "log": "/tmp/space-env-b08-installed.log"
+    },
+    "installed_coupled_eo": {
+      "build": {
+        "ok": true,
+        "status": "ready",
+        "rows": {
+          "rl": 10,
+          "sft": 10
+        },
+        "episodes": 1,
+        "sha256": "8649d0b8aeb89c078fe5710ed007ea549f6a7b6744160263ab9890dae36853ea",
+        "content_sha256": "d599beb2f5ebe341e87adff1a186cc2a3e27f91074e7fa5f9ee00fdc54db530c",
+        "coupled_eo_fulfilled": 2,
+        "total": 2,
+        "expert_qualified": false
+      },
+      "verification": {
+        "ok": true,
+        "status": "ready",
+        "replay_verified": true,
+        "episodes": 1,
+        "rows": {
+          "rl": 10,
+          "sft": 10
+        },
+        "content_sha256": "d599beb2f5ebe341e87adff1a186cc2a3e27f91074e7fa5f9ee00fdc54db530c"
+      },
+      "exit_code": 0,
+      "teacher_gate_opt_out_explicit": true,
+      "note": "One synthetic 20-second EO/CPU/ISL/ground mission, not expert/held-out qualification. Full conservation, ACK and corpus replay verified.",
+      "logs": [
+        "/tmp/space-env-b08-installed-eo-build.log",
+        "/tmp/space-env-b08-installed-eo-verify.log"
+      ]
+    },
+    "installed_quarantine": {
+      "build_exit": 1,
+      "verify_exit": 1,
+      "audit_preserved": true,
+      "replay_verified": true,
+      "status": "quarantined",
+      "rows": {
+        "rl": 48,
+        "sft": 0
+      },
+      "expected_failure": true,
+      "log": "/tmp/space-env-b08-installed-quarantine.log"
+    },
+    "lint": "factory modules, CLI, CI profile, tests and examples passed",
+    "diff_whitespace": "passed",
+    "ci": {
+      "outside_checkout_factory_job_added": true,
+      "remote_workflow_executed": false
+    }
+  },
+  "capabilities": [
+    "versioned synthetic templates and typed unit-bearing distributions",
+    "deterministic local RNG and explicit physical seed policy",
+    "no success-conditioned resampling; invalid draws retained",
+    "conservative geometry/typed-identity split groups and OOD declarations",
+    "native replay/accounting/ACK/reward/mask/finite-view gates",
+    "role-filtered RL and central SFT with actual action/tool schemas",
+    "candidate-specific teacher thresholds and synthetic non-expert labels",
+    "actual trajectory deduplication independent of labels/hidden mission metadata",
+    "cross-split trajectory collision quarantine",
+    "atomic episode export rollback and local directory publication",
+    "stable semantic content hash versus measured audit bundle hash",
+    "full bundle/data reconstruction and explicit integrity-only mode",
+    "small generated fixture checked by B07 bounded native oracle"
+  ],
+  "limits": {
+    "cases": 64,
+    "policies": 5,
+    "episodes": 320,
+    "default_member_payload_bytes": 268435456,
+    "receipt_in_payload_budget": false,
+    "fingerprint_nodes": 100000,
+    "materializes_audit_and_rows_in_memory": true
+  },
+  "remaining": [
+    "B09 streaming/history/fork memory and measured fleet throughput",
+    "cross-bundle group/trajectory registry for merging independent corpora",
+    "learned-policy held-out evaluation and qualified teachers",
+    "B12 independent hardware/operator calibration",
+    "checkpoint migration across source/dependency versions"
+  ]
+}

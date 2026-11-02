@@ -221,6 +221,14 @@ class DynamicStateProvider(ReferenceEphemeris):
                 "direction_gcrs": list(thrust.direction_gcrs),
                 "mass_before_kg": mass,
                 "planned_mass_after_kg": final_mass,
+                **(
+                    {
+                        "direction_model": thrust.manifest()["direction_model"],
+                        "attitude_path_sha256": digest(thrust.manifest()),
+                    }
+                    if "direction_model" in thrust.manifest()
+                    else {}
+                ),
             }
         )
         self._seal()

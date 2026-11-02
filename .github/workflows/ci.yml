@@ -24,15 +24,25 @@ jobs:
             profile: reference
           - python-version: "3.12"
             profile: full
+            arguments: "--shard other"
+          - python-version: "3.12"
+            profile: full
+            arguments: "--shard campaign"
+          - python-version: "3.12"
+            profile: full
+            arguments: "--shard tasking-base"
+          - python-version: "3.12"
+            profile: full
+            arguments: "--shard tasking-sixteen"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install package and test tools
-        run: pip install -e ".[dev,reference,coverage]"
+        run: pip install -e ".[dev,reference,coverage,marl]"
       - name: Run profile
-        run: python -m space_env.eval.ci_profiles ${{ matrix.profile }}
+        run: python -m space_env.eval.ci_profiles ${{ matrix.profile }} ${{ matrix.arguments }}
 
   installed-wheel:
     runs-on: ubuntu-latest
@@ -49,7 +59,29 @@ jobs:
       - name: Install in a clean environment
         run: |
           python -m venv /tmp/space-env-wheel-check
-          /tmp/space-env-wheel-check/bin/python -c "import glob, subprocess, sys; wheels = glob.glob('dist/*.whl'); assert len(wheels) == 1; subprocess.check_call([sys.executable, '-m', 'pip', 'install', wheels[0] + '[reference,coverage]'])"
+          /tmp/space-env-wheel-check/bin/python -c "import glob, subprocess, sys; wheels = glob.glob('dist/*.whl'); assert len(wheels) == 1; subprocess.check_call([sys.executable, '-m', 'pip', 'install', wheels[0] + '[reference,coverage,marl]'])"
       - name: Verify outside checkout
         working-directory: /tmp
         run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/scripts/verify_installed.py" --expected-prefix /tmp/space-env-wheel-check
+      - name: Verify bounded factory outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/factory/demo.py" /tmp/space-env-factory-check
+      - name: Verify isolated scale smoke outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/scaling/demo.py" /tmp/space-env-scale.json
+          /tmp/space-env-wheel-check/bin/space-env scale-benchmark /tmp/space-env-scale.json /tmp/space-env-scale-check
+      - name: Verify distinct-orbit fleet outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/scaling/fleet.py" /tmp/space-env-fleet.json --actors 4 --products 12 --planes 2
+          /tmp/space-env-wheel-check/bin/space-env scale-benchmark /tmp/space-env-fleet.json /tmp/space-env-fleet-check
+      - name: Verify replay-once multi-format export outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/scaling/verified_export.py" /tmp/space-env-verified-export
+      - name: Verify native operator outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/smoke.py"
+      - name: Verify durable operator restart and handover outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/durable_smoke.py"

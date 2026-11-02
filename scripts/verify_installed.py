@@ -258,6 +258,8 @@ def main() -> None:
         assert calendar_verification["ok"]
         console_env = dict(os.environ)
         console_env.pop("PYTHONPATH", None)
+        # Match the parent Python -I dependency visibility, including system-site venvs.
+        console_env["PYTHONNOUSERSITE"] = "1"
         console_output = subprocess.check_output([str(args.expected_prefix / "bin" / "space-env"),
             "reference-verify-benchmark", str(calendar_path)], cwd=tmp, env=console_env, text=True)
         console_verification = json.loads(console_output)
@@ -367,8 +369,8 @@ def main() -> None:
         assert eo_report["ledger"]["a"]["balance_error_bits"] == 0
         lifecycle_smoke = {"verified": True, "metrics": eo_report["metrics"],
                            "ledger": eo_report["ledger"], "acknowledgements": eo_report["acknowledgements"]}
-        from space_env.runtime import spacecraft_scenario
         from space_env.reference.spacecraft_bus import bus_preset, pointing_quaternion
+        from space_env.runtime import spacecraft_scenario
         bus_spec = json.loads(json.dumps(lifecycle_spec))
         bus_spec["operations"]["vehicles"]["a"]["solar_mode"] = "body_fixed_bus"
         config = bus_preset("synthetic-agile/1")
@@ -432,6 +434,7 @@ def main() -> None:
         spacecraft_smoke = {"verified": True, "metrics": bus_report["lifecycle"]["metrics"],
                             "ledgers": bus_report["spacecraft_bus"]["ledgers"], "checkpoint_replay": True}
         import importlib.util
+
         from space_env.runtime.cli import apply_plan
         quality_path = Path(__file__).resolve().parents[1] / "examples/payload_quality/demo.py"
         quality_loader = importlib.util.spec_from_file_location("installed_quality_demo", quality_path)
@@ -546,6 +549,240 @@ def main() -> None:
             actuation_smoke[kind] = {"verified": True, "metrics": actuation_life["metrics"],
                 "mid_gimbal_and_firing_replay": True,
                 "fuel_kg": engine["states"]["a"]["consumed_propellant_kg"]}
+        rigid_path = Path(__file__).resolve().parents[1] / "examples/rigid_mission/demo.py"
+        rigid_loader = importlib.util.spec_from_file_location("installed_rigid_mission_demo", rigid_path)
+        rigid_module = importlib.util.module_from_spec(rigid_loader)
+        rigid_loader.loader.exec_module(rigid_module)
+        rigid_mission_smoke = {}
+        for rigid_mode in ("tuned", "weak"):
+            rigid_scenario, (rigid_prefix, rigid_resume) = rigid_module.build_scenario(rigid_mode)
+            rigid_runtime = MissionRuntime(rigid_scenario, access=AccessPolicy(truth=True))
+            apply_plan(rigid_runtime, rigid_prefix)
+            rigid_record = Path(tmp) / ("rigid-mission-" + rigid_mode + ".json")
+            rigid_runtime.save(rigid_record)
+            rigid_runtime = MissionRuntime.load(rigid_record, access=AccessPolicy(truth=True))
+            for rigid_operation in rigid_resume["operations"]:
+                apply_plan(rigid_runtime, {"operations": [rigid_operation]})
+                if rigid_operation["idempotency_key"] == "partial-tracking":
+                    rigid_runtime.save(rigid_record)
+                    rigid_runtime = MissionRuntime.load(rigid_record, access=AccessPolicy(truth=True))
+            rigid_runtime.save(rigid_record)
+            rigid_report = rigid_runtime.observe(view="truth")["backend"]["report"]
+            rigid_state = rigid_report["spacecraft_bus"]["states"]["a"]["rigid_attitude"]
+            assert rigid_report["lifecycle"]["metrics"] == {"fulfilled_requests": 2 if rigid_mode == "tuned" else 1, "total_requests": 2}
+            assert abs(rigid_state["dc_heat_work_balance_error_j"]) < 1e-8
+            assert abs(rigid_state["kinetic_work_balance_error_j"]) < 1e-8
+            assert rigid_report["spacecraft_bus"]["operations"]["wheel"]["status"] == "cancelled"
+            if rigid_mode == "weak":
+                assert rigid_report["lifecycle"]["requests"]["after-wheel"]["reason"] == "coverage_requirement"
+                assert rigid_report["lifecycle"]["artifacts"]["raw-after"]["status"] == "delivered"
+            rigid_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(rigid_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert rigid_console["ok"]
+            rigid_mission_smoke[rigid_mode] = {"verified": True,
+                "metrics": rigid_report["lifecycle"]["metrics"], "substeps": rigid_state["substeps"],
+                "dc_energy_j": rigid_state["dc_energy_j"],
+                "dc_heat_work_balance_error_j": rigid_state["dc_heat_work_balance_error_j"],
+                "kinetic_work_balance_error_j": rigid_state["kinetic_work_balance_error_j"],
+                "mid_wheel_cpu_and_tracking_replay": True}
+        rotating_path = Path(__file__).resolve().parents[1] / "examples/rotating_thrust/demo.py"
+        rotating_loader = importlib.util.spec_from_file_location("installed_rotating_demo", rotating_path)
+        rotating_module = importlib.util.module_from_spec(rotating_loader)
+        rotating_loader.loader.exec_module(rotating_module)
+        rotating_smoke = {}
+        for rotating_kind in ("chemical", "electric"):
+            rotating_scenario, (rotating_prefix, rotating_resume) = rotating_module.build_scenario(rotating_kind)
+            rotating_runtime = MissionRuntime(rotating_scenario, access=AccessPolicy(truth=True))
+            apply_plan(rotating_runtime, rotating_prefix)
+            rotating_record = Path(tmp) / ("rotating-" + rotating_kind + ".json")
+            rotating_runtime.save(rotating_record)
+            rotating_runtime = MissionRuntime.load(rotating_record, access=AccessPolicy(truth=True))
+            for rotating_operation in rotating_resume["operations"]:
+                apply_plan(rotating_runtime, {"operations": [rotating_operation]})
+                if rotating_operation["idempotency_key"] == "partial-firing":
+                    rotating_runtime.save(rotating_record)
+                    rotating_runtime = MissionRuntime.load(rotating_record, access=AccessPolicy(truth=True))
+            rotating_runtime.save(rotating_record)
+            rotating_report = rotating_runtime.observe(view="truth")["backend"]["report"]
+            rotating_life = rotating_report["lifecycle"]
+            rotating_engine = rotating_life["actuation"]
+            rotating_state = rotating_report["spacecraft_bus"]["states"]["a"]["rigid_attitude"]
+            assert rotating_life["metrics"] == {"fulfilled_requests": 2, "total_requests": 2}
+            assert rotating_engine["operations"]["engine"]["status"] == "completed"
+            assert abs(rotating_engine["fuel_balance_error_kg"]["a"]) < 1e-10
+            assert abs(rotating_engine["electrical_heat_balance_error_j"]["engine"]) < 1e-8
+            assert max(abs(v) for v in rotating_state["angular_momentum_balance_error_gcrs_nms"]) < 1e-8
+            assert abs(rotating_state["kinetic_work_balance_error_j"]) < 1e-8
+            rotating_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(rotating_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert rotating_console["ok"]
+            rotating_smoke[rotating_kind] = {"verified": True, "metrics": rotating_life["metrics"],
+                "geometry_revision": rotating_report["geometry_revision"],
+                "fuel_balance_error_kg": rotating_engine["fuel_balance_error_kg"]["a"],
+                "angular_momentum_balance_error_gcrs_nms": rotating_state["angular_momentum_balance_error_gcrs_nms"],
+                "kinetic_work_balance_error_j": rotating_state["kinetic_work_balance_error_j"],
+                "mid_gimbal_and_rotating_firing_replay": True}
+        unloading_path = Path(__file__).resolve().parents[1] / "examples/momentum_unloading/demo.py"
+        unloading_loader = importlib.util.spec_from_file_location("installed_unloading_demo", unloading_path)
+        unloading_module = importlib.util.module_from_spec(unloading_loader)
+        unloading_loader.loader.exec_module(unloading_module)
+        unloading_smoke = {}
+        for unloading_mode in ("nominal", "limited"):
+            unloading_scenario, (unloading_prefix, unloading_resume) = unloading_module.build_scenario(unloading_mode)
+            unloading_runtime = MissionRuntime(unloading_scenario, access=AccessPolicy(truth=True))
+            apply_plan(unloading_runtime, unloading_prefix)
+            unloading_record = Path(tmp) / ("unloading-" + unloading_mode + ".json")
+            unloading_runtime.save(unloading_record)
+            unloading_runtime = MissionRuntime.load(unloading_record, access=AccessPolicy(truth=True))
+            for unloading_operation in unloading_resume["operations"]:
+                apply_plan(unloading_runtime, {"operations": [unloading_operation]})
+                if unloading_operation["idempotency_key"] == "partial-tracking":
+                    unloading_runtime.save(unloading_record)
+                    unloading_runtime = MissionRuntime.load(unloading_record, access=AccessPolicy(truth=True))
+            unloading_runtime.save(unloading_record)
+            unloading_report = unloading_runtime.observe(view="truth")["backend"]["report"]
+            unloading_data = unloading_report["lifecycle"]["unloading"]
+            unloading_op = unloading_data["operations"]["unload"]
+            unloading_rigid = unloading_report["spacecraft_bus"]["states"]["a"]["rigid_attitude"]
+            assert unloading_op["status"] == ("completed" if unloading_mode == "nominal" else "failed")
+            if unloading_mode == "limited":
+                assert unloading_op["reason"] == "unload_window_ended"
+                assert unloading_op["remaining_momentum_nms"][0] > .02
+            assert unloading_report["lifecycle"]["metrics"] == {"fulfilled_requests": 2, "total_requests": 2}
+            assert abs(unloading_data["fuel_balance_error_kg"]["a"]) < 1e-9
+            assert abs(unloading_data["energy_balance_error_j"]["unload"]) < 1e-8
+            assert max(abs(v) for v in unloading_rigid["angular_momentum_balance_error_gcrs_nms"]) < 1e-8
+            assert abs(unloading_rigid["kinetic_work_balance_error_j"]) < 1e-8
+            unloading_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(unloading_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert unloading_console["ok"]
+            unloading_smoke[unloading_mode] = {"verified": True,
+                "metrics": unloading_report["lifecycle"]["metrics"], "unload_status": unloading_op["status"],
+                "remaining_momentum_nms": unloading_op["remaining_momentum_nms"],
+                "fuel_kg": unloading_op["consumed_propellant_kg"],
+                "rcs_dc_energy_j": unloading_op["dc_energy_j"],
+                "mid_unload_and_post_unload_tracking_replay": True}
+        thermal_path = Path(__file__).resolve().parents[1] / "examples/thermal_network/demo.py"
+        thermal_loader = importlib.util.spec_from_file_location("installed_thermal_network_demo", thermal_path)
+        thermal_module = importlib.util.module_from_spec(thermal_loader)
+        thermal_loader.loader.exec_module(thermal_module)
+        thermal_smoke = {}
+        for thermal_mode in ("nominal", "hot", "cold"):
+            thermal_scenario, (thermal_prefix, thermal_resume) = thermal_module.build_scenario(thermal_mode)
+            thermal_runtime = MissionRuntime(thermal_scenario, access=AccessPolicy(truth=True))
+            apply_plan(thermal_runtime, thermal_prefix)
+            thermal_record = Path(tmp) / ("thermal-network-" + thermal_mode + ".json")
+            thermal_runtime.save(thermal_record)
+            thermal_runtime = MissionRuntime.load(thermal_record, access=AccessPolicy(truth=True))
+            for thermal_operation in thermal_resume["operations"]:
+                apply_plan(thermal_runtime, {"operations": [thermal_operation]})
+                if thermal_operation["idempotency_key"] == "partial-cpu":
+                    thermal_runtime.save(thermal_record)
+                    thermal_runtime = MissionRuntime.load(thermal_record, access=AccessPolicy(truth=True))
+            thermal_runtime.save(thermal_record)
+            thermal_report = thermal_runtime.observe(view="truth")["backend"]["report"]
+            thermal_bus = thermal_report["spacecraft_bus"]
+            thermal_state = thermal_bus["states"]["a"]["thermal_network"]
+            assert thermal_report["lifecycle"]["metrics"] == {"fulfilled_requests": 0 if thermal_mode == "hot" else 2, "total_requests": 2}
+            assert max(abs(v) for v in thermal_state["node_balance_error_j"].values()) < 1e-6
+            assert abs(thermal_bus["ledgers"]["a"]["thermal_balance_error_j"]) < 1e-6
+            if thermal_mode == "hot":
+                assert "overtemperature:cpu" in thermal_bus["states"]["a"]["safe_reasons"]
+                assert "final-a" not in thermal_report["lifecycle"]["artifacts"]
+            if thermal_mode == "cold":
+                assert thermal_state["ledgers"]["heater_dc_energy_j"] > 0
+                assert not thermal_bus["states"]["a"]["safe"]
+            thermal_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(thermal_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert thermal_console["ok"]
+            thermal_smoke[thermal_mode] = {"verified": True,
+                "metrics": thermal_report["lifecycle"]["metrics"],
+                "temperatures_k": thermal_state["temperatures_k"],
+                "node_balance_error_j": thermal_state["node_balance_error_j"],
+                "heater_dc_energy_j": thermal_state["ledgers"]["heater_dc_energy_j"],
+                "safe": thermal_bus["states"]["a"]["safe"],
+                "mid_capture_cpu_and_cold_start_replay": True}
+        network_path = Path(__file__).resolve().parents[1] / "examples/network_mission/demo.py"
+        network_loader = importlib.util.spec_from_file_location("installed_network_mission_demo", network_path)
+        network_module = importlib.util.module_from_spec(network_loader)
+        network_loader.loader.exec_module(network_module)
+        network_smoke = {}
+        for network_mode in ("nominal", "outage", "blocked"):
+            network_scenario, (network_prefix, network_resume) = network_module.build_scenario(network_mode)
+            network_runtime = MissionRuntime(network_scenario, access=AccessPolicy(truth=True))
+            apply_plan(network_runtime, network_prefix)
+            network_record = Path(tmp) / ("network-" + network_mode + ".json")
+            network_runtime.save(network_record)
+            network_runtime = MissionRuntime.load(network_record, access=AccessPolicy(truth=True))
+            for network_operation in network_resume["operations"]:
+                apply_plan(network_runtime, {"operations": [network_operation]})
+                if network_operation["idempotency_key"] == "mid-transmission":
+                    network_runtime.save(network_record)
+                    network_runtime = MissionRuntime.load(network_record, access=AccessPolicy(truth=True))
+            network_runtime.save(network_record)
+            network_check = network_module.verify(network_runtime, network_mode)
+            network_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(network_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert network_console["ok"]
+            network_smoke[network_mode] = {**network_check, "installed_console_replay": True,
+                "mid_acquisition_and_transmission_replay": True}
+        custody_path = Path(__file__).resolve().parents[1] / "examples/relay_mission/demo.py"
+        custody_loader = importlib.util.spec_from_file_location("installed_custody_demo", custody_path)
+        custody_module = importlib.util.module_from_spec(custody_loader)
+        custody_loader.loader.exec_module(custody_module)
+        custody_smoke = {}
+        for custody_mode in ("nominal", "reroute", "loss", "ttl"):
+            custody_scenario, (custody_prefix, custody_resume) = custody_module.build_scenario(custody_mode)
+            custody_runtime = MissionRuntime(custody_scenario, access=AccessPolicy(truth=True))
+            apply_plan(custody_runtime, custody_prefix)
+            custody_record = Path(tmp) / ("custody-" + custody_mode + ".json")
+            custody_runtime.save(custody_record)
+            custody_runtime = MissionRuntime.load(custody_record, access=AccessPolicy(truth=True))
+            for custody_operation in custody_resume["operations"]:
+                apply_plan(custody_runtime, {"operations": [custody_operation]})
+                if custody_operation["idempotency_key"] == "inflight":
+                    assert custody_runtime._backend.mission.dtn.transfers["relay-first"]["state"] == "inflight"
+                    custody_runtime.save(custody_record)
+                    custody_runtime = MissionRuntime.load(custody_record, access=AccessPolicy(truth=True))
+            custody_runtime.save(custody_record)
+            custody_check = custody_module.verify(custody_runtime, custody_mode)
+            custody_console = json.loads(subprocess.check_output([
+                str(args.expected_prefix / "bin" / "space-env"), "mission-replay", str(custody_record)
+            ], cwd=tmp, env=console_env, text=True))
+            assert custody_console["ok"]
+            custody_smoke[custody_mode] = {**custody_check, "installed_console_replay": True,
+                "mid_fragment_and_inflight_replay": True}
+        task_path = Path(__file__).resolve().parents[1] / "examples/agent_task/demo.py"
+        task_loader = importlib.util.spec_from_file_location("installed_task_demo", task_path)
+        task_module = importlib.util.module_from_spec(task_loader)
+        task_loader.loader.exec_module(task_module)
+        task_smoke = task_module.main(Path(tmp) / "agent-task", "nominal")
+        task_console = json.loads(subprocess.check_output([
+            str(args.expected_prefix / "bin" / "space-env"), "task-replay",
+            str(Path(tmp) / "agent-task/episode.json")
+        ], cwd=tmp, env=console_env, text=True))
+        assert task_console["ok"]
+        task_smoke["installed_console_replay"] = True
+        from space_env.planning import PlanningRun
+
+        planning_scenario, planning_task, _ = task_module.build("nominal")
+        planning_task.update(decision_sec=2., max_decisions=64)
+        planning_run = PlanningRun(planning_scenario, planning_task, {"name": "route_aware_rolling", "max_nodes": 512})
+        planning_run.run(3)
+        planning_record = Path(tmp) / "planning-prefix.json"
+        planning_run.save(planning_record)
+        assert PlanningRun.load(planning_record).checkpoint() == planning_run.checkpoint()
+        planning_console = json.loads(subprocess.check_output([
+            str(args.expected_prefix / "bin" / "space-env"), "planning-replay", str(planning_record)
+        ], cwd=tmp, env=console_env, text=True))
+        assert planning_console["ok"]
+        planning_smoke = {"prefix_decisions": 3, "policy_and_runtime_replay": True,
+                          "installed_console_replay": True, "full_mission_claim": False}
         current_covariance = np.asarray(dynamic_runtime.observe("a")["actors"]["a"]["orbit"]["covariance_si"])
         assert np.linalg.eigvalsh(current_covariance).min() >= -1e-9
         covariance_smoke = {"verified": True, "frame": "GCRS",
@@ -580,6 +817,14 @@ def main() -> None:
         "observation_requirements": observation_smoke,
         "resource_lanes": lanes_smoke,
         "body_actuation": actuation_smoke,
+        "rigid_mission": rigid_mission_smoke,
+        "rotating_thrust": rotating_smoke,
+        "momentum_unloading": unloading_smoke,
+        "thermal_network": thermal_smoke,
+        "radio_ground_network": network_smoke,
+        "custody_network": custody_smoke,
+        "runtime_tasks": task_smoke,
+        "baseline_planning": planning_smoke,
         "dynamic_physics_qualification": {"passed": physics_qualification["passed"],
             "status": physics_qualification["qualification_status"],
             "fixture_cases": len(physics_qualification["orbit_fixtures"]["cases"]),

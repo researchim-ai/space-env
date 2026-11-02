@@ -1,7 +1,8 @@
-"""Versioned coupled spacecraft bus surrogate, explicitly separate from rigid ADCS.
+"""Versioned coupled spacecraft bus with optional bounded rigid wheel attitude.
 
-Rate-limited quaternion control, body-fixed PV and two-port battery converters;
-a one-node RC thermal model and causal health masks. No flight calibration.
+Legacy rate-limited or opt-in rigid control, body-fixed PV and battery converters;
+optional network conduction/radiation/heaters or legacy RC, and causal health masks.
+No flight calibration.
 """
 
 from __future__ import annotations
@@ -19,11 +20,16 @@ from space_env.core.environment import shadow_state
 from space_env.core.frames import geodetic_to_ecef
 from space_env.reference.operations import ReferenceDownlinkMission
 from space_env.reference.orbit import _ephemerides
+from space_env.reference.rigid_bus import RigidBus, RigidControllerSettings
 from space_env.reference.thermal import TransmitterThermal
+from space_env.reference.thermal_bus import CoupledThermalNetwork
+from space_env.reference.thermal_network import ThermalNetworkSettings
 from space_env.runtime.schema import FiniteScalar, StrictModel
 
 
 class AttitudeSettings(StrictModel):
+    rigid: RigidControllerSettings | None = None
+    rigid_pointing_tolerance_deg: float = Field(default=0.1, gt=0, le=10, strict=True)
     initial_quaternion_wxyz: tuple[
         FiniteScalar, FiniteScalar, FiniteScalar, FiniteScalar
     ] = (1.0, 0.0, 0.0, 0.0)
@@ -61,7 +67,10 @@ class BusPower(StrictModel):
     def hysteresis(self):
         if self.safe_enter_soc >= self.recovery_soc:
             raise ValueError("recovery SOC must exceed safe-entry SOC")
-        if self.safe_base_power_w is not None and self.safe_base_power_w > self.max_load_w:
+        if (
+            self.safe_base_power_w is not None
+            and self.safe_base_power_w > self.max_load_w
+        ):
             raise ValueError("safe base power exceeds bus capacity")
         return self
 
@@ -74,6 +83,7 @@ class SpacecraftBusModel(StrictModel):
     attitude: AttitudeSettings = Field(default_factory=AttitudeSettings)
     power: BusPower = Field(default_factory=BusPower)
     thermal: TransmitterThermal
+    thermal_network: ThermalNetworkSettings | None = None
     electrical_heat_fraction: float = Field(default=0.8, ge=0, le=1, strict=True)
     safe_slew_allowed: bool = Field(default=True, strict=True)
 
@@ -211,6 +221,10 @@ class SpacecraftBus:
         for state in self.states.values():
             q = np.asarray(state["quaternion_wxyz"])
             state["quaternion_wxyz"] = (q / np.linalg.norm(q)).tolist()
+        self.rigid = RigidBus(models)
+        self.network = CoupledThermalNetwork(models, backend)
+        for a in self.network.models:
+            self.states[a]["temperature_k"] = max(self.network.temperatures[a].values())
         self.operations = {}
         self.events = []
         self.denials = []
@@ -233,7 +247,9 @@ class SpacecraftBus:
         for a, state in self.states.items():
             model = self.models[a]
             reasons = set(state["safe_reasons"])
-            if state["temperature_k"] >= model.thermal.trip_k:
+            if a in self.network.models:
+                reasons.update(self.network.violations(a))
+            elif state["temperature_k"] >= model.thermal.trip_k:
                 reasons.add("overtemperature")
             if (
                 model.power.safe_enter_soc > 0
@@ -247,10 +263,20 @@ class SpacecraftBus:
 
     def base_power(self, actor, nominal):
         state, model = self.states[actor], self.models[actor]
-        return (
+        raw = (
             model.power.safe_base_power_w
             if state["safe"] and model.power.safe_base_power_w is not None
             else nominal
+        )
+
+        return raw + self.network.heater_power(actor)
+
+    def thermal_recovered(self, actor):
+        return (
+            self.network.recovered(actor)
+            if actor in self.network.models
+            else self.states[actor]["temperature_k"]
+            <= self.models[actor].thermal.resume_k
         )
 
     def battery_load(self, actor, watts):
@@ -273,7 +299,7 @@ class SpacecraftBus:
             else "radio"
             if kind == "downlink"
             else "adcs"
-            if kind == "slew"
+            if kind in {"slew", "wheel_torque"}
             else "cpu"
         )
         reason = None
@@ -282,9 +308,7 @@ class SpacecraftBus:
         elif kind in {"imaging", "body_burn"} and "adcs" in faults:
             reason = "adcs_fault"
         elif state["safe"] and not (
-            kind == "slew"
-            and model.safe_slew_allowed
-            and state["temperature_k"] <= model.thermal.resume_k
+            kind == "slew" and model.safe_slew_allowed and self.thermal_recovered(actor)
         ):
             reason = "safe_mode"
         elif (
@@ -299,8 +323,22 @@ class SpacecraftBus:
         return reason
 
     def admit(self, command, backend):
+        if command.kind == "wheel_torque":
+            self.operations[command.command_id] = {
+                "actor": command.actor_id,
+                "goal": None,
+                "status": "accepted",
+                "motor_torque_nm": list(command.wheel_torque.motor_torque_nm),
+                "until_sec": backend.now() + command.duration_sec,
+                "reason": None,
+                "settle_remaining_sec": 0.0,
+            }
+            return
         self.operations[command.command_id] = {
             "actor": command.actor_id,
+            "pointing_tolerance_deg": self.models[
+                command.actor_id
+            ].attitude.rigid_pointing_tolerance_deg,
             "goal": (
                 np.asarray(command.slew.quaternion_wxyz)
                 / np.linalg.norm(command.slew.quaternion_wxyz)
@@ -325,12 +363,19 @@ class SpacecraftBus:
                 state["settle_remaining_sec"],
                 self.models[operation["actor"]].attitude.settling_sec,
             )
-            state["angular_rate_deg_s"] = 0.0
+            if operation["actor"] not in self.rigid.models:
+                state["angular_rate_deg_s"] = 0.0
+        if (
+            operation["actor"] in self.rigid.models
+            and self.plans.get(operation["actor"], {}).get("cid") == cid
+        ):
+            self.rigid.disable(operation["actor"], "operator_cancelled")
         operation.update(status="cancelled", reason="operator_cancelled")
         return True
 
     def prepare(self, backend, active):
         self.apply_protection(backend)
+        self.rigid.plans = {}
         self.plans = {
             a: {
                 "start": np.array(s["quaternion_wxyz"]),
@@ -344,12 +389,16 @@ class SpacecraftBus:
             c = row["command"]
             a, cid = c["actor_id"], c["command_id"]
             model, state = self.models[a], self.states[a]
-            if c["kind"] == "slew":
+            if c["kind"] in {"slew", "wheel_torque"}:
                 operation = self.operations[cid]
                 if operation["status"] in {"completed", "failed", "cancelled"}:
                     continue
                 self.plans[a].update(
-                    kind="slew", goal=np.array(operation["goal"]), cid=cid
+                    kind=c["kind"],
+                    goal=np.array(operation["goal"])
+                    if operation["goal"] is not None
+                    else self.plans[a]["start"],
+                    cid=cid,
                 )
                 reason = self.allowed(a, "slew", cid, backend)
                 floor = (
@@ -386,6 +435,8 @@ class SpacecraftBus:
             normal = rotate_body(
                 state["quaternion_wxyz"], self.models[a].attitude.panel_normal_body
             )
+            if a in self.network.models:
+                normal = normal / np.linalg.norm(normal)
             cosine = max(0.0, float(np.dot(normal, to_sun) / np.linalg.norm(to_sun)))
             vehicle = backend.mission.vehicles[a]
             raw = (
@@ -399,12 +450,18 @@ class SpacecraftBus:
             )
             self.raw_generation_w[a] = float(raw)
             self.generation_w[a] = float(raw * self.models[a].power.charge_efficiency)
+        self.network.prepare(backend, self)
+        self.rigid.prepare(backend, self)
 
     def stop_tracking(self, actor):
         if self.plans.get(actor, {}).get("kind") == "tracking":
             self.plans[actor].update(kind="hold", goal=self.plans[actor]["start"])
+            if actor in self.rigid.models:
+                self.rigid.disable(actor, "tracking_stopped")
 
     def extra_power(self, actor):
+        if actor in self.rigid.models:
+            return self.rigid.power(actor)
         plan = self.plans.get(actor)
         if plan is None or plan["kind"] == "hold":
             return 0.0
@@ -416,6 +473,8 @@ class SpacecraftBus:
         return self.models[actor].attitude.slew_power_w if moving or settling else 0.0
 
     def predicted_quaternion(self, actor, elapsed):
+        if actor in self.rigid.models:
+            return np.asarray(self.rigid.predict(actor, elapsed)[0].quaternion_wxyz)
         plan = self.plans[actor]
         if plan["kind"] == "hold" or elapsed <= 0:
             return plan["start"].copy()
@@ -428,8 +487,10 @@ class SpacecraftBus:
         )[0]
 
     def boundary(self, backend, right):
+        right = self.rigid.boundary(backend, self, right)
+        right = self.network.boundary(backend, self, right)
         for a, plan in self.plans.items():
-            if plan["kind"] != "slew":
+            if a in self.rigid.models or plan["kind"] != "slew":
                 continue
             vehicle, model = backend.mission.vehicles[a], self.models[a]
             power = self.base_power(a, vehicle.base_power_w) + self.extra_power(a)
@@ -466,12 +527,21 @@ class SpacecraftBus:
 
     def imaging_reason(self, actor, target, times, backend, cid):
         state, model = self.states[actor], self.models[actor]
+        if actor in self.rigid.models and not self.rigid.power(actor):
+            return self._deny(actor, cid, "rigid_controller_unpowered", backend.now())
         if state["settle_remaining_sec"] > 1e-9:
             return self._deny(actor, cid, "settling", backend.now())
         for t in times:
             provider = backend.mission.ephemerides[actor]
             goal = pointing_quaternion(provider, target, t)
             q = self.predicted_quaternion(actor, t - backend.now())
+            if actor in self.rigid.models:
+                predicted = self.rigid.predict(actor, t - backend.now())[0]
+                if (
+                    np.linalg.norm(predicted.omega_body_rad_s)
+                    > self.rigid.models[actor].payload_max_body_rate_rad_s
+                ):
+                    return self._deny(actor, cid, "rigid_payload_rate", backend.now())
             if (
                 angle_deg(boresight(q), boresight(goal))
                 > model.attitude.payload_tolerance_deg
@@ -483,7 +553,7 @@ class SpacecraftBus:
                 return self._deny(actor, cid, "sun_keep_out", backend.now())
         return None
 
-    def ordinary_allowed(self, row, backend):
+    def ordinary_allowed(self, row, backend, *, span=0.0):
         c = row["command"]
         actor, kind = c["actor_id"], c["kind"]
         if kind not in {"downlink", "processing"}:
@@ -495,18 +565,23 @@ class SpacecraftBus:
         if kind == "downlink" and self.models[actor].attitude.radio_tolerance_deg < 180:
             station = backend.mission.stations[c["destination_id"]]
             provider = backend.mission.ephemerides[actor]
-            target = provider.context.matrix(
-                provider.epoch.shifted(backend.now())
-            ).T @ geodetic_to_ecef(station.lat_deg, station.lon_deg, station.alt_m)
-            if (
-                angle_deg(
-                    boresight(self.states[actor]["quaternion_wxyz"]),
-                    target - provider.state(backend.now())[:3],
+            samples = (0.0, span / 2, span) if actor in self.rigid.models else (0.0,)
+            for elapsed in samples:
+                t = backend.now() + elapsed
+                target = provider.context.matrix(
+                    provider.epoch.shifted(t)
+                ).T @ geodetic_to_ecef(station.lat_deg, station.lon_deg, station.alt_m)
+                q = (
+                    self.predicted_quaternion(actor, elapsed)
+                    if actor in self.rigid.models
+                    else self.states[actor]["quaternion_wxyz"]
                 )
-                > self.models[actor].attitude.radio_tolerance_deg
-            ):
-                self._deny(actor, c["command_id"], "radio_pointing", backend.now())
-                return False
+                if (
+                    angle_deg(boresight(q), target - provider.state(t)[:3])
+                    > self.models[actor].attitude.radio_tolerance_deg
+                ):
+                    self._deny(actor, c["command_id"], "radio_pointing", backend.now())
+                    return False
         return True
 
     def integrate(self, backend, now, span, before):
@@ -515,39 +590,46 @@ class SpacecraftBus:
             model, plan = self.models[a], self.plans[a]
             qnew = self.predicted_quaternion(a, span)
             moved = quaternion_angle(plan["start"], qnew)
-            state["quaternion_wxyz"] = qnew.tolist()
-            state["mean_slew_rate_deg_s"] = moved / span
-            state["angular_rate_deg_s"] = (
-                model.attitude.max_rate_deg_s * state["rate_scale"]
-                if quaternion_angle(qnew, plan["goal"]) > 1e-6
-                else 0.0
-            )
-            if plan["kind"] == "slew":
-                operation = self.operations[plan["cid"]]
-                if quaternion_angle(qnew, plan["goal"]) <= 1e-6:
-                    travel = quaternion_angle(plan["start"], plan["goal"]) / (
-                        model.attitude.max_rate_deg_s * state["rate_scale"]
-                    )
-                    operation["settle_remaining_sec"] = max(
-                        0.0, operation["settle_remaining_sec"] - max(0.0, span - travel)
-                    )
-                    state["settle_remaining_sec"] = operation["settle_remaining_sec"]
-                    if operation["settle_remaining_sec"] <= 1e-9:
-                        operation["status"] = "completed"
-                        state["angular_rate_deg_s"] = 0.0
-                if (
-                    operation["status"] != "completed"
-                    and mission.clock >= operation["until_sec"] - 1e-9
-                ):
-                    operation.update(status="failed", reason="slew_window_ended")
-                    state["settle_remaining_sec"] = max(
-                        state["settle_remaining_sec"], model.attitude.settling_sec
-                    )
-                    state["angular_rate_deg_s"] = 0.0
+            if a in self.rigid.models:
+                self.rigid.integrate(a, self, backend, span)
+                state["mean_slew_rate_deg_s"] = moved / span
             else:
-                state["settle_remaining_sec"] = max(
-                    0.0, state["settle_remaining_sec"] - span
+                state["quaternion_wxyz"] = qnew.tolist()
+                state["mean_slew_rate_deg_s"] = moved / span
+                state["angular_rate_deg_s"] = (
+                    model.attitude.max_rate_deg_s * state["rate_scale"]
+                    if quaternion_angle(qnew, plan["goal"]) > 1e-6
+                    else 0.0
                 )
+                if plan["kind"] == "slew":
+                    operation = self.operations[plan["cid"]]
+                    if quaternion_angle(qnew, plan["goal"]) <= 1e-6:
+                        travel = quaternion_angle(plan["start"], plan["goal"]) / (
+                            model.attitude.max_rate_deg_s * state["rate_scale"]
+                        )
+                        operation["settle_remaining_sec"] = max(
+                            0.0,
+                            operation["settle_remaining_sec"] - max(0.0, span - travel),
+                        )
+                        state["settle_remaining_sec"] = operation[
+                            "settle_remaining_sec"
+                        ]
+                        if operation["settle_remaining_sec"] <= 1e-9:
+                            operation["status"] = "completed"
+                            state["angular_rate_deg_s"] = 0.0
+                    if (
+                        operation["status"] != "completed"
+                        and mission.clock >= operation["until_sec"] - 1e-9
+                    ):
+                        operation.update(status="failed", reason="slew_window_ended")
+                        state["settle_remaining_sec"] = max(
+                            state["settle_remaining_sec"], model.attitude.settling_sec
+                        )
+                        state["angular_rate_deg_s"] = 0.0
+                else:
+                    state["settle_remaining_sec"] = max(
+                        0.0, state["settle_remaining_sec"] - span
+                    )
             raw_pv = self.raw_generation_w[a] * span / 3600
             generated = mission.generated_wh[a] - before[a][0]
             withdrawn = mission.consumed_wh[a] - before[a][1]
@@ -569,14 +651,30 @@ class SpacecraftBus:
             adjustment = before[a][3] * span
             heat += adjustment
             state["payload_heat_adjustment_j"] += adjustment
-            thermal = model.thermal.model_copy(update={"heat_tx_w": heat / span})
-            old = state["temperature_k"]
-            new = thermal.advance(old, span, True)
-            state["temperature_k"] = new
-            state["heat_j"] += heat
-            state["rejected_heat_j"] += heat - model.thermal.capacity_j_per_k * (
-                new - old
-            )
+            if a in self.network.models:
+                heat, rejected = self.network.integrate(
+                    backend,
+                    self,
+                    a,
+                    now,
+                    span,
+                    before[a],
+                    heat,
+                    (charge_loss + discharge_loss) * 3600,
+                    raw_pv * 3600,
+                )
+                state["temperature_k"] = max(self.network.temperatures[a].values())
+                state["heat_j"] += heat
+                state["rejected_heat_j"] += rejected
+            else:
+                thermal = model.thermal.model_copy(update={"heat_tx_w": heat / span})
+                old = state["temperature_k"]
+                new = thermal.advance(old, span, True)
+                state["temperature_k"] = new
+                state["heat_j"] += heat
+                state["rejected_heat_j"] += heat - model.thermal.capacity_j_per_k * (
+                    new - old
+                )
 
     def inject(self, backend, event):
         payload = event["payload"]
@@ -600,7 +698,7 @@ class SpacecraftBus:
                 )
                 if (
                     state["faults"]
-                    or state["temperature_k"] > model.thermal.resume_k
+                    or not self.thermal_recovered(actor)
                     or soc < model.power.recovery_soc
                 ):
                     raise ValueError(
@@ -647,15 +745,30 @@ class SpacecraftBus:
         self.events.append(copy.deepcopy(event))
 
     def observation(self, actor):
-        return copy.deepcopy(self.states[actor])
+        return {
+            **copy.deepcopy(self.states[actor]),
+            **(
+                {"thermal_network": self.network.observation(actor)}
+                if actor in self.network.models
+                else {}
+            ),
+            **(
+                {"rigid_attitude": self.rigid.observation(actor)}
+                if actor in self.rigid.models
+                else {}
+            ),
+        }
 
     def report(self, backend):
         ledgers = {}
         for a, state in self.states.items():
             model = self.models[a]
             mission = backend.mission
-            stored = model.thermal.capacity_j_per_k * (
-                state["temperature_k"] - model.thermal.initial_k
+            stored = (
+                self.network.stored(a)
+                if a in self.network.models
+                else model.thermal.capacity_j_per_k
+                * (state["temperature_k"] - model.thermal.initial_k)
             )
             ledgers[a] = {
                 "battery_balance_error_wh": self.initial_energy_wh[a]
@@ -677,10 +790,10 @@ class SpacecraftBus:
         return {
             "schema": "space-env.spacecraft-bus/1",
             "models": {a: m.model_dump(mode="json") for a, m in self.models.items()},
-            "states": copy.deepcopy(self.states),
+            "states": {a: self.observation(a) for a in self.states},
             "operations": copy.deepcopy(self.operations),
             "events": copy.deepcopy(self.events),
             "denials": copy.deepcopy(self.denials),
             "ledgers": ledgers,
-            "scope": "rate-limited kinematics, body-fixed PV/two-port battery, single-node RC; no torque/wheel/optical qualification",
+            "scope": "opt-in rigid wheel attitude or legacy rate-limited kinematics; body-fixed PV/two-port battery, optional multi-node thermal or legacy RC; no flight qualification",
         }

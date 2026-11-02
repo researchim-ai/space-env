@@ -7,9 +7,12 @@
 `space_env.reference.rigid_attitude` provides strict, JSON-serializable
 `RigidAttitudeModel`/`RigidAttitudeState`, pure `advance_rigid_attitude`,
 `invariants`, and `thrust_torque_nm`. This is a separately usable physics kernel.
-It is NOT selectable in MissionRuntime, does not replace the bus slew surrogate,
-and does not change B04-D1's held-body thrust assumption. State serialization is
-kernel serialization, not a claim of integrated mission checkpoint support.
+The opt-in mission bridge is now described in
+[RIGID_MISSION_CONTRACT.md](RIGID_MISSION_CONTRACT.md). The kernel API remains
+separately usable; its state JSON serialization alone does not prove mission
+checkpoint support. The mission bridge preserves B04-D1 held-body thrust for
+legacy actors. Rotating burns now require explicit engine coupling; see
+[ROTATING_THRUST_CONTRACT.md](ROTATING_THRUST_CONTRACT.md).
 
 Inputs use SI units. Quaternion wxyz maps body to inertial axes; angular velocity,
 external torque and three orthogonal ideal wheel momenta use body axes.
@@ -61,7 +64,11 @@ serialized continuation and unloading with explicit external torque. Source and
 installed-wheel results are checked separately. Tests and demos do not imply that
 this kernel is connected to mission operations.
 
-## Next integration gate — B04-D2b
+## Original integration gates — B04-D2b
+
+B04-D2b1 now implements controller/state/resource/replay gates within its explicit
+contract. Rotating/off-center thrust is implemented in B04-D2b2 under its explicit
+small-mass-loss contract. A dedicated unloading actuator remains open.
 
 1. Opt-in mission schema/fidelity and actor-local persistent state.
 2. Torque-limited attitude controller; pointing/rate settling based on actual state.
@@ -76,3 +83,10 @@ this kernel is connected to mission operations.
 No gravity-gradient/magnetic/aerodynamic torque, structural flexibility, rotor
 imbalance, wheel geometry allocation, friction, sensor/estimator or flight controller
 is included. No complete ADCS or B04-D2 completion claim is made.
+
+## B04-D2b3 update
+
+Dedicated resource-accounted balanced RCS unloading is now available under an
+explicit opt-in contract: [MOMENTUM_UNLOADING_CONTRACT.md](MOMENTUM_UNLOADING_CONTRACT.md).
+This supersedes the earlier absence of a mission unloading actuator. Full
+hardware qualification, multiple tanks and variable inertia/COM remain open.

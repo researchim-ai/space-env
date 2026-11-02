@@ -1,0 +1,109 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B10-B",
+  "version": "0.134.0",
+  "date": "2026-11-02",
+  "status": "verified_bounded_local_durability_and_controller_handover",
+  "contract": "../OPERATOR_DURABILITY_CONTRACT.md",
+  "scope": [
+    "SQLite WAL snapshot/commit journal atomicity and generation CAS",
+    "native cold replay and historical navigation validation on restart",
+    "operator/agent ownership with revision and control-epoch fences",
+    "hashed capabilities, private connection file and local OS-owner recovery",
+    "explicit scripted/random checkpoint takeover retaining original provenance",
+    "secret-free portable archives and verified RL/SFT provenance sidecar"
+  ],
+  "checks": {
+    "operator_and_durable": {
+      "passed": 56,
+      "seconds": 77.85,
+      "new_durable_cases": 30,
+      "log": "/tmp/space-env-b10b-accepted.log"
+    },
+    "reference": {
+      "passed": 1161,
+      "warnings": 15,
+      "seconds": 268.8,
+      "log": "/tmp/space-env-b10b-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 20.46,
+      "log": "/tmp/space-env-b10b-fast.log"
+    },
+    "collected": 1591,
+    "test_counts_overlap": true,
+    "source_native_relay": {
+      "fulfilled_requests": 2,
+      "decisions": 10,
+      "restart": true,
+      "operator_agent_operator": true,
+      "native_replay": true,
+      "training_zip": true,
+      "archive_clone": true,
+      "log": "/tmp/space-env-b10b-smoke.log"
+    },
+    "installed_native_relay": {
+      "passed": true,
+      "isolated_python": true,
+      "outside_checkout": true,
+      "system_site_packages": true,
+      "log": "/tmp/space-env-b10b-installed.log"
+    },
+    "source_browser": {
+      "passed": true,
+      "restart_reconnect": true,
+      "ownership_permissions": true,
+      "archive_new_session_id": true,
+      "mobile_no_overflow": true,
+      "page_errors": [],
+      "log": "/tmp/space-env-b10b-browser3.log"
+    },
+    "installed_browser": {
+      "passed": true,
+      "outside_checkout": true,
+      "log": "/tmp/space-env-b10b-installed-browser.log"
+    },
+    "wheel": {
+      "modules_byte_matched": 231,
+      "ui_assets_byte_matched": 3,
+      "same_runtime_as_browser_verified_build": true,
+      "sha256": "1f8f36c67ba487a886e7eead133f630618fd166104daf24d820910c9035d835c"
+    },
+    "lint": "ruff explicit changed Python files passed; JS module syntax passed; git diff --check passed",
+    "legacy_studio_api": {
+      "passed": 5,
+      "warnings": 2,
+      "seconds": 116.35,
+      "log": "/tmp/space-env-b10b-legacy.log"
+    }
+  },
+  "fault_tests": [
+    "process exits before and after SQLite commit",
+    "write failure rollback and safe idempotent retry",
+    "lost commit acknowledgment reconciliation",
+    "uncertain IO poisons live handle until recovery",
+    "competing stores and concurrent handover",
+    "tampered snapshots, commit chain, navigation and controller history rejected",
+    "capability rotation and closed-session tombstones",
+    "local roles use independent idempotency namespaces"
+  ],
+  "issues_found_and_fixed": [
+    "Local roles originally collided on client idempotency key; role now participates in native key namespace.",
+    "Browser parsing/restringifying archive JSON changed number representations and hashes. Downloads now use original bytes and imports embed original JSON text. Browser assertion now verifies a new session ID."
+  ],
+  "build_note": "Final wheel README metadata updated after native/browser runs; all 231 Python modules and three UI assets byte-identical to browser-verified build. Final wheel installed outside checkout and asset route checked.",
+  "not_claimed": [
+    "dependency-clean remote CI executed",
+    "expanded full regression executed",
+    "power-loss hardware/filesystem qualification",
+    "distributed or network-filesystem storage",
+    "signed tamper-proof audit",
+    "multi-tenant identities/SSO/TLS",
+    "streamed artifact uploads or event cursors",
+    "large fleet/long mission latency or throughput qualification",
+    "independent flight calibration or industrial certification"
+  ],
+  "git": "No stage, commit, push or PR performed."
+}

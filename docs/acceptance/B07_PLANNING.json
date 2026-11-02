@@ -1,0 +1,316 @@
+{
+  "schema": "space-env.acceptance/1",
+  "date": "2026-11-02",
+  "package": "B07",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "scope": "central causal finite-template baseline controller; bounded current-window joint search; no forecast/global-optimality/expert claim",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "checks": {
+    "new_planning_cases": 57,
+    "unit_with_B06": {
+      "passed": 100,
+      "warnings": 2,
+      "seconds": 33.87,
+      "log": "/tmp/space-env-b07-unit-final.log"
+    },
+    "reference": {
+      "passed": 971,
+      "warnings": 15,
+      "seconds": 164.74,
+      "log": "/tmp/space-env-b07-reference-final.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.54,
+      "log": "/tmp/space-env-b07-fast-final.log"
+    },
+    "collection": {
+      "tests": 1401,
+      "seconds": 1.07
+    },
+    "expanded_regression": {
+      "status": "passed",
+      "expected_tests": 1372,
+      "log": "/tmp/space-env-b07-full-other.log",
+      "excluded_current_run": [
+        "tests/test_campaign.py (14 unchanged legacy cases)",
+        "tests/test_tasking.py (15 unchanged legacy cases)"
+      ],
+      "note": "These long legacy physics files passed for B06; not claimed rerun for B07. Separate CI jobs configured.",
+      "passed": 1372,
+      "warnings": 46,
+      "seconds": 570.67,
+      "exit_code": 0
+    },
+    "wheel": {
+      "sha256": "1f3a151f31eebfdc026a8c6d973c45b7ced56cd7c2f731c0f550442dbe952d41",
+      "modules": 214,
+      "source_byte_parity": true,
+      "boinor_fixture_byte_parity": true
+    },
+    "installed_missions": {
+      "status": "passed",
+      "exit_code": 0,
+      "results": [
+        {
+          "mode": "nominal",
+          "policy": "route_aware_rolling",
+          "fulfilled": 2,
+          "total": 2,
+          "rejections": 0,
+          "search_nodes": 50,
+          "decisions": 15,
+          "replay": true,
+          "conservation": true,
+          "qualification": "synthetic causal baseline, not an expert policy"
+        },
+        {
+          "mode": "reroute",
+          "policy": "route_aware_rolling",
+          "fulfilled": 2,
+          "total": 2,
+          "rejections": 0,
+          "search_nodes": 42,
+          "decisions": 15,
+          "replay": true,
+          "conservation": true,
+          "qualification": "synthetic causal baseline, not an expert policy"
+        },
+        {
+          "mode": "loss",
+          "policy": "route_aware_rolling",
+          "fulfilled": 2,
+          "total": 2,
+          "rejections": 0,
+          "search_nodes": 49,
+          "decisions": 15,
+          "replay": true,
+          "conservation": true,
+          "qualification": "synthetic causal baseline, not an expert policy"
+        },
+        {
+          "mode": "ttl",
+          "policy": "route_aware_rolling",
+          "fulfilled": 1,
+          "total": 2,
+          "rejections": 0,
+          "search_nodes": 44,
+          "decisions": 15,
+          "replay": true,
+          "conservation": true,
+          "qualification": "synthetic causal baseline, not an expert policy"
+        }
+      ],
+      "cli_and_export": [
+        {
+          "installed_cli_native_parity": true,
+          "installed_policy_replay": true,
+          "verified_prefix_exports": [
+            "rl",
+            "sft"
+          ]
+        }
+      ],
+      "realized_network_evidence": {
+        "nominal": {
+          "rx_duplicate_bits": {
+            "a": 0.0,
+            "b": 0.0,
+            "c": 0.0
+          },
+          "transfer_status": {
+            "@task/2/hop-second-b/0": "completed",
+            "@task/4/hop-first-c/0": "completed"
+          },
+          "custody_history": [
+            {
+              "bits": 1000000.0,
+              "destination": "b",
+              "product_id": "raw-after",
+              "source": "a",
+              "time_sec": 5.2420883806054
+            },
+            {
+              "bits": 500000.0,
+              "destination": "c",
+              "product_id": "final-a",
+              "source": "a",
+              "time_sec": 8.621925290869445
+            }
+          ]
+        },
+        "loss": {
+          "rx_duplicate_bits": {
+            "a": 0.0,
+            "b": 1000000.0,
+            "c": 0.0
+          },
+          "transfer_status": {
+            "@task/2/hop-second-b/0": "completed",
+            "@task/4/hop-first-c/0": "completed"
+          },
+          "custody_history": [
+            {
+              "bits": 1000000.0,
+              "destination": "b",
+              "product_id": "raw-after",
+              "source": "a",
+              "time_sec": 7.2841767259280985
+            },
+            {
+              "bits": 500000.0,
+              "destination": "c",
+              "product_id": "final-a",
+              "source": "a",
+              "time_sec": 8.621925290869445
+            }
+          ]
+        },
+        "reroute": {
+          "rx_duplicate_bits": {
+            "a": 0.0,
+            "b": 0.0,
+            "c": 0.0
+          },
+          "transfer_status": {
+            "@task/2/hop-second-c/0": "completed",
+            "@task/6/hop-first-c/0": "completed"
+          },
+          "custody_history": [
+            {
+              "bits": 1000000.0,
+              "destination": "c",
+              "product_id": "raw-after",
+              "source": "a",
+              "time_sec": 5.532888029315635
+            },
+            {
+              "bits": 500000.0,
+              "destination": "c",
+              "product_id": "final-a",
+              "source": "a",
+              "time_sec": 12.621925183592172
+            }
+          ]
+        },
+        "ttl": {
+          "rx_duplicate_bits": {
+            "a": 0.0,
+            "b": 0.0,
+            "c": 0.0
+          },
+          "transfer_status": {
+            "@task/2/hop-second-b/0": "expired",
+            "@task/4/hop-first-c/0": "completed"
+          },
+          "custody_history": [
+            {
+              "bits": 500000.0,
+              "destination": "c",
+              "product_id": "final-a",
+              "source": "a",
+              "time_sec": 8.621925290869445
+            }
+          ]
+        }
+      },
+      "logs": [
+        "/tmp/space-env-b07-installed-a.log",
+        "/tmp/space-env-b07-installed-b.log"
+      ],
+      "verification_scope": "full B07 examples and CLI/exports outside checkout; legacy verify_installed.py suite not rerun in full for B07"
+    },
+    "benchmark": {
+      "passed_execution": true,
+      "episodes": 10,
+      "semantic_replay": true,
+      "blocked_cases_retained": 5,
+      "teacher_status": "failed_declared_gates",
+      "expert_qualified": false,
+      "negative_gate_failure_expected": true,
+      "log": "/tmp/space-env-b07-installed-benchmark.log",
+      "manifest_sha256": "ce8aa56c76bf15f0a942627537e7c996ab326e0612b037ab1372db013ba78c10",
+      "policy_summary": {
+        "wait": {
+          "episodes": 2,
+          "errors": 0,
+          "completion_fraction_mean_all_episodes": 0.0,
+          "zero_denominator_episodes": 0,
+          "rejections": 0
+        },
+        "random_masked": {
+          "episodes": 2,
+          "errors": 0,
+          "completion_fraction_mean_all_episodes": 0.25,
+          "zero_denominator_episodes": 0,
+          "rejections": 0
+        },
+        "priority": {
+          "episodes": 2,
+          "errors": 0,
+          "completion_fraction_mean_all_episodes": 0.5,
+          "zero_denominator_episodes": 0,
+          "rejections": 0
+        },
+        "earliest_deadline": {
+          "episodes": 2,
+          "errors": 0,
+          "completion_fraction_mean_all_episodes": 0.5,
+          "zero_denominator_episodes": 0,
+          "rejections": 0
+        },
+        "route_aware_rolling": {
+          "episodes": 2,
+          "errors": 0,
+          "completion_fraction_mean_all_episodes": 0.5,
+          "zero_denominator_episodes": 0,
+          "rejections": 0
+        }
+      }
+    },
+    "installed_evaluation_cli": {
+      "installed_verify_evaluation": {
+        "ok": true,
+        "episodes": 10,
+        "manifest_sha256": "ce8aa56c76bf15f0a942627537e7c996ab326e0612b037ab1372db013ba78c10"
+      },
+      "failed_teacher_cli_exit": 1,
+      "report_preserved": true
+    },
+    "lint": "new modules, helpers, CLI, tests and examples passed",
+    "ci": {
+      "full_shards": [
+        "other",
+        "campaign",
+        "tasking-base",
+        "tasking-sixteen"
+      ],
+      "unit_partition_contract_verified": true,
+      "remote_executed": false,
+      "yaml_parsed": true
+    }
+  },
+  "capabilities": [
+    "immutable by-value public planning input",
+    "independent checkpointed policy RNG",
+    "wait/random/priority/EDF/route-aware baselines",
+    "bounded subset search and explicit pruning/budget exhaustion",
+    "conservative actor/lane/product/role/station claims",
+    "observable stall cancellation and next-hop cooldown",
+    "operator capability, external provenance and replay",
+    "native ACK-only accounting and existing RL/SFT exporter",
+    "predeclared detached benchmark manifest, lineage/OOD groups",
+    "paired teacher gates, errors/infeasible cases retained",
+    "native tiny masked-tree oracle with explicit scope",
+    "semantic evaluation verification ignoring measured wall time/RSS"
+  ],
+  "remaining": [
+    "B08 scenario/data diversity and quality factory",
+    "B09 streaming/history/RSS/fleet throughput",
+    "B12 independent calibration/operator evidence",
+    "authorized nominal forecast capability and propagated multi-epoch optimization",
+    "learned-policy held-out evaluation and expert-policy qualification"
+  ]
+}

@@ -246,3 +246,7 @@ test-results/
 junit.xml
 pytest-report.xml
 coverage.json
+
+# Local durable Mission Control state and private connection capabilities
+/.space-env/
+/operator-connection*.json

@@ -34,7 +34,13 @@ class RuntimeLimits(StrictModel):
 
 
 class Fidelity(StrictModel):
-    trajectory: Literal["fixed-gcrs-ephemeris", "controlled-gcrs", "propagated-gcrs-coast", "coupled-gcrs-thrust", "legacy-dynamic"]
+    trajectory: Literal[
+        "fixed-gcrs-ephemeris",
+        "controlled-gcrs",
+        "propagated-gcrs-coast",
+        "coupled-gcrs-thrust",
+        "legacy-dynamic",
+    ]
     resources: Literal["explicit-surrogate", "coupled-bus-surrogate", "legacy-training"]
 
 
@@ -87,7 +93,15 @@ class ScenarioSpec(StrictModel):
             "reference-fixed": ("fixed-gcrs-ephemeris", "explicit-surrogate"),
             "reference-dynamic": ("controlled-gcrs", "explicit-surrogate"),
             "reference-lifecycle": ("controlled-gcrs", "explicit-surrogate"),
-            "reference-spacecraft": ("coupled-gcrs-thrust" if self.definition.get("actuation") is not None else "propagated-gcrs-coast", "coupled-bus-surrogate"),
+            "reference-spacecraft": (
+                "coupled-gcrs-thrust"
+                if any(
+                    self.definition.get(k) is not None
+                    for k in ("actuation", "unloading")
+                )
+                else "propagated-gcrs-coast",
+                "coupled-bus-surrogate",
+            ),
             "legacy-training": ("legacy-dynamic", "legacy-training"),
         }
         if (self.fidelity.trajectory, self.fidelity.resources) != fidelity[
@@ -163,9 +177,30 @@ class BodyBurnSpec(StrictModel):
 
     @model_validator(mode="after")
     def unit_direction(self):
-        if not math.isclose(math.hypot(*self.direction_body), 1.0, abs_tol=1e-9, rel_tol=0):
+        if not math.isclose(
+            math.hypot(*self.direction_body), 1.0, abs_tol=1e-9, rel_tol=0
+        ):
             raise ValueError("body burn direction must be a unit BODY vector")
         return self
+
+
+class WheelTorqueSpec(StrictModel):
+    frame: Literal["BODY"]
+    motor_torque_nm: tuple[FiniteScalar, FiniteScalar, FiniteScalar]
+
+
+class MomentumUnloadSpec(StrictModel):
+    frame: Literal["BODY"]
+    target_momentum_nms: tuple[FiniteScalar, FiniteScalar, FiniteScalar] = (
+        0.0,
+        0.0,
+        0.0,
+    )
+    tolerance_nms: float = Field(default=1e-4, gt=0, strict=True)
+
+
+class RelaySpec(StrictModel):
+    ttl_sec: float = Field(gt=1e-6, le=259200, strict=True)
 
 
 class RuntimeCommand(StrictModel):
@@ -181,6 +216,9 @@ class RuntimeCommand(StrictModel):
         "transform",
         "slew",
         "body_burn",
+        "wheel_torque",
+        "momentum_unload",
+        "relay",
     ]
     duration_sec: float = Field(ge=0, strict=True)
     destination_id: str = ""
@@ -192,6 +230,9 @@ class RuntimeCommand(StrictModel):
     forecast: ForecastBinding | None = None
     slew: SlewSpec | None = None
     body_burn: BodyBurnSpec | None = None
+    wheel_torque: WheelTorqueSpec | None = None
+    momentum_unload: MomentumUnloadSpec | None = None
+    relay: RelaySpec | None = None
 
     @model_validator(mode="after")
     def fields(self):
@@ -210,12 +251,20 @@ class RuntimeCommand(StrictModel):
             raise ValueError("maneuver specification does not match command kind")
         if not self.command_id.strip() or not self.actor_id.strip():
             raise ValueError("command and actor IDs must be nonblank")
-        if self.kind != "downlink" and self.destination_id:
-            raise ValueError("destination is only valid for downlink")
-        if self.kind not in {"downlink", "processing"} and self.product_id:
-            raise ValueError("product selection requires downlink or processing")
+        if self.kind not in {"downlink", "relay"} and self.destination_id:
+            raise ValueError("destination is only valid for downlink or relay")
+        if self.kind not in {"downlink", "processing", "relay"} and self.product_id:
+            raise ValueError("product selection requires downlink, processing or relay")
+        if (self.kind == "relay") != (self.relay is not None):
+            raise ValueError("relay specification must match command kind")
+        if self.kind == "relay" and (not self.product_id.strip() or not self.destination_id.strip()):
+            raise ValueError("relay requires product_id and destination actor")
         if (self.kind == "slew") != (self.slew is not None):
             raise ValueError("slew specification must match command kind")
+        if (self.kind == "momentum_unload") != (self.momentum_unload is not None):
+            raise ValueError("momentum unloading specification must match command kind")
+        if (self.kind == "wheel_torque") != (self.wheel_torque is not None):
+            raise ValueError("wheel torque specification must match command kind")
         if (self.kind == "body_burn") != (self.body_burn is not None):
             raise ValueError("body burn specification must match command kind")
         if self.kind != "transform" and self.job_id:
@@ -315,7 +364,10 @@ def spacecraft_scenario(spec: dict, *, id: str, lineage: str, seed: int = 0) -> 
         definition=spec,
         seed=seed,
         fidelity=Fidelity(
-            trajectory="coupled-gcrs-thrust" if spec.get("actuation") is not None else "propagated-gcrs-coast", resources="coupled-bus-surrogate"
+            trajectory="coupled-gcrs-thrust"
+            if any(spec.get(k) is not None for k in ("actuation", "unloading"))
+            else "propagated-gcrs-coast",
+            resources="coupled-bus-surrogate",
         ),
         objective="fulfilled_requests",
     ).model_dump(mode="json")

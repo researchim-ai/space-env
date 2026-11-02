@@ -1,0 +1,449 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B06",
+  "version": "0.134.0",
+  "date": "2026-11-02",
+  "status": "verified_declared_engineering_profile",
+  "scope": "bounded reference runtime task profile; ideal local telemetry; declared finite controls; synthetic scripted teacher",
+  "checks": {
+    "unit": {
+      "passed": 43,
+      "warnings": 2,
+      "seconds": 10.62,
+      "log": "/tmp/space-env-task-unit-final.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.02,
+      "log": "/tmp/space-env-task-fast.log"
+    },
+    "reference": {
+      "passed": 914,
+      "warnings": 15,
+      "seconds": 132.57,
+      "log": "/tmp/space-env-task-reference.log"
+    },
+    "full": {
+      "status": "passed_partitioned",
+      "collected": 1344,
+      "monolithic": {
+        "exit_code": 143,
+        "status": "interrupted_SIGTERM_without_test_failure",
+        "log": "/tmp/space-env-task-full.log"
+      },
+      "partition": [
+        "tests/test_campaign.py",
+        "tests/test_tasking.py excluding sixteen_vehicles",
+        "tests/test_tasking.py selecting sixteen_vehicles",
+        "all remaining test_*.py files"
+      ],
+      "other": {
+        "passed": 1315,
+        "warnings": 46,
+        "seconds": 526.32,
+        "exit_code": 0,
+        "files": 97,
+        "log": "/tmp/space-env-task-full-other.log"
+      },
+      "tasking_combined_attempt": {
+        "status": "interrupted_SIGTERM_without_test_failure",
+        "exit_code": 143,
+        "log": "/tmp/space-env-task-full-tasking.log"
+      },
+      "partition_manifest": {
+        "disjoint": true,
+        "union_tests": 1344,
+        "groups": {
+          "campaign": {
+            "tests": 14,
+            "nodeids_sha256": "84e43d6dfb1b849d8fee3c8bd5169a56d8595c5e51b851c4be2f4f025c75fd2e"
+          },
+          "tasking_base": {
+            "tests": 14,
+            "nodeids_sha256": "e3b13b069b567ee3f4afb3db8242799a77fe13e0c4d6b2fb420e925e2864dc03"
+          },
+          "sixteen": {
+            "tests": 1,
+            "nodeids_sha256": "b41cd025dd4e9ed86a1b4938b9a54eb4940b575b87854e5118ad428f0c365f78"
+          },
+          "other": {
+            "tests": 1315,
+            "nodeids_sha256": "6878c72b6f686ab42e257d1c57522c2f8c82bdb40100e34815431b77f10dc793"
+          }
+        }
+      },
+      "tasking_base": {
+        "passed": 14,
+        "deselected": 1,
+        "warnings": 2,
+        "seconds": 143.96,
+        "exit_code": 0,
+        "log": "/tmp/space-env-task-full-tasking-base.log"
+      },
+      "passed": 1344,
+      "all_partition_exit_codes_zero": true,
+      "campaign": {
+        "passed": 14,
+        "warnings": 12,
+        "seconds": 469.39,
+        "exit_code": 0,
+        "log": "/tmp/space-env-task-full-campaign.log"
+      },
+      "sixteen": {
+        "passed": 1,
+        "deselected": 14,
+        "warnings": 1,
+        "seconds": 456.29,
+        "exit_code": 0,
+        "log": "/tmp/space-env-task-full-sixteen.log"
+      },
+      "warnings_sum_across_partitions": 61
+    },
+    "installed": {
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/tmp/space-env-task-installed.log",
+      "package": "/tmp/space-env-task-installed/lib/python3.12/site-packages/space_env",
+      "runtime_tasks": {
+        "mode": "nominal",
+        "fulfilled_requests": 2,
+        "total_requests": 2,
+        "decisions": 10,
+        "wire_balance_error_bits": 0.0,
+        "interface_parity": [
+          "sdk",
+          "cli-plan",
+          "gym",
+          "tools"
+        ],
+        "replay": [
+          "mid-fragment",
+          "inflight",
+          "final"
+        ],
+        "qualification": "synthetic scripted execution; not expert-policy or flight qualification",
+        "installed_console_replay": true
+      },
+      "dependencies": {
+        "numpy": "2.2.6",
+        "boinor": "0.19.0",
+        "gymnasium": "1.2.0",
+        "astropy": "7.2.0",
+        "pydantic": "2.11.7"
+      }
+    },
+    "wheel": {
+      "sha256": "219643f3efe778befa77c3cc0dd9a944600b33a3b28ab92bb24f96b6c5032dc4",
+      "source_modules": 207,
+      "source_byte_parity": true,
+      "boinor_assets": [
+        "space_env/reference/fixtures/boinor_j2_24h.json",
+        "space_env/reference/fixtures/boinor_j2_24h_third_body_other_epoch.json",
+        "space_env/reference/fixtures/boinor_j2_72h.json"
+      ],
+      "boinor_asset_byte_parity": true
+    },
+    "collection": {
+      "tests": 1344,
+      "seconds": 0.98
+    },
+    "installed_parallel_api": {
+      "passed": true,
+      "exit_code": 0,
+      "variable_duration": true,
+      "cycles": 4,
+      "log": "/tmp/space-env-task-installed-parallel.log"
+    },
+    "installed_variants": {
+      "passed": true,
+      "exit_code": 0,
+      "results": [
+        {
+          "mode": "reroute",
+          "fulfilled_requests": 2,
+          "total_requests": 2,
+          "decisions": 11,
+          "wire_balance_error_bits": -4.656612873077393e-10,
+          "interface_parity": [
+            "sdk",
+            "cli-plan",
+            "gym",
+            "tools"
+          ],
+          "replay": [
+            "mid-fragment",
+            "inflight",
+            "final"
+          ],
+          "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+        },
+        {
+          "installed_cli_replay": "reroute",
+          "result": {
+            "ok": true,
+            "decisions": 11,
+            "time_sec": 26.75
+          }
+        },
+        {
+          "mode": "loss",
+          "fulfilled_requests": 2,
+          "total_requests": 2,
+          "decisions": 10,
+          "wire_balance_error_bits": 0.0,
+          "interface_parity": [
+            "sdk",
+            "cli-plan",
+            "gym",
+            "tools"
+          ],
+          "replay": [
+            "mid-fragment",
+            "inflight",
+            "final"
+          ],
+          "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+        },
+        {
+          "installed_cli_replay": "loss",
+          "result": {
+            "ok": true,
+            "decisions": 10,
+            "time_sec": 25.75
+          }
+        },
+        {
+          "mode": "ttl",
+          "fulfilled_requests": 1,
+          "total_requests": 2,
+          "decisions": 9,
+          "wire_balance_error_bits": 0.0,
+          "interface_parity": [
+            "sdk",
+            "cli-plan",
+            "gym",
+            "tools"
+          ],
+          "replay": [
+            "mid-fragment",
+            "inflight",
+            "final"
+          ],
+          "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+        },
+        {
+          "installed_cli_replay": "ttl",
+          "result": {
+            "ok": true,
+            "decisions": 9,
+            "time_sec": 22.25
+          }
+        }
+      ],
+      "log": "/tmp/space-env-task-installed-variants.log"
+    },
+    "ci": {
+      "optional_marl_installed": true,
+      "yaml_parsed": true,
+      "remote_workflow_executed": false
+    },
+    "lint": {
+      "new_task_modules_and_tests": "passed",
+      "runtime_helpers_and_ci_profile": "passed",
+      "diff_whitespace": "passed",
+      "existing_cli_debt": {
+        "rule": "I001",
+        "location": "src/space_env/cli.py reference-qualify-orbits import block",
+        "present_in_HEAD": true,
+        "changed_by_B06": false,
+        "note": "Expanded CLI lint check reports this existing import-order issue; frozen tested source was not changed for it."
+      }
+    }
+  },
+  "examples": [
+    {
+      "mode": "nominal",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 10,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools",
+        "parallel"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    },
+    {
+      "mode": "reroute",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 11,
+      "wire_balance_error_bits": -4.656612873077393e-10,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    },
+    {
+      "mode": "loss",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 10,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    },
+    {
+      "mode": "ttl",
+      "fulfilled_requests": 1,
+      "total_requests": 2,
+      "decisions": 9,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    }
+  ],
+  "contracts": [
+    "task schema/1 and episode/1",
+    "role-scoped causal observation and independent registry",
+    "no backend/future oracle in masks",
+    "atomic cancel/recheck/event/submit/advance",
+    "rejection rollback with physical time cost",
+    "per-second discount; horizon termination vs budget truncation",
+    "seed preserve and derived-network modes",
+    "Gym and optional PettingZoo API checks",
+    "native runtime checkpoint adapter parity",
+    "verified lineage-grouped RL/SFT export; no expert-quality claim"
+  ],
+  "remaining": [
+    "B07 planner baselines and teacher qualification",
+    "B08 data factory and held-out learned-policy evaluation",
+    "B09 throughput/RSS/streaming and fleet scale qualification",
+    "B12 independent calibration/operator evidence",
+    "estimator and delayed decentralized TT&C",
+    "universal legacy task adaptation and arbitrary continuous command binding"
+  ],
+  "scale_observation": {
+    "nominal_episode_bytes": 60193784,
+    "decisions": 10,
+    "streaming_qualified": false,
+    "note": "Audit checkpoints retain detailed native history; measurement from source example before metadata-only local-export correction, not a fleet throughput benchmark."
+  },
+  "examples_on_final_wheel": [
+    {
+      "mode": "nominal",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 10,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification",
+      "installed_console_replay": true
+    },
+    {
+      "mode": "reroute",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 11,
+      "wire_balance_error_bits": -4.656612873077393e-10,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    },
+    {
+      "mode": "loss",
+      "fulfilled_requests": 2,
+      "total_requests": 2,
+      "decisions": 10,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    },
+    {
+      "mode": "ttl",
+      "fulfilled_requests": 1,
+      "total_requests": 2,
+      "decisions": 9,
+      "wire_balance_error_bits": 0.0,
+      "interface_parity": [
+        "sdk",
+        "cli-plan",
+        "gym",
+        "tools"
+      ],
+      "replay": [
+        "mid-fragment",
+        "inflight",
+        "final"
+      ],
+      "qualification": "synthetic scripted execution; not expert-policy or flight qualification"
+    }
+  ],
+  "hardware_flight_qualification": "needs_external_evidence"
+}

@@ -1,0 +1,689 @@
+{
+  "date": "2026-11-02",
+  "package": "B04-E",
+  "status": "verified_declared_engineering_profile",
+  "parent_B04_status": "in_progress",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "version": "0.134.0",
+  "contract": "../validation/THERMAL_NETWORK_CONTRACT.md",
+  "tests": {
+    "new_thermal_cases": 54,
+    "reference": 785,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1215,
+    "counts_overlap": true,
+    "full_regression": {
+      "status": "passed",
+      "passed": 1215,
+      "warnings": 58,
+      "duration_seconds": 1512.72,
+      "exit_code": 0,
+      "loopback_enabled": true,
+      "uninterrupted_on_final_source": true,
+      "summary": "1215 passed, 58 warnings in 1512.72s (0:25:12)"
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 195,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "51879f3b7e6c453a1d77152e745ae3dcfb0333d0ed256ff7d7d551b6c03e84c2"
+  },
+  "installed_sdk": {
+    "nominal": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "temperatures_k": {
+        "camera": 286.6437287706061,
+        "cpu": 288.2838424799153,
+        "hull": 289.08340599742974,
+        "panel": 284.3605352897216,
+        "radiator": 283.2611190908749
+      },
+      "node_balance_error_j": {
+        "camera": 9.144907053837414e-13,
+        "cpu": 3.527289571536585e-12,
+        "hull": 7.207567875866516e-12,
+        "panel": 5.4427573559223674e-12,
+        "radiator": 1.3500311979441904e-12
+      },
+      "heater_dc_energy_j": 0.0,
+      "safe": false,
+      "mid_capture_cpu_and_cold_start_replay": true
+    },
+    "hot": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      },
+      "temperatures_k": {
+        "camera": 285.8186688618446,
+        "cpu": 287.1578273139025,
+        "hull": 287.53002048169384,
+        "panel": 284.5722755811312,
+        "radiator": 283.7787880702074
+      },
+      "node_balance_error_j": {
+        "camera": -4.120981333954887e-12,
+        "cpu": -3.434752482434078e-14,
+        "hull": -3.133937553911892e-12,
+        "panel": 9.379164112033322e-13,
+        "radiator": -1.2363443602225743e-12
+      },
+      "heater_dc_energy_j": 0.0,
+      "safe": true,
+      "mid_capture_cpu_and_cold_start_replay": true
+    },
+    "cold": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "temperatures_k": {
+        "camera": 286.67494307513834,
+        "cpu": 288.34497631536925,
+        "hull": 289.80190480881345,
+        "panel": 280.7859624377609,
+        "radiator": 282.9754007661084
+      },
+      "node_balance_error_j": {
+        "camera": 5.009770376318556e-12,
+        "cpu": 5.080380560684716e-13,
+        "hull": 7.293721182577428e-12,
+        "panel": -4.973799150320701e-14,
+        "radiator": 5.066169705969514e-12
+      },
+      "heater_dc_energy_j": 33.99999999999999,
+      "safe": false,
+      "mid_capture_cpu_and_cold_start_replay": true
+    }
+  },
+  "extended_installed_smoke": {
+    "passed": true,
+    "package": "/tmp/space-env-thermal-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "console_python_no_user_site": true
+  },
+  "demos": {
+    "nominal": {
+      "ok": true,
+      "mode": "nominal",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "safe": false,
+      "safe_reasons": [],
+      "thermal_network": {
+        "schema": "space-env.thermal-network/1",
+        "temperatures_k": {
+          "camera": 286.6437287706061,
+          "cpu": 288.2838424799153,
+          "hull": 289.08340599742974,
+          "panel": 284.3605352897216,
+          "radiator": 283.2611190908749
+        },
+        "source_heat_j": {
+          "cpu": 8.0,
+          "payload": 32.0,
+          "radio": 24.0,
+          "adcs": 9.36,
+          "propulsion": 0.0,
+          "conversion": 18.522222222222197,
+          "pv_extraction": 0.0,
+          "base": 59.99999999999982
+        },
+        "heater_requested": {
+          "camera": false,
+          "cpu": false,
+          "hull": false,
+          "panel": false,
+          "radiator": false
+        },
+        "heater_power_w": {
+          "camera": 0.0,
+          "cpu": 0.0,
+          "hull": 0.0,
+          "panel": 0.0,
+          "radiator": 0.0
+        },
+        "sampled_environment": {
+          "camera": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8281996135671268,
+            "shadow_fraction": 1.0
+          },
+          "cpu": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8281996135671268,
+            "shadow_fraction": 1.0
+          },
+          "hull": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8281996135671268,
+            "shadow_fraction": 1.0
+          },
+          "panel": {
+            "solar_w": 0.0,
+            "earth_ir_w": 3.140532934646545,
+            "albedo_w": 1.1040404130270751,
+            "sky_w": 8.594525057014325e-09,
+            "earth_view_factor": 0.8281996135671268,
+            "shadow_fraction": 1.0
+          },
+          "radiator": {
+            "solar_w": 0.0,
+            "earth_ir_w": 1.106535259508697,
+            "albedo_w": 0.0,
+            "sky_w": 3.855482153463271e-08,
+            "earth_view_factor": 0.274642655623901,
+            "shadow_fraction": 1.0
+          }
+        },
+        "ledgers": {
+          "internal_j": {
+            "camera": 32.0,
+            "cpu": 32.0,
+            "hull": 87.88222222222207,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "external_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 31.90131413536196,
+            "radiator": 7.811389020684813
+          },
+          "bath_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "radiation_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 44.690608340935185,
+            "radiator": 47.090109265552044
+          },
+          "link_out_j": [
+            -0.8745754121214254,
+            -0.8384247991492627,
+            4.5011020623638665
+          ],
+          "evaluations": 4090,
+          "routing_error_j": 4.551914400963142e-15,
+          "heater_dc_energy_j": 0.0,
+          "heater_node_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "dc_input_j": 166.69999999999976,
+          "dc_heat_j": 133.35999999999993,
+          "wall_input_j": 0.0,
+          "wheel_work_j": 0.0,
+          "declared_nonthermal_export_j": 33.339999999999975
+        },
+        "node_balance_error_j": {
+          "camera": 9.144907053837414e-13,
+          "cpu": 3.527289571536585e-12,
+          "hull": 7.207567875866516e-12,
+          "panel": 5.4427573559223674e-12,
+          "radiator": 1.3500311979441904e-12
+        },
+        "events": [],
+        "temperature_summary": "maximum_node_kelvin",
+        "scope": "lumped network, sampled uniform Earth/Lambert phase and ideal thermostats; no flight calibration"
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 4.884981308350689e-15,
+          "thermal_stored_j": 99.81420777180006,
+          "thermal_balance_error_j": -1.84456894203322e-11,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 4.163336342344337e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.4654943925052066e-14,
+          "thermal_stored_j": 30.26236765175554,
+          "thermal_balance_error_j": 3.552713678800501e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-18
+        }
+      },
+      "job_state": {
+        "status": "completed",
+        "remaining_sec": 0.0,
+        "work_sec": 1.5,
+        "switching_sec": 0.5,
+        "setup_remaining_sec": 0.0,
+        "reserved": false,
+        "actor": "a",
+        "reason": null
+      },
+      "scope": "5-node engineering thermal network with sampled radiation and paid heaters; no flight calibration"
+    },
+    "hot": {
+      "ok": true,
+      "mode": "hot",
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      },
+      "safe": true,
+      "safe_reasons": [
+        "overtemperature:cpu"
+      ],
+      "thermal_network": {
+        "schema": "space-env.thermal-network/1",
+        "temperatures_k": {
+          "camera": 285.8186688618446,
+          "cpu": 287.1578273139025,
+          "hull": 287.53002048169384,
+          "panel": 284.5722755811312,
+          "radiator": 283.7787880702074
+        },
+        "source_heat_j": {
+          "cpu": 0.40000000000000036,
+          "payload": 16.0,
+          "radio": 0.0,
+          "adcs": 4.56,
+          "propulsion": 0.0,
+          "conversion": 8.466666666666663,
+          "pv_extraction": 0.0,
+          "base": 39.99999999999996
+        },
+        "heater_requested": {
+          "camera": false,
+          "cpu": false,
+          "hull": false,
+          "panel": false,
+          "radiator": false
+        },
+        "heater_power_w": {
+          "camera": 0.0,
+          "cpu": 0.0,
+          "hull": 0.0,
+          "panel": 0.0,
+          "radiator": 0.0
+        },
+        "sampled_environment": {
+          "camera": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8300848537335166,
+            "shadow_fraction": 1.0
+          },
+          "cpu": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8300848537335166,
+            "shadow_fraction": 1.0
+          },
+          "hull": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8300848537335166,
+            "shadow_fraction": 1.0
+          },
+          "panel": {
+            "solar_w": 0.0,
+            "earth_ir_w": 3.147681765357495,
+            "albedo_w": 1.1077835533107945,
+            "sky_w": 8.50021360530605e-09,
+            "earth_view_factor": 0.8300848537335166,
+            "shadow_fraction": 1.0
+          },
+          "radiator": {
+            "solar_w": 0.0,
+            "earth_ir_w": 1.0187962482390736,
+            "albedo_w": 0.0,
+            "sky_w": 3.971232460875253e-08,
+            "earth_view_factor": 0.25286578511766533,
+            "shadow_fraction": 1.0
+          }
+        },
+        "ledgers": {
+          "internal_j": {
+            "camera": 16.0,
+            "cpu": 0.40000000000000036,
+            "hull": 53.0266666666667,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "external_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 21.28376892191926,
+            "radiator": 5.073728997423959
+          },
+          "bath_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "radiation_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 29.8382572992966,
+            "radiator": 31.519281926384622
+          },
+          "link_out_j": [
+            -0.3733772368966866,
+            -0.03156546278053145,
+            2.0213143331095678
+          ],
+          "evaluations": 2747,
+          "routing_error_j": 8.881784197001252e-16,
+          "heater_dc_energy_j": 0.0,
+          "heater_node_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "dc_input_j": 76.20000000000005,
+          "dc_heat_j": 60.95999999999996,
+          "wall_input_j": 0.0,
+          "wheel_work_j": 0.0,
+          "declared_nonthermal_export_j": 15.239999999999995
+        },
+        "node_balance_error_j": {
+          "camera": -4.120981333954887e-12,
+          "cpu": -3.434752482434078e-14,
+          "hull": -3.133937553911892e-12,
+          "panel": 9.379164112033322e-13,
+          "radiator": -1.2363443602225743e-12
+        },
+        "events": [
+          {
+            "node": "cpu",
+            "kind": "hot",
+            "time_sec": 2.0265699336063743
+          }
+        ],
+        "temperature_summary": "maximum_node_kelvin",
+        "scope": "lumped network, sampled uniform Earth/Lambert phase and ideal thermostats; no flight calibration"
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.3322676295501878e-15,
+          "thermal_stored_j": 34.42662536032111,
+          "thermal_balance_error_j": 7.574385563202668e-12,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 1.734723475976807e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -9.325873406851315e-15,
+          "thermal_stored_j": 20.300738998912493,
+          "thermal_balance_error_j": -3.552713678800501e-15,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": -6.938893903907228e-18
+        }
+      },
+      "job_state": {
+        "status": "paused",
+        "remaining_sec": 1.5,
+        "work_sec": 0.0,
+        "switching_sec": 0.10000000000000009,
+        "setup_remaining_sec": 0.3999999999999999,
+        "reserved": true,
+        "actor": "a",
+        "reason": "safe_mode"
+      },
+      "scope": "5-node engineering thermal network with sampled radiation and paid heaters; no flight calibration"
+    },
+    "cold": {
+      "ok": true,
+      "mode": "cold",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "safe": false,
+      "safe_reasons": [],
+      "thermal_network": {
+        "schema": "space-env.thermal-network/1",
+        "temperatures_k": {
+          "camera": 286.67494307513834,
+          "cpu": 288.34497631536925,
+          "hull": 289.80190480881345,
+          "panel": 280.7859624377609,
+          "radiator": 282.9754007661084
+        },
+        "source_heat_j": {
+          "cpu": 8.0,
+          "payload": 32.0,
+          "radio": 24.0,
+          "adcs": 9.36,
+          "propulsion": 0.0,
+          "conversion": 23.96666666666664,
+          "pv_extraction": 0.0,
+          "base": 71.99999999999996
+        },
+        "heater_requested": {
+          "camera": false,
+          "cpu": false,
+          "hull": false,
+          "panel": false,
+          "radiator": false
+        },
+        "heater_power_w": {
+          "camera": 0.0,
+          "cpu": 0.0,
+          "hull": 0.0,
+          "panel": 0.0,
+          "radiator": 0.0
+        },
+        "sampled_environment": {
+          "camera": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8271323357211637,
+            "shadow_fraction": 1.0
+          },
+          "cpu": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8271323357211637,
+            "shadow_fraction": 1.0
+          },
+          "hull": {
+            "solar_w": 0.0,
+            "earth_ir_w": 0.0,
+            "albedo_w": 0.0,
+            "sky_w": 0.0,
+            "earth_view_factor": 0.8271323357211637,
+            "shadow_fraction": 1.0
+          },
+          "panel": {
+            "solar_w": 0.0,
+            "earth_ir_w": 3.1364858170546532,
+            "albedo_w": 1.1018807304174736,
+            "sky_w": 8.647916940352781e-09,
+            "earth_view_factor": 0.8271323357211637,
+            "shadow_fraction": 1.0
+          },
+          "radiator": {
+            "solar_w": 0.0,
+            "earth_ir_w": 1.1351788157139946,
+            "albedo_w": 0.0,
+            "sky_w": 3.817693940578731e-08,
+            "earth_view_factor": 0.2817520019146177,
+            "shadow_fraction": 1.0
+          }
+        },
+        "ledgers": {
+          "internal_j": {
+            "camera": 32.0,
+            "cpu": 32.0,
+            "hull": 105.32666666666647,
+            "panel": 33.99999999999999,
+            "radiator": 0.0
+          },
+          "external_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 38.261208176148486,
+            "radiator": 9.548739461501322
+          },
+          "bath_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 0.0,
+            "radiator": 0.0
+          },
+          "radiation_out_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 51.47524573838756,
+            "radiator": 56.38066997328918
+          },
+          "link_out_j": [
+            -1.498861502761876,
+            -1.4497631536920075,
+            6.339945833950943
+          ],
+          "evaluations": 4887,
+          "routing_error_j": 5.88418203051333e-15,
+          "heater_dc_energy_j": 33.99999999999999,
+          "heater_node_j": {
+            "camera": 0.0,
+            "cpu": 0.0,
+            "hull": 0.0,
+            "panel": 33.99999999999999,
+            "radiator": 0.0
+          },
+          "dc_input_j": 215.6999999999999,
+          "dc_heat_j": 179.35999999999976,
+          "wall_input_j": 0.0,
+          "wheel_work_j": 0.0,
+          "declared_nonthermal_export_j": 36.339999999999975
+        },
+        "node_balance_error_j": {
+          "camera": 5.009770376318556e-12,
+          "cpu": 5.080380560684716e-13,
+          "hull": 7.293721182577428e-12,
+          "panel": -4.973799150320701e-14,
+          "radiator": 5.066169705969514e-12
+        },
+        "events": [],
+        "temperature_summary": "maximum_node_kelvin",
+        "scope": "lumped network, sampled uniform Earth/Lambert phase and ideal thermostats; no flight calibration"
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": 2.6645352591003757e-15,
+          "thermal_stored_j": 143.28069859265736,
+          "thermal_balance_error_j": -1.7820411812863313e-11,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 4.163336342344337e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.7319479184152442e-14,
+          "thermal_stored_j": 36.17984827052396,
+          "thermal_balance_error_j": 6.394884621840902e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 2.42861286636753e-17
+        }
+      },
+      "job_state": {
+        "status": "completed",
+        "remaining_sec": 0.0,
+        "work_sec": 1.5,
+        "switching_sec": 0.5,
+        "setup_remaining_sec": 0.0,
+        "reserved": false,
+        "actor": "a",
+        "reason": null
+      },
+      "scope": "5-node engineering thermal network with sampled radiation and paid heaters; no flight calibration"
+    }
+  },
+  "independent_checks": [
+    "Two-node symmetric conduction matches analytic exponential with Radau and DOP853",
+    "One-node bath matches RC closed form; cold-space nonlinear radiation matches exact T^-3 solution",
+    "Stiff G=1e6 W/K exchange reaches conserved equilibrium",
+    "Earth-disc nadir/hidden branches and limb integral compared against analytic values",
+    "PV thermal plus battery energy closes for charging and curtailment",
+    "Actual SAR RF output, engine wall heat, RCS braking and fixed heater DC checked separately",
+    "Canonical node/edge/routing order preserves cold-start replay through JSON"
+  ],
+  "limits": [
+    "Lumped network, no CAD/FEA/internal radiative view matrix or temperature-dependent materials",
+    "Uniform spherical Earth IR and passive Lambert phase, sampled environment and feedback",
+    "Generic electrical nonthermal export is declared, not calibrated radiation/exhaust",
+    "Grouped EPS conversion/curtailment routing; curtailed output thermalized at declared conversion route",
+    "Ideal on/off thermostat; global node-triggered safe mode, no damaged heater or subsystem-specific thermal masks",
+    "No exact continuous shutdown, RF/science thermal degradation, flight calibration or mission-scale SLA"
+  ],
+  "commands": [
+    "python -m pytest -q tests/test_thermal_network.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m space_env.eval.ci_profiles full (loopback enabled)",
+    "python -m pytest --collect-only -q",
+    "python examples/thermal_network/demo.py OUTPUT nominal|hot|cold",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed CLI mission-validate/run/resume/replay with PYTHONNOUSERSITE=1"
+  ],
+  "next": "B05 RF/link/ground competition on common runtime; B09 scale and B12 external qualification remain open",
+  "installed_console": {
+    "nominal": {
+      "validate_run_resume_replay": true
+    },
+    "hot": {
+      "validate_run_resume_replay": true
+    },
+    "cold": {
+      "validate_run_resume_replay": true
+    }
+  }
+}

@@ -1,0 +1,357 @@
+{
+  "date": "2026-11-01",
+  "package": "B04-D2b2",
+  "status": "verified_engineering_scope",
+  "parent_B04_D2_status": "in_progress",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "contract": "../validation/ROTATING_THRUST_CONTRACT.md",
+  "tests": {
+    "new_rotating_cases": 36,
+    "reference": 688,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1118,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 192,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "2c1576dbe7ebb0e661bb3a72ec234c23452520d942bdd3c0e04644c5930b4cb8"
+  },
+  "independent_checks": {
+    "rotating_impulse": "analytic constant-rate sine/cosine integral, atol 1e-10 Ns",
+    "full_rotation": "net impulse <= 1e-9 Ns",
+    "orbit_refinement": "independent central-gravity + analytic theta(t) RHS; velocity error <2e-6 m/s, fine error < coarse/20",
+    "nominal_covariance": "PSD plus rejection of modified path with identical initial force",
+    "angular_work": "off-center analytic omega_y=-1/3 rad/s and work=1/6 J at 1 s",
+    "scope": "engineering numerics, not external flight qualification"
+  },
+  "installed_sdk": {
+    "chemical": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 10,
+      "fuel_balance_error_kg": 0.0,
+      "angular_momentum_balance_error_gcrs_nms": [
+        -1.3772755722354924e-18,
+        -1.3357370765021415e-16,
+        1.2976544751935881e-18
+      ],
+      "kinetic_work_balance_error_j": -9.733492766124396e-16,
+      "mid_gimbal_and_rotating_firing_replay": true
+    },
+    "electric": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 10,
+      "fuel_balance_error_kg": 0.0,
+      "angular_momentum_balance_error_gcrs_nms": [
+        -1.3772755722354924e-18,
+        -1.3357370765021415e-16,
+        1.2976544751935881e-18
+      ],
+      "kinetic_work_balance_error_j": -9.733492766124396e-16,
+      "mid_gimbal_and_rotating_firing_replay": true
+    }
+  },
+  "installed_demos": {
+    "chemical": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 10,
+      "engine_operation": {
+        "actor": "a",
+        "status": "completed",
+        "reason": null,
+        "phase": "completed",
+        "direction_body": [
+          0.17364817766693033,
+          0.0,
+          0.984807753012208
+        ],
+        "thrust_n": 0.01,
+        "remaining_firing_sec": 0.0,
+        "ignition_remaining_sec": 0.0,
+        "until_sec": 7.0,
+        "gimbal_sec": 2.0,
+        "settling_sec": 0.5,
+        "ignition_sec": 0.5,
+        "firing_sec": 1.0,
+        "dc_energy_j": 8.5,
+        "engine_heat_j": 8.54,
+        "jet_energy_j": 14.709975,
+        "chemical_wall_heat_j": 0.04000000000000001,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 3.399053980501776e-06,
+        "ideal_scalar_delta_v_m_s": 0.00010000000033542536,
+        "impulse_vector_gcrs_ns": [
+          0.009956579484114386,
+          -3.626828157695359e-05,
+          -0.0009287520903702479
+        ],
+        "active_phase": "firing"
+      },
+      "rigid_attitude": {
+        "quaternion_wxyz": [
+          0.7382996619019683,
+          0.003927854063861571,
+          0.6744611962491158,
+          -0.0005253114354748103
+        ],
+        "omega_body_rad_s": [
+          0.0009513075659703146,
+          -0.005865194965146775,
+          -0.00010220675200746832
+        ],
+        "wheel_momentum_nms": [
+          -0.0019019353631165874,
+          0.015625973300669293,
+          0.0004126071763690144
+        ],
+        "elapsed_sec": 9.0,
+        "dc_energy_j": 48.0,
+        "heat_j": 47.987584501653174,
+        "motor_work_j": 0.012415498346834546,
+        "external_work_j": 3.496051969529793e-05,
+        "momentum_inertial_nms": [
+          -8.137503599534368e-06,
+          -0.0019695712619792888,
+          -1.0363929529320162e-05
+        ],
+        "kinetic_energy_j": 0.01245045886652887,
+        "dc_heat_work_balance_error_j": -8.675352103360012e-15,
+        "kinetic_work_balance_error_j": -9.733492766124396e-16,
+        "external_angular_impulse_gcrs_nms": [
+          -8.137503599532991e-06,
+          -0.001969571261979155,
+          -1.036392952932146e-05
+        ],
+        "angular_momentum_balance_error_gcrs_nms": [
+          -1.3772755722354924e-18,
+          -1.3357370765021415e-16,
+          1.2976544751935881e-18
+        ],
+        "substeps": 942,
+        "capacity_limited_sec": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "controller": {
+          "enabled": false,
+          "torque": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reason": null,
+          "external_torque_body_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotating_burn": false
+        },
+        "scope": "mission rigid controller, optional rotating body thrust; no dedicated unloading actuator"
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "electrical_heat_balance_error_j": {
+        "engine": 0.0
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.0658141036401503e-14,
+          "thermal_stored_j": 168.91130003407397,
+          "thermal_balance_error_j": 1.1368683772161603e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 4.163336342344337e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.7763568394002505e-14,
+          "thermal_stored_j": 36.17984827052396,
+          "thermal_balance_error_j": 6.394884621840902e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 2.0816681711721685e-17
+        }
+      }
+    },
+    "electric": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "geometry_revision": 10,
+      "engine_operation": {
+        "actor": "a",
+        "status": "completed",
+        "reason": null,
+        "phase": "completed",
+        "direction_body": [
+          0.17364817766693033,
+          0.0,
+          0.984807753012208
+        ],
+        "thrust_n": 0.01,
+        "remaining_firing_sec": 0.0,
+        "ignition_remaining_sec": 0.0,
+        "until_sec": 7.0,
+        "gimbal_sec": 2.0,
+        "settling_sec": 0.5,
+        "ignition_sec": 0.5,
+        "firing_sec": 1.0,
+        "dc_energy_j": 37.91994999999999,
+        "engine_heat_j": 23.209975000000007,
+        "jet_energy_j": 14.709975,
+        "chemical_wall_heat_j": 0.0,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 3.399053980501776e-06,
+        "ideal_scalar_delta_v_m_s": 0.00010000000033542536,
+        "impulse_vector_gcrs_ns": [
+          0.009956579484114386,
+          -3.626828157695359e-05,
+          -0.0009287520903702479
+        ],
+        "active_phase": "firing"
+      },
+      "rigid_attitude": {
+        "quaternion_wxyz": [
+          0.7382996619019683,
+          0.003927854063861571,
+          0.6744611962491158,
+          -0.0005253114354748103
+        ],
+        "omega_body_rad_s": [
+          0.0009513075659703146,
+          -0.005865194965146775,
+          -0.00010220675200746832
+        ],
+        "wheel_momentum_nms": [
+          -0.0019019353631165874,
+          0.015625973300669293,
+          0.0004126071763690144
+        ],
+        "elapsed_sec": 9.0,
+        "dc_energy_j": 48.0,
+        "heat_j": 47.987584501653174,
+        "motor_work_j": 0.012415498346834546,
+        "external_work_j": 3.496051969529793e-05,
+        "momentum_inertial_nms": [
+          -8.137503599534368e-06,
+          -0.0019695712619792888,
+          -1.0363929529320162e-05
+        ],
+        "kinetic_energy_j": 0.01245045886652887,
+        "dc_heat_work_balance_error_j": -8.675352103360012e-15,
+        "kinetic_work_balance_error_j": -9.733492766124396e-16,
+        "external_angular_impulse_gcrs_nms": [
+          -8.137503599532991e-06,
+          -0.001969571261979155,
+          -1.036392952932146e-05
+        ],
+        "angular_momentum_balance_error_gcrs_nms": [
+          -1.3772755722354924e-18,
+          -1.3357370765021415e-16,
+          1.2976544751935881e-18
+        ],
+        "substeps": 942,
+        "capacity_limited_sec": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "controller": {
+          "enabled": false,
+          "torque": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reason": null,
+          "external_torque_body_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotating_burn": false
+        },
+        "scope": "mission rigid controller, optional rotating body thrust; no dedicated unloading actuator"
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "electrical_heat_balance_error_j": {
+        "engine": -1.4210854715202004e-14
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.4654943925052066e-14,
+          "thermal_stored_j": 186.5389776427719,
+          "thermal_balance_error_j": 1.4210854715202004e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": -2.7755575615628914e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.7763568394002505e-14,
+          "thermal_stored_j": 36.17984827052396,
+          "thermal_balance_error_j": 6.394884621840902e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 2.0816681711721685e-17
+        }
+      }
+    }
+  },
+  "extended_installed_smoke": {
+    "passed": true,
+    "package": "/tmp/space-env-rotating-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "console_python_no_user_site": true
+  },
+  "commands": [
+    "python -m pytest -q tests/test_rotating_thrust.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/rotating_thrust/demo.py OUTPUT chemical|electric",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed Python -I examples/rotating_thrust/demo.py OUTPUT chemical|electric",
+    "installed CLI mission-validate/run/resume/replay with PYTHONNOUSERSITE=1"
+  ],
+  "limits": [
+    "Explicit fixed COM/inertia small-mass-loss coupling; no variable inertia or exhaust flux qualification",
+    "RK4 attitude knots and piecewise SLERP; sampled and refinement-dependent, not exact continuous pointing",
+    "No hidden wheel hold during burn; exclusive attitude/propulsion ownership",
+    "Nominal 6x6 orbital covariance does not include attitude/thrust uncertainty",
+    "Future pending burns not predicted; coast beyond executed intervals",
+    "No dedicated unloading actuator, flight calibration, flexible body or fleet-scale SLA"
+  ],
+  "next": "B04-D2b3 resource-accounted momentum unloading and actuator allocation",
+  "installed_console": {
+    "chemical": {
+      "validate_run_resume_replay": true
+    },
+    "electric": {
+      "validate_run_resume_replay": true
+    }
+  }
+}

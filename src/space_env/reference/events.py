@@ -5,7 +5,11 @@ import copy
 import math
 from typing import TYPE_CHECKING
 
-from space_env.reference.booking import TerminalBooking, validate_bookings
+from space_env.reference.booking import (
+    TerminalBooking,
+    import_reservations,
+    validate_bookings,
+)
 from space_env.reference.dependencies import dependency_children, dependency_order
 from space_env.reference.operations import OnboardProduct, StationOutage
 from space_env.simulation.snapshot import canonical_json
@@ -27,7 +31,7 @@ def validate_event_envelope(event: dict) -> None:
         raise TypeError("event payload must be an object")
     if event["type"] not in {"onboard_product_added", "product_priority_changed", "station_outage_added", "station_recovered",
                              "product_cancelled", "product_deadline_changed", "station_rate_changed", "transmitter_rate_changed",
-                             "terminal_booking_added", "terminal_booking_cancelled", "station_reservation_policy_changed"}:
+                             "terminal_booking_added", "terminal_booking_cancelled", "station_reservation_policy_changed", "external_reservations_imported"}:
         raise ValueError("unsupported reference event type")
 
 
@@ -51,6 +55,7 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
     station_rates, transmitter_rates = dict(mission.station_rates), dict(mission.transmitter_rates)
     bookings, booking_cancelled = dict(mission.bookings), dict(mission.booking_cancelled)
     policies = dict(mission.reservation_required)
+    external_reservations = copy.deepcopy(mission.external_reservations)
     processing_remaining, processing_completed = dict(mission.processing_remaining), dict(mission.processing_completed)
     boundaries = set(mission._boundaries)
     ids = {e["id"] for e in mission.events}
@@ -73,7 +78,7 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
                 raise ValueError("invalid new onboard product")
             if len(staged_products) >= 10000:
                 raise ValueError("product limit reached")
-            occupied = sum(staged_remaining[p.id] for p in staged_products.values() if p.actor == payload["actor"])
+            occupied = sum(staged_remaining[p.id] for p in staged_products.values() if p.actor == payload["actor"])+mission.transport_memory(p.actor)
             if occupied+p.size_bits > mission.vehicles[p.actor].memory_bits:
                 raise ValueError("new product exceeds available onboard memory")
             if p.workspace_bits > mission.vehicles[p.actor].memory_bits:
@@ -96,6 +101,8 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
             p = staged_products[payload["product_id"]]
             if staged_remaining[p.id] == 0:
                 raise ValueError("product is already resolved")
+            if mission.dtn is not None and mission.dtn.pinned(p.id):
+                raise ValueError("product is pinned by unsettled custody transfer")
             if event["type"] == "product_cancelled":
                 discarded[p.id] += staged_remaining[p.id]
                 staged_remaining[p.id] = 0.
@@ -119,6 +126,8 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
             if key == "actor" and rate > mission.vehicles[payload[key]].rate_bps:
                 raise ValueError("transmitter rate cannot exceed nominal hardware rate")
             targets[payload[key]] = float(rate)
+        elif event["type"] == "external_reservations_imported":
+            import_reservations(mission,payload,bookings,booking_cancelled,external_reservations,boundaries)
         elif event["type"] == "terminal_booking_added":
             booking = TerminalBooking.model_validate(payload)
             if (booking.id in bookings or booking.actor not in mission.vehicles or booking.station not in mission.stations
@@ -172,11 +181,12 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
     staged.station_rates, staged.transmitter_rates = station_rates, transmitter_rates
     staged.bookings, staged.booking_cancelled, staged.reservation_required = bookings, booking_cancelled, policies
     staged.processing_remaining, staged.processing_completed = processing_remaining, processing_completed
+    staged.external_reservations = external_reservations
     staged._dependency_order = dependency_order(staged_products)
     staged._dependency_children = dependency_children(staged_products)
     for name in staged_products.keys() - mission.products.keys():
         for parent in staged_products[name].depends_on:
-            if parent in cancelled or staged_remaining[parent] != staged_products[parent].size_bits:
+            if parent in cancelled or staged_remaining[parent] != staged_products[parent].size_bits or (mission.dtn is not None and mission.dtn.pinned(parent)):
                 raise ValueError("new dependency requires intact retained input bytes")
     result = staged.report()
     mission.products, mission.remaining = staged.products, staged.remaining
@@ -185,6 +195,7 @@ def apply_events(mission: ReferenceDownlinkMission, events: list[dict]) -> dict:
     mission.station_rates, mission.transmitter_rates = staged.station_rates, staged.transmitter_rates
     mission.bookings, mission.booking_cancelled, mission.reservation_required = staged.bookings, staged.booking_cancelled, staged.reservation_required
     mission.processing_remaining, mission.processing_completed = staged.processing_remaining, staged.processing_completed
+    mission.external_reservations = staged.external_reservations
     mission._dependency_order = staged._dependency_order
     mission._dependency_children = staged._dependency_children
     return result

@@ -1,0 +1,377 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B09-Q1",
+  "version": "0.134.0",
+  "date": "2026-11-02",
+  "status": "verified_declared_synthetic_profiles",
+  "contract": "../SCALING_CONTRACT.md",
+  "scope": "distinct fixed J2 ephemerides, individual preloaded-product actions, repeated native replay/accounting/export measurements; not general coupled/industrial/flight qualification",
+  "checks": {
+    "new_fleet_cases": 24,
+    "scaling_unit": {
+      "passed": 55,
+      "warnings": 0,
+      "seconds": 24.76,
+      "log": "/tmp/space-env-b09q-acceptance-unit.log",
+      "exit_code": 0
+    },
+    "reference": {
+      "passed": 1087,
+      "warnings": 15,
+      "seconds": 207.2,
+      "log": "/tmp/space-env-b09q-acceptance-reference.log",
+      "exit_code": 0
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.82,
+      "log": "/tmp/space-env-b09q-acceptance-fast.log",
+      "exit_code": 0
+    },
+    "counts_overlap": true,
+    "collection": "1517 tests collected in 1.03s",
+    "expanded_full_regression": "not rerun this change; earlier B09 expanded result is historical, not final B09-Q1 coverage",
+    "wheel": {
+      "sha256": "74be0e0295e0cb1ca39615d536781ada8cf9d119fa8540ed3403efcf9199d746",
+      "modules": 228,
+      "boinor_fixtures": 3,
+      "byte_parity": true
+    },
+    "installed_64_64": {
+      "outside_checkout": true,
+      "repeats": 2,
+      "ok": true,
+      "summary": {
+        "fleet-64-64": {
+          "execution_p50_sec_successful_only": 0.7905721520000952,
+          "execution_p95_sec_successful_only": 0.7925128301012592,
+          "expected_repeats": 2,
+          "failed_repeats": 0,
+          "max_peak_rss_bytes": 394002432,
+          "observed_repeats": 2,
+          "passed": true,
+          "passed_repeats": 2,
+          "repeat_semantics_identical": true
+        }
+      },
+      "manifest_sha256": "407793e6d91b7df451036f543062686533e92682d2b0b6134263b1c24c1fde6f",
+      "environment": "wheel venv with system-site-packages; user-site disabled; not a dependency-clean install"
+    },
+    "remote_ci": "configured installed distinct-orbit smoke, not executed locally"
+  },
+  "profiles": {
+    "16_100_baseline": {
+      "receipt": "B09_Q_16_100_BASELINE.json",
+      "manifest_gzip": "B09_Q_16_100_BASELINE.manifest.json.gz",
+      "frozen_manifest_sha256": "60a62c354aa47d12091a3bb5b54d3209be002fa80c134932044a2a7f2b953bb0",
+      "manifest_file_sha256": "4e6239de09c7293ac6b4a8bfbd263482dc3303adf65829de8cf06385dda22ec3",
+      "ok": true,
+      "summary": {
+        "fleet-16-100": {
+          "execution_p50_sec_successful_only": 4.057140351000271,
+          "execution_p95_sec_successful_only": 4.997083286999623,
+          "expected_repeats": 2,
+          "failed_repeats": 0,
+          "max_peak_rss_bytes": 338100224,
+          "observed_repeats": 2,
+          "passed": true,
+          "passed_repeats": 2,
+          "repeat_semantics_identical": true
+        }
+      },
+      "outcomes": [
+        {
+          "fulfilled": 100,
+          "total": 100,
+          "physical_sec": 16.0,
+          "checkpoint_bytes": 1674341,
+          "step_p95_sec": 0.9139522529516397,
+          "peak_rss_bytes": 338100224,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        },
+        {
+          "fulfilled": 100,
+          "total": 100,
+          "physical_sec": 16.0,
+          "checkpoint_bytes": 1674345,
+          "step_p95_sec": 0.4753616421510742,
+          "peak_rss_bytes": 337121280,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        }
+      ]
+    },
+    "16_100_optimized": {
+      "receipt": "B09_Q_16_100.json",
+      "manifest_gzip": "B09_Q_16_100.manifest.json.gz",
+      "frozen_manifest_sha256": "60a62c354aa47d12091a3bb5b54d3209be002fa80c134932044a2a7f2b953bb0",
+      "manifest_file_sha256": "4e6239de09c7293ac6b4a8bfbd263482dc3303adf65829de8cf06385dda22ec3",
+      "ok": true,
+      "summary": {
+        "fleet-16-100": {
+          "execution_p50_sec_successful_only": 1.4199283715006459,
+          "execution_p95_sec_successful_only": 1.425062718951267,
+          "expected_repeats": 2,
+          "failed_repeats": 0,
+          "max_peak_rss_bytes": 337944576,
+          "observed_repeats": 2,
+          "passed": true,
+          "passed_repeats": 2,
+          "repeat_semantics_identical": true
+        }
+      },
+      "outcomes": [
+        {
+          "fulfilled": 100,
+          "total": 100,
+          "physical_sec": 16.0,
+          "checkpoint_bytes": 1674343,
+          "step_p95_sec": 0.21962894365024113,
+          "peak_rss_bytes": 337944576,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        },
+        {
+          "fulfilled": 100,
+          "total": 100,
+          "physical_sec": 16.0,
+          "checkpoint_bytes": 1674347,
+          "step_p95_sec": 0.2254550289510007,
+          "peak_rss_bytes": 337600512,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        }
+      ]
+    },
+    "64_1000_default32_failed": {
+      "receipt": "B09_Q_64_1000_C32.json",
+      "manifest_gzip": "B09_Q_64_1000_C32.manifest.json.gz",
+      "frozen_manifest_sha256": "d75238092c2aea7b2b445fc85e4e4575ba8b2fe5cc1391c3f12656be83c6b489",
+      "manifest_file_sha256": "3fb91ed74b52fcc3765018bf167edc62f849da8334eed6c490f174aab391eef8",
+      "ok": false,
+      "summary": {
+        "fleet-64-1000": {
+          "execution_p50_sec_successful_only": null,
+          "execution_p95_sec_successful_only": null,
+          "expected_repeats": 2,
+          "failed_repeats": 2,
+          "max_peak_rss_bytes": null,
+          "observed_repeats": 2,
+          "passed": false,
+          "passed_repeats": 0,
+          "repeat_semantics_identical": false
+        }
+      },
+      "outcomes": [
+        {
+          "fulfilled": 544,
+          "total": 1000,
+          "physical_sec": 34.0,
+          "checkpoint_bytes": 8708607,
+          "step_p95_sec": 2.2805097504002334,
+          "peak_rss_bytes": 1819140096,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": false,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        },
+        {
+          "fulfilled": 544,
+          "total": 1000,
+          "physical_sec": 34.0,
+          "checkpoint_bytes": 8708608,
+          "step_p95_sec": 2.1552354455998284,
+          "peak_rss_bytes": 1820082176,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": false,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        }
+      ]
+    },
+    "64_1000_cap64": {
+      "receipt": "B09_Q_64_1000_C64.json",
+      "manifest_gzip": "B09_Q_64_1000_C64.manifest.json.gz",
+      "frozen_manifest_sha256": "b233ae969472f32e0f0c92e14712f7645b74a210dc897c8c21711e7e497d4b7f",
+      "manifest_file_sha256": "baa5b0ab938f653d20e2ab3f08008cc70c2cd6d6f3ae192932cdae027ef6d6d7",
+      "ok": true,
+      "summary": {
+        "fleet-64-1000": {
+          "execution_p50_sec_successful_only": 42.54507840449878,
+          "execution_p95_sec_successful_only": 43.01300765144988,
+          "expected_repeats": 2,
+          "failed_repeats": 0,
+          "max_peak_rss_bytes": 1853603840,
+          "observed_repeats": 2,
+          "passed": true,
+          "passed_repeats": 2,
+          "repeat_semantics_identical": true
+        }
+      },
+      "outcomes": [
+        {
+          "fulfilled": 1000,
+          "total": 1000,
+          "physical_sec": 34.0,
+          "checkpoint_bytes": 11097405,
+          "step_p95_sec": 3.1112610862008294,
+          "peak_rss_bytes": 1852321792,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        },
+        {
+          "fulfilled": 1000,
+          "total": 1000,
+          "physical_sec": 34.0,
+          "checkpoint_bytes": 11097405,
+          "step_p95_sec": 2.978503289201035,
+          "peak_rss_bytes": 1853603840,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        }
+      ]
+    },
+    "hour_fixed_4_4": {
+      "receipt": "B09_Q_HOUR.json",
+      "manifest_gzip": "B09_Q_HOUR.manifest.json.gz",
+      "frozen_manifest_sha256": "4cc2813d00d3716a5ac33380722550542535fc325f0a9e92e13d98e33ed9484c",
+      "manifest_file_sha256": "4f9c48ec257f1022e32443c4997cf640362054d628b1fd2557db9a1aae8482b2",
+      "ok": true,
+      "summary": {
+        "fleet-4-4": {
+          "execution_p50_sec_successful_only": 0.5897505039993121,
+          "execution_p95_sec_successful_only": 0.5902060623995566,
+          "expected_repeats": 2,
+          "failed_repeats": 0,
+          "max_peak_rss_bytes": 278777856,
+          "observed_repeats": 2,
+          "passed": true,
+          "passed_repeats": 2,
+          "repeat_semantics_identical": true
+        }
+      },
+      "outcomes": [
+        {
+          "fulfilled": 4,
+          "total": 4,
+          "physical_sec": 3600.0,
+          "checkpoint_bytes": 1655778,
+          "step_p95_sec": 0.0870133126507426,
+          "peak_rss_bytes": 278437888,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        },
+        {
+          "fulfilled": 4,
+          "total": 4,
+          "physical_sec": 3600.0,
+          "checkpoint_bytes": 1655782,
+          "step_p95_sec": 0.0917281490505047,
+          "peak_rss_bytes": 278777856,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "execution_budget": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true,
+            "step_latency_budget": true
+          },
+          "error": null
+        }
+      ]
+    }
+  },
+  "optimization": {
+    "before_after_16_100_native_and_trace_identical": true,
+    "first_probe": "B09_Q_INITIAL_PROBE.json",
+    "reason": "Repeated full native outcome reports per action for horizon/command metadata; lightweight synchronized readers replace these reads without changing physics or public views",
+    "stage_note": "baseline 16/100 precedes read optimization; optimized 16/100 and hour profile precede the final generator-only max_candidates fix, which leaves these <=32-actor policies unchanged. Final 64/1000, installed 64/64, unit/reference/fast and wheel use final sources."
+  },
+  "controller_budget": {
+    "failed32_retained": true,
+    "same_physical_scenario_task_and_other_limits": true,
+    "old_max_candidates": 32,
+    "corrected_max_candidates": 64,
+    "completion_threshold_unchanged": 1.0,
+    "note": "544/1000 failed nominal mission completion; not discarded, resampled or reclassified as ready. New policy budget frozen before the corrected run."
+  },
+  "limits": [
+    "Only two repeats on shared host; successful-only timing summaries are not statistical tail reliability or pinned-core SLA",
+    "One-hour profile has four preloaded products, not sustained arrivals or coupled EO/CPU/DTN operation",
+    "Physical state/task history remain in RAM; 64/1000 peak RSS is material and cold replay/export remains expensive",
+    "256 actors/10000 products exceed existing native/task contracts and are not claimed supported",
+    "Per-phase crash recovery, long coupled missions, dependency-clean CI, B10 unified Studio/operator and B12 independent hardware/industrial calibration remain open"
+  ],
+  "git_operations": "no staging, commit, push, PR or deployment"
+}

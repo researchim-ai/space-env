@@ -1,0 +1,149 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B10-A",
+  "date": "2026-11-02",
+  "version": "0.134.0",
+  "status": "verified_bounded_local_operator",
+  "contract": "../OPERATOR_CONTRACT.md",
+  "scope": "one local Mission Control UI on native TaskSession; role capabilities, causal state, command admission, action replay, restored journals and external-origin RL/SFT; not a hosted multi-tenant/flight-qualified service",
+  "checks": {
+    "new_operator_cases": 26,
+    "operator_and_legacy_api": {
+      "passed": 31,
+      "warnings": 2,
+      "seconds": 151.12,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b10-api-final.log"
+    },
+    "additional_coupled_sdk_exact_parity": {
+      "passed": 1,
+      "warnings": 0,
+      "seconds": 39.23,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b10-coupled-parity.log"
+    },
+    "reference": {
+      "passed": 1131,
+      "warnings": 15,
+      "seconds": 231.26,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b10-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.36,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b10-fast.log"
+    },
+    "counts_overlap": true,
+    "collection": "1561 tests collected in 0.93s",
+    "expanded_full_regression": "not rerun this package; reference and old/new API checks cover changed native/operator paths; earlier B09 full result remains historical",
+    "wheel": {
+      "modules": 229,
+      "boinor_fixtures": 3,
+      "operator_fixture": true,
+      "source_byte_parity": true,
+      "ui_assets_byte_parity": true,
+      "sha256": "6c1feaa07d9fe5722ac60ef94b998daf26a332a2f58bc314bd53daff3eec954e"
+    },
+    "installed_outside_checkout": {
+      "ok": true,
+      "assets": "/tmp/space-env-b10-installed/lib/python3.12/site-packages/space_env/studio_assets",
+      "fulfilled_requests": 2,
+      "decisions": 10,
+      "cold_replay": true,
+      "training_zip": true
+    },
+    "instrumented_installed_probe": {
+      "ok": true,
+      "assets": "/tmp/space-env-b10-installed/lib/python3.12/site-packages/space_env/studio_assets",
+      "fulfilled_requests": 2,
+      "total_wall_sec": 36.385555834000115
+    },
+    "installed_environment": "wheel venv with system-site-packages, -I isolation; not dependency-clean install",
+    "initial_installed_attempt": {
+      "exit_code": 143,
+      "application_result": "no final result; terminated attempt retained as incomplete",
+      "cause": "not established; do not relabel as pass. Later phase-instrumented and repeated ordinary smoke runs completed. Client smoke loop now bounded with progress assertions; package code unchanged."
+    },
+    "browser_manual_desktop_mobile": {
+      "ok": true,
+      "native_steps": 3,
+      "viewer_controls_disabled": true,
+      "local_role_actors": 1,
+      "cold_replay": true,
+      "checkpoint_download": true,
+      "training_download": true,
+      "mobile_no_horizontal_overflow": true,
+      "page_errors": []
+    },
+    "browser_coupled_full_chain": {
+      "ok": true,
+      "actors": 3,
+      "fulfilled_requests": 2,
+      "physical_sec": 20,
+      "operator_steps": 10,
+      "baseline_run": true,
+      "cold_replay": true,
+      "checkpoint_download": true,
+      "page_errors": []
+    },
+    "final_ui_close_patch_browser_log": "/tmp/space-env-b10-browser-release.log",
+    "remote_ci": "installed operator smoke configured, not executed locally"
+  },
+  "ui": {
+    "route": "/operator",
+    "legacy_route": "/studio retained with native operator link",
+    "single_page": [
+      "native task actions and mask reasons",
+      "current actor resources",
+      "3D ITRS globe and past tracks",
+      "2D WGS-84 map",
+      "products/requests/jobs",
+      "operation journal",
+      "checkpoint/replay/training download"
+    ],
+    "screenshots_local": [
+      "/tmp/space-env-b10-desktop.png",
+      "/tmp/space-env-b10-relay-desktop.png",
+      "/tmp/space-env-b10-mobile.png"
+    ],
+    "render_scope": "enlarged illustrative spacecraft orientation/lighting, no browser physics or forecast; ideal current native navigation uses sealed mission EOP context"
+  },
+  "contracts": {
+    "step": "same TaskTools/TaskSession, strict revision, native idempotency and rejection-time cost",
+    "permissions": "separate central operator, viewer, artifact-admin and role-prefixed local capabilities; not verified identities/SSO",
+    "restore": "external-origin task checkpoint, native cold replay, fresh tokens; native journal restored, navigation starts at current frame",
+    "export": "native replay verified ZIP, external policy_origin, not expert teacher; bounded 16 MiB precompression export",
+    "http": "8 MiB request limit, JSON and same-origin loopback-host guards, bearer headers, no query tokens",
+    "live_session_ownership": "adapter is sole writer; programmatic and human clients use adapter/API. Independent direct SDK mutation/handover is outside B10-A ownership contract"
+  },
+  "fixture": {
+    "path": "src/space_env/configs/operator_relay.json",
+    "sha256": "ab02be88451aed79b804b751022c313f00814e50816a42e75320934a82d44e2d",
+    "source": "frozen published synthetic B07/B08 coupled EO/CPU/ISL/ground ACK input, not calibrated real spacecraft",
+    "fulfilled_requests": 2,
+    "total_requests": 2,
+    "physical_sec": 20,
+    "steps": 10
+  },
+  "limits": {
+    "actors": 16,
+    "action_templates": 256,
+    "decisions": 256,
+    "entities": 4096,
+    "relations": 16384,
+    "sessions": 8,
+    "navigation_frames": 257,
+    "scope": "operator interactive profile; native/fleet qualification bounds unchanged"
+  },
+  "open_gates": [
+    "B10-B durable sessions/journals, coordinated external SDK/agent handover and provenance, artifact migration",
+    "Multi-user accounts/SSO/TLS/rate-limited workers and operational deployment",
+    "Long heterogeneous coupled missions, larger fleet UI qualification and persistent/frame history on restore",
+    "Navigation estimation, forecast visualization and calibrated attitude/lighting display",
+    "B09-M2 mutable native-history memory and B12 independent hardware/industrial calibration"
+  ],
+  "git_operations": "no staging, commit, push, PR or deployment"
+}

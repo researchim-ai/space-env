@@ -377,7 +377,7 @@ function makeLines(color, opacity) {
   );
 }
 
-function makeSatellite(color) {
+export function makeSatellite(color) {
   const group = new THREE.Group();
   const bus = new THREE.MeshStandardMaterial({
     color: "#e4e8ee",

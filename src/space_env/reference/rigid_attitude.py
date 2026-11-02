@@ -1,6 +1,6 @@
 """Standalone rigid body + three orthogonal ideal reaction wheels, SI units.
 
-Not yet an option in the mission bus. Body-to-inertial quaternion is wxyz;
+Reusable kernel; optional mission integration is in rigid_bus. Quaternion is wxyz;
 wheel momentum is expressed in fixed body axes. No automatic momentum reset.
 """
 
@@ -129,6 +129,8 @@ def advance_rigid_attitude(
     *,
     motor_torque_nm=(0.0, 0.0, 0.0),
     external_torque_body_nm=(0.0, 0.0, 0.0),
+    angular_rate_limit_rad_s=None,
+    return_path=False,
 ):
     """Pure bounded RK4 advance; no state mutation on rejection or failure.
 
@@ -138,6 +140,10 @@ def advance_rigid_attitude(
     """
     if not math.isfinite(dt_sec) or dt_sec <= 0:
         raise ValueError("dt_sec must be positive finite")
+    if angular_rate_limit_rad_s is not None and (
+        not math.isfinite(angular_rate_limit_rad_s) or angular_rate_limit_rad_s <= 0
+    ):
+        raise ValueError("angular rate limit must be positive finite")
     ratio = dt_sec / model.max_step_sec
     if not math.isfinite(ratio) or ratio > model.max_steps:
         raise ValueError("integration step budget exceeded")
@@ -159,15 +165,24 @@ def advance_rigid_attitude(
         state.heat_j,
         state.motor_work_j,
         state.external_work_j,
+        0.0,
+        0.0,
+        0.0,
     ]
     torque = np.clip(requested, -np.asarray(model.max_torque_nm), model.max_torque_nm)
+    path_times, path_quaternions = [0.0], [tuple(state.quaternion_wxyz)]
     saturated_sec = np.zeros(3)
-    for _ in range(n):
+    for index in range(n):
         u = np.clip(torque, (-limits - y[7:10]) / dt, (limits - y[7:10]) / dt)
         saturated_sec += (np.abs(u - torque) > 1e-12) * dt
 
         def rhs(v, u=u):
             q, w, h = v[:4], v[4:7], v[7:10]
+            if (
+                angular_rate_limit_rad_s is not None
+                and np.linalg.norm(w) > angular_rate_limit_rad_s
+            ):
+                raise ValueError("angular rate outside declared applicability")
             qdot = 0.5 * np.r_[-np.dot(q[1:], w), q[0] * w + np.cross(q[1:], w)]
             wdot = inverse @ (external - u - np.cross(w, i @ w + h))
             mechanical = float(np.dot(u, h / ji - w))
@@ -176,7 +191,16 @@ def advance_rigid_attitude(
                 + abs(mechanical) / model.efficiency
                 + model.torque_loss_w_per_nm2 * float(u @ u)
             )
-            return np.r_[qdot, wdot, u, dc, dc - mechanical, mechanical, external @ w]
+            return np.r_[
+                qdot,
+                wdot,
+                u,
+                dc,
+                dc - mechanical,
+                mechanical,
+                external @ w,
+                _rotate(q, external),
+            ]
 
         k1 = rhs(y)
         k2 = rhs(y + dt * k1 / 2)
@@ -184,6 +208,9 @@ def advance_rigid_attitude(
         k4 = rhs(y + dt * k3)
         y += dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
         y[:4] /= np.linalg.norm(y[:4])
+        if return_path:
+            path_times.append(float(dt_sec if index == n - 1 else (index + 1) * dt))
+            path_quaternions.append(tuple(float(v) for v in y[:4]))
         if not np.isfinite(y).all():
             raise ValueError("rigid integration left finite applicability")
     result = RigidAttitudeState(
@@ -199,5 +226,14 @@ def advance_rigid_attitude(
     return result, {
         "substeps": n,
         "capacity_limited_sec": saturated_sec.tolist(),
+        "external_angular_impulse_gcrs_nms": y[14:17].tolist(),
+        **(
+            {
+                "attitude_times_sec": path_times,
+                "attitude_quaternions_wxyz": path_quaternions,
+            }
+            if return_path
+            else {}
+        ),
         "scope": "standalone ideal 3-wheel rigid dynamics; not mission bus integration",
     }

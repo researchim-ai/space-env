@@ -1,7 +1,7 @@
-"""Bounded center-of-mass body thrust, finite gimbal and paid engine phases.
+"""Bounded body thrust, finite gimbal and paid engine phases.
 
-The vehicle attitude is held/owned by the burn; no rigid-body torque/wheel or
-off-center thrust dynamics. Only applied intervals modify the state provider.
+Legacy held-body or explicit rigid rotating/off-center coupling with declared
+constant-inertia mass applicability. Only applied intervals modify the orbit.
 """
 
 from __future__ import annotations
@@ -15,11 +15,24 @@ from pydantic import Field, model_validator
 
 from space_env.core.propulsion import G0_M_S2
 from space_env.reference.spacecraft_bus import angle_deg, rotate_body
-from space_env.reference.thrust import FiniteThrust
+from space_env.reference.thrust import FiniteThrust, RotatingThrust
 from space_env.runtime.schema import FiniteScalar, StrictModel
 
 
+class RigidThrustSettings(StrictModel):
+    lever_arm_body_m: tuple[FiniteScalar, FiniteScalar, FiniteScalar]
+    max_mass_loss_fraction: float = Field(default=0.001, gt=0, le=0.05, strict=True)
+    max_attitude_step_rad: float = Field(default=0.25, gt=0, le=1, strict=True)
+
+    @model_validator(mode="after")
+    def applicability(self):
+        if math.hypot(*self.lever_arm_body_m) > 100:
+            raise ValueError("engine lever arm exceeds 100 m applicability")
+        return self
+
+
 class EngineSettings(StrictModel):
+    rigid_coupling: RigidThrustSettings | None = None
     kind: Literal["chemical", "electric"]
     model_id: str = Field(min_length=1)
     source_status: Literal["synthetic", "published", "calibrated"]
@@ -73,6 +86,21 @@ class CoupledActuation:
             power = jet / (model.electric_efficiency or 1.0) + model.firing_aux_power_w
             if not math.isfinite(power * backend.horizon()):
                 raise ValueError("engine energy exceeds finite model applicability")
+            if (
+                model.rigid_coupling is not None
+                and backend.config.spacecraft_bus[a].attitude.rigid is None
+            ):
+                raise ValueError("rigid engine coupling requires a rigid actor")
+            if model.rigid_coupling is not None:
+                rigid = backend.config.spacecraft_bus[a].attitude.rigid
+                if (
+                    rigid.max_applicable_rate_rad_s
+                    * min(rigid.control_step_sec, rigid.model.max_step_sec)
+                    > model.rigid_coupling.max_attitude_step_rad
+                ):
+                    raise ValueError(
+                        "rigid thrust angular step exceeds declared sampling applicability"
+                    )
             if model.max_thrust_n > backend.config.orbits[a].propulsion.max_thrust_n:
                 raise ValueError("engine thrust exceeds declared orbit hardware limit")
         self.initial_mass = {
@@ -93,6 +121,13 @@ class CoupledActuation:
         if command.actor_id not in self.config.engines:
             raise ValueError("actor has no declared engine")
         model, burn = self.config.engines[command.actor_id], command.body_burn
+        if (
+            command.actor_id in backend.bus.rigid.models
+            and model.rigid_coupling is None
+        ):
+            raise ValueError(
+                "rigid body burn requires explicit rigid_coupling and mass applicability"
+            )
         if burn.thrust_n > model.max_thrust_n:
             raise ValueError("body thrust exceeds engine limit")
         if (
@@ -157,8 +192,10 @@ class CoupledActuation:
     def prepare(self, backend, active):
         self.plans, self.pending = {}, {}
         segments_left = min(
-            self.config.max_segments, backend.config.max_maneuvers
-        ) - len(self.intervals)
+            self.config.max_segments - len(self.intervals),
+            backend.config.max_maneuvers
+            - sum(len(p.maneuvers) for p in backend.mission.ephemerides.values()),
+        )
         for row in sorted(
             active,
             key=lambda row: (
@@ -275,6 +312,20 @@ class CoupledActuation:
                 if segments_left <= 0:
                     self._fail(cid, "burn_segment_budget")
                     continue
+                if model.rigid_coupling is not None:
+                    mass_floor = self.initial_mass[a] * (
+                        1 - model.rigid_coupling.max_mass_loss_fraction
+                    )
+                    scope_sec = (
+                        (provider.mass(backend.now()) - mass_floor)
+                        * provider.isp_s
+                        * G0_M_S2
+                        / op["thrust_n"]
+                    )
+                    if scope_sec <= 1e-9:
+                        self._fail(cid, "constant_inertia_mass_limit")
+                        continue
+                    remaining = min(remaining, scope_sec)
                 remaining = min(remaining, fuel_sec)
                 segments_left -= 1
             op["status"] = "running"
@@ -290,6 +341,28 @@ class CoupledActuation:
                 "nonthermal_w": nonthermal,
                 "min_soc": model.min_soc,
             }
+
+        self.sync_rigid_torques(backend)
+
+    def sync_rigid_torques(self, backend):
+        for a in self.config.engines:
+            if a not in backend.bus.rigid.models:
+                continue
+            plan = self.plans.get(a)
+            firing = plan is not None and plan["phase"] == "firing"
+            force = (
+                np.asarray(self.states[a]["gimbal_body"])
+                * self.operations[plan["cid"]]["thrust_n"]
+                if firing
+                else np.zeros(3)
+            )
+            coupling = self.config.engines[a].rigid_coupling
+            torque = (
+                np.cross(coupling.lever_arm_body_m, force)
+                if coupling is not None
+                else np.zeros(3)
+            )
+            backend.bus.rigid.set_external_torque(a, torque, rotating_burn=firing)
 
     def boundary(self, backend, right):
         for a, plan in list(self.plans.items()):
@@ -314,6 +387,7 @@ class CoupledActuation:
                 del self.plans[a]
             else:
                 right = min(right, now + seconds)
+        self.sync_rigid_torques(backend)
         return right
 
     def power(self, actor):
@@ -338,17 +412,43 @@ class CoupledActuation:
             )
             direction = direction / np.linalg.norm(direction)
             mass_before = provider.mass(backend.now())
-            provider.burn(
-                backend.now(),
-                span,
-                FiniteThrust(
-                    op["thrust_n"], provider.isp_s, provider.dry_mass_kg, direction
-                ),
+            coupling = self.config.engines[a].rigid_coupling
+            thrust = FiniteThrust(
+                op["thrust_n"], provider.isp_s, provider.dry_mass_kg, direction
             )
+            extra = {}
+            if coupling is not None:
+                _, path = backend.bus.rigid.predict(a, span)
+                thrust = RotatingThrust(
+                    op["thrust_n"],
+                    provider.isp_s,
+                    provider.dry_mass_kg,
+                    tuple(direction),
+                    tuple(self.states[a]["gimbal_body"]),
+                    tuple(path["attitude_times_sec"]),
+                    tuple(tuple(q) for q in path["attitude_quaternions_wxyz"]),
+                )
+                impulse = thrust.impulse_vector()
+                extra = {
+                    "direction_model": "space-env.rotating-body-thrust/1",
+                    "direction_end_gcrs": thrust.direction_at(span).tolist(),
+                    "torque_body_nm": backend.bus.rigid.plans[a][
+                        "external_torque_body_nm"
+                    ].tolist(),
+                    "attitude_knots": len(thrust.attitude_times_sec),
+                    "external_angular_impulse_gcrs_nms": path[
+                        "external_angular_impulse_gcrs_nms"
+                    ],
+                }
+            else:
+                impulse = direction * op["thrust_n"] * span
+            provider.burn(backend.now(), span, thrust)
             self.pending[a] = {
                 "mass_before": mass_before,
                 "mass_after": provider.mass(backend.now() + span),
                 "direction_gcrs": direction.tolist(),
+                "impulse_vector_gcrs_ns": impulse.tolist(),
+                **extra,
             }
             backend.geometry_revision += 1
             backend._refresh_geometry(a)
@@ -417,7 +517,7 @@ class CoupledActuation:
                 )
                 op["impulse_vector_gcrs_ns"] = (
                     np.asarray(op["impulse_vector_gcrs_ns"])
-                    + np.asarray(actual["direction_gcrs"]) * op["thrust_n"] * span
+                    + np.asarray(actual["impulse_vector_gcrs_ns"])
                 ).tolist()
                 self.intervals.append(
                     {
@@ -468,6 +568,11 @@ class CoupledActuation:
                 a: self.initial_mass[a]
                 - backend.mission.ephemerides[a].mass(backend.now())
                 - s["consumed_propellant_kg"]
+                - (
+                    backend.lifecycle.unloader.fuel_used.get(a, 0.0)
+                    if backend.lifecycle.unloader is not None
+                    else 0.0
+                )
                 for a, s in self.states.items()
             },
             "electrical_heat_balance_error_j": {
@@ -483,5 +588,5 @@ class CoupledActuation:
                 for cid, op in self.operations.items()
             },
             "forecast_contract": "applied thrust only; coast beyond executed intervals; no prediction of pending phases",
-            "scope": "fixed body attitude during each burn, finite gimbal and paid phases; no torque/wheel/off-center dynamics",
+            "scope": "legacy held-body or explicit rigid rotating/off-center thrust with constant inertia mass-loss applicability; no flight or exhaust qualification",
         }

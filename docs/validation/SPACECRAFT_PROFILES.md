@@ -133,3 +133,11 @@ B04-C добавил [parallel resource scheduler](RESOURCE_LANES_CONTRACT.md).
 actuator momentum/torque/thrust coupling. Калибровка реальных аппаратов требует
 внешних измерений и declared mission error budgets. B04-A не закрывает эти задачи
 и не дает оснований заявлять flight-qualified industrial simulator.
+
+## B04-E thermal update
+
+An optional multi-node network with routed component heat, orbital radiation,
+PV extraction/curtailment and paid thermostatic heaters is now available; see
+[THERMAL_NETWORK_CONTRACT.md](THERMAL_NETWORK_CONTRACT.md). The earlier one-node
+assumptions above describe legacy actors. Flight/hardware qualification remains
+open and the network does not add pressure/exhaust or variable-inertia physics.

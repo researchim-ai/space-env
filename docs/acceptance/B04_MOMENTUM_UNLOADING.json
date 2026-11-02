@@ -1,0 +1,261 @@
+{
+  "date": "2026-11-02",
+  "package": "B04-D2b3",
+  "status": "verified_declared_engineering_profile",
+  "B04_D2_engineering_delivery": "complete_in_declared_profile",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "parent_B04_status": "in_progress",
+  "version": "0.134.0",
+  "contract": "../validation/MOMENTUM_UNLOADING_CONTRACT.md",
+  "tests": {
+    "new_unloading_cases": 43,
+    "reference": 731,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1161,
+    "counts_overlap": true,
+    "full_regression": {
+      "status": "passed",
+      "passed": 1161,
+      "warnings": 58,
+      "exit_code": 0,
+      "duration_sec": 1513.13,
+      "loopback_enabled": true,
+      "summary": "1161 passed, 58 warnings in 1513.13s (0:25:13)",
+      "uninterrupted_on_final_source": true
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 193,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "a51a3e8305f99ff168a5461bd50011c3ee6c3b90be320684a8e0d0a09bc4e6c5"
+  },
+  "installed_sdk": {
+    "nominal": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "unload_status": "completed",
+      "remaining_momentum_nms": [
+        1.490475888950057e-169,
+        0.0,
+        0.0
+      ],
+      "fuel_kg": 0.00027192432344236295,
+      "rcs_dc_energy_j": 3.8,
+      "mid_unload_and_post_unload_tracking_replay": true
+    },
+    "limited": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "unload_status": "failed",
+      "remaining_momentum_nms": [
+        0.02399999999999994,
+        0.0,
+        0.0
+      ],
+      "fuel_kg": 0.00019034702648923485,
+      "rcs_dc_energy_j": 11.799999999999999,
+      "mid_unload_and_post_unload_tracking_replay": true
+    }
+  },
+  "installed_console": {
+    "nominal": {
+      "validate_run_resume_replay": true
+    },
+    "limited": {
+      "validate_run_resume_replay": true
+    }
+  },
+  "extended_installed_smoke": {
+    "passed": true,
+    "package": "/tmp/space-env-unloading-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "console_python_no_user_site": true
+  },
+  "demos": {
+    "nominal": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation": {
+        "actor": "a",
+        "status": "completed",
+        "reason": null,
+        "phase": "control",
+        "startup_remaining_sec": 0.0,
+        "target_momentum_nms": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tolerance_nms": 1e-05,
+        "hold_quaternion_wxyz": [
+          0.7198602676183807,
+          0.0015575090101952306,
+          0.6941172590204602,
+          -0.0
+        ],
+        "initial_momentum_nms": [
+          0.08,
+          0.0,
+          0.0
+        ],
+        "until_sec": 3.0,
+        "settle_remaining_sec": 0.0,
+        "dc_energy_j": 3.8,
+        "rcs_heat_j": 3.8,
+        "wall_heat_j": 0.0,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 0.00027192432344236295,
+        "startup_sec": 0.2,
+        "control_sec": 1.8,
+        "remaining_momentum_nms": [
+          1.490475888950057e-169,
+          0.0,
+          0.0
+        ],
+        "completed_sec": 2.0
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "rcs_energy_balance_error_j": {
+        "unload": 0.0
+      },
+      "unload_wheel_dc_energy_j": 21.6,
+      "unload_total_dc_energy_j": 25.400000000000002,
+      "angular_balance_error_gcrs_nms": [
+        -8.673617379884035e-18,
+        2.7538735181131813e-17,
+        1.249000902703301e-16
+      ],
+      "kinetic_work_balance_error_j": -7.216449660063518e-16,
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.3322676295501878e-14,
+          "thermal_stored_j": 196.40266218332272,
+          "thermal_balance_error_j": 2.2737367544323206e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": -5.551115123125783e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -2.042810365310288e-14,
+          "thermal_stored_j": 42.05311379851082,
+          "thermal_balance_error_j": 7.815970093361102e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 3.469446951953614e-17
+        }
+      }
+    },
+    "limited": {
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation": {
+        "actor": "a",
+        "status": "failed",
+        "reason": "unload_window_ended",
+        "phase": "control",
+        "startup_remaining_sec": 0.0,
+        "target_momentum_nms": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tolerance_nms": 1e-05,
+        "hold_quaternion_wxyz": [
+          0.7198602676183807,
+          0.0015575090101952306,
+          0.6941172590204602,
+          -0.0
+        ],
+        "initial_momentum_nms": [
+          0.08,
+          0.0,
+          0.0
+        ],
+        "until_sec": 3.0,
+        "settle_remaining_sec": 1.0,
+        "dc_energy_j": 11.799999999999999,
+        "rcs_heat_j": 11.799999999999999,
+        "wall_heat_j": 0.0,
+        "electrical_nonthermal_j": 0.0,
+        "consumed_propellant_kg": 0.00019034702648923485,
+        "startup_sec": 0.2,
+        "control_sec": 2.8,
+        "remaining_momentum_nms": [
+          0.02399999999999994,
+          0.0,
+          0.0
+        ]
+      },
+      "fuel_balance_error_kg": {
+        "a": 0.0
+      },
+      "rcs_energy_balance_error_j": {
+        "unload": 0.0
+      },
+      "unload_wheel_dc_energy_j": 33.599999999999994,
+      "unload_total_dc_energy_j": 45.39999999999999,
+      "angular_balance_error_gcrs_nms": [
+        4.119968255444917e-17,
+        1.1384122811097797e-17,
+        8.326672684688674e-17
+      ],
+      "kinetic_work_balance_error_j": -1.6930901125533637e-15,
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.2878587085651816e-14,
+          "thermal_stored_j": 217.68507895178573,
+          "thermal_balance_error_j": 2.2737367544323206e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": -6.938893903907228e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -2.042810365310288e-14,
+          "thermal_stored_j": 42.05311379851082,
+          "thermal_balance_error_j": 7.815970093361102e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 3.469446951953614e-17
+        }
+      }
+    }
+  },
+  "commands": [
+    "python -m pytest -q tests/test_momentum_unloading.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m space_env.eval.ci_profiles full (loopback enabled)",
+    "python -m pytest --collect-only -q",
+    "python examples/momentum_unloading/demo.py OUTPUT nominal|limited",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed CLI mission-validate/run/resume/replay with PYTHONNOUSERSITE=1"
+  ],
+  "limits": [
+    "Six ideal signed paired-nozzle channels; continuous authority, zero net force, no minimum impulse or pressure dynamics",
+    "Explicit single shared lumped propellant pool; no independently modeled propellants/pressurant",
+    "Constant COM/inertia under declared cumulative small-mass-loss fraction",
+    "Sampled control/settling, bounded numerical integration; no globally optimal actuator allocation",
+    "RCS DC is separate from constant wheel-controller supply; no full exhaust thermodynamics or electrical regeneration",
+    "Insufficient authority/time reports failed operation and residual momentum; EO fulfillment is a separate outcome",
+    "No hardware/flight calibration, estimator, disturbance or arbitrary wheel/nozzle layout qualification"
+  ],
+  "next": "B04-E multi-node thermal engineering; independent qualification/multiple tanks/variable inertia remain separate gates"
+}

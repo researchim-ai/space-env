@@ -2,11 +2,61 @@
 
 ![Спутник на низкой орбите: Солнце, тень Земли, луч на наземную станцию и второй аппарат на соседней траектории](docs/space-env-hero.jpg)
 
-Среда, в которой агент учится вести один аппарат на низкой орбите: держать батарею, снимать точки на Земле, говорить со станцией и решать, нужен ли манёвр при сближении. Из того же шага симуляции собираются тексты для языковой модели и траектории для обучения с подкреплением.
+Среда, в которой агент учится управлять аппаратом или группировкой на низкой орбите: держать батарею, снимать точки на Земле, говорить со станцией и решать, нужен ли манёвр при сближении. Из того же шага симуляции собираются тексты для языковой модели и траектории для обучения с подкреплением.
 
 Это инженерная модель для обучения, не цифровой двойник конкретной миссии. Крупные пакеты развития и критерии промышленной приемки — в [основном плане](docs/INDUSTRIAL_AI_SIMULATOR_PLAN.md); реализованные возможности и проверки — в [статусе пакета](docs/IMPLEMENTATION_STATUS.md).
 
-В coupled spacecraft profile доступна [тяга в системе корпуса](docs/validation/BODY_THRUST_CONTRACT.md): chemical/electric engine, конечный gimbal, подготовка, расход топлива и связанные энергия/тепло. Пример: `python examples/actuation/demo.py /tmp/body-thrust chemical`. Моменты и маховики — следующий этап.
+[B09 масштабирование](docs/SCALING_CONTRACT.md): потоковые RL/SFT exports и дисковый
+буфер фабрики, compact checkpoints с cold replay, изолированные workers и локальный
+cross-bundle registry. [Профиль нагрузки](examples/scaling/README.md) измеряет
+p50/p95 шага, peak RSS, стоимость fork/checkpoint/replay и verified export throughput.
+Это проверяемые синтетические workloads, без заявления квалификации больших миссий.
+
+[B10 Mission Control](docs/OPERATOR_CONTRACT.md) — пульт на общем native runtime:
+команды и роли, текущая телеметрия, 3D/2D трассы, journal, checkpoint/replay и RL/SFT
+на одной странице. Запуск: `python -m space_env.api.server`, затем
+[localhost:8766/operator](http://127.0.0.1:8766/operator). Это локальный инженерный
+режим; SQLite-сессии переживают рестарт, operator/agent передают управление через
+revision/epoch. [Хранение и восстановление](docs/OPERATOR_DURABILITY_CONTRACT.md);
+enterprise SSO и multi-tenant deployment пока не реализованы.
+
+[B09-M export](docs/VERIFIED_EXPORT_CONTRACT.md): `VerifiedEpisode` проверяет
+эпизод один раз и потоково экспортирует RL/SFT; `export_bundle()` публикует набор
+файлов атомарно. История задач и idempotency-cache разделяют внутренние append-only
+наблюдения, а публичные ответы и строки остаются независимыми копиями.
+
+[B09-Q fleet workloads](examples/scaling/README.md#distinct-orbit-fleet-loads-b09-q)
+задают разные орбиты в нескольких плоскостях и до 1000 индивидуальных задач.
+Повторные запуски проверяют идентичность native результатов, лимиты задержки/RAM
+и фиксируют CPU/quota/thread environment. Это synthetic fixed-ephemeris нагрузка.
+
+[B08 factory](docs/FACTORY_CONTRACT.md) генерирует версионированные native-сценарии
+из шаблонов и распределений, проверяет replay/балансы/ACK и собирает раздельные
+train/holdout/OOD RL/SFT JSONL. Идентичные траектории между splits блокируют готовность
+корпуса; ошибки и невыполнимые случаи остаются в аудите. [Пример](examples/factory/README.md):
+`python examples/factory/demo.py /tmp/factory-corpus`. Генерация синтетическая;
+статус `ready` означает прохождение заданных gates, а не экспертную квалификацию.
+
+Добавлены [B07 baseline-планировщики](docs/PLANNING_CONTRACT.md): wait, random,
+priority, EDF и ограниченный route-aware поиск текущих совместимых действий.
+Один runner сохраняет состояние политики/RNG, действия оператора и проверяет cold
+replay. Benchmark фиксирует manifest, lineage splits и пороги до запуска; успешное
+исполнение не выдаётся за экспертность. [Пример без готовой последовательности команд](examples/planning/README.md):
+`python examples/planning/demo.py /tmp/planning nominal`.
+
+Для обучения на том же mission runtime доступен [единый task layer](docs/AGENT_RUNTIME_CONTRACT.md):
+Gymnasium, опциональный PettingZoo (`.[marl]`), структурированные LLM tools,
+разграничение ролей, причинные маски, физическое время/discount, холодный replay и
+проверяемый RL/SFT JSONL. [Сквозной пример](examples/agent_task/README.md):
+`python examples/agent_task/demo.py /tmp/task-demo nominal` — три спутника,
+съёмка → onboard CPU → ISL custody → ground ACK. Каталог действий конечный;
+телеметрия идеальная локальная, а scripted teacher не считается экспертной политикой.
+
+В coupled spacecraft profile доступна [тяга в системе корпуса](docs/validation/BODY_THRUST_CONTRACT.md): chemical/electric engine, конечный gimbal, подготовка, расход топлива и связанные энергия/тепло. Пример: `python examples/actuation/demo.py /tmp/body-thrust chemical`. Доступен opt-in [режим вращения с маховиками](docs/validation/RIGID_MISSION_CONTRACT.md): `python examples/rigid_mission/demo.py /tmp/rigid-mission tuned`. В нём отмена не обнуляет spin; для вращающейся/off-center тяги нужен явный `engine.rigid_coupling` с ограничением потери массы при постоянной инерции. [Контракт](docs/validation/ROTATING_THRUST_CONTRACT.md), пример: `python examples/rotating_thrust/demo.py /tmp/rotating chemical`.
+
+Для разгрузки маховиков доступен [ресурсный RCS-профиль](docs/validation/MOMENTUM_UNLOADING_CONTRACT.md): `python examples/momentum_unloading/demo.py /tmp/unloading nominal`. Он расходует газ и электроэнергию, а при нехватке времени сохраняет остаточный момент и сообщает failed.
+
+Доступна [многозонная тепловая модель](docs/validation/THERMAL_NETWORK_CONTRACT.md): проводимость, излучение, отдельный нагрев компонентов, платные нагреватели и блокировки по температуре. Пример: `python examples/thermal_network/demo.py /tmp/thermal nominal` (также `hot` и `cold`).
 
 Короткая миссия группировки запускается так:
 
@@ -258,3 +308,34 @@ space-env/
 ## Лицензия
 
 [Apache 2.0](LICENSE).
+
+### Sampled RF and ground service (B05-A)
+
+Opt-in `operations.radio_network` connects declared Friis/EIRP/G/T/Eb/N0 modem
+budgets, antenna acquisition/handover, station capacity pools, versioned booking
+imports and delayed ideal ACK to actual battery/thermal/lifecycle execution.
+Run `python examples/network_mission/demo.py /tmp/network nominal` (also `outage`,
+`blocked`). See [contract and limits](docs/validation/RADIO_GROUND_CONTRACT.md).
+Concurrent reference-runtime ISL/custody is implemented in B05-B below; calibrated
+weather remains open.
+
+### Concurrent ISL and custody transport (B05-B)
+
+Opt-in `operations.dtn_network` and runtime `relay` commands add shared half-duplex
+TX/RX admission, reserved receiver buffers, packet propagation, loss/retry/dedup,
+immutable lifetime and atomic whole-product custody. Acquisition provenance is
+preserved; customer credit still waits for final ground ACK.
+Run `python examples/relay_mission/demo.py /tmp/relay nominal` (also `reroute`,
+`loss`, `ttl`). See [quickstart](examples/relay_mission/README.md) and
+[engineering contract/limits](docs/validation/CUSTODY_NETWORK_CONTRACT.md).
+This is an isolated-link store-and-forward model, not BPv7/BIBE/LTP or calibrated
+RF/flight hardware.
+
+### Durable Mission Control (B10-B)
+
+`python -m space_env.api.server` → http://127.0.0.1:8766/operator.
+Local sessions survive restart in `.space-env/operator.sqlite3` (override with
+`SPACE_ENV_OPERATOR_DB`). Save the private connection file to reconnect. Operator↔agent
+handover uses revision/epoch fencing; secret-free archives retain observed tracks
+and provenance. See [durability and recovery contract](docs/OPERATOR_DURABILITY_CONTRACT.md).
+This bounded local console is not an authenticated multi-tenant public service.

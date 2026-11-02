@@ -2,6 +2,10 @@
 
 Date: 2026-11-01. Version: 0.134.0. Parent B04 and B04-D remain in progress.
 
+B04-D2b2 adds an optional rotating/off-center extension described in
+[ROTATING_THRUST_CONTRACT.md](ROTATING_THRUST_CONTRACT.md). The held-body
+assumptions below apply to the original non-rigid mode.
+
 ## Configuration and execution
 
 Opt in with `definition.actuation` in the reference-spacecraft coupled bus profile.

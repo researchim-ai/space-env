@@ -1,0 +1,283 @@
+{
+  "date": "2026-11-01",
+  "package": "B04-D2b1",
+  "status": "verified_engineering_scope",
+  "version": "0.134.0",
+  "parent_B04_D2_status": "in_progress",
+  "parent_B04_status": "in_progress",
+  "contract": "../validation/RIGID_MISSION_CONTRACT.md",
+  "tests": {
+    "new_mission_cases": 33,
+    "reference": 652,
+    "reference_warnings": 13,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1082,
+    "counts_overlap": true,
+    "full_regression_rerun": false,
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 192,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "a2906e660cb10700c6f85c429c519dc82af33c4276383fe45f5db23e12f082be"
+  },
+  "installed_demos": {
+    "tuned": {
+      "ok": true,
+      "mode": "tuned",
+      "request_outcomes": {
+        "customer-a": {
+          "status": "completed",
+          "reason": null,
+          "delivered_sec": 4.5
+        },
+        "after-wheel": {
+          "status": "completed",
+          "reason": null,
+          "delivered_sec": 7.5
+        }
+      },
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "rigid_attitude": {
+        "quaternion_wxyz": [
+          0.7351043021366298,
+          0.002904111128101033,
+          0.6779477993519462,
+          -0.00011168091916704276
+        ],
+        "omega_body_rad_s": [
+          -0.0044244719903605255,
+          -0.011572340973603075,
+          7.915465860540923e-05
+        ],
+        "wheel_momentum_nms": [
+          0.008848943980721051,
+          0.03471702292080905,
+          -0.0003166186344216363
+        ],
+        "elapsed_sec": 7.5,
+        "dc_energy_j": 51.0,
+        "heat_j": 50.9355957460324,
+        "motor_work_j": 0.0644042539676069,
+        "external_work_j": 0.0,
+        "momentum_inertial_nms": [
+          -9.163247034047542e-20,
+          -1.8041106987902136e-16,
+          -6.90439503384564e-19
+        ],
+        "kinetic_energy_j": 0.0644042539676066,
+        "dc_heat_work_balance_error_j": -4.718447854656915e-15,
+        "kinetic_work_balance_error_j": -3.0531133177191805e-16,
+        "substeps": 788,
+        "capacity_limited_sec": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "controller": {
+          "enabled": false,
+          "torque": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reason": null
+        },
+        "scope": "mission rigid controller; no body burn/external unloading actuator"
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.0658141036401503e-14,
+          "thermal_stored_j": 157.39165856447244,
+          "thermal_balance_error_j": 1.4210854715202004e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.4654943925052066e-14,
+          "thermal_stored_j": 30.26236765175554,
+          "thermal_balance_error_j": 3.552713678800501e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-18
+        }
+      },
+      "scope": "mission wheel control; body thrust and external unloading unsupported on rigid actors"
+    },
+    "weak": {
+      "ok": true,
+      "mode": "weak",
+      "request_outcomes": {
+        "customer-a": {
+          "status": "completed",
+          "reason": null,
+          "delivered_sec": 4.5
+        },
+        "after-wheel": {
+          "status": "failed",
+          "reason": "coverage_requirement",
+          "delivered_sec": null
+        }
+      },
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "rigid_attitude": {
+        "quaternion_wxyz": [
+          0.7267058705086048,
+          0.00041969225319140127,
+          0.6869463075153024,
+          0.0017810721027278261
+        ],
+        "omega_body_rad_s": [
+          0.006380275912506827,
+          -0.016497100737130243,
+          0.0007851512960708965
+        ],
+        "wheel_momentum_nms": [
+          -0.012760551825013655,
+          0.049491302211390815,
+          -0.003140605184283586
+        ],
+        "elapsed_sec": 7.5,
+        "dc_energy_j": 51.0,
+        "heat_j": 50.86844562373597,
+        "motor_work_j": 0.13155437626401306,
+        "external_work_j": 0.0,
+        "momentum_inertial_nms": [
+          -1.81495424522372e-19,
+          9.020501666911357e-17,
+          2.7575745120205525e-19
+        ],
+        "kinetic_energy_j": 0.13155437626401298,
+        "dc_heat_work_balance_error_j": 1.4377388168895777e-14,
+        "kinetic_work_balance_error_j": -8.326672684688674e-17,
+        "substeps": 788,
+        "capacity_limited_sec": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "controller": {
+          "enabled": false,
+          "torque": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reason": null
+        },
+        "scope": "mission rigid controller; no body burn/external unloading actuator"
+      },
+      "bus_ledgers": {
+        "a": {
+          "battery_balance_error_wh": -1.0658141036401503e-14,
+          "thermal_stored_j": 157.32287454286507,
+          "thermal_balance_error_j": 1.1368683772161603e-13,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-17
+        },
+        "b": {
+          "battery_balance_error_wh": -1.4654943925052066e-14,
+          "thermal_stored_j": 30.26236765175554,
+          "thermal_balance_error_j": 3.552713678800501e-14,
+          "pv_balance_error_wh": 0.0,
+          "discharge_balance_error_wh": 6.938893903907228e-18
+        }
+      },
+      "scope": "mission wheel control; body thrust and external unloading unsupported on rigid actors"
+    }
+  },
+  "commands": [
+    "python -m pytest -q tests/test_rigid_mission.py",
+    "python -m space_env.eval.ci_profiles reference",
+    "python -m space_env.eval.ci_profiles fast",
+    "python -m pytest --collect-only -q",
+    "python examples/rigid_mission/demo.py OUTPUT tuned|weak",
+    "installed Python -I examples/rigid_mission/demo.py OUTPUT tuned|weak",
+    "installed Python -I scripts/verify_installed.py --expected-prefix PREFIX",
+    "installed CLI mission-validate/run/resume/replay with PYTHONNOUSERSITE=1"
+  ],
+  "limits": [
+    "Only opt-in actors use rigid motion; other actors retain rate-limited slew",
+    "Fixed electrical supply is reserved and charged when enabled; unused power becomes heat, not measured motor behavior",
+    "Sampled PD control and start/mid/end pointing; no continuous pointing guarantee",
+    "Slew completion is a sampled milestone; no automatic attitude hold after completion",
+    "Body burn on a rigid actor is rejected; rotating/off-center thrust not yet integrated",
+    "No mission external unloading actuator or free momentum reset",
+    "No flight calibration, sensor/estimator, flex, arbitrary wheel layout or external torque disturbances",
+    "No fleet-scale throughput/SLA qualification"
+  ],
+  "next": "B04-D2b2 rotating/off-center thrust integration, then explicit resource-accounted unloading actuator",
+  "installed_sdk": {
+    "tuned": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "substeps": 788,
+      "dc_energy_j": 51.0,
+      "dc_heat_work_balance_error_j": -4.718447854656915e-15,
+      "kinetic_work_balance_error_j": -3.0531133177191805e-16,
+      "mid_wheel_cpu_and_tracking_replay": true
+    },
+    "weak": {
+      "verified": true,
+      "metrics": {
+        "fulfilled_requests": 1,
+        "total_requests": 2
+      },
+      "substeps": 788,
+      "dc_energy_j": 51.0,
+      "dc_heat_work_balance_error_j": 1.4377388168895777e-14,
+      "kinetic_work_balance_error_j": -8.326672684688674e-17,
+      "mid_wheel_cpu_and_tracking_replay": true
+    }
+  },
+  "installed_console": {
+    "tuned": {
+      "validate_run_resume_replay": true
+    },
+    "weak": {
+      "validate_run_resume_replay": true
+    }
+  },
+  "extended_installed_smoke": {
+    "passed": true,
+    "package": "/tmp/space-env-rigid-mission-installed/lib/python3.12/site-packages/space_env",
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "console_python_no_user_site": true,
+    "body_actuation_regression": {
+      "chemical": {
+        "verified": true,
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "mid_gimbal_and_firing_replay": true,
+        "fuel_kg": 0.0003399054043313754
+      },
+      "electric": {
+        "verified": true,
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "mid_gimbal_and_firing_replay": true,
+        "fuel_kg": 3.399054037345195e-06
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "status": "interrupted_for_observed_hotspot_fix",
+  "reason": "py-spy shows full native report computed per action solely for horizon checks in admissible; no mission qualification claimed",
+  "stack": "Process 2627265: /home/user/miniconda3/bin/python -m space_env.scaling.worker /tmp/space-env-scale-2z6t034a/input.json /tmp/space-env-scale-2z6t034a/result.json\nPython v3.12.9 (/home/user/miniconda3/bin/python3.12)\n\nThread 99 (active+gil): \"MainThread\"\n    <genexpr> (space_env/reference/operations.py:600)\n    report (space_env/reference/operations.py:600)\n    metrics (space_env/runtime/adapters.py:212)\n    report (space_env/runtime/mission.py:393)\n    call (space_env/runtime/mission.py:34)\n    admissible (space_env/tasks/observation.py:455)\n    build (space_env/tasks/observation.py:339)\n    _refresh (space_env/tasks/session.py:186)\n    step (space_env/tasks/session.py:381)\n    step (space_env/planning/runner.py:81)\n    run (space_env/planning/runner.py:123)\n    measure (space_env/scaling/worker.py:27)\n    main (space_env/scaling/worker.py:96)\n    <module> (space_env/scaling/worker.py:142)\n    _run_code (<frozen runpy>:88)\n    _run_module_as_main (<frozen runpy>:198)\n",
+  "stopped_at_unix": 1793636116.3610897,
+  "scope": "initial 64/1000 probe; audit retained instead of treating interruption as success"
+}

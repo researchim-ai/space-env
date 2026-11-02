@@ -28,6 +28,7 @@ from space_env.reference.spacecraft_bus import (
 )
 from space_env.reference.thrust import FiniteThrust
 from space_env.reference.time import EOPSeries, Epoch
+from space_env.reference.unloading import UnloadingSettings
 from space_env.runtime.adapters import ReferenceBackend
 from space_env.runtime.schema import FiniteScalar, StrictModel
 
@@ -112,6 +113,7 @@ class DynamicMissionSpec(StrictModel):
     spacecraft_bus: dict[str, SpacecraftBusModel] | None = None
     execution: ParallelExecution | None = None
     actuation: ActuationSettings | None = None
+    unloading: UnloadingSettings | None = None
 
 
 class DynamicReferenceBackend(ReferenceBackend):
@@ -143,6 +145,11 @@ class DynamicReferenceBackend(ReferenceBackend):
                 raise ValueError("body actuation requires coupled spacecraft profile")
             self.capabilities = self.capabilities | {"commands.body_burn", "physics.body_thrust"}
             self.forecast_scope = "applied thrust only; future pending engine phases/firing are not predicted"
+        if config.unloading is not None:
+            if config.spacecraft_bus is None:
+                raise ValueError("unloading requires coupled spacecraft profile")
+            self.capabilities = self.capabilities | {"commands.momentum_unload", "physics.balanced_rcs_couples"}
+            self.forecast_scope = "executed actuation only; future pending unloading/burn commands are not predicted"
         if config.execution is not None:
             if config.spacecraft_bus is None or set(config.execution.actors) != set(spec.actor_order):
                 raise ValueError("resource lanes require coupled spacecraft and capacities for every actor")
@@ -251,6 +258,8 @@ class DynamicReferenceBackend(ReferenceBackend):
                 "state.covariance_propagation",
                 "state.stm",
             }
+        if self.mission.dtn is not None and config.execution is not None:
+            self.mission.dtn_lane_bandwidth = {a:r.memory_bandwidth_bps for a,r in config.execution.actors.items()}
         self.geometry_revision = 0
         self.burn_commands = {}
         self.data_validity = {
@@ -280,11 +289,24 @@ class DynamicReferenceBackend(ReferenceBackend):
         if config.spacecraft_bus is not None:
             self.bus = SpacecraftBus(config.spacecraft_bus, self)
             self.mission.bus = self.bus
+            if self.mission.radio_network is not None:
+                for a,tx in self.mission.radio_network.config.transmitters.items():
+                    v = self.mission.vehicles[a]
+                    if tx.rf_power_w > v.tx_power_w*(1-self.bus.models[a].electrical_heat_fraction)+1e-12:
+                        raise ValueError("RF output plus declared radio heat exceeds DC input")
+            self.lifecycle.thermal_network = self.bus.network
+            if self.bus.network.models:
+                self.capabilities = self.capabilities | {"physics.thermal_network.partial_actors", "thermal.autonomous_heaters"}
             self.capabilities = self.capabilities | {
                 "commands.slew",
                 "events.spacecraft_bus",
                 "observe.spacecraft_bus",
             }
+
+        if self.bus is not None and self.bus.rigid.models:
+            self.capabilities = self.capabilities | {"commands.wheel_torque", "physics.rigid_attitude.partial_actors"}
+            if config.actuation is not None and any(m.rigid_coupling is not None for m in config.actuation.engines.values()):
+                self.capabilities = self.capabilities | {"physics.rotating_body_thrust.partial_actors"}
 
     def command_claims(self, command):
         if self.config.execution is None:
@@ -305,6 +327,12 @@ class DynamicReferenceBackend(ReferenceBackend):
 
     def validate_command(self, c):
         super().validate_command(c)
+        if c.kind == "wheel_torque" and (self.bus is None or c.actor_id not in self.bus.rigid.models):
+            raise ValueError("wheel torque requires actor rigid attitude model")
+
+        if c.kind == "momentum_unload":
+            self.lifecycle.unloader.validate(c, self)
+            return
         if c.kind == "body_burn":
             self.lifecycle.actuation.validate(c, self)
             return
@@ -366,11 +394,16 @@ class DynamicReferenceBackend(ReferenceBackend):
         return result
 
     def admit(self, c):
+        if c.kind == "relay":
+            return super().admit(c)
         self.validate_command(c)
+        if c.kind == "momentum_unload":
+            self.lifecycle.unloader.admit(c, self)
+            return
         if c.kind == "body_burn":
             self.lifecycle.actuation.admit(c, self)
             return
-        if self.bus is not None and c.kind == "slew":
+        if self.bus is not None and c.kind in {"slew", "wheel_torque"}:
             self.bus.admit(c, self)
             return
         if self.lifecycle is not None and c.kind in {"imaging", "transform"}:
@@ -410,6 +443,8 @@ class DynamicReferenceBackend(ReferenceBackend):
         self.mission._boundaries = sorted(boundaries)
 
     def cancel(self, command_id):
+        if self.lifecycle is not None and self.lifecycle.unloader is not None and self.lifecycle.unloader.cancel(command_id):
+            return True
         if self.lifecycle is not None and self.lifecycle.actuation is not None and self.lifecycle.actuation.cancel(command_id):
             return
         if self.bus is not None and self.bus.cancel(command_id):
@@ -422,6 +457,7 @@ class DynamicReferenceBackend(ReferenceBackend):
             self.geometry_revision += 1
             self._refresh_geometry(entry[0])
         self.burn_commands.pop(command_id, None)
+        super().cancel(command_id)
 
     def observe(self, actor):
         provider = self.mission.ephemerides[actor]

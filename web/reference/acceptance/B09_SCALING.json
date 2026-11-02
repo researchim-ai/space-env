@@ -1,0 +1,343 @@
+{
+  "schema": "space-env.acceptance/1",
+  "date": "2026-11-02",
+  "package": "B09",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "contract": "../SCALING_CONTRACT.md",
+  "scope": "bounded streaming/compact replay/isolated workers/local registry and short synthetic measured probes; long heterogeneous fleet and external industrial qualification remain open",
+  "checks": {
+    "new_scaling_cases": 31,
+    "targeted_B06_B07_B08_B09": {
+      "passed": 192,
+      "warnings": 2,
+      "seconds": 92.34,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09-unit-final.log"
+    },
+    "reference_final": {
+      "passed": 1063,
+      "warnings": 15,
+      "seconds": 220.14,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09-reference-final.log"
+    },
+    "fast_final": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.76,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09-fast-final.log"
+    },
+    "expanded_regression": {
+      "passed": 1463,
+      "warnings": 46,
+      "seconds": 676.01,
+      "exit_code": 0,
+      "log": "/tmp/space-env-b09-full-tests.log",
+      "stage": "before the final Python-3.10 compatibility guard; no physical/execution behavior changed on tested Python 3.12; final targeted/reference/fast were rerun afterward",
+      "excluded_current_run": [
+        "tests/test_campaign.py (14 unchanged legacy cases)",
+        "tests/test_tasking.py (15 unchanged legacy cases)"
+      ],
+      "note": "separate CI jobs configured; this is not a continuous full-suite result on the final source"
+    },
+    "wheel": {
+      "sha256": "8640ac19aa5603bf059d5455773d7dd968b557b08c5318caaa88b57e4fed6731",
+      "modules": 227,
+      "boinor_fixtures": 3,
+      "source_byte_parity": true
+    },
+    "installed_corpus": {
+      "ok": true,
+      "status": "ready",
+      "rows": {
+        "rl": 48,
+        "sft": 20
+      },
+      "episodes": 36,
+      "sha256": "492f75c027c8a503c074590741595aa84368cfd13750a703c88b20d1c0e371a2",
+      "content_sha256": "5dee1a4031a106351f212e554d27d9a184bfd7d17b43bab373beb1271ae8eda0",
+      "expert_qualified": false,
+      "verified": true,
+      "coupled_eo": false
+    },
+    "installed_coupled_eo": {
+      "ok": true,
+      "status": "ready",
+      "rows": {
+        "rl": 10,
+        "sft": 10
+      },
+      "episodes": 1,
+      "sha256": "f5d968196e41f92b3ea0f527f8eb3d8fae69943bcca98b71566ab04928b96c62",
+      "content_sha256": "f594d8e3db0e541544692e1194b343357f63251ffddc5ef0d41f3cd2324e14cf",
+      "expert_qualified": false,
+      "verified": true,
+      "coupled_eo": true,
+      "fulfilled": 2,
+      "total": 2
+    },
+    "installed_worker_parity": {
+      "ok": true,
+      "module": "/tmp/space-env-b09-installed/lib/python3.12/site-packages/space_env/__init__.py",
+      "episodes_each": 2,
+      "worker_pids": [
+        53,
+        56
+      ],
+      "semantic_parity": true
+    },
+    "installed_scale_smoke": {
+      "schema": "space-env.scale-result/1",
+      "manifest_sha256": "4ddfe4f2d8fd2ee475738fd5b5098b31dee989cf9f8a7d2ef802c78619b50d33",
+      "hardware": {
+        "system": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+        "machine": "x86_64",
+        "processor": "x86_64",
+        "logical_cpus": 24,
+        "python": "3.12.9",
+        "thread_env": {
+          "OMP_NUM_THREADS": null,
+          "OPENBLAS_NUM_THREADS": null,
+          "MKL_NUM_THREADS": null
+        },
+        "memory_bytes": 67037372416
+      },
+      "rows": [
+        {
+          "id": "fixed-4",
+          "family": "synthetic-fixed-fanout",
+          "repeat": 0,
+          "error": null,
+          "checkpoint_bytes": 324420,
+          "checkpoint_sec": 0.013774082999589154,
+          "decisions": 2,
+          "execution_sec": 0.04139736599972821,
+          "export_sec": 0.42588334399988526,
+          "fork_python_peak_bytes": 1343464,
+          "fork_sec": 0.026616377999744145,
+          "gates": {
+            "checkpoint_budget": true,
+            "completion": true,
+            "native_replay": true,
+            "peak_rss_budget": true,
+            "quality": true
+          },
+          "metrics": {
+            "acked_ground_mbits": 0.4,
+            "completion_fraction": 1.0,
+            "completion_latency_sec": [
+              0.1,
+              0.1,
+              0.1,
+              0.1
+            ],
+            "decision_wall_sec": [
+              0.000468763002572814,
+              0.00042915700032608584
+            ],
+            "decisions": 2,
+            "discarded_bits": 0.0,
+            "energy_j": 168.0,
+            "fulfilled": 4,
+            "lateness_sec": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time_ground_mbits": 0.4,
+            "physical_sec": 4.0,
+            "process_peak_rss_bytes": 246681600,
+            "qualification": "synthetic baseline execution, not expert/flight qualification",
+            "rejections": 0,
+            "rss_scope": "process-lifetime high-water mark, not episode-exclusive",
+            "sampled_safe_entries": 0,
+            "search_nodes": 0,
+            "terminated": true,
+            "total": 4,
+            "truncated": false,
+            "wasted_partial_bits": 0
+          },
+          "native_backend_sha256": "4995f445ec7e3664172d57ace186f55d5add2ff5b785d502240c9958c1461cf3",
+          "passed": true,
+          "peak_rss_bytes": 251990016,
+          "quality": {
+            "checks": [
+              "inventory_bits",
+              "battery_wh",
+              "native_ACK_reward",
+              "causal_public_views",
+              "physical_dt_discount",
+              "accepted_masks"
+            ],
+            "conditional_after_cancel": 0,
+            "passed": true,
+            "transitions": 2
+          },
+          "replay_sec": 0.17518673599988688,
+          "step_p50_sec": 0.020380028499857872,
+          "step_p95_sec": 0.023163079152254795,
+          "trace_sha256": "be8500792ec523d27fa505e9f190c1752e796dced608f1fdae191d5275157621",
+          "verified_export_rows": 4,
+          "verified_export_rows_per_sec": 9.392243336947871,
+          "end_to_end_wall_sec": 1.732467772999371
+        }
+      ],
+      "ok": true,
+      "scope": "only the frozen workloads on this hardware; peak RSS is fresh-process lifetime high-water, not delta allocation or flight qualification",
+      "sha256": "176d97b131bb8ae726e1aacfd36cdd0f1eb567710b70611dbce3e4d86cc79579"
+    },
+    "installed_registry": {
+      "ok": true,
+      "status": "registered",
+      "content_sha256": "5dee1a4031a106351f212e554d27d9a184bfd7d17b43bab373beb1271ae8eda0",
+      "groups": 6,
+      "trajectories": 12
+    },
+    "installed_registry_idempotent": {
+      "ok": true,
+      "status": "already_registered",
+      "content_sha256": "5dee1a4031a106351f212e554d27d9a184bfd7d17b43bab373beb1271ae8eda0"
+    },
+    "installed_environment_note": "Local wheel venv uses system-site-packages for preinstalled dependencies. -I/PYTHONNOUSERSITE=1 makes native dependency fingerprints consistent; exposing extra user-site sgp4/nrlmsise00 changes fingerprints and was correctly rejected. This is not a dependency-clean install; remote clean-install CI is configured but was not run.",
+    "remote_ci": "configured, not executed locally",
+    "collection": "1493 tests collected in 0.97s",
+    "counts_overlap": true
+  },
+  "measurements": {
+    "receipt": "B09_SCALE_RUN.json",
+    "measurement_stage_wheel_sha256": "5f0fba99fce02add170b305bc045d5837a087b19a710a228597740944bdb7d48",
+    "stage_note": "8 probes measured before a validation-only Python-3.10 parallel-worker guard; measurement results are retained rather than relabelled as a later build",
+    "cpu_model": "AMD Ryzen 9 9900X 12-Core Processor",
+    "hardware": {
+      "logical_cpus": 24,
+      "machine": "x86_64",
+      "memory_bytes": 67037372416,
+      "processor": "x86_64",
+      "python": "3.12.9",
+      "system": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+      "thread_env": {
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null
+      }
+    },
+    "scope": "one measured sample per workload, shared host concurrent with regression; not pinned-core/repeated operational throughput qualification",
+    "same_workload_full_audit_fork_before": {
+      "wall_sec": 19.361663423998834,
+      "decisions": 10,
+      "fulfilled": 2,
+      "checkpoint_bytes": 73277003,
+      "fork_sec": 4.308080015998712,
+      "fork_python_peak_bytes": 211178447,
+      "native_backend_report_bytes": 2771280
+    },
+    "same_workload_full_audit_fork_after": {
+      "wall_sec": 12.4137495089999,
+      "decisions": 10,
+      "fulfilled": 2,
+      "checkpoint_bytes": 73277029,
+      "fork_sec": 0.15535774999807472,
+      "fork_python_peak_bytes": 9298277,
+      "native_backend_report_bytes": 2771280
+    },
+    "fork_speed_ratio_observed": 27.730061847909745,
+    "fork_python_peak_ratio_observed": 22.711567637746217,
+    "coupled_checkpoint_full_bytes": 73277030,
+    "coupled_checkpoint_compact_bytes": 2930459,
+    "full_compact_native_report_identical": true,
+    "full_compact_trace_identical": true,
+    "probes": [
+      {
+        "id": "fixed-1",
+        "passed": true,
+        "checkpoint_bytes": 89468,
+        "peak_rss_bytes": 258609152,
+        "step_p50_sec": 0.005439900498458883,
+        "step_p95_sec": 0.006125336448531016,
+        "fulfilled": 1,
+        "total": 1
+      },
+      {
+        "id": "fixed-4",
+        "passed": true,
+        "checkpoint_bytes": 324425,
+        "peak_rss_bytes": 258609152,
+        "step_p50_sec": 0.020193419000861468,
+        "step_p95_sec": 0.02330106680165045,
+        "fulfilled": 4,
+        "total": 4
+      },
+      {
+        "id": "fixed-16",
+        "passed": true,
+        "checkpoint_bytes": 1264276,
+        "peak_rss_bytes": 280518656,
+        "step_p50_sec": 0.10776581700156385,
+        "step_p95_sec": 0.1189074606021677,
+        "fulfilled": 16,
+        "total": 16
+      },
+      {
+        "id": "fixed-64",
+        "passed": true,
+        "checkpoint_bytes": 5012828,
+        "peak_rss_bytes": 411725824,
+        "step_p50_sec": 0.6549482335012726,
+        "step_p95_sec": 0.6871210442504889,
+        "fulfilled": 64,
+        "total": 64
+      },
+      {
+        "id": "coupled-full",
+        "passed": true,
+        "checkpoint_bytes": 73277030,
+        "peak_rss_bytes": 1230909440,
+        "step_p50_sec": 1.1244788254989544,
+        "step_p95_sec": 1.6246642404499652,
+        "fulfilled": 2,
+        "total": 2
+      },
+      {
+        "id": "coupled-compact",
+        "passed": true,
+        "checkpoint_bytes": 2930459,
+        "peak_rss_bytes": 350060544,
+        "step_p50_sec": 1.0946755050008505,
+        "step_p95_sec": 1.5337098668491307,
+        "fulfilled": 2,
+        "total": 2
+      },
+      {
+        "id": "fault-loss",
+        "passed": true,
+        "checkpoint_bytes": 3110941,
+        "peak_rss_bytes": 359018496,
+        "step_p50_sec": 1.0716820300003747,
+        "step_p95_sec": 1.6315874370000527,
+        "fulfilled": 2,
+        "total": 2
+      },
+      {
+        "id": "fault-ttl",
+        "passed": true,
+        "checkpoint_bytes": 3028483,
+        "peak_rss_bytes": 353021952,
+        "step_p50_sec": 1.1664698829990812,
+        "step_p95_sec": 1.566555744501238,
+        "fulfilled": 1,
+        "total": 2
+      }
+    ]
+  },
+  "open_gates": [
+    "B09-Q: repeated multi-plane independent geometry / 16 actors+100 tasks / 64+1000 / separate 256+10000 / long coupled horizons and quota envelope",
+    "B09-M: transient full-operation evidence and mutable native history remain in RAM; cold replay remains linear, not instant snapshot restore",
+    "Python 3.10 serial contract validated by version-guard unit test; actual Python 3.10 interpreter not available locally; parallel explicitly requires 3.11+",
+    "B10: Studio/operator on unified causal runtime",
+    "B11/B12: clean-release matrix, independent hardware/flight calibration and industrial pilot"
+  ],
+  "git_operations": "no staging, commit, push, PR or deployment"
+}

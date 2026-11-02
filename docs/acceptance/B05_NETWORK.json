@@ -1,0 +1,398 @@
+{
+  "date": "2026-11-02",
+  "package": "B05-A",
+  "version": "0.134.0",
+  "status": "verified_declared_engineering_profile",
+  "parent_B05_status": "in_progress",
+  "hardware_flight_qualification": "needs_external_evidence",
+  "contract": "../validation/RADIO_GROUND_CONTRACT.md",
+  "tests": {
+    "new_radio_cases": 42,
+    "reference": 827,
+    "reference_warnings": 13,
+    "reference_duration_sec": 116.61,
+    "fast": 110,
+    "fast_warnings": 2,
+    "collected": 1257,
+    "counts_overlap": true,
+    "full_regression": {
+      "status": "passed",
+      "passed": 1257,
+      "warnings": 58,
+      "duration_seconds": 1511.44,
+      "exit_code": 0,
+      "loopback_enabled": true,
+      "uninterrupted_on_final_source": true,
+      "summary": "1257 passed, 58 warnings in 1511.44s (0:25:11)"
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "wheel": {
+    "python_modules_byte_matched": 197,
+    "frozen_boinor_fixtures": 3,
+    "sha256": "31864fd9046430b1368e2e49b65a94ea91c925d3912e3f2fa974a135d3d39108"
+  },
+  "demos": {
+    "nominal": {
+      "ok": true,
+      "mode": "nominal",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 250.95838695865848
+      },
+      "setup_terminal_seconds": {
+        "Ground": 1.759583869586585
+      },
+      "station_transmitted_bits": {
+        "Ground": 1499999.9999999995
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 5.3541556110111586,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 11.113766190115758,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    },
+    "outage": {
+      "ok": true,
+      "mode": "outage",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 280.1615555939205
+      },
+      "setup_terminal_seconds": {
+        "Ground": 2.051615555939204
+      },
+      "station_transmitted_bits": {
+        "Ground": 1500000.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 6.35415868045499,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 12.155804249909682,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    },
+    "blocked": {
+      "ok": true,
+      "mode": "blocked",
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 0.0
+      },
+      "setup_terminal_seconds": {
+        "Ground": 0.0
+      },
+      "station_transmitted_bits": {
+        "Ground": 0.0
+      },
+      "acknowledgements": [],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    }
+  },
+  "installed_standalone": {
+    "nominal": {
+      "ok": true,
+      "mode": "nominal",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 250.95838695865848
+      },
+      "setup_terminal_seconds": {
+        "Ground": 1.759583869586585
+      },
+      "station_transmitted_bits": {
+        "Ground": 1499999.9999999995
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 5.3541556110111586,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 11.113766190115758,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    },
+    "outage": {
+      "ok": true,
+      "mode": "outage",
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 280.1615555939205
+      },
+      "setup_terminal_seconds": {
+        "Ground": 2.051615555939204
+      },
+      "station_transmitted_bits": {
+        "Ground": 1500000.0
+      },
+      "acknowledgements": [
+        {
+          "product_id": "final-a",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 500000,
+          "acknowledged_sec": 6.35415868045499,
+          "fulfilled_request_ids": [
+            "customer-a"
+          ]
+        },
+        {
+          "product_id": "raw-after",
+          "actor": "a",
+          "destination_id": "Ground",
+          "bits": 1000000,
+          "acknowledged_sec": 12.155804249909682,
+          "fulfilled_request_ids": [
+            "after-thermal"
+          ]
+        }
+      ],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    },
+    "blocked": {
+      "ok": true,
+      "mode": "blocked",
+      "metrics": {
+        "fulfilled_requests": 0,
+        "total_requests": 2
+      },
+      "ground_energy_j": {
+        "Ground": 0.0
+      },
+      "setup_terminal_seconds": {
+        "Ground": 0.0
+      },
+      "station_transmitted_bits": {
+        "Ground": 0.0
+      },
+      "acknowledgements": [],
+      "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather"
+    }
+  },
+  "installed_sdk": {
+    "status": "passed",
+    "network": {
+      "nominal": {
+        "ok": true,
+        "mode": "nominal",
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "ground_energy_j": {
+          "Ground": 250.95838695865848
+        },
+        "setup_terminal_seconds": {
+          "Ground": 1.759583869586585
+        },
+        "station_transmitted_bits": {
+          "Ground": 1499999.9999999995
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "a",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 5.3541556110111586,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          },
+          {
+            "product_id": "raw-after",
+            "actor": "a",
+            "destination_id": "Ground",
+            "bits": 1000000,
+            "acknowledged_sec": 11.113766190115758,
+            "fulfilled_request_ids": [
+              "after-thermal"
+            ]
+          }
+        ],
+        "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather",
+        "installed_console_replay": true,
+        "mid_acquisition_and_transmission_replay": true
+      },
+      "outage": {
+        "ok": true,
+        "mode": "outage",
+        "metrics": {
+          "fulfilled_requests": 2,
+          "total_requests": 2
+        },
+        "ground_energy_j": {
+          "Ground": 280.1615555939205
+        },
+        "setup_terminal_seconds": {
+          "Ground": 2.051615555939204
+        },
+        "station_transmitted_bits": {
+          "Ground": 1500000.0
+        },
+        "acknowledgements": [
+          {
+            "product_id": "final-a",
+            "actor": "a",
+            "destination_id": "Ground",
+            "bits": 500000,
+            "acknowledged_sec": 6.35415868045499,
+            "fulfilled_request_ids": [
+              "customer-a"
+            ]
+          },
+          {
+            "product_id": "raw-after",
+            "actor": "a",
+            "destination_id": "Ground",
+            "bits": 1000000,
+            "acknowledged_sec": 12.155804249909682,
+            "fulfilled_request_ids": [
+              "after-thermal"
+            ]
+          }
+        ],
+        "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather",
+        "installed_console_replay": true,
+        "mid_acquisition_and_transmission_replay": true
+      },
+      "blocked": {
+        "ok": true,
+        "mode": "blocked",
+        "metrics": {
+          "fulfilled_requests": 0,
+          "total_requests": 2
+        },
+        "ground_energy_j": {
+          "Ground": 0.0
+        },
+        "setup_terminal_seconds": {
+          "Ground": 0.0
+        },
+        "station_transmitted_bits": {
+          "Ground": 0.0
+        },
+        "acknowledgements": [],
+        "limits": "sampled threshold RF/ideal ACK; no concurrent ISL/DTN custody or calibrated weather",
+        "installed_console_replay": true,
+        "mid_acquisition_and_transmission_replay": true
+      }
+    },
+    "dependencies": {
+      "numpy": "2.2.6",
+      "boinor": "0.19.0",
+      "gymnasium": "1.2.0",
+      "astropy": "7.2.0",
+      "pydantic": "2.11.7"
+    },
+    "source_isolation": "python -I outside source checkout; console PYTHONNOUSERSITE=1",
+    "extended_existing_profiles": "passed"
+  },
+  "installed_console": {
+    "nominal": {
+      "validate_run_resume_replay": true
+    },
+    "outage": {
+      "validate_run_resume_replay": true
+    },
+    "blocked": {
+      "validate_run_resume_replay": true
+    }
+  },
+  "independent_checks": [
+    "linear Friis/noise-density/information-bit identities",
+    "range/frequency inverse-square scaling",
+    "coding/rolloff/overhead occupied bandwidth",
+    "Doppler shifted full-band eligibility",
+    "actual BODY pointing",
+    "aggregate rate/bandwidth and per-terminal distinction",
+    "spherical antenna handover and acquisition cost",
+    "DC/RF/declared heat bounds",
+    "no complete product credit before delayed ACK",
+    "seeded time-keyed weather",
+    "local/external reservation revisions/history/conflicts",
+    "atomic budget rollback and cold replay"
+  ],
+  "limits": [
+    "threshold modem; no waveform or BER curve",
+    "caller-provided source/status is not calibration attestation",
+    "constant receive G/T; parabolic BODY +Z pattern or declared ideal TX pointing",
+    "sampled held geometry/environment",
+    "uniform synthetic fade/outage; not ITU-R rain availability",
+    "ideal acquired ground tracking; no servo dynamics",
+    "abstract isolated channel capacity pools; no interference/spectrum compliance",
+    "ideal reliable round-trip ACK; no ACK radio/ground capacity or loss",
+    "source bytes freed on serialization; no custody copy or automatic retries",
+    "concurrent reference-runtime ISL/DTN not implemented; B05.06-08/10 remain open",
+    "B09 independent fleet performance and B12 external evidence remain open"
+  ],
+  "next": "B05-B: endpoint radio/energy/memory admission, event-driven ISL fragment ownership/custody/TTL/retry/deduplication and mixed relay acceptance",
+  "source_installed_demos_identical": true,
+  "installed_sdk_cli_checkpoints_identical": true
+}
