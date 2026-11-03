@@ -1,0 +1,33 @@
+{
+  "members": [
+    {
+      "expected_battery_wh": 4.3564381565300625,
+      "expected_omega_z_rad_s": -1.165233168524953e-05,
+      "index": 0,
+      "observed_battery_wh": 4.3564381565300625,
+      "observed_omega_z_rad_s": -1.1652331685249537e-05,
+      "observed_solar_efficiency": 0.2682
+    },
+    {
+      "expected_battery_wh": 4.266370317125087,
+      "expected_omega_z_rad_s": -1.1492535340810973e-05,
+      "index": 1,
+      "observed_battery_wh": 4.266370317125087,
+      "observed_omega_z_rad_s": -1.1492535340810985e-05,
+      "observed_solar_efficiency": 0.2682
+    },
+    {
+      "expected_battery_wh": 4.749902227310764,
+      "expected_omega_z_rad_s": -1.1654094178014188e-05,
+      "index": 2,
+      "observed_battery_wh": 4.749902227310764,
+      "observed_omega_z_rad_s": -1.165409417801418e-05,
+      "observed_solar_efficiency": 0.2682
+    }
+  ],
+  "package_path": "/tmp/space-env-calibration-venv/lib/python3.12/site-packages/space_env/__init__.py",
+  "passed": true,
+  "schema": "space-env.calibration-native-parameter-witness/1",
+  "scope": "three short synthetic mixed-evidence candidates; actual loaded native parameters and response, no hardware calibration claim",
+  "sha256": "c9b738ad664ea2c381ae5c41d60d4f73ebf37ca3dcc885c058272d3e30d710a5"
+}

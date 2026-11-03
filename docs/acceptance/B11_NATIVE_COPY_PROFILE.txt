@@ -1,0 +1,33 @@
+         36385015 function calls (32438487 primitive calls) in 9.266 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1030 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002    9.268    9.268 runner.py:114(run)
+  546/311    0.028    0.000    9.184    0.030 mission.py:33(call)
+       10    0.000    0.000    9.112    0.911 runner.py:50(step)
+       10    0.025    0.003    9.094    0.909 session.py:231(step)
+       14    0.000    0.000    7.533    0.538 session.py:296(native)
+       14    0.034    0.002    7.505    0.536 mission.py:422(_mutation)
+       10    0.000    0.000    6.594    0.659 mission.py:584(advance)
+1162026/208    3.228    0.000    4.440    0.021 owned.py:17(owned_copy)
+       10    0.000    0.000    3.448    0.345 mission.py:596(apply)
+       10    0.000    0.000    3.446    0.345 dynamic.py:503(advance)
+       10    0.012    0.001    3.446    0.345 lifecycle.py:940(advance)
+2381855/12459    1.087    0.000    2.417    0.000 copy.py:118(deepcopy)
+410904/47185    0.489    0.000    2.333    0.000 copy.py:217(_deepcopy_dict)
+42620/10350    0.054    0.000    2.087    0.000 copy.py:191(_deepcopy_list)
+       24    0.000    0.000    2.082    0.087 dynamic.py:584(capture)
+       53    0.010    0.000    1.931    0.036 mission.py:250(observe)
+      250    0.003    0.000    1.384    0.006 adapters.py:121(advance)
+      250    0.005    0.000    1.381    0.006 spacecraft_bus.py:172(step)
+      250    0.009    0.000    1.373    0.005 operations.py:384(step)
+       15    0.000    0.000    1.342    0.089 dynamic.py:564(report)
+       15    0.005    0.000    1.296    0.086 lifecycle.py:1684(report)
+        4    0.000    0.000    0.939    0.235 mission.py:501(submit)
+      250    0.004    0.000    0.896    0.004 spacecraft_bus.py:587(integrate)
+       10    0.007    0.001    0.893    0.089 mission.py:117(fork)
+      500    0.015    0.000    0.875    0.002 thermal_bus.py:255(integrate)
+
+

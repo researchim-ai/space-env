@@ -112,6 +112,29 @@ def main(argv: list[str] | None = None) -> None:
     calendar_verify.add_argument("record")
     qualification = sub.add_parser("reference-qualify-orbits", help="compare frozen external J2 arcs and finite-thrust equations")
     qualification.add_argument("output")
+    envelopes = sub.add_parser("reference-qualify-envelopes", help="Verify frozen analytical vectors with explicit evidence scope")
+    envelopes.add_argument("output")
+    envelopes.add_argument("--long", action="store_true", dest="long_arcs", help="Include eccentric central arcs through 72 hours")
+    envelopes.add_argument("--external", action="store_true", help="Also verify existing frozen shared-input J2 arcs and frame regression")
+    pointing = sub.add_parser("reference-qualify-pointing", help="Verify frozen off-axis attitude, rotating thrust and fixed-station contacts")
+    pointing.add_argument("output")
+    materials = sub.add_parser("reference-qualify-materials", help="Verify published cp correlation and enthalpy-based thermal nodes")
+    materials.add_argument("output")
+    ensemble = sub.add_parser("qualify-ensemble", help="Execute all parameter candidates with native replay and retained failures")
+    ensemble.add_argument("spec")
+    ensemble.add_argument("output")
+    ensemble_audit = sub.add_parser("verify-ensemble", help="Audit ensemble artifact identity and aggregation without rerunning physics")
+    ensemble_audit.add_argument("directory")
+    independent = sub.add_parser("independent-fleet", help="Freeze independent orbit/site delivery workload and diagnostic capacity certificate")
+    independent.add_argument("spec")
+    independent.add_argument("output")
+    for name in ("hardware-catalog", "calibration-check", "calibration-fit", "parameter-ensemble"):
+        command = sub.add_parser(name, help="Published evidence, conditional fits or assumed sensitivity ensembles")
+        if name == "parameter-ensemble":
+            command.add_argument("scenario")
+        if name in {"calibration-fit", "parameter-ensemble"}:
+            command.add_argument("spec")
+        command.add_argument("output")
     for name in ("mission-validate", "mission-run", "mission-resume", "mission-replay", "mission-schema"):
         unified = sub.add_parser(name, help="Scenario v3 unified runtime workflow")
         if name in {"mission-validate", "mission-run"}:
@@ -203,6 +226,131 @@ def main(argv: list[str] | None = None) -> None:
             print(json.dumps({"ok":False,"error":{"code":"task_contract_error","message":str(exc)}}))
             raise SystemExit(1) from exc
         print(json.dumps(result,ensure_ascii=False))
+        return
+
+    if args.command in {"hardware-catalog", "calibration-check", "calibration-fit", "parameter-ensemble"}:
+        from space_env.calibration import calibrate, compile_ensemble, hardware_catalog
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+        from space_env.validation.calibration import calibration_workflow_report
+
+        def read_calibration_input(path):
+            with Path(path).open("rb") as stream:
+                raw = stream.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError("calibration CLI input exceeds 2MB")
+            return json.loads(raw)
+
+        try:
+            input_paths = [getattr(args, name) for name in ("scenario", "spec") if hasattr(args, name)]
+            output_path = Path(args.output).resolve()
+            for path in input_paths:
+                source_path = Path(path).resolve()
+                if source_path == output_path or (output_path.exists() and source_path.exists() and output_path.samefile(source_path)):
+                    raise ValueError("calibration input and output must be distinct files")
+            if args.command == "hardware-catalog":
+                result = hardware_catalog()
+            elif args.command == "calibration-check":
+                result = calibration_workflow_report()
+            elif args.command == "calibration-fit":
+                result = calibrate(read_calibration_input(args.spec))
+            else:
+                result = compile_ensemble(read_calibration_input(args.scenario), read_calibration_input(args.spec))
+            atomic_write(args.output, canonical_json(result))
+        except (ValueError, OSError) as exc:
+            print(json.dumps({"passed": False, "error": {"code": "calibration_contract_error", "message": str(exc)}}))
+            raise SystemExit(2) from exc
+        passed = result.get("passed", result.get("rejected", 0) == 0)
+        print(json.dumps({"schema": result["schema"], "passed": passed, "sha256": result["sha256"],
+                          "native_execution_validated": result.get("native_execution_validated", False)}))
+        if not passed:
+            raise SystemExit(1)
+        return
+
+    if args.command == "independent-fleet":
+        from space_env.scaling.independent import independent_bundle
+        from space_env.simulation.snapshot import atomic_write, canonical_json, digest
+
+        try:
+            source, output = Path(args.spec).resolve(), Path(args.output).resolve()
+            if source == output or (output.exists() and output.samefile(source)):
+                raise ValueError("independent input/output must be distinct files")
+            with source.open("rb") as stream:
+                raw = stream.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError("independent input exceeds 2MB")
+            result = independent_bundle(json.loads(raw))
+            text = canonical_json(result)
+            if len(text.encode()) > 16_000_000:
+                raise ValueError("independent bundle exceeds 16MB")
+            atomic_write(output, text)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({"passed": False, "error": {"code": "independent_contract_error", "message": str(exc)}}))
+            raise SystemExit(2) from exc
+        print(json.dumps({"sha256": result["sha256"], "native_executed": False,
+                          "contact_pairs": result["assessment"]["pairs_with_contacts"]}))
+        return
+
+    if args.command in {"qualify-ensemble", "verify-ensemble"}:
+        from space_env.scaling.ensemble import (
+            run_ensemble_qualification,
+            verify_ensemble_qualification,
+        )
+
+        try:
+            if args.command == "verify-ensemble":
+                result = verify_ensemble_qualification(args.directory)
+                passed = result["qualification_passed"]
+            else:
+                with Path(args.spec).open("rb") as stream:
+                    raw = stream.read(2_000_001)
+                if len(raw) > 2_000_000:
+                    raise ValueError("qualification input exceeds 2MB")
+                result = run_ensemble_qualification(json.loads(raw), args.output)
+                passed = result["passed"]
+            print(json.dumps(result if args.command == "verify-ensemble" else
+                             {"passed": passed, "sha256": result["sha256"], "summary": result["summary"]["counts"]}))
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({"passed": False, "error": {"code": "ensemble_contract_error", "message": str(exc)}}))
+            raise SystemExit(2) from exc
+        if not passed:
+            raise SystemExit(1)
+        return
+
+    if args.command == "reference-qualify-materials":
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+        from space_env.validation.materials import material_validation_report
+
+        result = material_validation_report()
+        atomic_write(args.output, canonical_json(result))
+        print(json.dumps({"passed": result["passed"], "checks": len(result["checks"]), "sha256": result["sha256"]}))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command == "reference-qualify-pointing":
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+        from space_env.validation.pointing import pointing_validation_report
+
+        result = pointing_validation_report()
+        atomic_write(args.output, canonical_json(result))
+        print(json.dumps({"schema": result["schema"], "passed": result["passed"],
+                          "qualification_status": result["qualification_status"],
+                          "cases": len(result["cases"]), "checks": len(result["checks"]), "sha256": result["sha256"]}))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command == "reference-qualify-envelopes":
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+        from space_env.validation.envelopes import analytic_envelope_report
+
+        result = analytic_envelope_report(long_arcs=args.long_arcs, external=args.external)
+        atomic_write(args.output, canonical_json(result))
+        print(json.dumps({"schema": result["schema"], "passed": result["passed"],
+                          "qualification_status": result["qualification_status"],
+                          "checks": len(result["analytic"]["checks"]), "sha256": result["sha256"]}))
+        if not result["passed"]:
+            raise SystemExit(1)
         return
 
     if args.command == "reference-qualify-orbits":

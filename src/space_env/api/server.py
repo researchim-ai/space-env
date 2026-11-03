@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -222,13 +223,16 @@ def _operator_response(method, path, *, payload=None, token=None):
             },
             503,
         )
+    from space_env.api.operator_artifacts import ArtifactChunk, FileBody
     from space_env.runtime import RuntimeContractError
     from space_env.simulation.snapshot import canonical_json
 
     try:
-        if payload is not None:
+        if payload is not None and not isinstance(payload, ArtifactChunk):
             canonical_json(payload)
         result = dispatch(method, path, payload, token)
+        if isinstance(result, FileBody):
+            return 200, result, result.content_type
         if isinstance(result, bytes):
             return 200, result, "application/zip"
         return _json_bytes(result)
@@ -271,6 +275,17 @@ def _operator_response(method, path, *, payload=None, token=None):
             },
             503,
         )
+    except TimeoutError:
+        return _json_bytes(
+            {
+                "ok": False,
+                "error": {
+                    "code": "artifact_timeout",
+                    "message": "artifact operation timed out",
+                },
+            },
+            408,
+        )
     except OSError:
         return _json_bytes(
             {
@@ -295,15 +310,31 @@ def _operator_response(method, path, *, payload=None, token=None):
 class _Handler(BaseHTTPRequestHandler):
     def _send(self, response):
         status, body, kind = response
-        self.send_response(status)
-        self.send_header("Content-Type", kind)
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("X-Content-Type-Options", "nosniff")
-        if self.path.startswith(("/api/operator/", "/operator")):
-            self.send_header("Cache-Control", "no-store")
-            self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
-        self.end_headers()
-        self.wfile.write(body)
+        from space_env.api.operator_artifacts import FileBody
+
+        try:
+            self.send_response(status)
+            self.send_header("Content-Type", kind)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("X-Content-Type-Options", "nosniff")
+            if isinstance(body, FileBody):
+                self.send_header(
+                    "Content-Disposition", f'attachment; filename="{body.filename}"'
+                )
+                self.send_header("X-Artifact-SHA256", body.sha256)
+            if self.path.startswith(("/api/operator/", "/operator")):
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
+            self.end_headers()
+            if isinstance(body, FileBody):
+                self.connection.settimeout(15)
+                for chunk in body.iter_chunks():
+                    self.wfile.write(chunk)
+            else:
+                self.wfile.write(body)
+        finally:
+            if isinstance(body, FileBody):
+                body.close()
 
     def _token(self):
         value = self.headers.get("Authorization", "")
@@ -387,6 +418,63 @@ class _Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         self._send(handle_post(parsed.path, body, token=self._token()))
 
+    def do_PUT(self):
+        from space_env.api.operator_artifacts import CHUNK_BYTES, ArtifactChunk
+
+        self.close_connection = True  # A rejected chunk may leave unread request bytes.
+        parsed = urlparse(self.path)
+        if not self._operator_origin():
+            self._send(_json_bytes({"error": "local same-origin API required"}, 403))
+            return
+        if not parsed.path.startswith("/api/operator/transfers/"):
+            self._send(_json_bytes({"error": "unknown upload route"}, 404))
+            return
+        if self.headers.get_content_type() != "application/octet-stream":
+            self._send(_json_bytes({"error": "application/octet-stream required"}, 415))
+            return
+        try:
+            if self.headers.get("Transfer-Encoding") is not None:
+                raise ValueError("chunked transfer encoding is unsupported")
+            for header in ["Content-Length", "X-Upload-Offset"]:
+                values = self.headers.get_all(header, [])
+                if (
+                    len(values) != 1
+                    or not values[0].isascii()
+                    or not values[0].isdigit()
+                ):
+                    raise ValueError(
+                        "one nonnegative decimal length and offset required"
+                    )
+            length = int(self.headers["Content-Length"])
+            offset = int(self.headers["X-Upload-Offset"])
+            if not 1 <= length <= CHUNK_BYTES:
+                self._send(
+                    _json_bytes({"error": "chunk exceeds 1 MiB or is empty"}, 413)
+                )
+                return
+        except ValueError as exc:
+            self._send(_json_bytes({"error": str(exc)}, 400))
+            return
+        self.connection.settimeout(15)
+        deadline = time.monotonic() + 15
+        handler = self
+
+        class DeadlineReader:
+            def read(self, size):
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("artifact chunk deadline exceeded")
+                handler.connection.settimeout(remaining)
+                return handler.rfile.read1(size)
+
+        response = _operator_response(
+            "PUT",
+            parsed.path,
+            payload=ArtifactChunk(offset, length, DeadlineReader()),
+            token=self._token(),
+        )
+        self._send(response)
+
     def log_message(self, fmt, *args):
         return
 
@@ -408,6 +496,9 @@ def serve(host: str = "127.0.0.1", port: int = 8766, *, storage=None) -> None:
         server.serve_forever()
     finally:
         server.server_close()
+        from space_env.api.operator_artifacts import ARTIFACTS
+
+        ARTIFACTS.close()
 
 
 if __name__ == "__main__":

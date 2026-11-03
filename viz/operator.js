@@ -85,21 +85,43 @@ function download(blob,name){const a=document.createElement('a');a.href=URL.crea
 $('new').onclick=()=>task(()=>open({preset:$('preset').value}));$('refresh').onclick=()=>task(refresh);$('filter').oninput=()=>state&&actionNodes();$('role').onchange=()=>task(async()=>{pending=null;selected.clear();await refresh();say('Роль изменена; права и видимость проверяются сервером.');});
 $('execute').onclick=()=>task(()=>step([...selected].length?[...selected]:['wait']));$('wait').onclick=()=>task(()=>step(['wait']));$('suggest').onclick=()=>task(async()=>{const suggestion=await api(endpoint('suggest'));await step(suggestion.action_ids);});
 $('run').onclick=()=>{if(autorun){autorun=false;buttons();return;}task(async()=>{autorun=true;buttons();try{for(let i=0;i<256&&autorun&&state&&!state.done;i++){const suggestion=await api(endpoint('suggest'));await step(suggestion.action_ids);await new Promise(resolve=>setTimeout(resolve,120));}}finally{autorun=false;}say(state?.done?'Эпизод завершён нативной средой; итог виден в продуктах и заданиях.':'Прогон остановлен. Уже принятый шаг завершён.');});};
-$('checkpoint').onclick=()=>task(async()=>{const record=await api(endpoint('checkpoint'),{admin:true,binary:true});download(record,'mission-checkpoint.json');say('Checkpoint скачан. Он содержит control-plane данные, а не только policy view.');});
+async function artifactDigest(blob){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function artifactDownload(format,filename){
+ const job=await api(endpoint('artifacts'),{method:'POST',body:{direction:'download',format},admin:true});
+ try{const blob=await api(`/api/operator/transfers/${job.transfer_id}/content`,{admin:true,binary:true});if(blob.size!==job.bytes||await artifactDigest(blob)!==job.sha256)throw new Error('Размер или SHA-256 скачанного артефакта не совпал.');download(blob,filename);}
+ finally{try{await api(`/api/operator/transfers/${job.transfer_id}/cancel`,{method:'POST',body:{},admin:true});}catch{}}
+}
+async function artifactImport(file,format,takeover=false){
+ const old=credentials,ephemeral=!state?.durable;
+ const job=await api(endpoint('artifacts'),{method:'POST',body:{direction:'upload',format,bytes:file.size,sha256:await artifactDigest(file),takeover},admin:true});
+ let result;
+ try{
+  for(let offset=0;offset<file.size;offset+=job.chunk_bytes){
+   say(`Загрузка артефакта: ${Math.min(offset+job.chunk_bytes,file.size)} / ${file.size} байт…`);
+   const response=await fetch(`/api/operator/transfers/${job.transfer_id}/chunks`,{method:'PUT',headers:{Authorization:`Bearer ${old.tokens.admin}`,'Content-Type':'application/octet-stream','X-Upload-Offset':String(offset)},body:file.slice(offset,offset+job.chunk_bytes),cache:'no-store'});
+   if(!response.ok){const payload=await response.json();throw new Error(payload.error?.message||payload.error||`HTTP ${response.status}`);}
+  }
+  say('SHA-256 проверен. Выполняется native replay перед импортом…');
+  result=await api(`/api/operator/transfers/${job.transfer_id}/commit`,{method:'POST',body:{},admin:true});
+ }finally{try{await api(`/api/operator/transfers/${job.transfer_id}/cancel`,{method:'POST',body:{},admin:true});}catch{}}
+ if(ephemeral)try{await fetch(`/api/operator/sessions/${old.session_id}/close`,{method:'POST',headers:{Authorization:`Bearer ${old.tokens.admin}`,'Content-Type':'application/json'},body:'{}'});}catch{}
+ adopt(result);say('Артефакт импортирован после проверки SHA-256 и native replay. Выданы новые capabilities.');
+}
+$('checkpoint').onclick=()=>task(async()=>{await artifactDownload('checkpoint','mission-checkpoint.json');say('Checkpoint скачан без пересериализации. SHA-256 подтверждён.');});
 $('verify').onclick=()=>task(async()=>{say('Пересчитываем миссию с начала; живое состояние не изменяется…');const result=await api(endpoint('verify'),{method:'POST',body:{},admin:true});$('verification').textContent=`Replay подтверждён · ${result.decisions} решений · ${result.episode_sha256.slice(0,12)}…`;say('Cold replay совпал.');});
-$('export').onclick=()=>task(async()=>{say('Проверяем native replay и собираем RL/SFT…');const blob=await api(endpoint('export'),{method:'POST',body:{},admin:true,binary:true});download(blob,'mission-training.zip');say('Экспортирован replay-verified корпус. Действия оператора имеют origin=external, не expert.');});
+$('export').onclick=()=>task(async()=>{say('Native replay и дисковая сборка RL/SFT…');await artifactDownload('training','mission-training.zip');say('RL/SFT экспортирован с проверкой SHA-256 и external provenance.');});
 $('close').onclick=()=>task(async()=>{await api(endpoint('close'),{method:'POST',body:{},admin:true});credentials=null;state=null;pending=null;$('connection').textContent='Сессия закрыта';$('session-label').textContent='Нет активной сессии';$('mission-status').textContent='Сессия закрыта';$('actions').replaceChildren();say('Сессия закрыта. На экране последний снимок; можно открыть новую или импортировать checkpoint.');});
 $('connection-save').onclick=()=>{if(credentials){const value={schema:'space-env.operator-connection/1',session_id:credentials.session_id,tokens:credentials.tokens};download(new Blob([JSON.stringify(value)],{type:'application/json'}),`operator-connection.${credentials.session_id}.json`);say('Секретный файл доступа сохранён. Не добавляйте его в репозиторий или training dataset.');}};
-$('archive').onclick=()=>task(async()=>{const archive=await api(endpoint('archive'),{admin:true,binary:true});download(archive,'mission-archive.json');say('Архив содержит native checkpoint, проверяемую историю и provenance; токены исключены.');});
+$('archive').onclick=()=>task(async()=>{await artifactDownload('archive','mission-archive.json');say('Архив скачан. SHA-256 подтверждён; capabilities в архив не включены.');});
 async function transfer(controller){const request={controller,expected_revision:state.revision,expected_control_epoch:state.control.epoch,idempotency_key:crypto.randomUUID(),reason:$('handover-reason').value};await api(endpoint('handover'),{method:'POST',body:request,admin:true});pending=null;await refresh();say('Управление передано. Физическое время не изменилось; команды прежнего control epoch отклоняются.');}
 $('to-agent').onclick=()=>task(()=>transfer('agent'));$('to-operator').onclick=()=>task(()=>transfer('operator'));
-$('import').onclick=()=>$('upload').click();$('upload').onchange=()=>task(async()=>{const file=$('upload').files[0];if(!file)return;if(file.size>8*1024*1024)throw new Error('Лимит импорта — 8 МиБ.');const raw=await file.text();const data=JSON.parse(raw);
+$('import').onclick=()=>$('upload').click();$('upload').onchange=()=>task(async()=>{const file=$('upload').files[0];if(!file)return;if(file.size>32*1024*1024)throw new Error('Лимит артефакта — 32 МиБ.');const raw=await file.text();const data=JSON.parse(raw);
 if(data.schema==='space-env.operator-connection/1'){
  if(!/^[A-Za-z0-9_-]{20,64}$/.test(data.session_id)||!data.tokens||!Object.keys(data.tokens).some(k=>k!=='admin'))throw new Error('Некорректный файл доступа.');
  const previous=credentials;credentials={session_id:data.session_id,tokens:data.tokens};$('role').replaceChildren();const key=data.tokens.operator?'operator':Object.keys(data.tokens).find(k=>k!=='admin');const option=document.createElement('option');option.value=key;$('role').append(option);$('role').value=key;
  try{const restored=await api(endpoint());adopt({...credentials,state:restored});say('Подключение восстановлено к подтверждённой сессии.');}catch(error){credentials=previous;if(previous&&state)adopt({...previous,state});else{$('role').replaceChildren();}throw error;}
-}else if(data.schema==='space-env.operator-archive/1'){await open({archive:data},true,`{"archive":${raw}}`);}
-else if(data.schema?.startsWith('space-env.task-episode/')){await open({record:data},true,`{"record":${raw},"takeover":${data.task?.policy_origin!=='external'}}`);}
+}else if(data.schema==='space-env.operator-archive/1'){if(credentials?.tokens.admin)await artifactImport(file,'archive');else if(file.size<=8*1024*1024)await open({archive:data},true,`{"archive":${raw}}`);else throw new Error('Для большого импорта подключите admin-доступ к сессии или откройте новую миссию.');}
+else if(data.schema?.startsWith('space-env.task-episode/')){if(credentials?.tokens.admin)await artifactImport(file,'checkpoint',data.task?.policy_origin!=='external');else if(file.size<=8*1024*1024)await open({record:data},true,`{"record":${raw},"takeover":${data.task?.policy_origin!=='external'}}`);else throw new Error('Для большого импорта нужен admin-доступ к сессии.');}
 else await open(data);
 $('upload').value='';});
 

@@ -99,6 +99,46 @@ RELATIONS = {
 }
 
 
+class _ProjectionReads:
+    """Owned public reads shared only during one synchronous task refresh.
+
+    No instance survives the refresh or participates in native admission. Each
+    projection still selects its own actor scope and owns its entity registry.
+    Values are treated as read-only by Projection/admissible, never returned.
+    """
+
+    def __init__(self, runtime):
+        self._runtime = runtime
+        self._reads = {}
+        self.time_sec = runtime.time_sec
+        self.horizon_sec = runtime.horizon_sec
+
+    def _read(self, method, *args):
+        key = (method, *args)
+        if key not in self._reads:
+            self._reads[key] = getattr(self._runtime, method)(*args)
+        return self._reads[key]
+
+    def observe(self, actor):
+        return self._read("observe", actor)
+
+    def inventory(self, actor):
+        return self._read("inventory", actor)
+
+    def station_observation(self, station):
+        return self._read("station_observation", station)
+
+    def command_status(self):
+        return self._read("command_status")
+
+    def describe_capabilities(self):
+        return self._read("describe_capabilities")
+
+    def command_claims(self, command):
+        # Claims depend on the command/configuration, not native admission.
+        return self._runtime.command_claims(command)
+
+
 class Projection:
     def __init__(self, spec):
         self.spec = spec

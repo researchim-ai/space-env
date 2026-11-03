@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import math
 from functools import wraps
@@ -15,6 +16,7 @@ from pydantic import ValidationError
 from space_env.data_generators.portable_run import _differences, runtime_manifest
 from space_env.runtime.adapters import make_backend
 from space_env.runtime.schema import AccessPolicy, RuntimeCommand, ScenarioSpec
+from space_env.simulation.owned import owned_copy
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
 
 
@@ -271,8 +273,20 @@ class MissionRuntime:
             "time_sec": self.time_sec,
             "profile": self._spec.physics_profile,
             "view": "ideal-local/1",
-            "actors": {a: copy.deepcopy(self._backend.observe(a)) for a in names},
+            "actors": {a: owned_copy(self._observe_backend(a)) for a in names},
         }
+
+    def _observe_backend(self, actor):
+        # Called only by locked observe(), followed immediately by an owned copy.
+        reader = getattr(self._backend, "_observe_borrowed", self._backend.observe)
+        return reader(actor)
+
+    @_synchronized
+    def _task_score(self):
+        """Trainer-only scalar accounting; never an agent observation."""
+        self._require_truth()
+        reader = getattr(self._backend, "task_score", None)
+        return None if reader is None else reader()
 
     @_synchronized
     def forecast(self, actor: str, station: str):
@@ -462,7 +476,16 @@ class MissionRuntime:
                 "report": self.report(),
                 "backend_report": self._backend.report(),
             }
-            canonical_json(row)
+            encoded = canonical_json(row)
+            if self._audit_mode == "compact":
+                row = self._compact_row(
+                    row,
+                    evidence_sha256=hashlib.sha256(encoded.encode("utf-8")).hexdigest(),
+                )
+            del encoded
+            committed = owned_copy(row)
+            cached_response = copy.deepcopy(response)
+            public_response = copy.deepcopy(response)
         except Exception as exc:
             self.revision, self._commands = previous
             self._backend.restore(backend_state)
@@ -471,11 +494,9 @@ class MissionRuntime:
             ):
                 raise RuntimeContractError("invalid_request", str(exc)) from exc
             raise
-        if self._audit_mode == "compact":
-            row = self._compact_row(row)
-        self._operations.append(copy.deepcopy(row))
-        self._cache[key] = {"body_sha256": sha, "response": copy.deepcopy(response)}
-        return copy.deepcopy(response)
+        self._operations.append(committed)
+        self._cache[key] = {"body_sha256": sha, "response": cached_response}
+        return public_response
 
     def submit(self, commands: list, *, expected_revision: int, idempotency_key: str):
         if not isinstance(commands, list) or not commands:
@@ -672,13 +693,15 @@ class MissionRuntime:
         }
 
     @staticmethod
-    def _compact_row(row):
+    def _compact_row(row, *, evidence_sha256=None):
         return {
             "request": row["request"],
             "expected_revision": row["expected_revision"],
             "idempotency_key": row["idempotency_key"],
             "response": row["response"],
-            "evidence_sha256": digest(row),
+            "evidence_sha256": digest(row)
+            if evidence_sha256 is None
+            else evidence_sha256,
         }
 
     def _artifact(self, compact=False):
@@ -696,7 +719,7 @@ class MissionRuntime:
             "report": self.report(),
             "backend_report": self._backend.report(),
         }
-        return {**copy.deepcopy(body), "sha256": digest(body)}
+        return {**owned_copy(body), "sha256": digest(body)}
 
     @_synchronized
     def checkpoint(self, *, compact=False):

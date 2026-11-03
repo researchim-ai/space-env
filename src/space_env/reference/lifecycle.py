@@ -53,6 +53,7 @@ from space_env.reference.payload_quality import (
 from space_env.reference.resource_lanes import ResourceLanes
 from space_env.reference.unloading import MomentumUnloader
 from space_env.runtime.schema import StrictModel
+from space_env.simulation.owned import owned_copy
 from space_env.simulation.snapshot import digest
 
 _TERMINAL = {"completed", "failed", "cancelled", "expired"}
@@ -1618,6 +1619,9 @@ class ProductLifecycle:
         return self.report(backend)
 
     def observation(self, actor, now):
+        return self._observation(actor, now, owned=True)
+
+    def _observation(self, actor, now, *, owned):
         visible_areas = {r.coverage.aoi_id for r in self.requests.values()
                          if r.coverage is not None and actor in r.eligible_actors and r.release_sec <= now}
         return {
@@ -1651,7 +1655,8 @@ class ProductLifecycle:
                 )
             ],
             "artifacts": [
-                copy.deepcopy(p) for p in self.artifacts.values() if p["actor"] == actor
+                (owned_copy(p) if owned else p)
+                for p in self.artifacts.values() if p["actor"] == actor
             ],
         }
 
@@ -1776,12 +1781,12 @@ class ProductLifecycle:
                 r: {**self.requests[r].model_dump(mode="json"), **s}
                 for r, s in self.request_state.items()
             },
-            "jobs": copy.deepcopy(self.job_state),
-            "artifacts": copy.deepcopy(self.artifacts),
-            "operations": copy.deepcopy(self.operations),
-            "transitions": copy.deepcopy(self.transitions),
-            "events": copy.deepcopy(self.events),
-            "charges": copy.deepcopy(self.charges),
+            "jobs": owned_copy(self.job_state),
+            "artifacts": owned_copy(self.artifacts),
+            "operations": owned_copy(self.operations),
+            "transitions": owned_copy(self.transitions),
+            "events": owned_copy(self.events),
+            "charges": owned_copy(self.charges),
             "ledger": ledger,
             "delivery_receipts": linked_receipts,
             "acknowledgements": acknowledgements,

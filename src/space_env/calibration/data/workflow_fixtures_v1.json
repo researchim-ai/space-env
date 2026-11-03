@@ -1,0 +1,338 @@
+{
+  "schema": "space-env.calibration-workflow-fixtures/1",
+  "generator_sha256": "61cbf9960c9c8b1f18cecb5ac16914da2b40f45768665aad06f52816e0682f18",
+  "status": "synthetic workflow data only; no laboratory/flight calibration evidence",
+  "cases": [
+    {
+      "id": "pv_efficiency",
+      "truth": 0.27,
+      "expected_passed": true,
+      "spec": {
+        "schema_version": "space-env.scalar-calibration/1",
+        "id": "synthetic-pv_efficiency",
+        "component_id": "synthetic-pv_efficiency",
+        "model": "pv_efficiency",
+        "x_unit": "W",
+        "y_unit": "W",
+        "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+        "experiment_model": "constant-effective-efficiency",
+        "frame": "scalar",
+        "axis": null,
+        "input_error_assumption": "negligible-independent-x",
+        "noise_assumption": "independent-known-gaussian-sigma-y",
+        "source": {
+          "id": "synthetic-acquisition-pv_efficiency",
+          "kind": "synthetic_fixture",
+          "uri": "synthetic://space-env/calibration/pv_efficiency",
+          "content_sha256": "ccdbb799aa3d1e645f32f9345e7d5e51987430722affd7c090aa73f9bf89d27f",
+          "content_scope": "space-env.measurement-rows/1 canonical JSON",
+          "locator": "offline seeded normal perturbations; not independent physical measurements",
+          "retrieved_on": "2026-11-03",
+          "redistribution": "project synthetic data"
+        },
+        "observations": [
+          {
+            "id": "train-0",
+            "experiment_id": "independent-train-0",
+            "split": "train",
+            "x": 0.0,
+            "y": -0.055892757038067065,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "train-1",
+            "experiment_id": "independent-train-1",
+            "split": "train",
+            "x": 10.0,
+            "y": 2.7028338714599176,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "train-2",
+            "experiment_id": "independent-train-2",
+            "split": "train",
+            "x": 20.0,
+            "y": 5.368559689059152,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "train-3",
+            "experiment_id": "independent-train-3",
+            "split": "train",
+            "x": 40.0,
+            "y": 10.779323982528139,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "train-4",
+            "experiment_id": "independent-train-4",
+            "split": "train",
+            "x": 70.0,
+            "y": 19.005128474708588,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "train-5",
+            "experiment_id": "independent-train-5",
+            "split": "train",
+            "x": 100.0,
+            "y": 27.04017158102193,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "holdout-0",
+            "experiment_id": "independent-holdout-0",
+            "split": "holdout",
+            "x": 15.0,
+            "y": 4.101846765727549,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "holdout-1",
+            "experiment_id": "independent-holdout-1",
+            "split": "holdout",
+            "x": 35.0,
+            "y": 9.534049479630722,
+            "sigma_y": 0.05
+          },
+          {
+            "id": "holdout-2",
+            "experiment_id": "independent-holdout-2",
+            "split": "holdout",
+            "x": 80.0,
+            "y": 21.708703353408726,
+            "sigma_y": 0.05
+          }
+        ],
+        "gates": {
+          "parameter_low": 0.135,
+          "parameter_high": 0.405,
+          "max_train_standardized_rmse": 2.0,
+          "max_holdout_standardized_rmse": 3.0,
+          "max_holdout_absolute_error": 0.3
+        }
+      }
+    },
+    {
+      "id": "inverse_inertia",
+      "truth": 0.4,
+      "expected_passed": true,
+      "spec": {
+        "schema_version": "space-env.scalar-calibration/1",
+        "id": "synthetic-inverse_inertia",
+        "component_id": "synthetic-inverse_inertia",
+        "model": "inverse_inertia",
+        "x_unit": "N*m*s",
+        "y_unit": "rad/s",
+        "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+        "experiment_model": "isolated-principal-axis-impulse",
+        "frame": "BODY",
+        "axis": "z",
+        "input_error_assumption": "negligible-independent-x",
+        "noise_assumption": "independent-known-gaussian-sigma-y",
+        "source": {
+          "id": "synthetic-acquisition-inverse_inertia",
+          "kind": "synthetic_fixture",
+          "uri": "synthetic://space-env/calibration/inverse_inertia",
+          "content_sha256": "25b9c3fe770e8ebcf2b09bd6381e2bccfc6224ef80accdbebf04943070ce2b58",
+          "content_scope": "space-env.measurement-rows/1 canonical JSON",
+          "locator": "offline seeded normal perturbations; not independent physical measurements",
+          "retrieved_on": "2026-11-03",
+          "redistribution": "project synthetic data"
+        },
+        "observations": [
+          {
+            "id": "train-0",
+            "experiment_id": "independent-train-0",
+            "split": "train",
+            "x": 0.0,
+            "y": -0.0003571605447360877,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "train-1",
+            "experiment_id": "independent-train-1",
+            "split": "train",
+            "x": 0.1,
+            "y": 0.04019782116356413,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "train-2",
+            "experiment_id": "independent-train-2",
+            "split": "train",
+            "x": 0.2,
+            "y": 0.08016884663787226,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "train-3",
+            "experiment_id": "independent-train-3",
+            "split": "train",
+            "x": 0.4,
+            "y": 0.1599433547657505,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "train-4",
+            "experiment_id": "independent-train-4",
+            "split": "train",
+            "x": 0.7,
+            "y": 0.2794509537761739,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "train-5",
+            "experiment_id": "independent-train-5",
+            "split": "train",
+            "x": 1.0,
+            "y": 0.40070103694593073,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "holdout-0",
+            "experiment_id": "independent-holdout-0",
+            "split": "holdout",
+            "x": 0.15,
+            "y": 0.06065565216326222,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "holdout-1",
+            "experiment_id": "independent-holdout-1",
+            "split": "holdout",
+            "x": 0.35,
+            "y": 0.13981590612826342,
+            "sigma_y": 0.0005
+          },
+          {
+            "id": "holdout-2",
+            "experiment_id": "independent-holdout-2",
+            "split": "holdout",
+            "x": 0.8,
+            "y": 0.3197749850408253,
+            "sigma_y": 0.0005
+          }
+        ],
+        "gates": {
+          "parameter_low": 0.2,
+          "parameter_high": 0.6000000000000001,
+          "max_train_standardized_rmse": 2.0,
+          "max_holdout_standardized_rmse": 3.0,
+          "max_holdout_absolute_error": 0.003
+        }
+      }
+    },
+    {
+      "id": "inverse_heat_capacity",
+      "truth": 0.02,
+      "expected_passed": true,
+      "spec": {
+        "schema_version": "space-env.scalar-calibration/1",
+        "id": "synthetic-inverse_heat_capacity",
+        "component_id": "synthetic-inverse_heat_capacity",
+        "model": "inverse_heat_capacity",
+        "x_unit": "J",
+        "y_unit": "K",
+        "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+        "experiment_model": "isolated-known-net-heat",
+        "frame": "scalar",
+        "axis": null,
+        "input_error_assumption": "negligible-independent-x",
+        "noise_assumption": "independent-known-gaussian-sigma-y",
+        "source": {
+          "id": "synthetic-acquisition-inverse_heat_capacity",
+          "kind": "synthetic_fixture",
+          "uri": "synthetic://space-env/calibration/inverse_heat_capacity",
+          "content_sha256": "bfd3827115149dac9fc821a81e7b9bb6952469f5ea572c94dd09ad21c410ef1e",
+          "content_scope": "space-env.measurement-rows/1 canonical JSON",
+          "locator": "offline seeded normal perturbations; not independent physical measurements",
+          "retrieved_on": "2026-11-03",
+          "redistribution": "project synthetic data"
+        },
+        "observations": [
+          {
+            "id": "train-0",
+            "experiment_id": "independent-train-0",
+            "split": "train",
+            "x": 0.0,
+            "y": -0.005782120409855978,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "train-1",
+            "experiment_id": "independent-train-1",
+            "split": "train",
+            "x": 10.0,
+            "y": 0.19921904956990405,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "train-2",
+            "experiment_id": "independent-train-2",
+            "split": "train",
+            "x": 20.0,
+            "y": 0.4011081868284065,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "train-3",
+            "experiment_id": "independent-train-3",
+            "split": "train",
+            "x": 40.0,
+            "y": 0.7983399555786644,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "train-4",
+            "experiment_id": "independent-train-4",
+            "split": "train",
+            "x": 70.0,
+            "y": 1.4022083676064818,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "train-5",
+            "experiment_id": "independent-train-5",
+            "split": "train",
+            "x": 100.0,
+            "y": 2.0001731297905705,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "holdout-0",
+            "experiment_id": "independent-holdout-0",
+            "split": "holdout",
+            "x": 15.0,
+            "y": 0.3008574785380958,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "holdout-1",
+            "experiment_id": "independent-holdout-1",
+            "split": "holdout",
+            "x": 35.0,
+            "y": 0.6978478671608527,
+            "sigma_y": 0.003
+          },
+          {
+            "id": "holdout-2",
+            "experiment_id": "independent-holdout-2",
+            "split": "holdout",
+            "x": 80.0,
+            "y": 1.5989914540135615,
+            "sigma_y": 0.003
+          }
+        ],
+        "gates": {
+          "parameter_low": 0.01,
+          "parameter_high": 0.03,
+          "max_train_standardized_rmse": 2.0,
+          "max_holdout_standardized_rmse": 3.0,
+          "max_holdout_absolute_error": 0.018
+        }
+      }
+    }
+  ],
+  "sha256": "5b219224074afa8800a5e7112ca78708c8bb30b1f3cf12c6e7562f241525be58"
+}

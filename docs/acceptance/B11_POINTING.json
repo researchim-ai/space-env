@@ -1,0 +1,235 @@
+{
+  "schema": "space-env.pointing-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-B numerical package verified for enumerated synthetic cases; mission/hardware qualification remains open",
+  "industrial_readiness": false,
+  "implementation": [
+    "frozen analytic gyrostat rotation matrix, off-axis initial orientation and three-axis spin",
+    "signed wheel saturation/reversal with separate timing budget and .01-to-.005s refinement gates",
+    "independent matrix RK4 for asymmetric external wheel unloading",
+    "independent Cartesian/matrix RK4 for centered and off-center rotating burns; attitude/trajectory/mass/impulse checked",
+    "eight fixed station-plane combinations with geometric roots, range/rate/angles/Doppler and pointing goals",
+    "strict input/time domain hashes, fixed budgets, full failure denominators, CLI and installed CI wiring"
+  ],
+  "validation": {
+    "new_tests_passed": 52,
+    "new_tests_seconds": 17.37,
+    "strengthened_window_assertion_passed": 1,
+    "reference_passed": 1397,
+    "reference_seconds": 434.29,
+    "fast_passed": 110,
+    "collected": 1827,
+    "counts_overlap": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false
+  },
+  "numerical": {
+    "receipt": "B11_POINTING_FULL.json",
+    "cases": 16,
+    "checks": 612,
+    "passed": true,
+    "attitude_cases": 5,
+    "forced_unloading_cases": 1,
+    "burn_cases": 2,
+    "fixed_station_plane_cases": 8,
+    "positive_contact_combinations": 4,
+    "no_contact_combinations": 4,
+    "contact_windows": 7,
+    "qualification_status": "needs_external_evidence",
+    "maxima": {
+      "attitude/attitude/rotation_frobenius": {
+        "maximum_measured": 2.4034315638868177e-13,
+        "tolerance": 2e-08
+      },
+      "attitude/attitude/omega_rad_s": {
+        "maximum_measured": 2.4077065972695935e-14,
+        "tolerance": 1e-09
+      },
+      "attitude/attitude/wheel_nms": {
+        "maximum_measured": 2.192690473634684e-15,
+        "tolerance": 1e-10
+      },
+      "attitude/attitude/boresight_chord": {
+        "maximum_measured": 1.437651481961325e-13,
+        "tolerance": 2e-08
+      },
+      "attitude/attitude/pointing_deg": {
+        "maximum_measured": 7.062794793455396e-12,
+        "tolerance": 2e-06
+      },
+      "attitude/attitude/saturation_duration_sec": {
+        "maximum_measured": 0.0,
+        "tolerance": 1e-10
+      },
+      "attitude/capacity/rotation_frobenius": {
+        "maximum_measured": 4.159487654571244e-08,
+        "tolerance": 1e-06
+      },
+      "attitude/capacity/omega_rad_s": {
+        "maximum_measured": 4.241854013318126e-09,
+        "tolerance": 1e-06
+      },
+      "attitude/capacity/wheel_nms": {
+        "maximum_measured": 0.0,
+        "tolerance": 1e-10
+      },
+      "attitude/capacity/boresight_chord": {
+        "maximum_measured": 1.7647172996366468e-08,
+        "tolerance": 1e-06
+      },
+      "attitude/capacity/pointing_deg": {
+        "maximum_measured": 1.0015826390485927e-06,
+        "tolerance": 0.0001
+      },
+      "attitude/capacity/saturation_duration_sec": {
+        "maximum_measured": 0.009411764705788528,
+        "tolerance": 0.010001
+      },
+      "attitude/refinement/rotation_frobenius": {
+        "maximum_measured": 1.8024524720303228e-08,
+        "tolerance": 1e-06
+      },
+      "attitude/refinement/fine_error_excess": {
+        "maximum_measured": -3.0123201099555217e-09,
+        "tolerance": 0.0
+      },
+      "forced_attitude/attitude/rotation_frobenius": {
+        "maximum_measured": 2.6532535015831424e-13,
+        "tolerance": 2e-08
+      },
+      "forced_attitude/attitude/omega_rad_s": {
+        "maximum_measured": 8.849503044952823e-15,
+        "tolerance": 1e-09
+      },
+      "forced_attitude/attitude/wheel_nms": {
+        "maximum_measured": 9.575673587391975e-16,
+        "tolerance": 1e-10
+      },
+      "forced_attitude/attitude/boresight_chord": {
+        "maximum_measured": 1.7926675522016877e-13,
+        "tolerance": 2e-08
+      },
+      "forced_attitude/attitude/pointing_deg": {
+        "maximum_measured": 4.490630090003833e-12,
+        "tolerance": 2e-06
+      },
+      "forced_attitude/attitude/saturation_duration_sec": {
+        "maximum_measured": 0.0,
+        "tolerance": 1e-10
+      },
+      "burn/burn/rotation_frobenius": {
+        "maximum_measured": 5.588926133907029e-13,
+        "tolerance": 2e-08
+      },
+      "burn/burn/omega_rad_s": {
+        "maximum_measured": 1.2408364374044847e-14,
+        "tolerance": 1e-09
+      },
+      "burn/burn/wheel_nms": {
+        "maximum_measured": 0.0,
+        "tolerance": 1e-10
+      },
+      "burn/burn/direction_chord": {
+        "maximum_measured": 5.505497265046368e-07,
+        "tolerance": 3e-06
+      },
+      "burn/burn/impulse_ns": {
+        "maximum_measured": 8.463804772319852e-07,
+        "tolerance": 1e-05
+      },
+      "burn/burn/position_m": {
+        "maximum_measured": 1.0267820479801474e-08,
+        "tolerance": 0.002
+      },
+      "burn/burn/velocity_m_s": {
+        "maximum_measured": 1.282824773835048e-10,
+        "tolerance": 2e-05
+      },
+      "burn/burn/mass_kg": {
+        "maximum_measured": 0.0,
+        "tolerance": 1e-10
+      },
+      "contact/contact/range_m": {
+        "maximum_measured": 7.078051567077637e-08,
+        "tolerance": 0.1
+      },
+      "contact/contact/range_rate_m_s": {
+        "maximum_measured": 5.1447927944536787e-05,
+        "tolerance": 0.02
+      },
+      "contact/contact/elevation_deg": {
+        "maximum_measured": 5.799805080641818e-13,
+        "tolerance": 1e-05
+      },
+      "contact/contact/azimuth_deg": {
+        "maximum_measured": 1.1652900866465643e-12,
+        "tolerance": 1e-05
+      },
+      "contact/contact/doppler_hz": {
+        "maximum_measured": 0.00037754599179606885,
+        "tolerance": 0.2
+      },
+      "contact/contact/pointing_chord": {
+        "maximum_measured": 2.0195266567169662e-14,
+        "tolerance": 1e-08
+      },
+      "contact/contact/window_count_error": {
+        "maximum_measured": 0.0,
+        "tolerance": 0.0
+      },
+      "contact/contact/boundary_sec": {
+        "maximum_measured": 1.3307151675689965e-05,
+        "tolerance": 0.02
+      }
+    }
+  },
+  "prior_physics": {
+    "receipt": "B11_POINTING_PRIOR_ENVELOPES.json",
+    "analytic_checks": 119,
+    "existing_external_orbit_cases": 3,
+    "passed": true,
+    "scope": "rerun on final installed wheel; historical Q5-A receipt not modified"
+  },
+  "installed": {
+    "wheel_receipt": "B11_POINTING_WHEEL.json",
+    "native_receipt": "B11_POINTING_NATIVE.json",
+    "all_passed": true,
+    "source_modules_byte_matched": 241,
+    "inventory_files": 271,
+    "dependency_clean": false,
+    "native_unloading_negative_case_preserved": true,
+    "native_replay_and_verified_rl_sft": true
+  },
+  "limitations": [
+    "arbitrary asymmetric tensor forced solution and hardware calibration",
+    "exact wheel saturation event times; native partial-step clipping is approximate",
+    "flight-calibrated thrust/lever arms, variable inertia and general off-center mission qualification",
+    "closed-loop mission pointing/tracking performance and payload quality",
+    "independent real EOP/frames/ephemerides/antenna/weather truth",
+    "continuous event completeness for sub-grid/grazing contacts",
+    "multiplane/multistation resource contention and full mission service",
+    "local numerical evidence only; no broad continuous parameter qualification",
+    "shared constants/synthetic inputs/ERFA; no measured calibration or weather/antenna truth",
+    "no large 12-actor native mission rerun or transfer of original Q4 wheel qualification"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json"
+  ],
+  "artifacts_sha256": {
+    "B11_POINTING_FULL.json": "81cffa11a27973e082e5b12b7c7bbdff4be494e5f7fe342dae39b1ee709a4333",
+    "B11_POINTING_PRIOR_ENVELOPES.json": "7ab4a5cc57cbd5da4268ff648a91dae358257f53548e9809a8b9f4b82020b18f",
+    "B11_POINTING_NATIVE.json": "1a08d13cd314c6f0c037dfc3ad836172463c3616c131a5f905d4e0320d1bace1",
+    "B11_POINTING_WHEEL.json": "e71c8e939b4178321804ac9e9736cd25e0a6220f5ca06b0a8e13182243eb12cb",
+    "B11_POINTING_NATIVE_CHEMICAL.json.gz": "82aa3bb9d64df8b8b59a1a59804751d2d936bddc4f0ef34fe259adb586f71ced",
+    "B11_POINTING_NATIVE_ELECTRIC.json.gz": "c39baeda992b7918b588062e2d57b780925d80710e59baebd07822ad56037c3a",
+    "B11_POINTING_NATIVE_UNLOADING_NOMINAL.json.gz": "c0f91fb10809de60b8dc12d15f0124562c730f650090bdd7c3cdd5569231f475",
+    "B11_POINTING_NATIVE_UNLOADING_LIMITED.json.gz": "564fe6ee13b98eaac463233289d9aa99709d452c4d2c07839a4f22a29b2b7d6f"
+  },
+  "next": [
+    "Q5-C real hardware/measurement provenance and parameter uncertainty",
+    "Q5-D nonconstructive closed-loop pointing/control with multi-plane multi-station mission/resource gates"
+  ],
+  "sha256": "2e0d4bd6dd0a217e553a2feac78a356f29cacd37bfe0f73fbcef48d0028ee5cf"
+}

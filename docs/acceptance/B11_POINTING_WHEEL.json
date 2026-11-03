@@ -1,0 +1,20 @@
+{
+  "schema": "space-env.pointing-wheel/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "7505302429c917b9b5cf90e988f4a9776d27f020ba11096d14b883fe9166e9a7",
+  "source_modules_byte_matched": 241,
+  "current_readme_in_wheel": true,
+  "pointing_fixture_byte_matched": true,
+  "inventory_files": 271,
+  "inventory_sha256": "72df1bbcb27160036d609aaaa0c66f21b72ada83f6b734d3b0fcdbd71581a0ce",
+  "source_version": "0.134.0",
+  "distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-pointing-venv",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "scope": "system-site-packages venv; not remote clean CI, native large qualification or complete wheel author signature",
+  "sha256": "6e570659b6935ec4d64046f05778ebdd854d8effdad891f3d094435a491c1b97"
+}

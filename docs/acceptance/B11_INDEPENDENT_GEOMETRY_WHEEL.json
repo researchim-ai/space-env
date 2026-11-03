@@ -1,0 +1,27 @@
+{
+  "schema": "space-env.independent-geometry-wheel/1",
+  "date": "2026-11-04",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "e17b266d3557c71446e48d8dc8194a3ace85fb62928b3c0c63b825c93628d66a",
+  "source_modules_byte_matched": 253,
+  "inventory_files": 286,
+  "inventory_sha256": "731af9e524f795e9f6331fb8fe9dea95058ab498cce005063a3160394c21817f",
+  "current_readme_in_wheel": true,
+  "packaged_data_byte_matched": true,
+  "source_version": "0.134.0",
+  "installed_distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-independent-venv/lib/python3.12/site-packages/space_env",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "cli_compile_exit_code": 0,
+  "compiled_bundle_audit": {
+    "verified": true,
+    "orbit_geometry_recomputed": true,
+    "solver_reexecuted": true,
+    "native_mission_reexecuted": false,
+    "scope": "compiler/model/certificate audit on this build, not a fresh mission, physical calibration or author signature"
+  },
+  "scope": "local system-site-packages installation, not remote clean CI or hardware qualification",
+  "sha256": "08be86dab0adc89f4602f45d5c528596e1515758e22d400817461f4a025f9ad6"
+}

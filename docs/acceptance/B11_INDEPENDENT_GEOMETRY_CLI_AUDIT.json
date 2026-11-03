@@ -1,0 +1,7 @@
+{
+  "verified": true,
+  "orbit_geometry_recomputed": true,
+  "solver_reexecuted": true,
+  "native_mission_reexecuted": false,
+  "scope": "compiler/model/certificate audit on this build, not a fresh mission, physical calibration or author signature"
+}

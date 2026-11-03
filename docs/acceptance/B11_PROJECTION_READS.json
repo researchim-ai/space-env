@@ -1,0 +1,126 @@
+{
+  "schema": "space-env.projection-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "scoped read optimization verified; frozen large workload failed qualification",
+  "industrial_readiness": false,
+  "implementation": [
+    "native single-actor observation only materializes the selected actor",
+    "one refresh-local cache of owned public telemetry; independent role projection registries",
+    "real candidate admission after cancellation remains uncached",
+    "native capture/history ownership and physics cadence unchanged"
+  ],
+  "validation": {
+    "reference": {
+      "passed": 1251,
+      "failed": 1,
+      "failure": "sandbox denied localhost socket creation",
+      "separate_http_rerun_passed": 1,
+      "http_rerun_outside_socket_restriction": true
+    },
+    "fast_passed": 110,
+    "collected": 1682,
+    "new_projection_tests": 5,
+    "counts_overlap": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false
+  },
+  "parity": {
+    "receipt": "B11_PROJECTION_PARITY.json",
+    "passed": true,
+    "scope": "same-build diagnostic restoring previous read path; four modes, two actors, one request, 20s; exact all transition hashes, trace and full native reports",
+    "timing_scope": "single observations under shared host load; no stable speedup claim"
+  },
+  "installed": {
+    "wheel_receipt": "B11_PROJECTION_WHEEL.json",
+    "modules_byte_matched": 235,
+    "small_paired_native_smoke_passed": true,
+    "scope": "venv with system-site-packages; isolated execution outside checkout; native replay and verified RL/SFT export; not dependency-clean or large installed qualification"
+  },
+  "profile": {
+    "receipt": "B11_PROJECTION_PROFILE.json",
+    "top25": "B11_PROJECTION_PROFILE.txt",
+    "scope": "instrumented diagnostic; timings not readiness gates and cumulative rows overlap"
+  },
+  "large": {
+    "status": "failed",
+    "frozen_manifest_sha256": "bb879d3742dbb44614b8d4632e0e4f1ebbd757c540efd42abf3649ce692a7400",
+    "actors": 12,
+    "requests": 40,
+    "physical_sec": 120,
+    "timeout_sec": 2400,
+    "execution_budget_sec": 1200,
+    "expected_repeats": 3,
+    "thresholds_relaxed": false,
+    "receipt": "B11_PROJECTION_LARGE.json",
+    "manifest": "B11_PROJECTION_LARGE.manifest.json.gz",
+    "passed": false,
+    "successful_repeats": 0,
+    "failed_repeats": 3,
+    "repeat_outcomes": [
+      {
+        "id": "formation-12-40-straight",
+        "repeat": 0,
+        "passed": false,
+        "error": {
+          "message": "Command '['/home/user/miniconda3/bin/python', '-m', 'space_env.scaling.worker', '/tmp/space-env-scale-szgsdgia/input.json', '/tmp/space-env-scale-szgsdgia/result.json']' timed out after 2400 seconds",
+          "type": "TimeoutExpired"
+        },
+        "failed_gates": null,
+        "fulfilled": null,
+        "execution_sec": null,
+        "replay_sec": null
+      },
+      {
+        "id": "formation-12-40-straight",
+        "repeat": 1,
+        "passed": false,
+        "error": {
+          "message": "Command '['/home/user/miniconda3/bin/python', '-m', 'space_env.scaling.worker', '/tmp/space-env-scale-ja1rgd87/input.json', '/tmp/space-env-scale-ja1rgd87/result.json']' timed out after 2400 seconds",
+          "type": "TimeoutExpired"
+        },
+        "failed_gates": null,
+        "fulfilled": null,
+        "execution_sec": null,
+        "replay_sec": null
+      },
+      {
+        "id": "formation-12-40-resumed",
+        "repeat": 0,
+        "passed": false,
+        "error": {
+          "message": "Command '['/home/user/miniconda3/bin/python', '-m', 'space_env.scaling.worker', '/tmp/space-env-scale-amd8q0io/input.json', '/tmp/space-env-scale-amd8q0io/result.json']' timed out after 2400 seconds",
+          "type": "TimeoutExpired"
+        },
+        "failed_gates": null,
+        "fulfilled": null,
+        "execution_sec": null,
+        "replay_sec": null
+      }
+    ],
+    "timeout_scope": "timeout covers worker end-to-end; phase and final native outcomes unknown for timed-out rows",
+    "baseline": "B11_CAMPAIGN_LARGE.json retained unchanged; same frozen manifest"
+  },
+  "remaining": [
+    "backend capture and evidence/report copy cost",
+    "long-horizon history growth",
+    "large arbitrary and multi-plane mission qualification"
+  ],
+  "artifacts_sha256": {
+    "B11_PROJECTION_PARITY.json": "fd656353e30f78a3d9316b2b793062b375dd7dc5fd2ce81ba63bfcaf06d5b77e",
+    "B11_PROJECTION_PROFILE.txt": "43c3ca86f3595cce7bb431fb6cc03b85b9bac7ec176e99074ca98c2a7e9ce125",
+    "B11_PROJECTION_PROFILE.json": "577febb002a86d0b272f243971e2d8f6c16925b29a937e5c50aa52e728ae74e6",
+    "B11_PROJECTION_WHEEL.json": "7b1646a77daad15be8333028c2f692c7e599305da2620526a67acdeee0e66a1a",
+    "B11_PROJECTION_FAULTS.json": "b618b894308dac95e7e3bdd3148f7b17973297faa2c19d78423392f50a2703af",
+    "B11_PROJECTION_FAULTS.manifest.json.gz": "cf2371051f388e174d7f1a228c5b33c903ad99de355f647ce73eb6b9f2f3e7e5",
+    "B11_PROJECTION_LARGE.json": "3fd283d2fac097a4d26bed3462da2bcdf186abaa46e48b6ce6616efe060d4670",
+    "B11_PROJECTION_LARGE.manifest.json.gz": "9bb02404379c6920a0ed4a6d36f082dcf569f613924d62ae2166f89c957c8fd4"
+  },
+  "faults": {
+    "receipt": "B11_PROJECTION_FAULTS.json",
+    "manifest": "B11_PROJECTION_FAULTS.manifest.json.gz",
+    "passed": true,
+    "scope": "same frozen four-actor B11-Q1 fault matrix; exact native witnesses, quality, conservation, replay and verified training export gates"
+  },
+  "sha256": "56bc9898fb69a21c2b5b7025060d79efd235b8ac3f3b6b47579b335bb254a8bb"
+}

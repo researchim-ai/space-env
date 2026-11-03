@@ -1,0 +1,33 @@
+         90464140 function calls (74003094 primitive calls) in 21.180 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1014 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.003    0.003   21.182   21.182 runner.py:114(run)
+ 1068/665    0.042    0.000   21.042    0.032 mission.py:31(call)
+       10    0.000    0.000   20.827    2.083 runner.py:50(step)
+       10    0.056    0.006   20.807    2.081 session.py:227(step)
+13795473/8662    8.931    0.000   17.410    0.002 copy.py:118(deepcopy)
+806459/55292    1.694    0.000   17.319    0.000 copy.py:217(_deepcopy_dict)
+1917778/14859    1.821    0.000   16.943    0.001 copy.py:191(_deepcopy_list)
+       14    0.000    0.000   13.293    0.950 session.py:292(native)
+       14    0.040    0.003   13.253    0.947 mission.py:408(_mutation)
+       10    0.000    0.000   11.318    1.132 mission.py:563(advance)
+       93    0.080    0.001   10.357    0.111 mission.py:248(observe)
+       35    0.001    0.000    5.064    0.145 dynamic.py:518(report)
+       35    0.030    0.001    4.926    0.141 lifecycle.py:1679(report)
+ 2389/884    0.003    0.000    3.693    0.004 copy.py:200(_deepcopy_tuple)
+       24    0.018    0.001    3.664    0.153 dynamic.py:538(capture)
+13315/379    0.018    0.000    3.651    0.010 copy.py:247(_reconstruct)
+       10    0.000    0.000    3.537    0.354 mission.py:575(apply)
+       10    0.000    0.000    3.536    0.354 dynamic.py:491(advance)
+       10    0.012    0.001    3.536    0.354 lifecycle.py:939(advance)
+      100    0.002    0.000    3.468    0.035 dynamic.py:462(observe)
+      100    0.020    0.000    3.404    0.034 lifecycle.py:1620(observation)
+       10    0.017    0.002    3.058    0.306 session.py:184(_refresh)
+       40    0.002    0.000    3.041    0.076 observation.py:107(build)
+       21    0.000    0.000    2.917    0.139 dynamic.py:508(truth)
+       21    0.000    0.000    2.917    0.139 adapters.py:191(truth)
+
+

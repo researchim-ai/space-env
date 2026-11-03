@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_serializer
 
 from space_env.runtime.schema import StrictModel
 from space_env.simulation.snapshot import canonical_json, digest
@@ -23,6 +23,14 @@ class PolicyConfig(StrictModel):
     decision_sec: float | None = Field(default=None, gt=1e-9, le=3600, strict=True)
     cooldown_steps: int = Field(default=2, ge=1, le=100, strict=True)
     stall_steps: int = Field(default=2, ge=1, le=100, strict=True)
+    reclaim_acked_downlinks: bool = Field(default=False, strict=True)
+
+    @model_serializer(mode="wrap")
+    def canonical_config(self, handler):
+        value = handler(self)
+        if not self.reclaim_acked_downlinks:
+            value.pop("reclaim_acked_downlinks", None)
+        return value
 
 
 @dataclass(frozen=True)
@@ -58,18 +66,28 @@ class PlanningInput:
         return digest(self.view())
 
 
-def make_input(session, feedback=None):
+def make_input(session, feedback=None, *, conditional_claims=False):
     """Trusted bridge; only current public views/static claims cross the boundary.
 
     No backend validation, forecast, scenario, seed, truth report or future rollout.
     The policy receives the returned value, never the session itself.
     """
+    if type(conditional_claims) is not bool:
+        raise TypeError("conditional_claims must be boolean")
     observation = session.observe()
     catalogue = {a["id"]: a for a in observation["catalogue"]}
     actions = {}
     for a in session._actions:
         claims = []
-        for c in a.commands if catalogue[a.id]["enabled"] else ():
+        for c in (
+            a.commands
+            if (
+                catalogue[a.id]["enabled"]
+                or conditional_claims
+                and catalogue[a.id].get("commands")
+            )
+            else ()
+        ):
             claims.extend(
                 [c.actor_id, r] for r in session._runtime.command_claims(c)["resources"]
             )
@@ -80,6 +98,8 @@ def make_input(session, feedback=None):
             [[c.actor_id, r] for r in session._runtime.command_claims(c)["resources"]]
             for c in a.commands
             if catalogue[a.id]["enabled"]
+            or conditional_claims
+            and catalogue[a.id].get("commands")
         ]
         # Parameters are taken only from the already causal B06 catalogue.
         assert "commands" not in actions[a.id]
@@ -95,6 +115,7 @@ def make_input(session, feedback=None):
                 "kind": c["kind"],
                 "destination": c["destination_id"],
                 "until_sec": row["until_sec"],
+                **({"product_id": c["product_id"]} if conditional_claims else {}),
                 "claims": [
                     [c["actor_id"], r]
                     for r in session._runtime.command_claims(c)["resources"]

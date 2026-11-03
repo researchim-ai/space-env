@@ -1,0 +1,16 @@
+{
+  "schema": "space-env.envelope-wheel/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "479414a8bf156dc751d40ea9a2edb171b3837bd85f05ad89c919ab97c8b13af5",
+  "source_modules_byte_matched": 240,
+  "analytic_fixture_byte_matched": true,
+  "generator_sha256": "1c96ced9ae10c2833d344b1ec9400d2e8e719086fb97ff237ca95b1cbf7aa3bc",
+  "inventory_sha256": "61e11cd5142bd9d1211771afeaf6eecdc0e9213188f2b413a03ed598c32e5cf3",
+  "inventory_files": 269,
+  "installed_package_version": "0.134.0",
+  "installed_distribution_version": "0.134.0",
+  "scope": "system-site-packages venv; no dependency-clean or remote CI claim; inventory is not native mission build ID",
+  "sha256": "b2a83203b65730a6e4115367568625a21d205b96da5d9061f2f94ac2f9be71f1"
+}

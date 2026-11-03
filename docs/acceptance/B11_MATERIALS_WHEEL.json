@@ -1,0 +1,19 @@
+{
+  "schema": "space-env.material-wheel/1",
+  "date": "2026-11-03",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "eddf4f1947c244349fc957887ca33ce8825a3e63a28867a461f76ea555560687",
+  "source_modules_byte_matched": 249,
+  "inventory_files": 282,
+  "inventory_sha256": "1985ecb565f571a0522573748912d57ba7b5edef7981fda99ab62f6039d5bf2e",
+  "current_readme_in_wheel": true,
+  "packaged_data_byte_matched": true,
+  "source_version": "0.134.0",
+  "installed_distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-materials-venv",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "scope": "local system-site-packages venv; no remote clean CI, full-suite run or large mission requalification",
+  "sha256": "aa9fba2e6993abd78d8f334a1a8bcadd7d450178293316f6b95e15dc578fc31f"
+}

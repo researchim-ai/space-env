@@ -1,0 +1,19 @@
+{
+  "schema": "space-env.calibration-wheel/1",
+  "date": "2026-11-03",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "ac8b13750bfc4e2dc3b177893cc5d49a59ff56233952e3e020ad79cb113efc45",
+  "source_modules_byte_matched": 247,
+  "inventory_files": 279,
+  "inventory_sha256": "0601669dfdbdbb363678a851305ee851aa2fbdd7d36ba75da5646f70c56f9d66",
+  "current_readme_in_wheel": true,
+  "calibration_data_byte_matched": true,
+  "source_version": "0.134.0",
+  "distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-calibration-venv",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "scope": "system-site-packages venv; not remote clean CI or large mission requalification",
+  "sha256": "bb7183c17ae64568e0926a63b02dec7ced6633d648364978426525a00ed31311"
+}

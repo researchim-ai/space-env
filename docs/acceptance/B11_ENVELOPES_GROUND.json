@@ -1,0 +1,14 @@
+{
+  "schema": "space-env.installed-ground-smoke/1",
+  "date": "2026-11-03",
+  "result": {
+    "ok": true,
+    "short_ground_paired_recovery": true,
+    "observed_ack_cancel_and_resubmit": true,
+    "native_replay_and_verified_rl_sft": true,
+    "scope": "small installed smoke, not large mission qualification"
+  },
+  "wheel_sha256": "479414a8bf156dc751d40ea9a2edb171b3837bd85f05ad89c919ab97c8b13af5",
+  "scope": "final installed wheel; system-site-packages venv; cwd /tmp; python -I; not dependency-clean or large mission qualification",
+  "sha256": "64c5ddc9585a32f941f3a2933a2f3b1ebd667e87d42f7f9ffc7f87d1bd718524"
+}

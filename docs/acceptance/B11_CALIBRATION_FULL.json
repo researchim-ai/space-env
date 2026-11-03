@@ -1,0 +1,1591 @@
+{
+  "adapters": [
+    {
+      "adapter_sha256": "f6ee1c47f0a77e1a0a6237cf036eae2ccd4222068e92e8b7e7bf434715fe1daa",
+      "model": {
+        "efficiency": 0.8,
+        "idle_power_w": 0.1,
+        "inertia_kg_m2": [
+          [
+            2.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            4.0
+          ]
+        ],
+        "max_momentum_nms": [
+          0.00177,
+          0.00177,
+          0.00177
+        ],
+        "max_step_sec": 0.01,
+        "max_steps": 100000,
+        "max_torque_nm": [
+          0.00023,
+          0.00023,
+          0.00023
+        ],
+        "model_id": "published-wheel-points/mixed-1",
+        "source": "cw0017; cw0017; cw0017; synthetic host inertia and motor losses for a numerical adapter smoke only",
+        "torque_loss_w_per_nm2": 1.0,
+        "wheel_inertia_kg_m2": [
+          2.112781869544911e-06,
+          2.112781869544911e-06,
+          2.112781869544911e-06
+        ]
+      },
+      "observed_momentum_nms": [
+        0.0,
+        0.0,
+        0.00177
+      ],
+      "profile": "cw0017",
+      "scope": "mixed-published-derived-assumed"
+    },
+    {
+      "adapter_sha256": "fa89a0c0a97f462ef6ce016c36927319b1c27ddd66ef249d72e6c88fe9d69463",
+      "model": {
+        "efficiency": 0.8,
+        "idle_power_w": 0.1,
+        "inertia_kg_m2": [
+          [
+            2.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            4.0
+          ]
+        ],
+        "max_momentum_nms": [
+          0.0057,
+          0.0057,
+          0.0057
+        ],
+        "max_step_sec": 0.01,
+        "max_steps": 100000,
+        "max_torque_nm": [
+          0.002,
+          0.002,
+          0.002
+        ],
+        "model_id": "published-wheel-points/mixed-1",
+        "source": "cw0057; cw0057; cw0057; synthetic host inertia and motor losses for a numerical adapter smoke only",
+        "torque_loss_w_per_nm2": 1.0,
+        "wheel_inertia_kg_m2": [
+          9.071831756238034e-06,
+          9.071831756238034e-06,
+          9.071831756238034e-06
+        ]
+      },
+      "observed_momentum_nms": [
+        0.0,
+        0.0,
+        0.0057
+      ],
+      "profile": "cw0057",
+      "scope": "mixed-published-derived-assumed"
+    },
+    {
+      "adapter_sha256": "8181edced44614c4676fd332af6c09b4be28f680db036b17bc3b24a66b6d968f",
+      "model": {
+        "efficiency": 0.8,
+        "idle_power_w": 0.1,
+        "inertia_kg_m2": [
+          [
+            2.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            4.0
+          ]
+        ],
+        "max_momentum_nms": [
+          0.0162,
+          0.0162,
+          0.0162
+        ],
+        "max_step_sec": 0.01,
+        "max_steps": 100000,
+        "max_torque_nm": [
+          0.007,
+          0.007,
+          0.007
+        ],
+        "model_id": "published-wheel-points/mixed-1",
+        "source": "cw0162; cw0162; cw0162; synthetic host inertia and motor losses for a numerical adapter smoke only",
+        "torque_loss_w_per_nm2": 1.0,
+        "wheel_inertia_kg_m2": [
+          2.5783100780887044e-05,
+          2.5783100780887044e-05,
+          2.5783100780887044e-05
+        ]
+      },
+      "observed_momentum_nms": [
+        0.0,
+        0.0,
+        0.0162
+      ],
+      "profile": "cw0162",
+      "scope": "mixed-published-derived-assumed"
+    },
+    {
+      "adapter_sha256": "e9a3e43d00dfc279e60e9d374985058ef3816e6fd5aff704e1be7cc2a5c8373c",
+      "model": {
+        "efficiency": 0.8,
+        "idle_power_w": 0.1,
+        "inertia_kg_m2": [
+          [
+            2.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            4.0
+          ]
+        ],
+        "max_momentum_nms": [
+          0.05,
+          0.05,
+          0.05
+        ],
+        "max_step_sec": 0.01,
+        "max_steps": 100000,
+        "max_torque_nm": [
+          0.01,
+          0.01,
+          0.01
+        ],
+        "model_id": "published-wheel-points/mixed-1",
+        "source": "cw0500; cw0500; cw0500; synthetic host inertia and motor losses for a numerical adapter smoke only",
+        "torque_loss_w_per_nm2": 1.0,
+        "wheel_inertia_kg_m2": [
+          8.217983292180484e-05,
+          8.217983292180484e-05,
+          8.217983292180484e-05
+        ]
+      },
+      "observed_momentum_nms": [
+        0.0,
+        0.0,
+        0.05
+      ],
+      "profile": "cw0500",
+      "scope": "mixed-published-derived-assumed"
+    },
+    {
+      "adapter": {
+        "assumptions": {
+          "irradiance_mapping": "constant efficiency linear model, not interpolation between datasheet calibrations",
+          "native_solar_constant_w_m2": 1361.0,
+          "operating_conditions": "BOL reference-point approximation with constant efficiency and ideal irradiance scaling",
+          "packing_factor": 0.9,
+          "reference_area_m2": 0.1
+        },
+        "industrial_readiness": false,
+        "profile_evidence": {
+          "catalog_sha256": "6f5984bc343b741bfc0194bfa3666b35b38e214cbd4288124dc5765e8093693d",
+          "conditions": "BOL, AM0 WRC, CASOLBA 2005 (05-20MV1); geometry/coverglass changes performance",
+          "id": "azur-3g30-bare",
+          "kind": "solar_reference_point",
+          "manufacturer": "AZUR SPACE",
+          "product": "3G30-Advanced, 100mm wafer, 2 cells per wafer, bare cell",
+          "source": {
+            "content_scope": "downloaded original PDF bytes",
+            "content_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+            "id": "azur-general-2025",
+            "kind": "manufacturer_specification",
+            "locator": "DB 00010890-01, issue 08-Apr-2025, page 7, Generic Product Performance Data, 3G30-Advanced 100mm/2 cells-per-wafer columns and footnote 3",
+            "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only",
+            "retrieved_on": "2026-11-03",
+            "uri": "https://www.azurspace.com/media/uploads/file_links/file/bdb_00010890-01-00_generalinformationazur.pdf"
+          },
+          "source_id": "azur-general-2025",
+          "source_values": {
+            "efficiency_percent": 29.8,
+            "irradiance_w_m2": 1353.0,
+            "temperature_c": 28.0,
+            "temperature_half_range_c": 1.0
+          },
+          "status": "published_reference_point",
+          "uncertainty": "temperature test condition is not an efficiency error bar; no efficiency tolerance distribution inferred",
+          "unmodeled": [
+            "temperature coefficients and I-V curve",
+            "radiation/aging",
+            "panel packing/wiring/MPPT losses",
+            "alternative irradiance normalization"
+          ],
+          "values_si": {
+            "efficiency": 0.298,
+            "irradiance_w_m2": 1353.0,
+            "temperature_half_range_k": 1.0,
+            "temperature_k": 301.15
+          }
+        },
+        "qualification_status": "mixed-published-derived-assumed",
+        "schema": "space-env.solar-reference-adapter/1",
+        "sha256": "292771dab2287abcf2c3a015e95d2df8887865f6a675d662baf527012ae80a58",
+        "vehicle_resources": {
+          "base_power_w": 10.0,
+          "battery_wh": 20.0,
+          "initial_soc": 1.0,
+          "max_tx_sec": null,
+          "memory_bits": 1000000.0,
+          "min_processing_soc": 0.1,
+          "min_tx_soc": 0.1,
+          "processing_power_w": 0.0,
+          "rate_bps": 1000000.0,
+          "solar_area_m2": 0.1,
+          "solar_efficiency": 0.2682,
+          "solar_mode": "ideal_sun_tracking",
+          "thermal": null,
+          "tx_power_w": 20.0
+        }
+      },
+      "profile": "azur-3g30-bare"
+    },
+    {
+      "adapter": {
+        "assumptions": {
+          "irradiance_mapping": "constant efficiency linear model, not interpolation between datasheet calibrations",
+          "native_solar_constant_w_m2": 1361.0,
+          "operating_conditions": "BOL reference-point approximation with constant efficiency and ideal irradiance scaling",
+          "packing_factor": 0.9,
+          "reference_area_m2": 0.1
+        },
+        "industrial_readiness": false,
+        "profile_evidence": {
+          "catalog_sha256": "6f5984bc343b741bfc0194bfa3666b35b38e214cbd4288124dc5765e8093693d",
+          "conditions": "BOL, AM0 WRC, CASOLBA 2005 (05-20MV1); geometry/coverglass changes performance",
+          "id": "azur-3g30-cic",
+          "kind": "solar_reference_point",
+          "manufacturer": "AZUR SPACE",
+          "product": "3G30-Advanced, 100mm wafer, 2 cells per wafer, CIC/SCA with 100 micrometer CMG coverglass",
+          "source": {
+            "content_scope": "downloaded original PDF bytes",
+            "content_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+            "id": "azur-general-2025",
+            "kind": "manufacturer_specification",
+            "locator": "DB 00010890-01, issue 08-Apr-2025, page 7, Generic Product Performance Data, 3G30-Advanced 100mm/2 cells-per-wafer columns and footnote 3",
+            "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only",
+            "retrieved_on": "2026-11-03",
+            "uri": "https://www.azurspace.com/media/uploads/file_links/file/bdb_00010890-01-00_generalinformationazur.pdf"
+          },
+          "source_id": "azur-general-2025",
+          "source_values": {
+            "efficiency_percent": 29.5,
+            "irradiance_w_m2": 1353.0,
+            "temperature_c": 28.0,
+            "temperature_half_range_c": 1.0
+          },
+          "status": "published_reference_point",
+          "uncertainty": "temperature test condition is not an efficiency error bar; no efficiency tolerance distribution inferred",
+          "unmodeled": [
+            "temperature coefficients and I-V curve",
+            "radiation/aging",
+            "panel packing/wiring/MPPT losses",
+            "alternative irradiance normalization"
+          ],
+          "values_si": {
+            "efficiency": 0.295,
+            "irradiance_w_m2": 1353.0,
+            "temperature_half_range_k": 1.0,
+            "temperature_k": 301.15
+          }
+        },
+        "qualification_status": "mixed-published-derived-assumed",
+        "schema": "space-env.solar-reference-adapter/1",
+        "sha256": "a320e5fb9c1997a0258ce84051e5152ea70296d623b46d4b6154d2ca8b63818c",
+        "vehicle_resources": {
+          "base_power_w": 10.0,
+          "battery_wh": 20.0,
+          "initial_soc": 1.0,
+          "max_tx_sec": null,
+          "memory_bits": 1000000.0,
+          "min_processing_soc": 0.1,
+          "min_tx_soc": 0.1,
+          "processing_power_w": 0.0,
+          "rate_bps": 1000000.0,
+          "solar_area_m2": 0.1,
+          "solar_efficiency": 0.2655,
+          "solar_mode": "ideal_sun_tracking",
+          "thermal": null,
+          "tx_power_w": 20.0
+        }
+      },
+      "profile": "azur-3g30-cic"
+    }
+  ],
+  "build": {
+    "dependencies": {
+      "numpy": "2.2.6",
+      "pydantic": "2.11.7",
+      "pyerfa": "2.0.1.5",
+      "scipy": "1.15.2"
+    },
+    "distribution_matches_source_version": true,
+    "files_sha256": {
+      "__init__.py": "e4773f2221dd8b605e4c890f00df79489e737c80ebd179ce1180ce67f1f0a73d",
+      "api/__init__.py": "fbe7a1cf5de770373048f44d40e2c66d2230cfe5adbfe4bdb4e6b22c5f83de6e",
+      "api/console.py": "3a08ba3a71b9f0b7b5b00c6c6fc2d0fceb13101dde9d21e9d9d98e83a64004f1",
+      "api/operator.py": "e145759ccd47200fe43850a3d2e919d8c5e54be40df4f89c02b05c887889c629",
+      "api/operator_artifacts.py": "b9477a6518509374c8956064b975023ce56ae155a309ac3a5fb1ee6e117fdec2",
+      "api/operator_events.py": "122ba43d29133e2f779c0e83e05febff525d0dfec835a314ca22abe809108aac",
+      "api/operator_maintenance.py": "40e4a4ce8614c00b4123a241e52f0c341b68b638dce651e506df35d8ce906f6e",
+      "api/operator_recovery.py": "3d9c59eeda38820e9117f5f72cc7e2b0600783875d9f2330803fbda4a17683bf",
+      "api/operator_storage.py": "62817cf1d70e251484f0c607eb461f630fc82c35e5861ec6f02c6752a3ce683c",
+      "api/server.py": "a0b91eb576df32979b4d5a27bce2336cbb0a1798db94723f183961d7949b0ec9",
+      "bundled_data/glossary.yaml": "3eb301d98add07edced1f10bbc8ff8a4ca7ae26646c6fa51dac9e794c129382e",
+      "bundled_data/pretraining_templates.yaml": "bd2f30f29513487d111ca10cc29fea5b8a091409ba588ea257ecf1e7d1b930b1",
+      "bundled_data/sft_pairs.yaml": "f90dc5d8eecfc2a90ba443bd69e67de395ff5f508e43f6a175d012b603bdfce7",
+      "calibration/__init__.py": "d4adc6a347ee37dc01708e6de1241c532860004f0d6d5eb605a865f6eda82d22",
+      "calibration/data/hardware_v1.json": "08a653c1b5e61f1a4f75d0e7b0b4511cca385841e930beac8c6744f81279d1e3",
+      "calibration/data/workflow_fixtures_v1.json": "85dbd577b3a34f591230c809c711bbfd8e4c8f6689c95592e8d79ec0b112bcec",
+      "calibration/ensemble.py": "0c8d90bc08ab37239dc9c56712d267ed86b0c32366dbf6ab5516da4104cf1b45",
+      "calibration/fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+      "calibration/hardware.py": "cdeaa519909fdce4ed34c8baa6256a543de363461d317129e2915e62555255fe",
+      "calibration/schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3",
+      "catalog/__init__.py": "29177e0534783768c863eb82f61e99c3523087f5c1ec4f5e07fe23b2f0ea1ffd",
+      "catalog/build.py": "2e4f1b558c681bd39845db63f33917d877cf78f527e0e9967ed3ff36cacf992f",
+      "catalog/drag.py": "9dee679ed639e4091a7f885e5e9804cda4b93438ed49cff46abfad2df7b028ab",
+      "catalog/geometry.py": "1c92adc9b9cd253ccd310353f0a5584c6470b37e4030a6daa9ee5474ae0b21d2",
+      "catalog/live.py": "987a8924453315a25da186d05d61ac627018e60539fe77d199ffe748c45fe5f2",
+      "catalog/mesh.py": "3d7f08f67cbaf5098e183818817ee6fc9354424da156965b0701e0845ef9d627",
+      "catalog/phasing.py": "68b3b20944d41daf44e48f20416975602f0e6b0bb0f753737e4a47f683590203",
+      "catalog/references.py": "d40efe550ba1bf90e9ffacab723d2eab16e06b034c41c66231479a065a61455f",
+      "catalog/traffic.py": "cc6d6263d088325afd2739b8e99c6e7065f3a0024b0c5fbe75b0d16beff8f61c",
+      "cli.py": "7cccf7e0359a0c85585f37cf72d3e4cea69df82ae70a5c74827ad1f6230203b7",
+      "configs/benchmark_suites/mission_v1_smoke.yaml": "a0a5b4ffb7611fb8fe63fc02c9d2008cc68f9eba32c30ed2e4fa64099494463e",
+      "configs/curriculum.yaml": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07",
+      "configs/demand_deliver.yaml": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098",
+      "configs/demand_late.yaml": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5",
+      "configs/eo_72h.yaml": "f6ad8a4487682e03979be86b875d20d5208856210cc25c2a09129e1b01faf838",
+      "configs/eo_72h_16.yaml": "109af0f3a7acb456cf03e6bbe576ab3dc8383439b9bb8f7615f615fbedc3b495",
+      "configs/eo_pass.yaml": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c",
+      "configs/family_infeasible.yaml": "42f0cffb43024cde11e7e2125615f038f008cbc7c13dac119e2cb60c457177b0",
+      "configs/family_nominal.yaml": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c",
+      "configs/family_outage.yaml": "5cbed335080fd18ebbe7fcc4c626a72cd6ba759b64d842639dee06d98591e6b9",
+      "configs/mission_day.yaml": "640c6e1d2c4e9943579835469a8865272e73503f3cdeb90bf79241edd9a2c171",
+      "configs/mission_holdout.yaml": "a3be68d392a607b8e580fcd4ae701a768b02e5e10011a79bd4d6e05468e09670",
+      "configs/mission_short.yaml": "8cd47d9f777960ee601adf36919f8a7e5b38cebb387dbd2c493b0b5b67e84f2c",
+      "configs/operator_relay.json": "ab02be88451aed79b804b751022c313f00814e50816a42e75320934a82d44e2d",
+      "configs/operator_shift.yaml": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312",
+      "configs/rewards.yaml": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4",
+      "configs/tasking_deliver.yaml": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c",
+      "configs/tasking_late.yaml": "0b7804fb56b8ce31e9e80d61a4fe508b929c0a0ce560947639959a2719bc4e4b",
+      "core/__init__.py": "a6471fdf17e8d4e24cf9f62936259d58ae32377b8ffdb8de31687f9f9797a9d1",
+      "core/access.py": "fc95ef3296bc5ad80f003aed1b9c5d4f65ae92aef34a7bcebf79fff5d30a6ac8",
+      "core/attitude.py": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+      "core/bodies.py": "10023822c6fb9ce4877d024d03e5884c959abc4330b4df45ff0985fc4d0493fa",
+      "core/cdm.py": "82f12d7c1d59b1636ad17b5cf60d7aef2b45acfce54b63a5a3bc4ccd33131edb",
+      "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+      "core/dut1.py": "ee055bfc4bae745a68690d4ee53dfcfc558262cddfe1715e82c953e554fb2e1d",
+      "core/encounter.py": "c7a7ead7f3fe0c19752c947490c78aa6152ecebf444e90972980960eae8d5e73",
+      "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+      "core/eop/f107_trailing.csv": "6843a2c948ccca24228b8cf78262246c7887654f5268ba12951bfbf1c5747f1f",
+      "core/eop/finals2000A.daily.csv": "03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855",
+      "core/eop/swpc_daily.csv": "799952d2253e192e09e8f6fe60eef058acbafa6f1665321a8dd5f26fcfd75043",
+      "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+      "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+      "core/ground.py": "7953a0776b3ebdc968486f7f6a6d303ce38ab93d28ee568d327599819a30e70f",
+      "core/lifetime.py": "75a5ebd3095a6ead1461796dd4c6cdc75a617c0aae47b60140dd0e64af26710d",
+      "core/link.py": "71c87b378fd3713c7ee42da6eebe8fbe65b174d1e8b0ec7afe0e6f7e616cc093",
+      "core/orbit.py": "e65c7144604c459906bde0bbd8039e4f0ad58c34564f862166faeb38e9722092",
+      "core/packets.py": "1b6bd936716b6ab52dde0c71c8a15fdd0a52b769b47ced608aa4905983d1df2b",
+      "core/passes.py": "b2d98c0559e2dd16796699133e2ae20c1d0fb90c276a2b33692b5c1a61ef8022",
+      "core/power.py": "806aecd4d3b96c53d03517fc82fbc9eeadd82501872174d29f2ca4c221417466",
+      "core/probability.py": "4750a4c6f293eef8c01fec9652cc73a92c90cf8561ba3fc9886c8beb920bdde1",
+      "core/propagate.py": "cb8746b07b383ddb3ea2ae40e3f28805f1b107caec489a5f17103f1fc379fa84",
+      "core/propulsion.py": "27463f42a7c0a2496098bc91af1afeac923d13f7a7844925028631270af1b45f",
+      "core/relative.py": "dc2430f6e320cba952b4d7fc7e2d63fe976383b0b9e22e5318d1345fd50ef996",
+      "core/space_weather.py": "5cca284385dbbf0138ef0279c8d30d7636b7453e16dd697ff7f612d16c9b8e5c",
+      "core/spacecraft.py": "382ceff44eeb9a4fb742d4eaf28201ab4f226ca3b347f70bfac02d823243a584",
+      "core/sun.py": "3075fecb9bd843657022f8e8e79d25bea1110d01d16e841d93e05ac93175b9cf",
+      "core/thermal.py": "bf70f9098cac12bdc606b95e001bf2ccf66702f5a943be0a3337878827ba5262",
+      "core/time.py": "eb0b373352e4a2a94d562efcac6befda3298f3e5d958d1383ed35a18e4bfa761",
+      "data_generators/__init__.py": "6da41dfedddedf3073adeb892f155ccd34d06fadb957b57f28005cda50bd85b1",
+      "data_generators/agent_run.py": "6d560e274e89172e0682b86d14890f7fc582122ed623e1328a47e3d39e386175",
+      "data_generators/mission_dataset.py": "7846a59a713f27035c706523bc687efd985b1e7a987d9c96e18bc608cace0b5b",
+      "data_generators/portable_run.py": "ae2d7c5099f556bbe03325632f0ca5446a990877b533869769af97e188d4b15e",
+      "data_generators/pretraining.py": "f65075e3f4960b633764933df931a9548782651a596823a23b0b7a2c1ed9fbe1",
+      "data_generators/reference_operations.py": "3c7d08230ac82b3164a2568dc9612254c53cb24f742067439a922804f1021f21",
+      "data_generators/sft.py": "b8efc9e48d911b4fcf2a49394871d9e1f7018ff42353f0e161a103441d21ac0c",
+      "data_generators/verified_dataset.py": "2cac55468da8a028a04e9b39f7d4863e988d560ba68c427ab6e0aaec8509a8a6",
+      "envs/__init__.py": "acf8ba15e004c17acdb4fcdc9ecd5219a3ab60e55ed348a08f9a767837fc38cf",
+      "envs/anomaly_response_env.py": "bef0bfb0efb07c1c99ea2d8528034a7770f6f5471c8a44ecea1442825b770217",
+      "envs/base.py": "2f39d88fd5f699dbb22ade982f223dd8d3bdb5b9c0384adbdb5b824ba661cbc6",
+      "envs/campaign_env.py": "be4ebde93a272ce8cd0b72ee9ffa858a4b79de8f50e48010510e312da58318f0",
+      "envs/cards.py": "8422ba36317e4df0eda0fdfd1f47d5e16a7dd2c13e1788cdf3f18613cdcdaba0",
+      "envs/conjunction_env.py": "1440d4c299e698460d0ad4a0aad20f86992313d39ecbe74bd12480eb05c77fb4",
+      "envs/constellation_env.py": "09282de6cd0861e72a8e845191da13895ed500473abec540c7c6361f5e9bf182",
+      "envs/constellation_ops_env.py": "fd71dc49957b8ccc1099d96484e662c994648c5c05109753e476a3b60b16643d",
+      "envs/demand_env.py": "28469444594b61d99b6d6ccca3337793a76b45cffa9cca2321c4909b9956736b",
+      "envs/dict_env.py": "028fb024e69fd246688605c815a92b2f28afa48ba563557c5305de87b6b6568f",
+      "envs/fleet_tasking_env.py": "8059d99b6ea13eb363d2e72f098a2585ae5155f76950278daaaae38f7970fbcd",
+      "envs/horizon_envs.py": "1bb2899861faeb16c3b4f0ac960c1575c64f0b7e13ebcf2f902b0575c5116315",
+      "envs/industry_envs.py": "d54f62970111102dc6fafe3ddd684e90da5968b8b0da63a4fdf495ea9977cb3d",
+      "envs/market_envs.py": "68e0a5336018817f60c73338c22b40aa456ceb10270d23143945ee0ac491d0ce",
+      "envs/mission_fleet_env.py": "b45a4038148f746f27dbadf2dceee5528d2beac745467675e0f8a864b3ec5499",
+      "envs/mission_planner_env.py": "894c19a5851f40631cfea1357564d0b002823347de99624512f3db1bdc4bbc69",
+      "envs/phasing_env.py": "53a586922eb29f363f5d4423f32c03b81380d9f22bfca57cf88b3c977a69452c",
+      "envs/regime_envs.py": "3835460c46668cfbba9918bcefe72e2a69af27def16e612387ca8b9b52a052b6",
+      "envs/resource_manager_env.py": "09153e83d1752ffa879a9508f8f5e4234207a17485e0083e379051f576beef5a",
+      "envs/sentinel_env.py": "a885e62e0cea88f986e553dfa9afeb1b3fa6bae4d81fa611fa8002106eb4b02a",
+      "envs/shift_env.py": "cbced487bbdb8725c148720652a23782bf40be83e8c963410b6c4f6789583c04",
+      "envs/tasking_env.py": "6f0da316c878b1c632f284524ed5965823022324210f5b80a9f09b0ac06d7ce1",
+      "envs/workplan_env.py": "868ad57058c095f95acdfcf51f60855c80cebbda571f34f744e78e551f2d6585",
+      "estimation/__init__.py": "e4922f5879ff9033b4c04eb2731d9f3f438d7821f4dea59b5511fdb73d965c18",
+      "estimation/knowledge.py": "244530e91d4a712c93dab4a95f945fcdd0084b9c67d333f3fc174310de625f43",
+      "estimation/range_arc.py": "c921dfe62e9a71a26f0418ccc14171997876082083e5002bd36c3bb7c6837ac1",
+      "eval/__init__.py": "a98991f1eff176510d07fb897da3673962ee664a408da11f9dee3e0489999897",
+      "eval/benchmarks.py": "71bc92151d75a0eb8f540c288f7bd181882614967d40cffa7fd8e7a198adbbff",
+      "eval/ci_profiles.py": "541444ec0534d85cd2510c742a773bfc2fa62761d4f716954155d138f763576f",
+      "eval/demand_report.py": "da1a54c7d93b6f458e47e485917750b8a778b250ec50a51cecf4b3220196b19f",
+      "eval/holdout.py": "a5600aeb03ba1b3597c5362592a90a6cadb13502bb15fd1100927c3ddeb11384",
+      "eval/load_report.py": "bfa1ee70d2d0dce09c12629c6aa6b4e28fd2f7d8480170f6c4451def569a30c8",
+      "eval/mission_benchmark.py": "409d0813f4805e2b560b9cd42661fd0fd57efd8349e6836526468c23fde132dc",
+      "eval/operator_report.py": "3a0b761b9d17a771bcb13c2ed79161d53fa4b2be0106ff5e01081baa48ab1ee9",
+      "eval/run_record.py": "876a5892cf0f76548850f12f248ed110975d49eb5989e7eee216feed3769d5a9",
+      "eval/scale.py": "248272c3957b25ad914ae4e18b120b94d90fcd49d9ee3122527625ce02d33e5b",
+      "eval/sft_rubric.py": "8342740dda4e0aa46d27f0f73b13e14b2500bae8f92ba9571a9368ca0934638d",
+      "eval/statistics.py": "03912916a721ba440fa42bb3bd9b42835d13115df6ad4c9c9f5cf2e5cfc68adb",
+      "eval/tasking_report.py": "2d5bad8b6ee56c9c132bce2f095323297f8346eb1bd5f493de8f65920f1047fa",
+      "eval/tracks.py": "cd382c224ee97b49a2633fd4acf6821297cdc2bdebc723b9a3723c4b424e2cbf",
+      "eval/transfer.py": "9758b898fb02f4cec46b19df3c46a1eb518b38c279af988f7c2c3303c6af0f1b",
+      "factory/__init__.py": "20bac2719f9172d68e05d6d1e7d7e01567a0df91ca72e4a07962cc1ee0ee02d0",
+      "factory/bundle.py": "bf16dcd3d3bf0a77ae01be131ff1802f82a0c53ebef03b4a4fe0c95e500af47c",
+      "factory/cli.py": "5f5c143fa3bfb721a1925b86b9ea192699ca526e656ac25b92a81ae84658a967",
+      "factory/generate.py": "a792fdb5bf6a76a9f0134835c4e7efab274967dc18b8f7bd55065f3490cac141",
+      "factory/quality.py": "b4491b17fd654ae055c9406be6318769426e960a0baae334a1021a73a034d8d5",
+      "factory/registry.py": "a7a3d07c57aaeec13b7a18f9c92e6905285e729b85ea32ce1c528b4fa1c0cbb3",
+      "factory/schema.py": "6699d528010a98752a97a22a997fb4830904c75dfd5ba72ca13ad07eba6878df",
+      "factory/semantic.py": "5458a73a7c24d092c96dc89c6465be4ab7bef5f18a6bf496e227b14988b6899a",
+      "integrations/__init__.py": "109e71f4c9bc7e74d91a223e32e73169295be1476562748ded647cca03785f7b",
+      "integrations/ccsds_backend.py": "1b137311e39ddb645260b10f3e92f8861067e223f4de28c9f05b554801545c38",
+      "integrations/orekit_prop.py": "9bcadf3cd969a927c71b74262d0391dcce67b285b589a9c6f3da95f30c9b19a8",
+      "integrations/sgp4_prop.py": "a974c6e806ebcdc106ee6703abe3d256fdff55b82a029f05126655a7681be4e7",
+      "integrations/spice_ephem.py": "fa3be0eec4db702e49b1ab318642508700ade889c3ac97e7e6146345bcdb3039",
+      "mission/__init__.py": "97d65da09c8acb995cbaa8768dcbe6114ea76fc4a159b6be9f1e69a81776805c",
+      "mission/agent_protocol.py": "da0823df0e014cb476ca5f20265dce9aba8fdb8b595e9b8581aa9c3401ee1556",
+      "mission/avoidance.py": "7b5a7f6b2056410ed29bb251a5b5827e1f3ccc3a85ce4d6c11bb29a5f2e622e4",
+      "mission/awareness.py": "e8a492e492c60f0f3b489ce1cdb2d7afe56c5ebfce140510bc7957d46ce4d5cd",
+      "mission/campaign.py": "f1ee4350448bb956491a400fcbf723ad712738db1e468e6e54d7dfad74dce0fc",
+      "mission/coast.py": "dde8107c413a54dca801a93c09383fe0f904c303b393b8a502700bc4335c3ddb",
+      "mission/constraints.py": "30a0fe8fdf403e0ac6302b1c5b6f37756a4df3fccf4fd8437b0feb2c03561a15",
+      "mission/demand.py": "3129219e0cdc711d7b974be7903278e4efd93bac248b5f1ece8b23de2fe2b768",
+      "mission/events.py": "ef523a47d895d4a26d78378efd2497a9feaf2269b70b408bf86f08e368e41e1b",
+      "mission/factory.py": "d33161ad012691511578e7a3bd045391e3f05e517b91cd2eb1b411da0c3ef4ff",
+      "mission/fleet_plan.py": "c6509821ea0213fc9443fa75d4eab21b98e7e58251d2b7d686da8ad647299900",
+      "mission/geometry_requests.py": "709eccc2c951232291fb6f12ef9024db6fcba7121cc273970347049ef673cee4",
+      "mission/goals.py": "171085cad082039425dc019af8605545c4cf201d970d674c1c5cf22239c8adbd",
+      "mission/ground_schedule.py": "c38bade02612968732d40bb33f4fa8aaadc4f5cbb8a059487d37f8dfc6b474c4",
+      "mission/horizon.py": "b3f248c6f2b0dc38761ba18cc05040e879fcfcd118014c0db3e850968c04be3e",
+      "mission/loader.py": "cf2e9109ef7b90ba4639c22d3a4fed405ca480d8fab1340da0dc936c2a1c8b57",
+      "mission/outcome.py": "f36878940961c06d089b7ef6d4a416d98f8abce8cc905e7e3d288e93d951b8af",
+      "mission/phasing.py": "56ab270367af9faad2471a8d155f65989e8d1bc2cb73fa5c06c9c57e227972fe",
+      "mission/quality.py": "c97213ba851bd171edea1e6eb2ddb630a89b2d510150f58319d2b687ecd27cda",
+      "mission/registry.py": "c115635f5b0371579cd393ae50cbef8a7ec49fc35539f11f0554712a7640b719",
+      "mission/sar_ops.py": "20da52b15651ec6a761c9a58b7685025ce5fbc5756a33dc4d1a8b56c7d6cc85d",
+      "mission/scenario_v2.py": "0b9502319d8dff10eb6bd6980665efcf1ab9f1f39bcd6c4bd4bca2c6a01895a3",
+      "mission/scenarios.py": "43f9e822c1b2fe87e43ea0204cae098312ab7b9cced54ef68a66239da0e83a2d",
+      "mission/session.py": "31d4454753c5091355a8f573ffcec6fe0c561b1433006a88163270fb4c157c3f",
+      "mission/shift_scenario.py": "e9229680d35a10f109caadd064069bb61e2c074028791ddc02586aabbd809710",
+      "mission/stationkeep.py": "14da84d35b897a8f65efce6582279fa79924c5bae446cef7627a751945a54887",
+      "mission/tasking.py": "00f8c22afc3102e3c17ecc503ca228e6c684f849eed95591a392a06f144315cb",
+      "mission/tools.py": "98475ec464c4ebc1efe2055ffa4b766403feaddcfaa1a736825aca6e893cb01b",
+      "mission/types.py": "b3582570cd1e5a5f441b5297ea482164fe19d2a13d735638a6de4a78063f36a1",
+      "mission/workplan.py": "529d2dd62266bcf50b4d34062125bf0b9ccc0d77a0cfbea99998ca4d5e93c2e6",
+      "planning/__init__.py": "bf0603acc28f08c2ae78056ba2a452b9d9851604b5b612f177cd10c810c390f4",
+      "planning/benchmark.py": "85754736c7e2e39b14b085022505c5ad0d8051484692f560e98558e42eb6cb84",
+      "planning/cli.py": "4cd89330c461f2db75bcf14431c2688adf070026aba71579be318ebb36757f4d",
+      "planning/model.py": "d37292e71901f74402e4b876a7ebd777b7d704f15d9d54f483fd603f7cff6555",
+      "planning/oracle.py": "fe24a664a314edb0d61ab43f441074a693d1fd56794b39b21b20fc5abac8a219",
+      "planning/policy.py": "38b2d8ea13eb3ba972d7d6e6e5c0316f28dd5bbf66d3ae938fe9ab0e31002af1",
+      "planning/runner.py": "f042e3a54be326e7f6372086927355c36a49d57dc15a03f9f3d68124bed71698",
+      "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+      "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+      "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+      "reference/actuation.py": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+      "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+      "reference/area_coverage.py": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+      "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+      "reference/booking.py": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+      "reference/covariance.py": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+      "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+      "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+      "reference/dynamic.py": "561de5d04912b53724a55ac50b9e04c4d2c8c350481acbbb02db7456454c3319",
+      "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+      "reference/events.py": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+      "reference/fixtures/analytic_vectors_v1.json": "fcb8da46457f2cf44e3ca5769a739d246816bd337257ccd6313f1c4262a32011",
+      "reference/fixtures/boinor_j2_24h.json": "9207b34272d9358c9e41a39cc3e5d0f71e1c4823d19af778e247d0236fc0ed78",
+      "reference/fixtures/boinor_j2_24h_third_body_other_epoch.json": "bada4373e7a9eac0d364fdc1a983657c5357f3e80b140a06bb3395e9e38f4b7a",
+      "reference/fixtures/boinor_j2_72h.json": "85ef02fb9672ad9ca2a8efd7822f6b03f3f76433a04ddfcb7a014c192b3d80bc",
+      "reference/fixtures/c2t06a.json": "6d67648cc557fa13643dad27e5778c2144716761c030318730ba9b24f1e5bb05",
+      "reference/fixtures/pointing_vectors_v1.json": "ed329d7afe1aa9fba20fbb559533ada258ce109b02c8acc0b4c46393200a081a",
+      "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+      "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+      "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+      "reference/observations.py": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+      "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+      "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+      "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+      "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+      "reference/payload_quality.py": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+      "reference/providers.py": "0355a7cf8124e818d68d85da27f4b4996d55d6bacad6ecd857d6a5375659e3e1",
+      "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+      "reference/radio_network.py": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+      "reference/resource_lanes.py": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+      "reference/rigid_attitude.py": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+      "reference/rigid_bus.py": "66eadb83ca163ae3bafe74c87b8b15ad0fff74ad72ab7d97db73cd913d2af116",
+      "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+      "reference/spacecraft_bus.py": "51b47bc29758b706f022193cc308e319efb0e34585df441e441e3e4969f0425d",
+      "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+      "reference/thermal_bus.py": "421b41d59ed490f8a60333d42fe35e599e0aaa24a65d55675893ca93c225dba2",
+      "reference/thermal_network.py": "275a8915149c1bb8f85b2f6ca50d93129def910eeb5782e2dde07ee5087e371c",
+      "reference/thrust.py": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+      "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+      "reference/unloading.py": "72daed084fb23d3d212de5a34872299357f44bdd7f66bdecf317970e7f2c123e",
+      "rl/__init__.py": "2cabf080a0171f639722d20d86b3fdd8f942ec1c91028f2eee7a57d6e63e2591",
+      "rl/curriculum.py": "028a23f6b35b0162595b83927f0fb9e41b8027b4410017d247bb9d35bf73e451",
+      "rl/expert.py": "13271abccad47668336481b798cc8dbde4cd4b806ff9fbce116a28f9d4ec7d0a",
+      "rl/reinforce.py": "95cb1947d08370024390d30008efac9bca4c016655d3a641d7ba7ae857024314",
+      "rl/report.py": "6a2e0aef6f92c96f9c2a61f64479431ced16a43921b999cfc76da6d7a8ec49f0",
+      "rl/rewards.py": "aef265db4775e0766b88fbca861d7d4cab7f1179d227091adf624cc6ca5810f7",
+      "rl/trajectories.py": "a8301be813787e8b6d0c51d28938eb6ad050f6045df31d031e94167c74d149d4",
+      "runtime/__init__.py": "11e57aa1a3801f07ec0a750438fa6f71b340dc2be56ab096c33af29255f22d32",
+      "runtime/adapters.py": "fa3a15e49bf52ff42c95c79533ba908f8fd9aa7cc97a24b3257883304183544b",
+      "runtime/cli.py": "7032fde67ac2528f032d49c665a363adf78fc3a2caae6d62426baef61e2a9b12",
+      "runtime/mission.py": "5330a6c025ee10c3a42ec5fd2f8f2f579bb5ab2715406714f6d1cb45333b7207",
+      "runtime/schema.py": "299e589eefe1603f064d669a06e471fbbb61d66a6c60297277c73639ff0ec555",
+      "scaling/__init__.py": "d4df8255de58a81f4b754ae3c0d55eb75ffd45d74fd8b868b8d93d11f749527f",
+      "scaling/benchmark.py": "821063b6bb392ea0a952ca9eb2226bf0960f592fad75a68f3670d75e5819dbcd",
+      "scaling/campaign.py": "4ac4069334ed21d83ad4a04793965e8e3b08e46e40558032746877682cc06946",
+      "scaling/ground.py": "9eb6c51ee127d78ce0d143a66e775530a83faa7d6dc839f61c4ac61029a85fa0",
+      "scaling/progress.py": "30f7a212740ae50d9368d926400a1740b9058a2dbc30ec29ca2b254a91bb8ca1",
+      "scaling/qualification.py": "8c991e74ba0801309f3ad46962e23ee92645b32e5dd6926cb56610266bb24426",
+      "scaling/spool.py": "e3e3b05df1e998dbb38df68427b33054efdadec4ccf675d00ad0686a48ce1804",
+      "scaling/worker.py": "a991aefb03c3065256cb6717cafa240884b2c39f09fbf749ea920c63c350d088",
+      "scaling/workloads.py": "4a3121cf5e9d48ab5aea6a740c5e1180b8341a6955c009c10584a23474c1491c",
+      "simulation/__init__.py": "c7d7dd310e44d473154f3dcd7a2e352c774f27faa5d0f5580da1d00fff930ac0",
+      "simulation/commands.py": "80ab8175f728e96b9fa7bebfbf9a5ecd8e5911965eacf3d029b631e87fdfbcb6",
+      "simulation/dtn.py": "6365f5c8d9d007d9ed6582139a803305f21164c2283c7c6b3ba4c494d3cc766e",
+      "simulation/engine.py": "ab3213c35207b083ca12ec09b967227afb5eaa9f3f06cb272f9bfa4e8435689e",
+      "simulation/fleet.py": "a013ee09158ef7bd53644b08cb4236a3518ab52608339f479623a724b801b643",
+      "simulation/fleet_view.py": "351ba690a20c1831545b6461180645fb0e7c9180a747d738baddcfd31238677a",
+      "simulation/joint.py": "b2d3f8746dd36320450b9f2f6fcffad64e0d395916a67ac6a868654bb8ad74d6",
+      "simulation/owned.py": "83305b273a26f5a22d647f90c528dd9c11ec41a6fe3a065c35a923e2aaec46e9",
+      "simulation/parallel.py": "14c14b7617006d71e0926ff42d728ad0fcbcd34322050a89ffd373b9ff180d4f",
+      "simulation/relay.py": "00086567aea7b1b05b6b5dcb280b72167f2996d0aab2faa35519539edf6f4cb5",
+      "simulation/snapshot.py": "1e7a77827d85ac4345d6721b420505622885fb27de36967375a631cc61561335",
+      "simulation/state.py": "96c122240cf8f1717e7ef457d4a99049bdf2d5457bd6991de0d23cf7663aecc2",
+      "simulation/streaming.py": "f26323e1fb9c4fe481f3f1133da6df73548464ee187ed2a3c554fc6982555c6a",
+      "simulation/terminals.py": "7f579ef4e90d567a149e96c657cedf208a3e31110d0bc4b530e2ac859af3033f",
+      "simulation/world.py": "608db4ae86d845a9c4dc94a2fd21416073313fd13085d18e206fac961674fcdf",
+      "tasks/__init__.py": "ea6dfbc66ef1c2bd16b5dc7b5d6d6644bf1da1698d7ac30d99cfed59dce970f4",
+      "tasks/cli.py": "6a21c5be4c3e31f92c2aac69a39962a9a6d795743e90f3ecc471a2e49153d51a",
+      "tasks/dataset.py": "f2882fba61f43e1d7c1fb73f1dc4c8dce47951d5f4b1fd67d0e0716d6143f1d8",
+      "tasks/env.py": "969e0ec7a651362f9a7d83ce6635590761ff0949f8ce36b7d4fc311188e559a2",
+      "tasks/observation.py": "d284172a4be80beebd3ff605f3b49eb417e93044f606ed803ca08a9a797c4bf7",
+      "tasks/parallel.py": "e654193d4297d1a81bb9d3736fe353568454489e0910c5ded572aa0c0f800e7e",
+      "tasks/schema.py": "2c3b269cee545433f55ef236411479c4fdd10c09e2b546063400e0c08d42fea6",
+      "tasks/session.py": "ca7cc46252961ef2ad84aedad44bf59dbb307a93e14d12c637d275e3e27b3083",
+      "tasks/tools.py": "b0b62a1363ff072a22fd822bac7f6d30a85c11add5b3b28e5a78404d77ad9729",
+      "validation/__init__.py": "e8aabc05c9032cdcba2b5a0fe6f0e4003c33fad17c291a0d34dec84fc2ec557a",
+      "validation/calibration.py": "3112e9e026257faf7c8ed9a399028c3a4eda470cd2b064290257ea5f7b015296",
+      "validation/covariance.py": "c95798743d864576b6188a2f4294e00c8950f6bd877bf21859043ab6c6ca3613",
+      "validation/envelopes.py": "7cfd10ec2d30c09e6480709deec5408ec1f8b5e4c671edd92ad6f051947c75b3",
+      "validation/force_crosscheck.py": "efd4e8989d44991a1bfcecb91e7a4e409c0902eae691e1f6f9c1addc185741ab",
+      "validation/gcrs_report.py": "cc9bab8e58a177d58a2eac9327c3bf036fdcb51003c7a3873e21adca4883d6e1",
+      "validation/geometry_events.py": "2f15803171b32a61fcd790e537b5e783e0169157a7d68c8906929be102f0869e",
+      "validation/maneuvers.py": "6c90c05f8dd393e5031813c6c4e816bf48c21e28a61e89088d9764b9cbe2602a",
+      "validation/orbit_fixtures.py": "ab3fea5d3a3cde5f8b8530bcee8417d32f8d7f559067899afa3cba4058cf7cc9",
+      "validation/pointing.py": "2ffb6db2e1b18484c5d4c9601e5c50d74e652489d1b59f158d97ded72bd5564e",
+      "validation/profiles.py": "c17b5a90ce38f397d0719ff5839d255922271b6f0e938a0b72d2ae5631cfea49",
+      "validation/report.py": "728b9f19ff6f452f8d5b7dc86784b3b22d0ccff2faedb88602ffccdbeed111d1",
+      "viz/__init__.py": "35a661ed597d5ba4982a4dbc9a7928410e89de36e32adfe9dd2afa963aa1cb00",
+      "viz/export.py": "4188890a994e047eb7e201ba443ce8dc2d41294c757aa94f9a3ef50e3ee9627b"
+    },
+    "installed_distribution_version": "0.134.0",
+    "package_version": "0.134.0",
+    "scope": "package source/data inventory, not an author signature or native mission qualification ID",
+    "source_data_sha256": "0601669dfdbdbb363678a851305ee851aa2fbdd7d36ba75da5646f70c56f9d66"
+  },
+  "catalog_sha256": "6f5984bc343b741bfc0194bfa3666b35b38e214cbd4288124dc5765e8093693d",
+  "checks": [
+    {
+      "name": "synthetic_fits_pass",
+      "passed": true
+    },
+    {
+      "name": "biased_holdout_rejected",
+      "passed": true
+    },
+    {
+      "name": "holdout_does_not_change_fit",
+      "passed": true
+    },
+    {
+      "name": "cw0017-scenario-cap",
+      "passed": true
+    },
+    {
+      "name": "cw0057-scenario-cap",
+      "passed": true
+    },
+    {
+      "name": "cw0162-scenario-cap",
+      "passed": true
+    },
+    {
+      "name": "cw0500-scenario-cap",
+      "passed": true
+    },
+    {
+      "name": "azur-3g30-bare-efficiency-mapping",
+      "passed": true
+    },
+    {
+      "name": "azur-3g30-cic-efficiency-mapping",
+      "passed": true
+    },
+    {
+      "name": "sensitivity_repeatability",
+      "passed": true
+    },
+    {
+      "name": "all_sensitivity_draws_in_support",
+      "passed": true
+    },
+    {
+      "name": "known_noise_information",
+      "passed": true
+    },
+    {
+      "name": "synthetic_fitted_inertia_in_native_kernel",
+      "passed": true
+    },
+    {
+      "name": "synthetic_fitted_heat_capacity_in_native_kernel",
+      "passed": true
+    }
+  ],
+  "fits": [
+    {
+      "algorithm_sources_sha256": {
+        "fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+        "schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3"
+      },
+      "axis": null,
+      "component_id": "synthetic-pv_efficiency",
+      "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+      "data_sha256": "ccdbb799aa3d1e645f32f9345e7d5e51987430722affd7c090aa73f9bf89d27f",
+      "experiment_model": "constant-effective-efficiency",
+      "fit_status": "synthetic_workflow_verified",
+      "frame": "scalar",
+      "gates": {
+        "conditional_interval_in_bounds": true,
+        "holdout_absolute_error": true,
+        "holdout_residual": true,
+        "holdout_within_training_domain": true,
+        "parameter_in_bounds": true,
+        "training_residual": true
+      },
+      "holdout": [
+        {
+          "error": -0.04306855120222419,
+          "experiment_id": "independent-holdout-0",
+          "id": "holdout-0",
+          "observed": 4.101846765727549,
+          "predicted": 4.058778214525325,
+          "standardized_error": -0.8613710240444838,
+          "within_training_input_range": true,
+          "x": 15.0
+        },
+        {
+          "error": -0.06356697907163245,
+          "experiment_id": "independent-holdout-1",
+          "id": "holdout-1",
+          "observed": 9.534049479630722,
+          "predicted": 9.47048250055909,
+          "standardized_error": -1.271339581432649,
+          "within_training_input_range": true,
+          "x": 35.0
+        },
+        {
+          "error": -0.06188620927366273,
+          "experiment_id": "independent-holdout-2",
+          "id": "holdout-2",
+          "observed": 21.708703353408726,
+          "predicted": 21.646817144135063,
+          "standardized_error": -1.2377241854732546,
+          "within_training_input_range": true,
+          "x": 80.0
+        }
+      ],
+      "holdout_standardized_rmse": 1.1387457327671553,
+      "id": "synthetic-pv_efficiency",
+      "independent_source_authentication": false,
+      "industrial_readiness": false,
+      "limitations": [
+        "conditional known independent Gaussian y-noise; negligible x errors and correct zero-intercept model assumed",
+        "no simultaneous actuator-gain/inertia or net-heat/capacity identification",
+        "declared experiment IDs and source digest do not authenticate a measurement provider",
+        "no automatic promotion of native parameter_status to calibrated; no extrapolation qualification"
+      ],
+      "model": "pv_efficiency",
+      "parameter": {
+        "conditional_normal_95_interval": [
+          0.2698336024239163,
+          0.2713368261794603
+        ],
+        "estimate": 0.2705852143016883,
+        "meaning": "constant effective conversion efficiency at declared conditions",
+        "standard_error": 0.0003834824944236852,
+        "unit": "ratio"
+      },
+      "passed": true,
+      "predeclared_gates": {
+        "max_holdout_absolute_error": 0.3,
+        "max_holdout_standardized_rmse": 3.0,
+        "max_train_standardized_rmse": 2.0,
+        "min_holdout": 3,
+        "min_train": 4,
+        "parameter_high": 0.405,
+        "parameter_low": 0.135
+      },
+      "schema": "space-env.scalar-fit/1",
+      "sha256": "e58ecbfb8b077073f270897bdbcce21c3577e582e956a97ca6dc963ff9c4ce5a",
+      "source": {
+        "content_scope": "space-env.measurement-rows/1 canonical JSON",
+        "content_sha256": "ccdbb799aa3d1e645f32f9345e7d5e51987430722affd7c090aa73f9bf89d27f",
+        "id": "synthetic-acquisition-pv_efficiency",
+        "kind": "synthetic_fixture",
+        "locator": "offline seeded normal perturbations; not independent physical measurements",
+        "redistribution": "project synthetic data",
+        "retrieved_on": "2026-11-03",
+        "uri": "synthetic://space-env/calibration/pv_efficiency"
+      },
+      "spec_sha256": "4b3216ea7e12da7a4db331a5869ebddc3f975f734970b9db6e03a8826f62282c",
+      "train": [
+        {
+          "error": 0.055892757038067065,
+          "experiment_id": "independent-train-0",
+          "id": "train-0",
+          "observed": -0.055892757038067065,
+          "predicted": 0.0,
+          "standardized_error": 1.1178551407613413,
+          "within_training_input_range": true,
+          "x": 0.0
+        },
+        {
+          "error": 0.003018271556965324,
+          "experiment_id": "independent-train-1",
+          "id": "train-1",
+          "observed": 2.7028338714599176,
+          "predicted": 2.705852143016883,
+          "standardized_error": 0.06036543113930648,
+          "within_training_input_range": true,
+          "x": 10.0
+        },
+        {
+          "error": 0.04314459697461359,
+          "experiment_id": "independent-train-2",
+          "id": "train-2",
+          "observed": 5.368559689059152,
+          "predicted": 5.411704286033766,
+          "standardized_error": 0.8628919394922718,
+          "within_training_input_range": true,
+          "x": 20.0
+        },
+        {
+          "error": 0.04408458953939309,
+          "experiment_id": "independent-train-3",
+          "id": "train-3",
+          "observed": 10.779323982528139,
+          "predicted": 10.823408572067532,
+          "standardized_error": 0.8816917907878619,
+          "within_training_input_range": true,
+          "x": 40.0
+        },
+        {
+          "error": -0.06416347359040842,
+          "experiment_id": "independent-train-4",
+          "id": "train-4",
+          "observed": 19.005128474708588,
+          "predicted": 18.94096500111818,
+          "standardized_error": -1.2832694718081683,
+          "within_training_input_range": true,
+          "x": 70.0
+        },
+        {
+          "error": 0.018349849146900965,
+          "experiment_id": "independent-train-5",
+          "id": "train-5",
+          "observed": 27.04017158102193,
+          "predicted": 27.05852143016883,
+          "standardized_error": 0.3669969829380193,
+          "within_training_input_range": true,
+          "x": 100.0
+        }
+      ],
+      "train_degrees_of_freedom": 5,
+      "train_standardized_rmse": 0.8714618309624981,
+      "training_input_domain": [
+        0.0,
+        100.0
+      ]
+    },
+    {
+      "algorithm_sources_sha256": {
+        "fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+        "schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3"
+      },
+      "axis": "z",
+      "component_id": "synthetic-inverse_inertia",
+      "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+      "data_sha256": "25b9c3fe770e8ebcf2b09bd6381e2bccfc6224ef80accdbebf04943070ce2b58",
+      "derived_reciprocal": {
+        "conditional_95_interval": [
+          2.49403874078335,
+          2.5034243246188783
+        ],
+        "estimate": 2.498722719310922,
+        "scope": "monotone reciprocal transform; not a Gaussian interval in reciprocal space or automatic native calibration",
+        "unit": "kg*m^2"
+      },
+      "experiment_model": "isolated-principal-axis-impulse",
+      "fit_status": "synthetic_workflow_verified",
+      "frame": "BODY",
+      "gates": {
+        "conditional_interval_in_bounds": true,
+        "holdout_absolute_error": true,
+        "holdout_residual": true,
+        "holdout_within_training_domain": true,
+        "parameter_in_bounds": true,
+        "training_residual": true
+      },
+      "holdout": [
+        {
+          "error": -0.0006249817568372076,
+          "experiment_id": "independent-holdout-0",
+          "id": "holdout-0",
+          "observed": 0.06065565216326222,
+          "predicted": 0.06003067040642501,
+          "standardized_error": -1.2499635136744152,
+          "within_training_input_range": true,
+          "x": 0.15
+        },
+        {
+          "error": 0.00025565815339495535,
+          "experiment_id": "independent-holdout-1",
+          "id": "holdout-1",
+          "observed": 0.13981590612826342,
+          "predicted": 0.14007156428165837,
+          "standardized_error": 0.5113163067899107,
+          "within_training_input_range": true,
+          "x": 0.35
+        },
+        {
+          "error": 0.00038859046010814025,
+          "experiment_id": "independent-holdout-2",
+          "id": "holdout-2",
+          "observed": 0.3197749850408253,
+          "predicted": 0.32016357550093344,
+          "standardized_error": 0.7771809202162805,
+          "within_training_input_range": true,
+          "x": 0.8
+        }
+      ],
+      "holdout_standardized_rmse": 0.8996042340671793,
+      "id": "synthetic-inverse_inertia",
+      "independent_source_authentication": false,
+      "industrial_readiness": false,
+      "limitations": [
+        "conditional known independent Gaussian y-noise; negligible x errors and correct zero-intercept model assumed",
+        "no simultaneous actuator-gain/inertia or net-heat/capacity identification",
+        "declared experiment IDs and source digest do not authenticate a measurement provider",
+        "no automatic promotion of native parameter_status to calibrated; no extrapolation qualification"
+      ],
+      "model": "inverse_inertia",
+      "parameter": {
+        "conditional_normal_95_interval": [
+          0.39945285749839476,
+          0.4009560812539388
+        ],
+        "estimate": 0.40020446937616677,
+        "meaning": "inverse principal-axis inertia from independently known net angular impulse",
+        "standard_error": 0.0003834824944236852,
+        "unit": "1/(kg*m^2)"
+      },
+      "passed": true,
+      "predeclared_gates": {
+        "max_holdout_absolute_error": 0.003,
+        "max_holdout_standardized_rmse": 3.0,
+        "max_train_standardized_rmse": 2.0,
+        "min_holdout": 3,
+        "min_train": 4,
+        "parameter_high": 0.6000000000000001,
+        "parameter_low": 0.2
+      },
+      "schema": "space-env.scalar-fit/1",
+      "sha256": "47953d1f88e660cd1b51798f326f8d5e834b1925b256b21d89c327a909eaae04",
+      "source": {
+        "content_scope": "space-env.measurement-rows/1 canonical JSON",
+        "content_sha256": "25b9c3fe770e8ebcf2b09bd6381e2bccfc6224ef80accdbebf04943070ce2b58",
+        "id": "synthetic-acquisition-inverse_inertia",
+        "kind": "synthetic_fixture",
+        "locator": "offline seeded normal perturbations; not independent physical measurements",
+        "redistribution": "project synthetic data",
+        "retrieved_on": "2026-11-03",
+        "uri": "synthetic://space-env/calibration/inverse_inertia"
+      },
+      "spec_sha256": "9ee8dd223d5e4cd35c3eb972138e3da9c419b89b8f21302a730625b746ebdfe3",
+      "train": [
+        {
+          "error": 0.0003571605447360877,
+          "experiment_id": "independent-train-0",
+          "id": "train-0",
+          "observed": -0.0003571605447360877,
+          "predicted": 0.0,
+          "standardized_error": 0.7143210894721754,
+          "within_training_input_range": true,
+          "x": 0.0
+        },
+        {
+          "error": -0.00017737422594744923,
+          "experiment_id": "independent-train-1",
+          "id": "train-1",
+          "observed": 0.04019782116356413,
+          "predicted": 0.04002044693761668,
+          "standardized_error": -0.35474845189489845,
+          "within_training_input_range": true,
+          "x": 0.1
+        },
+        {
+          "error": -0.0001279527626388971,
+          "experiment_id": "independent-train-2",
+          "id": "train-2",
+          "observed": 0.08016884663787226,
+          "predicted": 0.08004089387523336,
+          "standardized_error": -0.2559055252777942,
+          "within_training_input_range": true,
+          "x": 0.2
+        },
+        {
+          "error": 0.00013843298471621912,
+          "experiment_id": "independent-train-3",
+          "id": "train-3",
+          "observed": 0.1599433547657505,
+          "predicted": 0.16008178775046672,
+          "standardized_error": 0.27686596943243824,
+          "within_training_input_range": true,
+          "x": 0.4
+        },
+        {
+          "error": 0.0006921747871428408,
+          "experiment_id": "independent-train-4",
+          "id": "train-4",
+          "observed": 0.2794509537761739,
+          "predicted": 0.28014312856331675,
+          "standardized_error": 1.3843495742856815,
+          "within_training_input_range": true,
+          "x": 0.7
+        },
+        {
+          "error": -0.0004965675697639615,
+          "experiment_id": "independent-train-5",
+          "id": "train-5",
+          "observed": 0.40070103694593073,
+          "predicted": 0.40020446937616677,
+          "standardized_error": -0.9931351395279231,
+          "within_training_input_range": true,
+          "x": 1.0
+        }
+      ],
+      "train_degrees_of_freedom": 5,
+      "train_standardized_rmse": 0.7832607734203326,
+      "training_input_domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "algorithm_sources_sha256": {
+        "fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+        "schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3"
+      },
+      "axis": null,
+      "component_id": "synthetic-inverse_heat_capacity",
+      "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+      "data_sha256": "bfd3827115149dac9fc821a81e7b9bb6952469f5ea572c94dd09ad21c410ef1e",
+      "derived_reciprocal": {
+        "conditional_95_interval": [
+          49.8699720736197,
+          50.09529789831993
+        ],
+        "estimate": 49.98238103913762,
+        "scope": "monotone reciprocal transform; not a Gaussian interval in reciprocal space or automatic native calibration",
+        "unit": "J/K"
+      },
+      "experiment_model": "isolated-known-net-heat",
+      "fit_status": "synthetic_workflow_verified",
+      "frame": "scalar",
+      "gates": {
+        "conditional_interval_in_bounds": true,
+        "holdout_absolute_error": true,
+        "holdout_residual": true,
+        "holdout_within_training_domain": true,
+        "parameter_in_bounds": true,
+        "training_residual": true
+      },
+      "holdout": [
+        {
+          "error": -0.000751727508456479,
+          "experiment_id": "independent-holdout-0",
+          "id": "holdout-0",
+          "observed": 0.3008574785380958,
+          "predicted": 0.3001057510296393,
+          "standardized_error": -0.25057583615215967,
+          "within_training_input_range": true,
+          "x": 15.0
+        },
+        {
+          "error": 0.002398885241639115,
+          "experiment_id": "independent-holdout-1",
+          "id": "holdout-1",
+          "observed": 0.6978478671608527,
+          "predicted": 0.7002467524024918,
+          "standardized_error": 0.799628413879705,
+          "within_training_input_range": true,
+          "x": 35.0
+        },
+        {
+          "error": 0.001572551477848183,
+          "experiment_id": "independent-holdout-2",
+          "id": "holdout-2",
+          "observed": 1.5989914540135615,
+          "predicted": 1.6005640054914096,
+          "standardized_error": 0.5241838259493944,
+          "within_training_input_range": true,
+          "x": 80.0
+        }
+      ],
+      "holdout_standardized_rmse": 0.5706611759862624,
+      "id": "synthetic-inverse_heat_capacity",
+      "independent_source_authentication": false,
+      "industrial_readiness": false,
+      "limitations": [
+        "conditional known independent Gaussian y-noise; negligible x errors and correct zero-intercept model assumed",
+        "no simultaneous actuator-gain/inertia or net-heat/capacity identification",
+        "declared experiment IDs and source digest do not authenticate a measurement provider",
+        "no automatic promotion of native parameter_status to calibrated; no extrapolation qualification"
+      ],
+      "model": "inverse_heat_capacity",
+      "parameter": {
+        "conditional_normal_95_interval": [
+          0.0199619533559763,
+          0.02005214678130894
+        ],
+        "estimate": 0.02000705006864262,
+        "meaning": "inverse lumped heat capacity from independently known net absorbed energy",
+        "standard_error": 2.3008949665421114e-05,
+        "unit": "K/J"
+      },
+      "passed": true,
+      "predeclared_gates": {
+        "max_holdout_absolute_error": 0.018,
+        "max_holdout_standardized_rmse": 3.0,
+        "max_train_standardized_rmse": 2.0,
+        "min_holdout": 3,
+        "min_train": 4,
+        "parameter_high": 0.03,
+        "parameter_low": 0.01
+      },
+      "schema": "space-env.scalar-fit/1",
+      "sha256": "256103c63d47ec8088cc746a8b7dfeb8cc5802dc9a61841528bcff5cb397ab2b",
+      "source": {
+        "content_scope": "space-env.measurement-rows/1 canonical JSON",
+        "content_sha256": "bfd3827115149dac9fc821a81e7b9bb6952469f5ea572c94dd09ad21c410ef1e",
+        "id": "synthetic-acquisition-inverse_heat_capacity",
+        "kind": "synthetic_fixture",
+        "locator": "offline seeded normal perturbations; not independent physical measurements",
+        "redistribution": "project synthetic data",
+        "retrieved_on": "2026-11-03",
+        "uri": "synthetic://space-env/calibration/inverse_heat_capacity"
+      },
+      "spec_sha256": "1423cda50c68504a7172d225083a0d7dfe9f76ada242d221b8ca1c163ff4cc08",
+      "train": [
+        {
+          "error": 0.005782120409855978,
+          "experiment_id": "independent-train-0",
+          "id": "train-0",
+          "observed": -0.005782120409855978,
+          "predicted": 0.0,
+          "standardized_error": 1.9273734699519927,
+          "within_training_input_range": true,
+          "x": 0.0
+        },
+        {
+          "error": 0.0008514511165221561,
+          "experiment_id": "independent-train-1",
+          "id": "train-1",
+          "observed": 0.19921904956990405,
+          "predicted": 0.2000705006864262,
+          "standardized_error": 0.2838170388407187,
+          "within_training_input_range": true,
+          "x": 10.0
+        },
+        {
+          "error": -0.000967185455554076,
+          "experiment_id": "independent-train-2",
+          "id": "train-2",
+          "observed": 0.4011081868284065,
+          "predicted": 0.4001410013728524,
+          "standardized_error": -0.32239515185135864,
+          "within_training_input_range": true,
+          "x": 20.0
+        },
+        {
+          "error": 0.0019420471670403838,
+          "experiment_id": "independent-train-3",
+          "id": "train-3",
+          "observed": 0.7983399555786644,
+          "predicted": 0.8002820027457048,
+          "standardized_error": 0.6473490556801279,
+          "within_training_input_range": true,
+          "x": 40.0
+        },
+        {
+          "error": -0.0017148628014982403,
+          "experiment_id": "independent-train-4",
+          "id": "train-4",
+          "observed": 1.4022083676064818,
+          "predicted": 1.4004935048049836,
+          "standardized_error": -0.5716209338327468,
+          "within_training_input_range": true,
+          "x": 70.0
+        },
+        {
+          "error": 0.0005318770736915113,
+          "experiment_id": "independent-train-5",
+          "id": "train-5",
+          "observed": 2.0001731297905705,
+          "predicted": 2.000705006864262,
+          "standardized_error": 0.17729235789717043,
+          "within_training_input_range": true,
+          "x": 100.0
+        }
+      ],
+      "train_degrees_of_freedom": 5,
+      "train_standardized_rmse": 0.8828460709737639,
+      "training_input_domain": [
+        0.0,
+        100.0
+      ]
+    }
+  ],
+  "hardware_calibration_complete": false,
+  "industrial_readiness": false,
+  "negative_holdout": {
+    "algorithm_sources_sha256": {
+      "fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+      "schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3"
+    },
+    "axis": null,
+    "component_id": "synthetic-pv_efficiency",
+    "conditions": "synthetic independent aggregate experiments; known net excitation, zero intercept; constant reference conditions",
+    "data_sha256": "7737c849d8322747226582c97d569ef12d25403bccb992f97f2ad550a8c91c5a",
+    "experiment_model": "constant-effective-efficiency",
+    "fit_status": "rejected_by_gates",
+    "frame": "scalar",
+    "gates": {
+      "conditional_interval_in_bounds": true,
+      "holdout_absolute_error": false,
+      "holdout_residual": false,
+      "holdout_within_training_domain": true,
+      "parameter_in_bounds": true,
+      "training_residual": true
+    },
+    "holdout": [
+      {
+        "error": -5.043068551202224,
+        "experiment_id": "independent-holdout-0",
+        "id": "holdout-0",
+        "observed": 9.101846765727549,
+        "predicted": 4.058778214525325,
+        "standardized_error": -100.86137102404447,
+        "within_training_input_range": true,
+        "x": 15.0
+      },
+      {
+        "error": -5.0635669790716324,
+        "experiment_id": "independent-holdout-1",
+        "id": "holdout-1",
+        "observed": 14.534049479630722,
+        "predicted": 9.47048250055909,
+        "standardized_error": -101.27133958143264,
+        "within_training_input_range": true,
+        "x": 35.0
+      },
+      {
+        "error": -5.061886209273663,
+        "experiment_id": "independent-holdout-2",
+        "id": "holdout-2",
+        "observed": 26.708703353408726,
+        "predicted": 21.646817144135063,
+        "standardized_error": -101.23772418547325,
+        "within_training_input_range": true,
+        "x": 80.0
+      }
+    ],
+    "holdout_standardized_rmse": 101.12364903707697,
+    "id": "synthetic-pv_efficiency",
+    "independent_source_authentication": false,
+    "industrial_readiness": false,
+    "limitations": [
+      "conditional known independent Gaussian y-noise; negligible x errors and correct zero-intercept model assumed",
+      "no simultaneous actuator-gain/inertia or net-heat/capacity identification",
+      "declared experiment IDs and source digest do not authenticate a measurement provider",
+      "no automatic promotion of native parameter_status to calibrated; no extrapolation qualification"
+    ],
+    "model": "pv_efficiency",
+    "parameter": {
+      "conditional_normal_95_interval": [
+        0.2698336024239163,
+        0.2713368261794603
+      ],
+      "estimate": 0.2705852143016883,
+      "meaning": "constant effective conversion efficiency at declared conditions",
+      "standard_error": 0.0003834824944236852,
+      "unit": "ratio"
+    },
+    "passed": false,
+    "predeclared_gates": {
+      "max_holdout_absolute_error": 0.3,
+      "max_holdout_standardized_rmse": 3.0,
+      "max_train_standardized_rmse": 2.0,
+      "min_holdout": 3,
+      "min_train": 4,
+      "parameter_high": 0.405,
+      "parameter_low": 0.135
+    },
+    "schema": "space-env.scalar-fit/1",
+    "sha256": "36efca345b61430df4a7fa2385f138f8a398d5e11c4d162ad03180e236870eeb",
+    "source": {
+      "content_scope": "space-env.measurement-rows/1 canonical JSON",
+      "content_sha256": "7737c849d8322747226582c97d569ef12d25403bccb992f97f2ad550a8c91c5a",
+      "id": "synthetic-acquisition-pv_efficiency",
+      "kind": "synthetic_fixture",
+      "locator": "offline seeded normal perturbations; not independent physical measurements",
+      "redistribution": "project synthetic data",
+      "retrieved_on": "2026-11-03",
+      "uri": "synthetic://space-env/calibration/pv_efficiency"
+    },
+    "spec_sha256": "a1c0845be14c071391dff65caee89d9a3a01200c74681945ffc1656966d2bf52",
+    "train": [
+      {
+        "error": 0.055892757038067065,
+        "experiment_id": "independent-train-0",
+        "id": "train-0",
+        "observed": -0.055892757038067065,
+        "predicted": 0.0,
+        "standardized_error": 1.1178551407613413,
+        "within_training_input_range": true,
+        "x": 0.0
+      },
+      {
+        "error": 0.003018271556965324,
+        "experiment_id": "independent-train-1",
+        "id": "train-1",
+        "observed": 2.7028338714599176,
+        "predicted": 2.705852143016883,
+        "standardized_error": 0.06036543113930648,
+        "within_training_input_range": true,
+        "x": 10.0
+      },
+      {
+        "error": 0.04314459697461359,
+        "experiment_id": "independent-train-2",
+        "id": "train-2",
+        "observed": 5.368559689059152,
+        "predicted": 5.411704286033766,
+        "standardized_error": 0.8628919394922718,
+        "within_training_input_range": true,
+        "x": 20.0
+      },
+      {
+        "error": 0.04408458953939309,
+        "experiment_id": "independent-train-3",
+        "id": "train-3",
+        "observed": 10.779323982528139,
+        "predicted": 10.823408572067532,
+        "standardized_error": 0.8816917907878619,
+        "within_training_input_range": true,
+        "x": 40.0
+      },
+      {
+        "error": -0.06416347359040842,
+        "experiment_id": "independent-train-4",
+        "id": "train-4",
+        "observed": 19.005128474708588,
+        "predicted": 18.94096500111818,
+        "standardized_error": -1.2832694718081683,
+        "within_training_input_range": true,
+        "x": 70.0
+      },
+      {
+        "error": 0.018349849146900965,
+        "experiment_id": "independent-train-5",
+        "id": "train-5",
+        "observed": 27.04017158102193,
+        "predicted": 27.05852143016883,
+        "standardized_error": 0.3669969829380193,
+        "within_training_input_range": true,
+        "x": 100.0
+      }
+    ],
+    "train_degrees_of_freedom": 5,
+    "train_standardized_rmse": 0.8714618309624981,
+    "training_input_domain": [
+      0.0,
+      100.0
+    ]
+  },
+  "passed": true,
+  "qualification_status": "published-reference-points-and-synthetic-workflow-only",
+  "remaining": [
+    "independent laboratory/flight acquisition data with authenticated provenance",
+    "measurement noise/error/correlation assessment and wider operating domain",
+    "native coupled scenario ensemble qualification and customer mission holdout"
+  ],
+  "schema": "space-env.calibration-workflow-validation/1",
+  "sensitivity": {
+    "algorithm": "space-env.counter-uniform/1",
+    "attempted": 16,
+    "limitations": "independent latents except explicit common-rank groups; no empirical covariance or calibrated tolerances",
+    "members": [
+      {
+        "draws": {
+          "battery": 0.9795212580383399,
+          "inertia": 1.0408739280626103
+        },
+        "errors": [],
+        "index": 0
+      },
+      {
+        "draws": {
+          "battery": 0.9686496655449677,
+          "inertia": 1.0267393518258505
+        },
+        "errors": [],
+        "index": 1
+      },
+      {
+        "draws": {
+          "battery": 0.8250984892855893,
+          "inertia": 1.0009889462737784
+        },
+        "errors": [],
+        "index": 2
+      },
+      {
+        "draws": {
+          "battery": 0.9853377603012452,
+          "inertia": 0.9414734504320426
+        },
+        "errors": [],
+        "index": 3
+      },
+      {
+        "draws": {
+          "battery": 1.0045978434879073,
+          "inertia": 0.9402450622094509
+        },
+        "errors": [],
+        "index": 4
+      },
+      {
+        "draws": {
+          "battery": 0.8984143197625936,
+          "inertia": 1.0093683526524637
+        },
+        "errors": [],
+        "index": 5
+      },
+      {
+        "draws": {
+          "battery": 0.8373519666088083,
+          "inertia": 1.090158849052024
+        },
+        "errors": [],
+        "index": 6
+      },
+      {
+        "draws": {
+          "battery": 0.985142775648536,
+          "inertia": 1.0295550437800383
+        },
+        "errors": [],
+        "index": 7
+      },
+      {
+        "draws": {
+          "battery": 0.8988174589854763,
+          "inertia": 0.9681515668129488
+        },
+        "errors": [],
+        "index": 8
+      },
+      {
+        "draws": {
+          "battery": 0.9730429051466256,
+          "inertia": 0.9875665168504059
+        },
+        "errors": [],
+        "index": 9
+      },
+      {
+        "draws": {
+          "battery": 0.852601179863397,
+          "inertia": 0.9525167982113096
+        },
+        "errors": [],
+        "index": 10
+      },
+      {
+        "draws": {
+          "battery": 0.972639469044217,
+          "inertia": 0.936590554676556
+        },
+        "errors": [],
+        "index": 11
+      },
+      {
+        "draws": {
+          "battery": 0.930534831695976,
+          "inertia": 0.9328967501217629
+        },
+        "errors": [],
+        "index": 12
+      },
+      {
+        "draws": {
+          "battery": 0.9172249487619486,
+          "inertia": 1.0236133118873831
+        },
+        "errors": [],
+        "index": 13
+      },
+      {
+        "draws": {
+          "battery": 0.9850469184611955,
+          "inertia": 0.9280149903394089
+        },
+        "errors": [],
+        "index": 14
+      },
+      {
+        "draws": {
+          "battery": 1.005462990816625,
+          "inertia": 0.9704924674443388
+        },
+        "errors": [],
+        "index": 15
+      }
+    ],
+    "schema": "space-env.parameter-draws/1",
+    "sha256": "5ebdac5bc86c010a01cc9e24a84f51271eec4e101d1cab5b67c8f191147df265",
+    "spec": {
+      "id": "workflow-sensitivity",
+      "parameters": [
+        {
+          "actor": "a",
+          "high": 1.1,
+          "id": "battery",
+          "latent_group": null,
+          "low": 0.8,
+          "mean": null,
+          "mode": "uniform",
+          "rationale": "assumed aging sensitivity, not manufacturer tolerance",
+          "sigma": null,
+          "status": "assumed_sensitivity",
+          "target": "battery_capacity_scale",
+          "unit": "ratio"
+        },
+        {
+          "actor": "a",
+          "high": 1.2,
+          "id": "inertia",
+          "latent_group": null,
+          "low": 0.8,
+          "mean": 1.0,
+          "mode": "truncated_normal",
+          "rationale": "assumed geometry sensitivity, not a fitted hardware distribution",
+          "sigma": 0.05,
+          "status": "assumed_sensitivity",
+          "target": "body_inertia_scale",
+          "unit": "ratio"
+        }
+      ],
+      "samples": 16,
+      "schema_version": "space-env.parameter-ensemble/1",
+      "seed": 17
+    },
+    "status": "assumed_sensitivity_only"
+  },
+  "sha256": "00cb9570dd53b8f432881abb7c938c4df9ee88264ac9f0422e4ce4e6a9f7b2d3",
+  "source_bytes_revalidated_in_run": false,
+  "sources": {
+    "azur-general-2025": {
+      "content_scope": "downloaded original PDF bytes",
+      "content_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+      "id": "azur-general-2025",
+      "kind": "manufacturer_specification",
+      "locator": "DB 00010890-01, issue 08-Apr-2025, page 7, Generic Product Performance Data, 3G30-Advanced 100mm/2 cells-per-wafer columns and footnote 3",
+      "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only",
+      "retrieved_on": "2026-11-03",
+      "uri": "https://www.azurspace.com/media/uploads/file_links/file/bdb_00010890-01-00_generalinformationazur.pdf"
+    },
+    "cubespace-wheels": {
+      "content_scope": "downloaded original PDF bytes",
+      "content_sha256": "f787e2fb8899c0dcfbf50eb3abaaf005fcc6485610b6b08fe48248c136b177ca",
+      "id": "cubespace-wheels",
+      "kind": "manufacturer_specification",
+      "locator": "page 2, CW0017/CW0057/CW0162/CW0500 table columns; visually checked",
+      "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only",
+      "retrieved_on": "2026-11-03",
+      "uri": "https://www.cubespace.co.za/uploads/ee37948b-0f02-4651-96e3-c6274f1d8797.pdf"
+    }
+  }
+}

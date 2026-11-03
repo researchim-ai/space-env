@@ -316,7 +316,7 @@ class ReferenceDownlinkMission:
 
         return apply_events(self, events)
 
-    def observation(self) -> dict:
+    def observation(self, actor: str | None = None) -> dict:
         return {"time_sec": self.clock, "actors": {actor: {
             "soc": self.energy_wh[actor]/self.vehicles[actor].battery_wh,
             "stored_bits": sum(self.remaining[p.id] for p in self.products.values() if p.actor == actor),
@@ -324,7 +324,7 @@ class ReferenceDownlinkMission:
             "transmitter_rate_bps": self.transmitter_rates[actor],
             **({"dtn":self.dtn.observation(actor)} if self.dtn is not None else {}),
             **({"radio_network":self.radio_network.observation(self, actor)} if self.radio_network is not None else {}),
-        } for actor in self.actors}}
+        } for actor in (self.actors if actor is None else (actor,))}}
 
     def _visible(self, actor: str, station: str) -> bool:
         return any(lo <= self.clock < hi for lo, hi in self.windows[actor, station]) and not any(
@@ -575,7 +575,7 @@ class ReferenceDownlinkMission:
         due = max(r.get("ack_due_sec", r["end_sec"]) for r in slips)
         return due if due <= self.clock+4*math.ulp(self.clock) else None
 
-    def report(self) -> dict:
+    def product_outcomes(self) -> list[dict]:
         outcomes = []
         processed = self.processed_products()
         for product in self.products.values():
@@ -599,6 +599,10 @@ class ReferenceDownlinkMission:
                                                and product.ready_sec <= self.clock+1e-9 and not self.retained_for(product.id),
                              "delivered_bits": sum(r["bits"] for r in slips),
                              "remaining_bits": self.remaining[product.id]})
+        return outcomes
+
+    def report(self) -> dict:
+        outcomes = self.product_outcomes()
         inventory = {}
         for actor in self.actors:
             initial = self.initial_bits[actor]

@@ -339,3 +339,149 @@ Local sessions survive restart in `.space-env/operator.sqlite3` (override with
 handover uses revision/epoch fencing; secret-free archives retain observed tracks
 and provenance. See [durability and recovery contract](docs/OPERATOR_DURABILITY_CONTRACT.md).
 This bounded local console is not an authenticated multi-tenant public service.
+
+### Incremental history and online recovery (B10-C1)
+
+Role-scoped journal/navigation cursors survive compatible-build restarts. Local
+SQLite online backups are replay-verified before exclusive publication; restore
+creates a new database and retains session/capability identity. See the
+[maintenance contract](docs/OPERATOR_MAINTENANCE_CONTRACT.md) and
+[installed smoke](examples/operator/maintenance_smoke.py). Artifact streaming,
+retention and deployment qualification remain separate work.
+
+### Bounded artifact transport (B10-C2)
+
+Native archives/checkpoints support SHA-256-checked chunk upload and disk-streamed
+download; verified RL/SFT ZIP is assembled on disk. The local operator UI uses the
+new routes. Per-artifact/job/spool limits, retry/cancel semantics and non-durable
+transfer lifecycle are defined in the [artifact contract](docs/OPERATOR_ARTIFACT_CONTRACT.md).
+
+### Coupled formation qualification (B11-Q1)
+
+A declared EO/CPU/DTN/RF/thermal workload adds multiple request arrivals, a shared
+ground terminal, fault witnesses and paired uninterrupted/native-recovered runs.
+The scale harness supports bounded fresh-process concurrency and frozen completion
+upper/lower gates. See [campaign qualification](docs/COUPLED_CAMPAIGN_QUALIFICATION.md)
+for synthetic geometry assumptions, exact scope and preserved failed probes.
+### Scoped projection reads (B11-Q2)
+
+Single-actor native observations materialize only the selected actor. Task refresh
+shares owned telemetry reads across its role projections for that refresh only;
+entity registries remain separate, public outputs remain owned and post-cancel
+joint admission reads the real candidate state. A same-build diagnostic checks
+exact task transitions, controller traces and native reports. See the
+[implementation and limits](docs/PROJECTION_READ_OPTIMIZATION.md) and
+[acceptance receipt](docs/acceptance/B11_PROJECTION_READS.json). Fewer read calls
+alone do not establish large-mission throughput or industrial readiness.
+
+### Native copies and worker diagnostics (B11-Q3)
+
+Native observations avoid a redundant science copy; owned container-tree copying,
+full independent capture and scalar trainer accounting preserve native outcomes.
+Compact audit reuses validated canonical bytes, with rollback on event-copy failure.
+Bounded atomic per-worker phase/PID/decision/resource diagnostics survive timeouts
+and remain separate from native replay proof. See the
+[contract](docs/NATIVE_COPY_AND_WORKER_DIAGNOSTICS.md),
+[acceptance](docs/acceptance/B11_NATIVE_COPY.json) and
+[same-build parity example](examples/campaign/native_copy_parity.py).
+
+### Ground windows and observed-ACK release (B11-Q4)
+
+Versioned campaign controls support shorter ground windows and optional causal
+release of acknowledged downlink controls. Native cancellation/re-admission still
+checks real resources and rolls back rejected replacements. Scale receipts expose
+conditional window diagnostics and separate runtime validity from mission targets;
+overall gates and historical failures are preserved. See the
+[contract](docs/GROUND_SCHEDULING_CONTRACT.md),
+[new frozen profile](examples/campaign/ground.py) and
+[acceptance](docs/acceptance/B11_GROUND.json).
+
+
+### B11-Q5-A: frozen analytical physics evidence
+
+```bash
+space-env reference-qualify-envelopes /tmp/physics.json --long --external
+```
+
+Ten frozen cases cover eccentric inclined central orbits through 72h, sampled
+Hermite interpolation, two-node conduction, vacuum radiation, principal-axis
+rigid/wheel dynamics and S/X-band scalar link budgets. The report records measured
+errors, predeclared budgets, shared inputs, source inventory and unqualified
+domains. Analytical agreement is numerical verification, not flight/hardware
+calibration or general industrial readiness. Existing external J2 and ERFA
+regressions remain separate evidence levels. See
+[the validation contract](docs/validation/ANALYTIC_ENVELOPES_V1.md) and
+[next Q5-B/C/D milestones](docs/INDUSTRIAL_NEXT_AFTER_GROUND.md).
+
+
+### B11-Q5-B: off-axis pointing, rotating force and fixed-station contacts
+
+```bash
+space-env reference-qualify-pointing /tmp/pointing.json
+```
+
+Sixteen frozen cases and 612 comparisons cover off-axis symmetric gyrostat
+rotation, wheel capacity/reversal, asymmetric external momentum unloading,
+centered/offset rotating burns, and two orbital planes against four fixed sites.
+Expected results use independent analytical/matrix/Cartesian implementations;
+Earth orientation uses explicitly shared ERFA and synthetic EOP. Positive and
+empty contact results, saturation-step refinement and rotating-force errors are
+checked separately. This is numerical equation verification with fixed budgets,
+not hardware calibration or mission-wide readiness. See
+[the contract and remaining scope](docs/validation/POINTING_ACTUATION_CONTACTS_V1.md).
+
+
+### B11-Q5-C1: hardware evidence, conditional fits and sensitivity ensembles
+
+```bash
+space-env hardware-catalog /tmp/hardware.json
+space-env calibration-check /tmp/calibration.json
+space-env calibration-fit measurements.json /tmp/fit.json
+space-env parameter-ensemble scenario.json sensitivity.json /tmp/ensemble.json
+```
+
+Six curated manufacturer reference points preserve source PDF hashes, SI units,
+operating conditions and unknown tolerances. Explicit wheel/solar adapters keep
+published values separate from derived quantities and host assumptions. Scalar
+known-noise fits enforce identifiable experiments, typed frames/units, immutable
+measurement exports and independent holdout. Counter-keyed sensitivity draws
+retain rejections and remove stale calibration labels from perturbed models.
+These are published reference points and a synthetic workflow acceptance, not
+flight/laboratory calibration or automatically qualified training data. See
+[the evidence and calibration contract](docs/validation/HARDWARE_EVIDENCE_CALIBRATION_V1.md).
+
+## Температурная теплоёмкость тепловых узлов
+
+В `thermal_network.nodes` можно явно выбрать `material_capacity` вместо
+постоянной `capacity_j_per_k`. Первый material profile использует опубликованную
+корреляцию NIST для Al6061-T6 (4–300 K): энергия учитывается через интеграл
+энтальпии, а выход за диапазон откатывает native-операцию. Масса, геометрия и
+применимость к аппарату остаются явными допущениями; аппаратная калибровка не
+заявляется. Проверка: `space-env reference-qualify-materials /tmp/materials.json`.
+Подробности: [контракт и формулы](docs/validation/MATERIAL_ENTHALPY_V1.md).
+
+## Native-проверка ансамблей параметров
+
+`space-env qualify-ensemble spec.json /tmp/ensemble-run` связывает assumed
+parameter variants с изолированным исполнением миссий: baseline, повторы,
+warm/cold checkpoint comparison, replay, quality и resource/service gates.
+Все compiler rejections, worker errors и failed gates остаются в результате.
+`space-env verify-ensemble /tmp/ensemble-run` проверяет артефакты и агрегацию,
+не перезапускает физику. [Контракт и пример](docs/validation/NATIVE_ENSEMBLE_QUALIFICATION_V1.md).
+Это проверка конкретных заданных миссий, без автоматического hardware-calibration
+или industrial-readiness claim.
+
+Для проверки восстановления через настоящий process boundary:
+`python examples/calibration/qualification.py /tmp/ensemble-process --new-process`.
+Producer завершается до старта continuation; JSON checkpoint связывается с
+workload/build/seed/policy, а timeout общий для двух фаз.
+[Протокол и границы](docs/validation/PROCESS_RESTART_V1.md).
+
+## Независимые орбиты и фиксированные станции
+
+`python examples/scaling/independent.py /tmp/independent --small` проверяет
+delivery-only workload на6000s: две орбитальные плоскости и заранее заданные
+географические sites. Пары без контактов сохраняются. Native gates проверяют
+ресурсы и receipts, а conditional LP capacity bound пересчитывается точной
+рациональной арифметикой. Есть outage/no-contact cases и отдельный процесс для
+восстановления. [Модель и ограничения](docs/validation/INDEPENDENT_GEOMETRY_V1.md).

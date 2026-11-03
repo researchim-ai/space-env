@@ -1,0 +1,33 @@
+         82273086 function calls (67370335 primitive calls) in 17.128 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1022 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002   17.131   17.131 runner.py:114(run)
+  616/331    0.033    0.000   17.008    0.051 mission.py:31(call)
+       10    0.000    0.000   17.004    1.700 runner.py:50(step)
+       10    0.062    0.006   16.986    1.699 session.py:228(step)
+12494049/8306    7.164    0.000   13.925    0.002 copy.py:118(deepcopy)
+763122/55007    1.513    0.000   13.841    0.000 copy.py:217(_deepcopy_dict)
+1702959/14097    1.377    0.000   13.506    0.001 copy.py:191(_deepcopy_list)
+       14    0.000    0.000   11.304    0.807 session.py:293(native)
+       14    0.030    0.002   11.271    0.805 mission.py:408(_mutation)
+       10    0.000    0.000    9.653    0.965 mission.py:563(advance)
+       73    0.041    0.001    7.931    0.109 mission.py:248(observe)
+       35    0.000    0.000    4.087    0.117 dynamic.py:518(report)
+       35    0.018    0.001    3.973    0.114 lifecycle.py:1679(report)
+       10    0.000    0.000    3.536    0.354 mission.py:575(apply)
+       10    0.000    0.000    3.534    0.353 dynamic.py:491(advance)
+       10    0.012    0.001    3.534    0.353 lifecycle.py:939(advance)
+ 2389/884    0.003    0.000    2.986    0.003 copy.py:200(_deepcopy_tuple)
+       24    0.017    0.001    2.957    0.123 dynamic.py:538(capture)
+13315/379    0.018    0.000    2.945    0.008 copy.py:247(_reconstruct)
+       80    0.002    0.000    2.755    0.034 dynamic.py:462(observe)
+       80    0.013    0.000    2.712    0.034 lifecycle.py:1620(observation)
+       21    0.000    0.000    2.440    0.116 dynamic.py:508(truth)
+       21    0.000    0.000    2.440    0.116 adapters.py:191(truth)
+       20    0.000    0.000    2.320    0.116 session.py:98(score)
+        4    0.000    0.000    1.651    0.413 mission.py:480(submit)
+
+

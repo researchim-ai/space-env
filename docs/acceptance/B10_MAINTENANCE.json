@@ -1,0 +1,110 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B10-C1",
+  "version": "0.134.0",
+  "date": "2026-11-03",
+  "status": "verified_bounded_scoped_cursors_and_online_recovery",
+  "contract": "../OPERATOR_MAINTENANCE_CONTRACT.md",
+  "scope": [
+    "stateless capability/session/channel-bound journal and navigation cursors",
+    "role-projected sequence with append continuity and consumed-prefix conflict detection",
+    "online SQLite WAL snapshot while another connection commits",
+    "active-session cold native replay and all stored journal/snapshot integrity before publication",
+    "exclusive no-overwrite backup publication and restore into a new database",
+    "OS-owner CLI and SDK verification against a private coherent snapshot"
+  ],
+  "checks": {
+    "operator_api_durable_maintenance": {
+      "passed": 94,
+      "new_maintenance_cases": 38,
+      "seconds": 63.64,
+      "log": "/tmp/space-env-b10c-api.log"
+    },
+    "reference": {
+      "passed": 1199,
+      "warnings": 15,
+      "seconds": 265.56,
+      "log": "/tmp/space-env-b10c-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 13.65,
+      "log": "/tmp/space-env-b10c-fast.log"
+    },
+    "collected": 1629,
+    "test_counts_overlap": true,
+    "native_sdk": {
+      "passed": true,
+      "source_revision": 1,
+      "restored_revision": 2,
+      "cursor_continuity": true,
+      "native_replay": true,
+      "independent_restore": true,
+      "log": "/tmp/space-env-b10c-smoke.log"
+    },
+    "real_http": {
+      "passed": true,
+      "backup_restore": true,
+      "scoped_cursor_continuity": true,
+      "cross_capability_rejected": true,
+      "log": "/tmp/space-env-b10c-http.log"
+    },
+    "installed_sdk": {
+      "passed": true,
+      "outside_checkout": true,
+      "isolated_python": true,
+      "system_site_packages": true,
+      "log": "/tmp/space-env-b10c-installed.log"
+    },
+    "installed_real_http": {
+      "passed": true,
+      "outside_checkout": true,
+      "isolated_python": true,
+      "log": "/tmp/space-env-b10c-installed-http.log"
+    },
+    "wheel": {
+      "modules_byte_matched": 233,
+      "operator_assets_byte_matched": 3,
+      "sha256": "b7cfe514e91245c1a036202c75bc24108c33afd00dd982687848c1e69eb073c8"
+    },
+    "lint": "ruff explicit changed Python files and git diff --check passed"
+  },
+  "fault_and_scope_cases": [
+    "empty tail, duplicate page reads, append continuity and no physical/storage mutations",
+    "different roles see only their projected decisions and actor navigation",
+    "cross-capability, cross-session and cross-channel cursors rejected",
+    "cursor revoked by capability recovery and changed-prefix conflict is explicit",
+    "strict limits/schema and unauthorized API requests rejected",
+    "concurrent source commit during SQLite copying retains coherent replayable head",
+    "verify snapshots privately before a later live mutation",
+    "existing file, directory, dangling symlink and output-creation race never overwritten",
+    "failed native verification, corrupt snapshot and copy timeout publish nothing and remove staging",
+    "closed tombstones retained and checked without reactivating capabilities",
+    "CLI verify/backup/restore prints no plaintext capability secrets"
+  ],
+  "bounds": {
+    "page_entries_max": 128,
+    "cursor_characters_max": 2048,
+    "interactive_limits_unchanged": true,
+    "copy_timeout_sec": [
+      0.01,
+      600
+    ],
+    "copy_timeout_excludes_native_verification": true,
+    "publication_requires_local_hard_links": true
+  },
+  "not_claimed": [
+    "artifact streaming, SSE or durable indexed event store",
+    "automatic retention, backup scheduling or live database replacement",
+    "SSO/TLS, multiple organizations or untrusted code sandbox",
+    "constant-time cursor prefix hashing or unbounded history",
+    "power-loss hardware/filesystem certification or network-filesystem recovery",
+    "source/dependency checkpoint migration",
+    "closed-episode full native replay in backup verification",
+    "independently calibrated physical accuracy or flight qualification",
+    "dependency-clean remote CI or expanded full profile executed"
+  ],
+  "website": "not changed or regenerated in B10-C1",
+  "git": "No stage, commit, push or PR performed."
+}

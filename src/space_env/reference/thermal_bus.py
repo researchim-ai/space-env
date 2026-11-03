@@ -108,7 +108,7 @@ class CoupledThermalNetwork:
 
     def stored(self, a):
         return sum(
-            n.capacity_j_per_k * (self.temperatures[a][k] - n.initial_k)
+            n.stored(n.initial_k, self.temperatures[a][k])
             for k, n in self.models[a].nodes.items()
         )
 
@@ -381,7 +381,7 @@ class CoupledThermalNetwork:
             exchange[edge.a] -= energy
             exchange[edge.b] += energy
         residual = {
-            k: n.capacity_j_per_k * (self.temperatures[a][k] - n.initial_k)
+            k: n.stored(n.initial_k, self.temperatures[a][k])
             - t["internal_j"][k]
             - t["external_j"][k]
             - exchange[k]
@@ -393,6 +393,13 @@ class CoupledThermalNetwork:
             {
                 "schema": "space-env.thermal-network/1",
                 "temperatures_k": self.temperatures[a],
+                "heat_capacity_j_per_k": {
+                    k: n.capacity(self.temperatures[a][k]) for k, n in c.nodes.items()
+                },
+                "node_stored_j": {
+                    k: n.stored(n.initial_k, self.temperatures[a][k])
+                    for k, n in c.nodes.items()
+                },
                 "source_heat_j": self.sources[a],
                 "heater_requested": self.heater_requests[a],
                 "heater_power_w": self.heaters[a],

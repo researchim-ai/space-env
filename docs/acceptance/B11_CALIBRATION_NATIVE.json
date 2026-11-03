@@ -1,0 +1,44 @@
+{
+  "ensemble_sha256": "3987f5e4ddf44ccc056204e20f627c245eab6fc9994ba10e5245b877eb18927c",
+  "members": [
+    {
+      "dc_energy_j": 6.0,
+      "index": 0,
+      "native_restore_replay": true,
+      "scenario_sha256": "f3289f8191c78881a559b54998291653a8f29808d8fb78ad8670b725c31edf78",
+      "wheel_momentum_nms": [
+        0.0,
+        0.0,
+        4.999999999999996e-05
+      ]
+    },
+    {
+      "dc_energy_j": 6.0,
+      "index": 1,
+      "native_restore_replay": true,
+      "scenario_sha256": "866d28b29760dd0220204d07251b4473213fd2b1acdb577638f20485385e3a68",
+      "wheel_momentum_nms": [
+        0.0,
+        0.0,
+        4.999999999999996e-05
+      ]
+    },
+    {
+      "dc_energy_j": 6.0,
+      "index": 2,
+      "native_restore_replay": true,
+      "scenario_sha256": "aa4c8cf3270ac54d6ce33ab74d2edf1f5246d4235c3cd0f83e5f31d35ce55e43",
+      "wheel_momentum_nms": [
+        0.0,
+        0.0,
+        4.999999999999996e-05
+      ]
+    }
+  ],
+  "passed": true,
+  "schema": "space-env.calibration-native-smoke/1",
+  "scope": "three short native mixed-evidence sensitivity cases; not a calibrated mission or a teacher-quality benchmark",
+  "sha256": "9cf894d2dfcf4b5b06c1131dab1471320425dfda8864c73f2517fa60e9e8184a",
+  "solar_adapter_sha256": "3a95e296831eaf709f713abc81d6b3bff5595d4a94758d79edbb10e407347c39",
+  "wheel_adapter_sha256": "12041eddc0e16b9c66dece92109a8b5e6d217a8a39e5a11d557490f23da5acce"
+}

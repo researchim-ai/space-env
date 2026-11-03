@@ -1,0 +1,89 @@
+{
+  "schema": "space-env.pointing-native-smoke/1",
+  "date": "2026-11-03",
+  "wheel_sha256": "7505302429c917b9b5cf90e988f4a9776d27f020ba11096d14b883fe9166e9a7",
+  "passed": true,
+  "cases": [
+    {
+      "id": "chemical",
+      "receipt": "B11_POINTING_NATIVE_CHEMICAL.json.gz",
+      "script_exit_code": 0,
+      "elapsed_sec": 17.394603862998338,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation_statuses": {
+        "engine": {
+          "status": "completed",
+          "reason": null
+        }
+      },
+      "expected_unload_operation_failure": false,
+      "scope": "deterministic rotating thrust/lever moment; small mass loss with constant inertia, no exhaust qualification"
+    },
+    {
+      "id": "electric",
+      "receipt": "B11_POINTING_NATIVE_ELECTRIC.json.gz",
+      "script_exit_code": 0,
+      "elapsed_sec": 17.390187794000667,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation_statuses": {
+        "engine": {
+          "status": "completed",
+          "reason": null
+        }
+      },
+      "expected_unload_operation_failure": false,
+      "scope": "deterministic rotating thrust/lever moment; small mass loss with constant inertia, no exhaust qualification"
+    },
+    {
+      "id": "unloading-nominal",
+      "receipt": "B11_POINTING_NATIVE_UNLOADING_NOMINAL.json.gz",
+      "script_exit_code": 0,
+      "elapsed_sec": 17.589085612999042,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation_statuses": {
+        "unload": {
+          "status": "completed",
+          "reason": null
+        }
+      },
+      "expected_unload_operation_failure": false,
+      "scope": "resource-accounted ideal balanced RCS; single declared tank and constant inertia applicability"
+    },
+    {
+      "id": "unloading-limited",
+      "receipt": "B11_POINTING_NATIVE_UNLOADING_LIMITED.json.gz",
+      "script_exit_code": 0,
+      "elapsed_sec": 20.0488383769989,
+      "metrics": {
+        "fulfilled_requests": 2,
+        "total_requests": 2
+      },
+      "operation_statuses": {
+        "unload": {
+          "status": "failed",
+          "reason": "unload_window_ended"
+        }
+      },
+      "expected_unload_operation_failure": true,
+      "scope": "resource-accounted ideal balanced RCS; single declared tank and constant inertia applicability"
+    }
+  ],
+  "ground_verified_exports": {
+    "ok": true,
+    "short_ground_paired_recovery": true,
+    "observed_ack_cancel_and_resubmit": true,
+    "native_replay_and_verified_rl_sft": true,
+    "scope": "small installed smoke, not large mission qualification"
+  },
+  "scope": "four installed legacy constructive-target mission demos plus ground export smoke; not independent fixed-site mission qualification; limited unloading operation correctly fails while service remains 2/2",
+  "sha256": "ff942e348fe226956abaef3165c110c76025507997d0430ca00ad49abd507e28"
+}

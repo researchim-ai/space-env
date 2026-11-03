@@ -1,0 +1,1013 @@
+{
+  "no-contact": {
+    "capacity": {
+      "certificate": {
+        "fractional_upper_denominator": "1",
+        "fractional_upper_float_rounded_up": 0.0,
+        "fractional_upper_numerator": "0",
+        "integer_upper_binary_lp_floor": 0,
+        "integer_upper_conservative_ceiling": 0,
+        "method": "exact Fraction weak-duality bound on binary64 LP coefficients; conservative integer ceiling"
+      },
+      "equality_dual": [
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "inequality_dual": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": "upper bound on relaxed fixed-rate service, not a feasible plan, an optimum of the native controller or calibrated RF coverage",
+      "primal_fractional_products_estimate": -0.0,
+      "problem": {
+        "capacities_sec": [
+          6000.0,
+          6000.0,
+          6000.0,
+          6000.0,
+          6000.0
+        ],
+        "flows": [],
+        "products": [
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-polar-high",
+            "required_tx_sec": 10.0,
+            "station": "polar-high"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-polar-high",
+            "required_tx_sec": 10.0,
+            "station": "polar-high"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-polar-high",
+            "required_tx_sec": 10.0,
+            "station": "polar-high"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-polar-high",
+            "required_tx_sec": 10.0,
+            "station": "polar-high"
+          }
+        ],
+        "schema": "space-env.contact-capacity-problem/1"
+      },
+      "problem_sha256": "498aa91709862b7b810a8a2e7503177536dcd1a858a0cd33574b9654aec6084a",
+      "schema": "space-env.contact-capacity-bound/1",
+      "sha256": "61fecedfa51d689deaa6dee4b623b4c68b3a85fbafe50f98537f55144bd128f0",
+      "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "solver_status": 0,
+      "solver_success": true
+    },
+    "native_spec_sha256": "3aa040d34ef2d23db9b25e877550429cbefb048c4a887eccf6aaf179bcf10bac",
+    "pairs": [
+      {
+        "actor": "plane-a-00",
+        "station": "polar-high",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "polar-high",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "polar-high",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "polar-high",
+        "windows": []
+      }
+    ],
+    "pairs_with_contacts": 0,
+    "pairs_without_contacts": 4,
+    "schema": "space-env.independent-geometry-assessment/1",
+    "scope": "diagnostic/privileged fixed-ephemeris model assessment; shared native geometric access equations, no physical calibration or actor forecast",
+    "sha256": "d23894c233d69648c79b1bfff27e0baead2f804af61558432ebfd463fefc1638"
+  },
+  "nominal": {
+    "capacity": {
+      "certificate": {
+        "fractional_upper_denominator": "1",
+        "fractional_upper_float_rounded_up": 6.0,
+        "fractional_upper_numerator": "6",
+        "integer_upper_binary_lp_floor": 6,
+        "integer_upper_conservative_ceiling": 6,
+        "method": "exact Fraction weak-duality bound on binary64 LP coefficients; conservative integer ceiling"
+      },
+      "equality_dual": [
+        0.1,
+        -0.0,
+        0.1,
+        0.1,
+        -0.0,
+        0.1,
+        -0.0,
+        -0.0,
+        0.1,
+        -0.0,
+        -0.0,
+        0.1
+      ],
+      "inequality_dual": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": "upper bound on relaxed fixed-rate service, not a feasible plan, an optimum of the native controller or calibrated RF coverage",
+      "primal_fractional_products_estimate": 6.0,
+      "problem": {
+        "capacities_sec": [
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954
+        ],
+        "flows": [
+          {
+            "actor_row": 8,
+            "product": 4,
+            "station_row": 12,
+            "upper_sec": 136.16600536019223
+          },
+          {
+            "actor_row": 14,
+            "product": 1,
+            "station_row": 19,
+            "upper_sec": 458.41535307666186
+          },
+          {
+            "actor_row": 15,
+            "product": 4,
+            "station_row": 19,
+            "upper_sec": 458.41535307666186
+          },
+          {
+            "actor_row": 21,
+            "product": 1,
+            "station_row": 26,
+            "upper_sec": 129.9244257370633
+          },
+          {
+            "actor_row": 38,
+            "product": 9,
+            "station_row": 39,
+            "upper_sec": 141.6566718815593
+          },
+          {
+            "actor_row": 44,
+            "product": 6,
+            "station_row": 46,
+            "upper_sec": 352.0964929207421
+          },
+          {
+            "actor_row": 45,
+            "product": 9,
+            "station_row": 46,
+            "upper_sec": 352.0964929207421
+          },
+          {
+            "actor_row": 51,
+            "product": 6,
+            "station_row": 53,
+            "upper_sec": 123.10399564070212
+          },
+          {
+            "actor_row": 66,
+            "product": 10,
+            "station_row": 68,
+            "upper_sec": 149.7830431381244
+          },
+          {
+            "actor_row": 72,
+            "product": 7,
+            "station_row": 75,
+            "upper_sec": 92.20317158705984
+          },
+          {
+            "actor_row": 73,
+            "product": 10,
+            "station_row": 75,
+            "upper_sec": 92.20317158705984
+          },
+          {
+            "actor_row": 79,
+            "product": 7,
+            "station_row": 82,
+            "upper_sec": 120.63891242987938
+          }
+        ],
+        "products": [
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          }
+        ],
+        "schema": "space-env.contact-capacity-problem/1"
+      },
+      "problem_sha256": "36902bf14132c00957deeef678c4ffa09c77097427943c9d87c1829b1628e99b",
+      "schema": "space-env.contact-capacity-bound/1",
+      "sha256": "330d54311a51f157e3aad93cdf4455bfef99c67074aabba6f195eb21573ff7a6",
+      "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "solver_status": 0,
+      "solver_success": true
+    },
+    "native_spec_sha256": "fd4f27beeb2d0690cf969dc80c5265a5705df067accfda29d473e616b6f3a3df",
+    "pairs": [
+      {
+        "actor": "plane-a-00",
+        "station": "equator",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-00",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 1807.2994331887976,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 2395.6372120025226,
+            "max_elevation_deg": 25.559881340926403,
+            "peak_sec": 2102.8258705655544
+          }
+        ]
+      },
+      {
+        "actor": "plane-a-00",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "equator",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 1671.1334278286054,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 2265.7127862654593,
+            "max_elevation_deg": 26.59573471582674,
+            "peak_sec": 1969.8660990669366
+          }
+        ]
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "equator",
+        "windows": [
+          {
+            "aos_sec": 4197.040253674349,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 4672.238742235792,
+            "max_elevation_deg": 13.943009387642805,
+            "peak_sec": 4434.827986487049
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 5246.1806234522655,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 5459.020707469204,
+            "max_elevation_deg": 6.236180399664035,
+            "peak_sec": 5352.488387938366
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "equator",
+        "windows": [
+          {
+            "aos_sec": 4055.3835817927893,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 4549.13474659509,
+            "max_elevation_deg": 15.038918653982902,
+            "peak_sec": 4302.465038894859
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 5096.397580314141,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 5338.381795039325,
+            "max_elevation_deg": 6.623963077988073,
+            "peak_sec": 5217.262890765361
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "south",
+        "windows": []
+      }
+    ],
+    "pairs_with_contacts": 6,
+    "pairs_without_contacts": 6,
+    "schema": "space-env.independent-geometry-assessment/1",
+    "scope": "diagnostic/privileged fixed-ephemeris model assessment; shared native geometric access equations, no physical calibration or actor forecast",
+    "sha256": "61d7732623eb62dfd182ddef0bf44996d49043150472f7996eecd2b2707ef9d0"
+  },
+  "outage": {
+    "capacity": {
+      "certificate": {
+        "fractional_upper_denominator": "1",
+        "fractional_upper_float_rounded_up": 0.0,
+        "fractional_upper_numerator": "0",
+        "integer_upper_binary_lp_floor": 0,
+        "integer_upper_conservative_ceiling": 0,
+        "method": "exact Fraction weak-duality bound on binary64 LP coefficients; conservative integer ceiling"
+      },
+      "equality_dual": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "inequality_dual": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": "upper bound on relaxed fixed-rate service, not a feasible plan, an optimum of the native controller or calibrated RF coverage",
+      "primal_fractional_products_estimate": -0.0,
+      "problem": {
+        "capacities_sec": [
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          1671.1324278286054,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          136.16600536019223,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          458.41535307666186,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          129.9244257370633,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          1659.7443697902663,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          141.6566718815593,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          352.0964929207421,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          123.10399564070212,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          424.1568380783483,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          149.7830431381244,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          92.20317158705984,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          120.63891242987938,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954,
+          540.9782925307954
+        ],
+        "flows": [],
+        "products": [
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-a-00",
+            "id": "p-plane-a-00-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-a-01",
+            "id": "p-plane-a-01-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-b-00",
+            "id": "p-plane-b-00-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-equator",
+            "required_tx_sec": 10.0,
+            "station": "equator"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-north",
+            "required_tx_sec": 10.0,
+            "station": "north"
+          },
+          {
+            "actor": "plane-b-01",
+            "id": "p-plane-b-01-south",
+            "required_tx_sec": 10.0,
+            "station": "south"
+          }
+        ],
+        "schema": "space-env.contact-capacity-problem/1"
+      },
+      "problem_sha256": "8dc9d67f4105954a8610ee871b5f89cb2449be2e82a2cf60dbb99347b4281f90",
+      "schema": "space-env.contact-capacity-bound/1",
+      "sha256": "0cae16df0c9a3a8a71e22009d7ab454376acb32135a71158bb4dd669c494c55e",
+      "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "solver_status": 0,
+      "solver_success": true
+    },
+    "native_spec_sha256": "5fd85b9db388ea6f3af0811e0a22607318a1dc42fb7bd2ffc2327355536762b6",
+    "pairs": [
+      {
+        "actor": "plane-a-00",
+        "station": "equator",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-00",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 1807.2994331887976,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 2395.6372120025226,
+            "max_elevation_deg": 25.559881340926403,
+            "peak_sec": 2102.8258705655544
+          }
+        ]
+      },
+      {
+        "actor": "plane-a-00",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "equator",
+        "windows": []
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 1671.1334278286054,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 2265.7127862654593,
+            "max_elevation_deg": 26.59573471582674,
+            "peak_sec": 1969.8660990669366
+          }
+        ]
+      },
+      {
+        "actor": "plane-a-01",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "equator",
+        "windows": [
+          {
+            "aos_sec": 4197.040253674349,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 4672.238742235792,
+            "max_elevation_deg": 13.943009387642805,
+            "peak_sec": 4434.827986487049
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 5246.1806234522655,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 5459.020707469204,
+            "max_elevation_deg": 6.236180399664035,
+            "peak_sec": 5352.488387938366
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-00",
+        "station": "south",
+        "windows": []
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "equator",
+        "windows": [
+          {
+            "aos_sec": 4055.3835817927893,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 4549.13474659509,
+            "max_elevation_deg": 15.038918653982902,
+            "peak_sec": 4302.465038894859
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "north",
+        "windows": [
+          {
+            "aos_sec": 5096.397580314141,
+            "clipped_end": false,
+            "clipped_start": false,
+            "los_sec": 5338.381795039325,
+            "max_elevation_deg": 6.623963077988073,
+            "peak_sec": 5217.262890765361
+          }
+        ]
+      },
+      {
+        "actor": "plane-b-01",
+        "station": "south",
+        "windows": []
+      }
+    ],
+    "pairs_with_contacts": 6,
+    "pairs_without_contacts": 6,
+    "schema": "space-env.independent-geometry-assessment/1",
+    "scope": "diagnostic/privileged fixed-ephemeris model assessment; shared native geometric access equations, no physical calibration or actor forecast",
+    "sha256": "3380ca31f975b231a684384d7f7a33b1fc2d954921b2b937c1a1306638d83375"
+  }
+}

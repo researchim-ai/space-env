@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "short_ground_paired_recovery": true,
+  "observed_ack_cancel_and_resubmit": true,
+  "native_replay_and_verified_rl_sft": true,
+  "scope": "small installed smoke, not large mission qualification",
+  "sha256": "db84b7f945905f876b0b428650d326860219881f152925b09ba02f406776bd63"
+}

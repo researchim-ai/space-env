@@ -1,0 +1,206 @@
+{
+  "schema": "space-env.hardware-reference-points/1",
+  "sources": {
+    "cubespace-wheels": {
+      "id": "cubespace-wheels",
+      "kind": "manufacturer_specification",
+      "uri": "https://www.cubespace.co.za/uploads/ee37948b-0f02-4651-96e3-c6274f1d8797.pdf",
+      "content_sha256": "f787e2fb8899c0dcfbf50eb3abaaf005fcc6485610b6b08fe48248c136b177ca",
+      "content_scope": "downloaded original PDF bytes",
+      "locator": "page 2, CW0017/CW0057/CW0162/CW0500 table columns; visually checked",
+      "retrieved_on": "2026-11-03",
+      "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only"
+    },
+    "azur-general-2025": {
+      "id": "azur-general-2025",
+      "kind": "manufacturer_specification",
+      "uri": "https://www.azurspace.com/media/uploads/file_links/file/bdb_00010890-01-00_generalinformationazur.pdf",
+      "content_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+      "content_scope": "downloaded original PDF bytes",
+      "locator": "DB 00010890-01, issue 08-Apr-2025, page 7, Generic Product Performance Data, 3G30-Advanced 100mm/2 cells-per-wafer columns and footnote 3",
+      "retrieved_on": "2026-11-03",
+      "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only"
+    }
+  },
+  "profiles": {
+    "cw0017": {
+      "kind": "reaction_wheel",
+      "manufacturer": "CubeSpace",
+      "product": "CW0017",
+      "source_id": "cubespace-wheels",
+      "status": "published_reference_point",
+      "source_values": {
+        "rated_momentum_mnms": 1.77,
+        "speed_at_rated_momentum_rpm": 8000.0,
+        "torque_at_rated_momentum_mnm": 0.23,
+        "mass_g": 60.0,
+        "steady_at_rated_momentum_mw": 300.0,
+        "peak_accelerating_at_rated_momentum_w": 0.85
+      },
+      "values_si": {
+        "rated_momentum_nms": 0.00177,
+        "speed_at_rated_momentum_rad_s": 837.7580409572781,
+        "torque_at_rated_momentum_nm": 0.00023,
+        "mass_kg": 0.06,
+        "steady_at_rated_momentum_w": 0.3,
+        "peak_accelerating_at_rated_momentum_w": 0.85
+      },
+      "conditions": "torque/speed/power at rated momentum; steady includes digital power; peak excludes startup inrush",
+      "uncertainty": "manufacturer tolerances/distributions not supplied here; no statistical uncertainty inferred",
+      "unmodeled": [
+        "full torque-speed/temperature/voltage envelope",
+        "friction/jitter",
+        "startup inrush",
+        "spacecraft inertia and three-wheel assembly calibration"
+      ]
+    },
+    "cw0057": {
+      "kind": "reaction_wheel",
+      "manufacturer": "CubeSpace",
+      "product": "CW0057",
+      "source_id": "cubespace-wheels",
+      "status": "published_reference_point",
+      "source_values": {
+        "rated_momentum_mnms": 5.7,
+        "speed_at_rated_momentum_rpm": 6000.0,
+        "torque_at_rated_momentum_mnm": 2.0,
+        "mass_g": 115.0,
+        "steady_at_rated_momentum_mw": 770.0,
+        "peak_accelerating_at_rated_momentum_w": 2.7
+      },
+      "values_si": {
+        "rated_momentum_nms": 0.0057,
+        "speed_at_rated_momentum_rad_s": 628.3185307179587,
+        "torque_at_rated_momentum_nm": 0.002,
+        "mass_kg": 0.115,
+        "steady_at_rated_momentum_w": 0.77,
+        "peak_accelerating_at_rated_momentum_w": 2.7
+      },
+      "conditions": "torque/speed/power at rated momentum; steady includes digital power; peak excludes startup inrush",
+      "uncertainty": "manufacturer tolerances/distributions not supplied here; no statistical uncertainty inferred",
+      "unmodeled": [
+        "full torque-speed/temperature/voltage envelope",
+        "friction/jitter",
+        "startup inrush",
+        "spacecraft inertia and three-wheel assembly calibration"
+      ]
+    },
+    "cw0162": {
+      "kind": "reaction_wheel",
+      "manufacturer": "CubeSpace",
+      "product": "CW0162",
+      "source_id": "cubespace-wheels",
+      "status": "published_reference_point",
+      "source_values": {
+        "rated_momentum_mnms": 16.2,
+        "speed_at_rated_momentum_rpm": 6000.0,
+        "torque_at_rated_momentum_mnm": 7.0,
+        "mass_g": 144.0,
+        "steady_at_rated_momentum_mw": 770.0,
+        "peak_accelerating_at_rated_momentum_w": 7.2
+      },
+      "values_si": {
+        "rated_momentum_nms": 0.0162,
+        "speed_at_rated_momentum_rad_s": 628.3185307179587,
+        "torque_at_rated_momentum_nm": 0.007,
+        "mass_kg": 0.14400000000000002,
+        "steady_at_rated_momentum_w": 0.77,
+        "peak_accelerating_at_rated_momentum_w": 7.2
+      },
+      "conditions": "torque/speed/power at rated momentum; steady includes digital power; peak excludes startup inrush",
+      "uncertainty": "manufacturer tolerances/distributions not supplied here; no statistical uncertainty inferred",
+      "unmodeled": [
+        "full torque-speed/temperature/voltage envelope",
+        "friction/jitter",
+        "startup inrush",
+        "spacecraft inertia and three-wheel assembly calibration"
+      ]
+    },
+    "cw0500": {
+      "kind": "reaction_wheel",
+      "manufacturer": "CubeSpace",
+      "product": "CW0500",
+      "source_id": "cubespace-wheels",
+      "status": "published_reference_point",
+      "source_values": {
+        "rated_momentum_mnms": 50.0,
+        "speed_at_rated_momentum_rpm": 5810.0,
+        "torque_at_rated_momentum_mnm": 10.0,
+        "mass_g": 322.0,
+        "steady_at_rated_momentum_mw": 3400.0,
+        "peak_accelerating_at_rated_momentum_w": 15.0
+      },
+      "values_si": {
+        "rated_momentum_nms": 0.05,
+        "speed_at_rated_momentum_rad_s": 608.4217772452232,
+        "torque_at_rated_momentum_nm": 0.01,
+        "mass_kg": 0.322,
+        "steady_at_rated_momentum_w": 3.4,
+        "peak_accelerating_at_rated_momentum_w": 15.0
+      },
+      "conditions": "torque/speed/power at rated momentum; steady includes digital power; peak excludes startup inrush",
+      "uncertainty": "manufacturer tolerances/distributions not supplied here; no statistical uncertainty inferred",
+      "unmodeled": [
+        "full torque-speed/temperature/voltage envelope",
+        "friction/jitter",
+        "startup inrush",
+        "spacecraft inertia and three-wheel assembly calibration"
+      ]
+    },
+    "azur-3g30-bare": {
+      "kind": "solar_reference_point",
+      "manufacturer": "AZUR SPACE",
+      "product": "3G30-Advanced, 100mm wafer, 2 cells per wafer, bare cell",
+      "source_id": "azur-general-2025",
+      "status": "published_reference_point",
+      "source_values": {
+        "efficiency_percent": 29.8,
+        "irradiance_w_m2": 1353.0,
+        "temperature_c": 28.0,
+        "temperature_half_range_c": 1.0
+      },
+      "values_si": {
+        "efficiency": 0.298,
+        "irradiance_w_m2": 1353.0,
+        "temperature_k": 301.15,
+        "temperature_half_range_k": 1.0
+      },
+      "conditions": "BOL, AM0 WRC, CASOLBA 2005 (05-20MV1); geometry/coverglass changes performance",
+      "uncertainty": "temperature test condition is not an efficiency error bar; no efficiency tolerance distribution inferred",
+      "unmodeled": [
+        "temperature coefficients and I-V curve",
+        "radiation/aging",
+        "panel packing/wiring/MPPT losses",
+        "alternative irradiance normalization"
+      ]
+    },
+    "azur-3g30-cic": {
+      "kind": "solar_reference_point",
+      "manufacturer": "AZUR SPACE",
+      "product": "3G30-Advanced, 100mm wafer, 2 cells per wafer, CIC/SCA with 100 micrometer CMG coverglass",
+      "source_id": "azur-general-2025",
+      "status": "published_reference_point",
+      "source_values": {
+        "efficiency_percent": 29.5,
+        "irradiance_w_m2": 1353.0,
+        "temperature_c": 28.0,
+        "temperature_half_range_c": 1.0
+      },
+      "values_si": {
+        "efficiency": 0.295,
+        "irradiance_w_m2": 1353.0,
+        "temperature_k": 301.15,
+        "temperature_half_range_k": 1.0
+      },
+      "conditions": "BOL, AM0 WRC, CASOLBA 2005 (05-20MV1); geometry/coverglass changes performance",
+      "uncertainty": "temperature test condition is not an efficiency error bar; no efficiency tolerance distribution inferred",
+      "unmodeled": [
+        "temperature coefficients and I-V curve",
+        "radiation/aging",
+        "panel packing/wiring/MPPT losses",
+        "alternative irradiance normalization"
+      ]
+    }
+  },
+  "sha256": "6f5984bc343b741bfc0194bfa3666b35b38e214cbd4288124dc5765e8093693d"
+}

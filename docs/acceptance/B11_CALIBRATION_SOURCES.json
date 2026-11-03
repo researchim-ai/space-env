@@ -1,0 +1,42 @@
+{
+  "schema": "space-env.calibration-source-byte-audit/1",
+  "date": "2026-11-03",
+  "sources": [
+    {
+      "source": {
+        "id": "cubespace-wheels",
+        "kind": "manufacturer_specification",
+        "uri": "https://www.cubespace.co.za/uploads/ee37948b-0f02-4651-96e3-c6274f1d8797.pdf",
+        "content_sha256": "f787e2fb8899c0dcfbf50eb3abaaf005fcc6485610b6b08fe48248c136b177ca",
+        "content_scope": "downloaded original PDF bytes",
+        "locator": "page 2, CW0017/CW0057/CW0162/CW0500 table columns; visually checked",
+        "retrieved_on": "2026-11-03",
+        "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only"
+      },
+      "observed_bytes": 895615,
+      "observed_sha256": "f787e2fb8899c0dcfbf50eb3abaaf005fcc6485610b6b08fe48248c136b177ca",
+      "table_visually_checked": true,
+      "pdf_redistributed": false,
+      "independent_provider_authentication": false
+    },
+    {
+      "source": {
+        "id": "azur-general-2025",
+        "kind": "manufacturer_specification",
+        "uri": "https://www.azurspace.com/media/uploads/file_links/file/bdb_00010890-01-00_generalinformationazur.pdf",
+        "content_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+        "content_scope": "downloaded original PDF bytes",
+        "locator": "DB 00010890-01, issue 08-Apr-2025, page 7, Generic Product Performance Data, 3G30-Advanced 100mm/2 cells-per-wafer columns and footnote 3",
+        "retrieved_on": "2026-11-03",
+        "redistribution": "manufacturer copyright; PDF not redistributed, curated numerical facts only"
+      },
+      "observed_bytes": 1477425,
+      "observed_sha256": "c931ea2ac58ba357327b666e9716e25d70669d12dc8e827f9d076b3785f9f22f",
+      "table_visually_checked": true,
+      "pdf_redistributed": false,
+      "independent_provider_authentication": false
+    }
+  ],
+  "scope": "retrieved primary specification bytes and table transcription; no measured hardware calibration",
+  "sha256": "a6174b54a618f7543159ef669a23d164dc45be48b6dcac5365ab6e16b08e15ef"
+}

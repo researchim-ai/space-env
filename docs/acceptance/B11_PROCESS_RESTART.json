@@ -1,0 +1,173 @@
+{
+  "schema": "space-env.process-restart-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-D1b opt-in two-process recovery and artifact audit verified for enumerated synthetic workloads; C2/D2/Q6/Q7 open",
+  "industrial_readiness": false,
+  "hardware_calibration_complete": false,
+  "implementation": [
+    "producer exits successfully before consumer starts; separate interpreters and bounded atomic JSON packet",
+    "invocation/workload/scenario/task/seed/policy/source-data/dependency identities bound and checked",
+    "shared prefix-continuation deadline with child kill/reap; retained error rows and phase diagnostics",
+    "native process_restart gate, direct-versus-restored trace/backend comparisons, persisted packet verification",
+    "legacy false flags omitted from serialized input; old in-process default preserved; CLI example and installed CI updated"
+  ],
+  "validation": {
+    "new_tests_passed": 41,
+    "targeted_process_ensemble_progress_passed": 91,
+    "reference_passed": 1581,
+    "reference_seconds": 421.14,
+    "fast_passed": 110,
+    "collected": 2011,
+    "counts_overlap": true,
+    "reference_passed_in_single_run": true,
+    "reference_local_http_permission_enabled": true,
+    "logical_native_executions": 30,
+    "successful_separate_process_restores": 9,
+    "prior_materials_34_calibration_14_pointing_612_envelopes_119_passed": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false,
+    "dependency_clean": false,
+    "independently_located_large_mission_requalified": false
+  },
+  "installed_cases": {
+    "positive": {
+      "qualification_passed": true,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 2,
+        "structural_rejected": 0
+      },
+      "logical_executions": 6,
+      "successful_process_restores": 3,
+      "planned_process_launches_admitted_only": 9,
+      "prefix_decisions": 1,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 1.0
+    },
+    "rejected": {
+      "qualification_passed": false,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 0,
+        "structural_rejected": 2
+      },
+      "logical_executions": 2,
+      "successful_process_restores": 1,
+      "planned_process_launches_admitted_only": 3,
+      "prefix_decisions": 1,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 1.0
+    },
+    "budget": {
+      "qualification_passed": false,
+      "baseline": "native_failed",
+      "counts": {
+        "native_failed": 2,
+        "passed": 0,
+        "structural_rejected": 0
+      },
+      "logical_executions": 6,
+      "successful_process_restores": 0,
+      "planned_process_launches_admitted_only": 9,
+      "prefix_decisions": 1,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 1.0
+    },
+    "timeout": {
+      "qualification_passed": false,
+      "baseline": "native_failed",
+      "counts": {
+        "native_failed": 2,
+        "passed": 0,
+        "structural_rejected": 0
+      },
+      "logical_executions": 6,
+      "successful_process_restores": 0,
+      "planned_process_launches_admitted_only": 9,
+      "prefix_decisions": 1,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 1.0
+    },
+    "random": {
+      "qualification_passed": true,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 1,
+        "structural_rejected": 0
+      },
+      "logical_executions": 4,
+      "successful_process_restores": 2,
+      "planned_process_launches_admitted_only": 6,
+      "prefix_decisions": 1,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 0.0
+    },
+    "midflight": {
+      "qualification_passed": true,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 2,
+        "structural_rejected": 0
+      },
+      "logical_executions": 6,
+      "successful_process_restores": 3,
+      "planned_process_launches_admitted_only": 9,
+      "prefix_decisions": 3,
+      "offline_artifacts_verified": true,
+      "minimum_completion_fraction": 1.0
+    }
+  },
+  "source_modules": 251,
+  "source_data_inventory_files": 284,
+  "test_source_sha256": "53b4104d8775bc7d7a79c46dd4562aa862d3047ceade22a8775cfaf1c41b77af",
+  "example_source_sha256": "8b1b9c4cfe7b2fbb89c2964249557b3a7909dd4b14503dfb47b46cd7140d8595",
+  "limitations": [
+    "restore replays audited prefix in the new interpreter; not O(1) native memory deserialization",
+    "PID/nonce/hash checks are local identity evidence, not author/remote host authentication",
+    "measured RSS snapshots and subprocess deadline are not hard OS memory/CPU quotas",
+    "no automatic durable retry/cancellation/job queue or nonempty-directory recovery",
+    "constructive synthetic scenarios are not independently located mission envelopes or hardware calibration",
+    "random policy probe declares min completion zero and proves continuation integrity, not teacher expertise or useful service"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json",
+    "B11_POINTING.json",
+    "B11_CALIBRATION.json",
+    "B11_MATERIALS.json",
+    "B11_ENSEMBLE.json"
+  ],
+  "artifacts_sha256": {
+    "B11_PROCESS_RESTART_BUDGET.json": "25c331f7b2e57126c8b90b6a94a2a6ab54cabb2ab550c3a308cadc5ee62f53b0",
+    "B11_PROCESS_RESTART_BUDGET.manifest.json.gz": "380c7d63f42257bad3d9f9f184129e14a79b37c1e7ce742797543e829ac83183",
+    "B11_PROCESS_RESTART_FAST.txt": "9beac92971c1fe696c688e2d8e78bee34eb3a4053efff90a29f88a83e72af4c0",
+    "B11_PROCESS_RESTART_MIDFLIGHT.json": "ed44f70a0fa8500ae874c938e439c31a5d09d139fdfd0c71fc9f3159121f5105",
+    "B11_PROCESS_RESTART_MIDFLIGHT.manifest.json.gz": "6fd8b616cf48319ec0bc254a593687c93cd4dd003f09cc719d1a8a6ba0218dd2",
+    "B11_PROCESS_RESTART_POSITIVE.json": "052ef29c646152f201d84f7d55463ad96335eb33817c873dee0eb33139eecef2",
+    "B11_PROCESS_RESTART_POSITIVE.manifest.json.gz": "6a4ffc4ea5121459c36c491b2ffa5c64e26d438387db415473329498e43a91e0",
+    "B11_PROCESS_RESTART_PRIOR_CALIBRATION.json": "7aa8aa8e66c8b52d107f8e13bf7387f5246237f02f82f2d96f0c81d4526f983a",
+    "B11_PROCESS_RESTART_PRIOR_ENVELOPES.json": "b462db7bde41c628bee9f9e4e16cb58ac0a6d668b5efb9a24c26d426cf31ab50",
+    "B11_PROCESS_RESTART_PRIOR_MATERIALS.json": "f2ee74ed7f7940c04b268233e6a40f0de802b484f56146d5968c269f04a0b53a",
+    "B11_PROCESS_RESTART_PRIOR_POINTING.json": "879acd32890d1bbd898047d24e24e614c13ee689405cbcc18d4991d3c092303b",
+    "B11_PROCESS_RESTART_RANDOM.json": "89e5b391c3a94b3be5ca03b151fcf6f822dda51d8cc2ad1ac3c88e24cde22eb9",
+    "B11_PROCESS_RESTART_RANDOM.manifest.json.gz": "140c3eb550f43f3c2b0fe1d59c45f2590e2c10c97840508e4fa0942ce6c8ebbe",
+    "B11_PROCESS_RESTART_REFERENCE.txt": "9d774f17ea813890ee0df2cc0dc00951018daa348517701446f5f510f2684b58",
+    "B11_PROCESS_RESTART_REJECTED.json": "aad3f06cd967956798012e24e3bee4f2d66bc62df74404077bb3d8ba246eb0d1",
+    "B11_PROCESS_RESTART_REJECTED.manifest.json.gz": "1e288ce71c4793e4ab116c05e0ea9e246ce5139bdaddcaebb1b167d50ec71bf9",
+    "B11_PROCESS_RESTART_TARGETED.txt": "2c14f62c88662f2d3bb8383d2497c3ea85b7c28c889fd81f1367ed9837930f19",
+    "B11_PROCESS_RESTART_TIMEOUT.json": "2071135eccd8073539b6ab5a16aa007931e2738dfaa461c669e795b5e968935d",
+    "B11_PROCESS_RESTART_TIMEOUT.manifest.json.gz": "c812a76a3823bef1792dffc8c187150d5f28242f758ba18313201677d80d4e98",
+    "B11_PROCESS_RESTART_WHEEL.json": "223c89441a6bcd25d2097274646591de4ea2d2a753c88b9cd2adf4516a4e17a9"
+  },
+  "next": [
+    "D2 independently located multi-plane/multi-station closed-loop mission workloads and pointing/resource/refinement gates",
+    "C2 measured-data acquisition/provenance/protocol-specific estimation and independent holdout",
+    "Q6 teacher/public-view/OOD benchmark and Q7 hard quotas/durable jobs"
+  ],
+  "sha256": "e06d5b0c19772077bd4271ee9d66e802574c5248677b5179da33748c2c706c72"
+}

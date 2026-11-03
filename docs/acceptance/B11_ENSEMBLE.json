@@ -1,0 +1,122 @@
+{
+  "schema": "space-env.ensemble-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-D1 native ensemble execution and artifact audit verified for frozen synthetic workloads; C2/D2/Q6 open",
+  "industrial_readiness": false,
+  "hardware_calibration_complete": false,
+  "implementation": [
+    "frozen sensitivity compiler to isolated scale-worker bridge, baseline and every structural candidate",
+    "explicit completion lower bound, declared workload/repeat/IO budgets, paired warm/cold restart and semantic comparisons",
+    "all structural rejections, timeouts, gate failures and missing rows retained in the original attempt denominator",
+    "bounded artifact audit recomputes compilation and aggregation; no native replay/authentication claim for the audit",
+    "CLI, EO/CPU/relay/ACK example and installed CI wiring"
+  ],
+  "validation": {
+    "new_tests_passed": 39,
+    "reference_passed": 1540,
+    "fast_passed": 110,
+    "collected": 1970,
+    "counts_overlap": true,
+    "reference_local_http_permission_enabled": true,
+    "reference_passed_in_single_run": true,
+    "prior_materials_34_calibration_14_pointing_612_envelopes_119_passed": true,
+    "native_worker_executions": 20,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false,
+    "dependency_clean": false,
+    "large_independently_located_mission_requalified": false
+  },
+  "installed_cases": {
+    "positive": {
+      "qualification_passed": true,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 2,
+        "structural_rejected": 0
+      },
+      "observed_executions": 6,
+      "offline_artifacts_verified": true,
+      "native_reexecuted_by_audit": false
+    },
+    "rejected": {
+      "qualification_passed": false,
+      "baseline": "passed",
+      "counts": {
+        "native_failed": 0,
+        "passed": 0,
+        "structural_rejected": 2
+      },
+      "observed_executions": 2,
+      "offline_artifacts_verified": true,
+      "native_reexecuted_by_audit": false
+    },
+    "gates": {
+      "qualification_passed": false,
+      "baseline": "native_failed",
+      "counts": {
+        "native_failed": 2,
+        "passed": 0,
+        "structural_rejected": 0
+      },
+      "observed_executions": 6,
+      "offline_artifacts_verified": true,
+      "native_reexecuted_by_audit": false
+    },
+    "timeout": {
+      "qualification_passed": false,
+      "baseline": "native_failed",
+      "counts": {
+        "native_failed": 2,
+        "passed": 0,
+        "structural_rejected": 0
+      },
+      "observed_executions": 6,
+      "offline_artifacts_verified": true,
+      "native_reexecuted_by_audit": false
+    }
+  },
+  "source_modules": 250,
+  "source_data_inventory_files": 283,
+  "limitations": [
+    "assumed sensitivity is not measured hardware uncertainty or covariance",
+    "constructive synthetic EO mission does not qualify arbitrary fixed-site multi-plane controllers",
+    "failed budget gates may coexist with completed customer requests; timeout leaves mission outcome unobserved",
+    "artifact identity/aggregation audit is not fresh physics execution or author authentication",
+    "restored variant reconstructs PlanningRun inside its fresh worker; no OS process boundary between prefix and continuation",
+    "worker transient export checks do not publish a corpus or satisfy Q6 teacher/holdout gates",
+    "wall-time subprocess guard and RSS gates are not hard OS resource isolation"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json",
+    "B11_POINTING.json",
+    "B11_CALIBRATION.json",
+    "B11_MATERIALS.json"
+  ],
+  "artifacts_sha256": {
+    "B11_ENSEMBLE_FAST.txt": "6b06f28d38672888b5bdd2348a14d4424f95b7c6c059489307d450ce7b04e013",
+    "B11_ENSEMBLE_GATES.json": "d114fb8d0c239c56d22842aecdd72cdd8a8215d10754f16eeaf9848c9dd5b76c",
+    "B11_ENSEMBLE_GATES.manifest.json.gz": "64392aadc000410feae397ac11ed281af602b18d8854d2e468025efc39ffe9c2",
+    "B11_ENSEMBLE_POSITIVE.json": "3194e8fd82edea8939c6b814feb928c7d2e4642899da0c9f24f2c613197d64cd",
+    "B11_ENSEMBLE_POSITIVE.manifest.json.gz": "e2c0a906ca253cb36ea5bc1d0c8f4fecc0ae89601e5b20729ab6925522096b9e",
+    "B11_ENSEMBLE_PRIOR_CALIBRATION.json": "084863fb74fc8d629122db3e57b582c69222ded267a609c80eeebd9702411030",
+    "B11_ENSEMBLE_PRIOR_ENVELOPES.json": "8e9351815f3c8de3291652d5f5a022669f636b546b9ecb31cdc6d346b6c49ec8",
+    "B11_ENSEMBLE_PRIOR_MATERIALS.json": "52a95485ec274172ae07417200fcb965051af41bb35799d06485e0670532f6ca",
+    "B11_ENSEMBLE_PRIOR_POINTING.json": "cbb4701cf2e545331e25a6dcdfd18c8dee8a43e6d5dc7238109f6a22fb602547",
+    "B11_ENSEMBLE_REFERENCE.txt": "4e0c1edc22b17a72b0a75f172eeab5590a885197d9b0899bed5fef5e05d95744",
+    "B11_ENSEMBLE_REJECTED.json": "b0d5b46a6d04460bd87f1a0c8f972767a1cfdd352880943ac4d4cd1201fb5bcc",
+    "B11_ENSEMBLE_REJECTED.manifest.json.gz": "f7102ccf093ee4012d61cc8997321c49e6a1d50366e28d6d88270c42a4ee2b7a",
+    "B11_ENSEMBLE_TARGETED.txt": "f7503b3bf3e5c156d2e327dc7ea7e24d8e69efdf1e11bc1f2d194a634d43516c",
+    "B11_ENSEMBLE_TIMEOUT.json": "15ee44e7f6e61f88d45375927b8a50afe324ba80b21b74134f536961c11859ed",
+    "B11_ENSEMBLE_TIMEOUT.manifest.json.gz": "ff9979e3830de9147f8c58119690ec3cb368751545e9c7a380a60cca447c066b",
+    "B11_ENSEMBLE_WHEEL.json": "16b935de1a6cd324a4af3f661f6402419a658e220b7a5ba82efe43b2e2e344a0"
+  },
+  "next": [
+    "C2 open measured-data provenance/protocol-specific estimation and independent holdout",
+    "D2 independently located multi-plane multi-station slew/tracking and solver/resource gates",
+    "Q6 native/public-view/teacher holdout benchmark with retained failures"
+  ],
+  "sha256": "96eb0937c325e16afd95712713f238acc256f3b1f1583fe68d49c667e2bdc5d6"
+}

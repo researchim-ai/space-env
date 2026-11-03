@@ -1,0 +1,45 @@
+{
+  "schema": "space-env.ensemble-wheel/1",
+  "date": "2026-11-03",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "f4ba929c97778ab6b4f7ffe02beaeb7299285e5cd26afbc0f23c52722d42f7a3",
+  "source_modules_byte_matched": 250,
+  "inventory_files": 283,
+  "inventory_sha256": "408ec3b838b523629a194316babd662ef96af2deffcf04b3eab0fde207c3a48b",
+  "current_readme_in_wheel": true,
+  "packaged_data_byte_matched": true,
+  "source_version": "0.134.0",
+  "installed_distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-ensemble-venv/lib/python3.12/site-packages/space_env",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "cli_audits": [
+    {
+      "case": "positive",
+      "exit_code": 0,
+      "verified": true,
+      "qualification_passed": true
+    },
+    {
+      "case": "rejected",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    },
+    {
+      "case": "gates",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    },
+    {
+      "case": "timeout",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    }
+  ],
+  "scope": "local system-site-packages venv; not dependency-clean remote CI or large arbitrary mission qualification",
+  "sha256": "e056807841ab87208c6e344349846f775c6dedca15fa18d3e16758d3986e5225"
+}

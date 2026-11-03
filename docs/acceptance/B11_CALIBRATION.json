@@ -1,0 +1,61 @@
+{
+  "schema": "space-env.calibration-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-C1 verified: published reference points, synthetic conditional-fit workflow and assumed sensitivity; Q5-C2 and Q5-D open",
+  "industrial_readiness": false,
+  "hardware_calibration_complete": false,
+  "validation": {
+    "new_tests_passed": 73,
+    "reference_passed": 1470,
+    "reference_seconds": 427.03,
+    "fast_passed": 110,
+    "fast_seconds": 13.23,
+    "collected": 1900,
+    "counts_overlap": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false,
+    "large_mission_requalified": false,
+    "workflow_checks": 14,
+    "native_variants_passed": 3,
+    "native_parameter_response_witness": true,
+    "prior_analytic_and_pointing_passed_on_current_build": true,
+    "ground_native_replay_verified_rl_sft_smoke": true
+  },
+  "implementation": [
+    "six manufacturer reference-point profiles with source hashes, conditions and SI",
+    "explicit wheel/solar native adapters with retained host and operating assumptions",
+    "three identifiable known-noise scalar fits with independent holdout and conditional intervals",
+    "deterministic bounded sensitivity ensembles, retained rejections and stale calibration label removal",
+    "bounded atomic CLI, packaged data, native example and CI wiring"
+  ],
+  "limitations": [
+    "specifications are not measurement series or full operating envelopes",
+    "synthetic fits prove workflow only; no measured hardware series bundled",
+    "assumed sensitivity is not empirical uncertainty or covariance",
+    "structural candidates require separate native mission and teacher-quality gates",
+    "three short native variants do not qualify a complete customer mission"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json",
+    "B11_POINTING.json"
+  ],
+  "artifacts_sha256": {
+    "B11_CALIBRATION_ENSEMBLE.json.gz": "5d3ca800282681e1bdb469547dcc88ef7b5490774d2eb0a010acac1e95679ebf",
+    "B11_CALIBRATION_FULL.json": "03d42ba52a5bab98e93b8df8a930a6107d40758daa0427b02c7f272c1778c8a2",
+    "B11_CALIBRATION_GROUND.json": "970fd420ccc4c2be9d04457fa0d5b24afd6939e38dbe5ac43dfc5d4c23607319",
+    "B11_CALIBRATION_NATIVE.json": "22a990612c93a3de3bd011c5f57030dfe9a85d182698e77392af28866306fea4",
+    "B11_CALIBRATION_PARAMETER_WITNESS.json": "d488d507359d1af50cc26b44957eda1dac92391e36fdfd8077972d016c4a3b97",
+    "B11_CALIBRATION_PRIOR_ENVELOPES.json": "89ef6d9502805b8e5c1501cd333a4d3ce7418ffcaaee9b9dbd53d1854ffa550e",
+    "B11_CALIBRATION_PRIOR_POINTING.json": "e974d5781a7986a78a18c783e325dd3b367944cdb205d438e938588174af1e4e",
+    "B11_CALIBRATION_SOURCES.json": "b024d700a0ffd18065a3aea239436c40055ee2a3bf93798896a429453ab00fd8",
+    "B11_CALIBRATION_WHEEL.json": "1d0f230acf90c3402713cb66a1cfc8a3953cb52eab6fd3fe4627b1abbeeba27b"
+  },
+  "next": [
+    "Q5-C2 open measured-data provenance, appropriate estimator and independent coverage",
+    "Q5-D coupled nonconstructive multi-plane multi-station mission qualification",
+    "Q6 native/public-view/teacher gates before RL/SFT benchmark release"
+  ],
+  "sha256": "ed9f1b8a02646d14642880d18bacbe9e89afa0bdca48be4f2b52a6fc85c0c631"
+}

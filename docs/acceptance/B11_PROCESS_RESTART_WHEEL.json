@@ -1,0 +1,57 @@
+{
+  "schema": "space-env.process-restart-wheel/1",
+  "date": "2026-11-03",
+  "wheel": "space_env-0.134.0-py3-none-any.whl",
+  "wheel_sha256": "9e6ffa7b22eb130ecdb107d1acc97d0c4837a141c1987a7f6c57f83fe6994412",
+  "source_modules_byte_matched": 251,
+  "inventory_files": 284,
+  "inventory_sha256": "80597b1b4dfcde3dea670ea006720f6842206d49dda4392be18309ce7f0b7057",
+  "current_readme_in_wheel": true,
+  "packaged_data_byte_matched": true,
+  "source_version": "0.134.0",
+  "installed_distribution_version": "0.134.0",
+  "package_import_prefix": "/tmp/space-env-process-venv/lib/python3.12/site-packages/space_env",
+  "isolated_python": true,
+  "cwd": "/tmp",
+  "dependency_clean": false,
+  "cli_audits": [
+    {
+      "case": "positive",
+      "exit_code": 0,
+      "verified": true,
+      "qualification_passed": true
+    },
+    {
+      "case": "rejected",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    },
+    {
+      "case": "budget",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    },
+    {
+      "case": "timeout",
+      "exit_code": 1,
+      "verified": true,
+      "qualification_passed": false
+    },
+    {
+      "case": "random",
+      "exit_code": 0,
+      "verified": true,
+      "qualification_passed": true
+    },
+    {
+      "case": "midflight",
+      "exit_code": 0,
+      "verified": true,
+      "qualification_passed": true
+    }
+  ],
+  "scope": "local system-site-packages venv; no clean dependency/remote CI or arbitrary mission qualification",
+  "sha256": "310f0321ae27c0d5e7ddc324cc60e754488000927fb251cc598967fb14b9dfac"
+}

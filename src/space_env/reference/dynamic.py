@@ -17,7 +17,12 @@ from space_env.reference.acquisition import (
 from space_env.reference.actuation import ActuationSettings
 from space_env.reference.covariance import NavigationSettings
 from space_env.reference.frames import FrameContext
-from space_env.reference.lifecycle import LifecycleSpec, ProductLifecycle
+from space_env.reference.lifecycle import (
+    GeometryFeatureTransformer,
+    LifecycleSpec,
+    MetadataTransformer,
+    ProductLifecycle,
+)
 from space_env.reference.orbit import ForceModel, ReferenceState
 from space_env.reference.providers import DynamicStateProvider
 from space_env.reference.resource_lanes import ParallelExecution, command_claims
@@ -31,6 +36,7 @@ from space_env.reference.time import EOPSeries, Epoch
 from space_env.reference.unloading import UnloadingSettings
 from space_env.runtime.adapters import ReferenceBackend
 from space_env.runtime.schema import FiniteScalar, StrictModel
+from space_env.simulation.owned import owned_copy
 
 
 class IntegratorSettings(StrictModel):
@@ -460,6 +466,12 @@ class DynamicReferenceBackend(ReferenceBackend):
         super().cancel(command_id)
 
     def observe(self, actor):
+        return self._observation(actor, owned=True)
+
+    def _observe_borrowed(self, actor):
+        return self._observation(actor, owned=False)
+
+    def _observation(self, actor, *, owned):
         provider = self.mission.ephemerides[actor]
         mass = provider.mass(self.now())
         observation = {
@@ -483,7 +495,7 @@ class DynamicReferenceBackend(ReferenceBackend):
                 for p in observation["products"]
                 if p["id"] not in self.lifecycle.producers
             ]
-            observation["lifecycle"] = self.lifecycle.observation(actor, self.now())
+            observation["lifecycle"] = self.lifecycle._observation(actor, self.now(), owned=owned)
         if self.bus is not None:
             observation["spacecraft_bus"] = self.bus.observation(actor)
         return observation
@@ -497,6 +509,40 @@ class DynamicReferenceBackend(ReferenceBackend):
         if self.lifecycle is None:
             return super().inject(events)
         return self.lifecycle.inject(self, events)
+
+    def task_score(self):
+        if self.lifecycle is None:
+            return None
+        mission = self.mission
+        life = self.lifecycle
+        outcomes = mission.product_outcomes()
+        return {
+            "completion": life.metrics()["fulfilled_requests"],
+            "priority": sum(
+                life.requests[rid].priority
+                for rid, row in life.request_state.items()
+                if row["status"] == "completed"
+            ),
+            "mbits": sum(
+                p["delivered_bits"]
+                for p in outcomes
+                if p["status"] in {"delivered_on_time", "delivered_late"}
+            )
+            / 1e6,
+            "energy_j": math.fsum(mission.consumed_wh[a] for a in mission.actors) * 3600,
+            "discard_mbits": sum(
+                sum(
+                    mission.discarded[p.id]
+                    for p in mission.products.values()
+                    if p.actor == a
+                )
+                for a in mission.actors
+            )
+            / 1e6,
+            "safe": {}
+            if self.bus is None
+            else {a: bool(row["safe"]) for a, row in self.bus.states.items()},
+        }
 
     def metrics(self):
         return (
@@ -536,15 +582,26 @@ class DynamicReferenceBackend(ReferenceBackend):
         return report
 
     def capture(self):
-        return copy.deepcopy(
-            (
-                self.mission,
-                self.geometry_revision,
-                self.burn_commands,
-                self.lifecycle,
-                self.bus,
-            )
+        # Clone the large scalar/container lifecycle graph once into the shared
+        # deepcopy memo. Every mutable node is still owned, never shared with
+        # the live backend; transport/bus/mission aliases remain one graph.
+        state = (
+            self.mission,
+            self.geometry_revision,
+            self.burn_commands,
+            self.lifecycle,
+            self.bus,
         )
+        memo = {}
+        life = state[3]
+        if type(life) is ProductLifecycle and all(
+            type(plugin) in {MetadataTransformer, GeometryFeatureTransformer}
+            for plugin in life.transformers.values()
+        ):
+            cloned = object.__new__(ProductLifecycle)
+            memo[id(life)] = cloned
+            cloned.__dict__ = owned_copy(life.__dict__, memo)
+        return copy.deepcopy(state, memo)
 
     def restore(self, state):
         (

@@ -1,6 +1,460 @@
 # Следующие крупные пакеты реализации
 
-## Текущий пакет — B10-B: восстановление и управление operator ↔ agent
+## Текущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
+
+Добавлен отдельный fixed-ephemeris delivery compiler: independently specified
+initial planes/phases/radii и synthetic fixed WGS84 sites. Станции не строятся
+из subsatellite point; все actor×station products и zero-contact pairs сохраняются.
+Профиль ограничен ready onboard data, constant-rate geometric downlink и shared
+station terminals. Closed-loop EO/pointing этим не объявляется проверенным.
+
+Conditional fractional delivery relaxation учитывает actor single-TX и station
+slots. Weak-duality bound пересчитывается exact Fraction arithmetic для binary
+coefficients, отдельно от solver status и native conservative sanity ceiling.
+Native witnesses проверяют receipts/contact/outage/rate, occupancy, product bits,
+energy/inventory и explicit minimum service. Diagnostic LP не передаётся policy.
+
+Контракт: [INDEPENDENT_GEOMETRY_V1](validation/INDEPENDENT_GEOMETRY_V1.md).
+Приёмка: `acceptance/B11_INDEPENDENT_GEOMETRY.json`. C2 measured calibration,
+D2b coupled EO/pointing, Q6 benchmark и Q7 durable/OS isolation открыты.
+
+
+### Приёмка D2a — 2026-11-04
+
+30 новых geometry/capacity tests,110 targeted geometry/restart/ensemble,
+1611 reference и110 fast прошли; наборы пересекаются. 2041 collected,
+expanded full suite не запускался. Reference прошёл одним запуском с localhost
+permission для существующего HTTP test.
+
+Installed small/full suites проверили2/4 actors,2 planes и6000s:
+nominal3/6 и6/12 delivered соответственно; outage/no-contact0 retained.
+Stress с1000Mbit products и той же геометрией: priority baseline1/12 при одном
+terminal и2/12 при двух. У stress explicit min service0: это observed behavior,
+не экспертный SLA. Все16 logical native executions,8 separate-process restores
+и semantic pair comparisons прошли объявленные gates.
+
+253 Python modules и286 source/data files byte-matched; wheel SHA:
+`e17b266d3557c71446e48d8dc8194a3ace85fb62928b3c0c63b825c93628d66a`.
+Installed compiler/bundle audit и прежние materials34/calibration14/pointing612/
+envelopes119 прошли. Venv system-site-packages, без dependency-clean/remote CI.
+[Приёмка](acceptance/B11_INDEPENDENT_GEOMETRY.json) сохраняет полные native
+результаты, exact input/certificate/packet bundles и19 linked artifact hashes.
+
+## Предыдущий пакет — B11-Q5-D1b: process-isolated checkpoint continuation
+
+Добавлен opt-in resume_in_new_process для ScaleSpec/ensemble: prefix producer
+успешно выходит до запуска другого interpreter для continuation. Packet связан
+с workload/scenario/task/seed/policy, code/data/Python/dependency identity и nonce.
+Parent-observed PIDs/exit codes сверяются с consumer evidence и отдельным
+native-integrity gate. Restore использует audited prefix replay существующего
+PlanningRun API, без передачи Python graph/caches и без pickle.
+
+Deadline общий для двух фаз; byte-budget, corrupted packet, terminated prefix,
+worker failure и timeout остаются error rows. Restart packets/progress сохраняются
+и проверяются offline audit. Default false/legacy serialized inputs сохранены.
+Это recovery evidence конкретных frozen workloads, не durable hosted job queue.
+
+Контракт: [PROCESS_RESTART_V1](validation/PROCESS_RESTART_V1.md).
+Приёмка: `acceptance/B11_PROCESS_RESTART.json`. C2, independent closed-loop D2,
+Q6 benchmark/teacher и Q7 hard quotas/durable jobs остаются открытыми.
+
+
+### Приёмка D1b — 2026-11-03
+
+41 новый process test, 91 targeted process/ensemble/progress, 1581 reference и
+110 fast прошли (наборы пересекаются), 2011 collected. Reference прошёл одним
+запуском с разрешённым localhost HTTP; expanded full suite не запускался.
+
+Установленный wheel проверен на6 пакетах: nominal EO, prefix после3 decisions,
+random-masked policy continuation, structural rejection, prefix byte-budget failure
+и shared timeout. Всего30 logical native attempts и9 successful process-boundary
+restores. Nominal/midflight cases выполнили обе заявки во всех direct/restored
+вариантах. Random probe имеет explicit min completion0 и проверяет RNG/continuation
+integrity, а не экспертность. Отрицательные qualification сохранили passed=false.
+
+Сверены251 Python modules и284 source/data files; wheel SHA:
+`9e6ffa7b22eb130ecdb107d1acc97d0c4837a141c1987a7f6c57f83fe6994412`.
+Все6 offline/CLI audits прошли; прежние materials34/calibration14/pointing612/
+envelopes119 также прошли на этой сборке. Venv system-site-packages, без clean
+remote CI и без qualification independently located large mission.
+
+[Приёмка](acceptance/B11_PROCESS_RESTART.json) содержит exact-byte packet/progress
+bundles, negative outcomes, source hashes и test logs. Исторические receipts
+сохранены; обновлённый код ими автоматически не квалифицируется.
+
+## Предыдущий пакет — B11-Q5-D1: native qualification ансамблей параметров
+
+Sensitivity compilation теперь связана с isolated scale runner: frozen baseline,
+каждый structural candidate, repeats, warm/cold restart comparison и стандартные
+native replay/quality/resource/completion gates. Все structural rejections,
+worker errors, timeouts и missing rows остаются в общем результате; baseline
+отделён от variant denominator. Completion lower bound требуется задать явно.
+
+Offline verifier сверяет frozen compilation, artifact identity, native manifest,
+progress и агрегацию raw execution rows; это не новый запуск физики и не подпись
+автора. Конкретные масштабы workload/budgets заданы до исполнения. Проверка
+отрицательной qualification не превращает её в passed mission.
+
+Контракт: [NATIVE_ENSEMBLE_QUALIFICATION_V1](validation/NATIVE_ENSEMBLE_QUALIFICATION_V1.md).
+Приёмка: `acceptance/B11_ENSEMBLE.json`. Q5-D2 independently located closed-loop
+missions, C2 measured hardware calibration и Q6 teacher/holdout benchmark открыты.
+
+
+### Приёмка D1 — 2026-11-03
+
+39 новых targeted tests, 1540 reference и 110 fast прошли; наборы пересекаются.
+1970 collected; expanded full suite не запускался. Reference прошёл в одном
+запуске с разрешённым localhost HTTP для существующего теста пульта.
+
+Установленный wheel проверен на четырёх пакетах: positive (6 native executions,
+baseline + 2 variants, completion gates passed), structural rejections (2 baseline
+executions + 2 retained rejected variants), checkpoint-budget failure (6 executions,
+service completed but budget gate failed), subprocess timeout (6 retained failures).
+Всего20 executions. Offline audit всех четырёх пакетов прошёл; отрицательные
+qualification сохранили passed=false и CLI verify exit1.
+
+Прежние numerical/workflow проверки также прошли: materials34, calibration14,
+pointing612, envelopes119. Wheel SHA:
+`f4ba929c97778ab6b4f7ffe02beaeb7299285e5cd26afbc0f23c52722d42f7a3`.
+250 Python modules / 283 source-data files byte-matched. Venv system-site-packages;
+remote clean CI, dependency-clean установка и большая independently located
+миссия на этой сборке не запускались. Restore выполняется внутри отдельного
+worker; OS-процесс между prefix и continuation не меняется.
+
+[Приёмка](acceptance/B11_ENSEMBLE.json) содержит полные результаты, исходные
+frozen manifests/progress/receipts в UTF-8 bundles, test logs и hashes.
+
+## Предыдущий пакет — B11-Q5-C1b: material cp(T) и энтальпия тепловой сети
+
+Добавлен opt-in material_capacity для узлов: опубликованная корреляция NIST
+Al6061-T6, масса и homogeneous-lump assumption задаются явно. C(T) применяется
+на каждом solver step, stored energy — через m∫cp(T)dT в kernel, bus balance
+и observations. Диапазон 4–300 K не экстраполируется; native domain failure
+откатывает всю транзакцию. Постоянная C сохраняется для прежних сценариев.
+
+Frozen stdlib Decimal/Simpson oracle отделён от native Horner/QUADPACK/ODE:
+34 numerical comparisons, плюс native replay, paid heater, PV/battery energy
+и domain rollback tests. Источник — material correlation, не новый measurement
+series: Q5-C2 аппаратная калибровка и Q5-D whole-mission qualification открыты.
+Контракт: [MATERIAL_ENTHALPY_V1](validation/MATERIAL_ENTHALPY_V1.md).
+Приёмка этой сборки: `acceptance/B11_MATERIALS.json`.
+
+
+### Приёмка C1b — 2026-11-03
+
+31 новый material test и 158 targeted material/thermal/calibration tests прошли;
+110 fast прошли, 1931 collected. Наборы пересекаются. В reference-профиле
+1500 passed и один PermissionError на bind локального HTTP-сервера; именно этот
+тест повторён с разрешением локального сервера и прошёл. Все 1501 distinct
+reference tests проверены, но единого полностью зелёного reference-run не было.
+Оба исходных результата сохранены в acceptance artifacts.
+
+Установленный wheel прошёл 34 material comparisons, native cold replay/domain
+rollback и предыдущие 119 envelope / 612 pointing / 14 calibration checks.
+249 Python modules и 282 source/data files byte-matched. Wheel SHA:
+`eddf4f1947c244349fc957887ca33ce8825a3e63a28867a461f76ea555560687`.
+Venv system-site-packages; clean dependency install, remote CI, expanded full
+suite и большая миссия на этой сборке не запускались.
+
+Приёмка: [B11_MATERIALS.json](acceptance/B11_MATERIALS.json), включая source audit,
+полные numerical reports, native scenario/prefix/final и журналы HTTP recheck.
+
+## Предыдущий пакет — B11-Q5-C1: hardware evidence и conditional calibration workflow
+
+Добавлены шесть manufacturer reference-point profiles с primary PDF hashes,
+условиями и SI; native wheel/solar adapters оставляют host assumptions явными.
+Три identifiable scalar fits требуют typed experiment/frame/units, known-noise
+условий, canonical measurement export и независимых train/holdout experiments.
+Synthetic/declared measured origin не превращается автоматически в calibration.
+
+Counter-keyed sensitivity ensembles сохраняют все draws/rejections, проверяют
+structural native contracts и снимают stale calibration label после perturbation.
+Native execution/teacher quality такой manifest не утверждает. 73 новых targeted
+checks проверяют provenance, leakage, units, bounds, failure retention и CLI.
+
+Контракт: [HARDWARE_EVIDENCE_CALIBRATION_V1](validation/HARDWARE_EVIDENCE_CALIBRATION_V1.md).
+Приёмка: `acceptance/B11_CALIBRATION.json`. Q5-C2 реальные измерения/error model/
+coverage и Q5-D closed-loop coupled mission qualification остаются открытыми.
+
+
+### Проверенная приёмка C1 — 2026-11-03
+
+73 targeted tests, 1470 reference и 110 fast прошли; наборы пересекаются.
+1900 тестов собрано, полный расширенный suite не запускался. Установленный wheel
+прошёл 14 workflow checks, предыдущие analytic/pointing проверки, три native
+sensitivity-варианта с cold restore/replay и ground smoke с verified RL/SFT.
+Отдельный witness подтвердил изменение реальной angular velocity при изменении
+инерции и применение battery capacity/solar efficiency в загруженных миссиях.
+
+Wheel SHA: `ac8b13750bfc4e2dc3b177893cc5d49a59ff56233952e3e020ad79cb113efc45`;
+247 Python modules и 279 source/data files сверены. Venv использует system site
+packages: dependency-clean/remote CI и большая миссия на новой сборке не проверены.
+Оригинальные два PDF сверены по bytes SHA; это спецификации, не измерительные ряды.
+
+Отчёт: [B11_CALIBRATION.json](acceptance/B11_CALIBRATION.json).
+Следующий исполнимый план: [OPEN_DATA_CALIBRATION_NEXT.md](OPEN_DATA_CALIBRATION_NEXT.md).
+Q5-C2 и Q5-D открыты; hardware calibration/industrial readiness не заявляются.
+
+## Предыдущий пакет — B11-Q5-B: off-axis pointing, actuation и fixed-site contacts
+
+Добавлены 16 frozen cases и 612 численных сравнений: symmetric gyrostat вне
+главной оси, signed wheel saturation/reversal, asymmetric external unloading,
+centered/offset rotating burns и восемь комбинаций двух orbital planes с четырьмя
+заранее заданными станциями. Есть семь окон и четыре корректных no-contact случая.
+
+CLI `reference-qualify-pointing` пишет ошибки, предзаданные budgets, точные
+input/time domains, source provenance и unqualified gaps. Oracle отделён от
+production: analytic matrix solution, independent matrix/Cartesian RK4 и
+contact bisection; Earth frames/EOP явно общие. Wheel saturation timing и
+refinement проверяются отдельно. Это numerical verification объявленных моделей,
+не hardware calibration или qualification arbitrary mission/controller.
+
+Приёмка Q5-B: **1397 reference**, **110 fast**, **52 новых targeted tests**,
+**1827 collected**; наборы пересекаются. Усиленная проверка всех границ fixed-site
+контактов также прошла отдельно. Final installed wheel: **241/241** modules и
+fixture побайтно совпали, README актуален; **612 Q5-B** + **119 Q5-A** numerical
+checks и existing external J2/ERFA проверки прошли. Chemical/electric/off-center
+mission demos, nominal/limited RCS, replay и verified RL/SFT прошли. Limited
+RCS сохраняет ожидаемый failed unloading operation (service 2/2), а не превращает
+его в completed. Venv system-site-packages; remote clean CI/expanded full и
+большая миссия на новой сборке не запускались.
+
+Контракт:
+[POINTING_ACTUATION_CONTACTS_V1](validation/POINTING_ACTUATION_CONTACTS_V1.md).
+Текущая приёмка — `acceptance/B11_POINTING.json`. Q5-C calibration и Q5-D реальные
+closed-loop mission workloads остаются следующими уровнями.
+
+## Предыдущий пакет — B11-Q5-A: независимые аналитические векторы
+
+Добавлены 10 frozen cases: две наклонные эллиптические орбиты, conduction с
+нулевым/ненулевым нагревом, radiative cooling, principal-axis coast/wheel/external
+торк и S/X-band link budgets. CLI `reference-qualify-envelopes` измеряет 103
+проверки, `--long` — 119 с дугами до 72 часов и отдельной Hermite interpolation
+ошибкой; `--external` дополнительно исполняет существующие J2/ERFA проверки.
+
+Заданы заранее фиксированные допуски, pinned input/time domains, offline stdlib
+генератор, отчёт с provenance/checks/build inventory/evidence registry. Подписанный
+неверный expected vector не считается физическим эталоном. Отказы решателя
+остаются failed evidence. `industrial_readiness=false`: это numerical verification,
+не аппаратная калибровка или квалификация произвольной миссии.
+
+Приёмка Q5-A: **42 новых targeted tests**, **1339 reference**, **110 fast**;
+**1775 collected**. Наборы пересекаются: reference запуск включал первые 36 новых
+тестов; после provenance-only исправления версии отдельно прошли все финальные 42.
+Окончательный installed wheel: **240/240** Python modules byte-matched, **119**
+analytic checks + existing external J2/ERFA проверки, small coupled native replay
+и verified RL/SFT прошли. Venv system-site-packages; dependency-clean/remote CI и
+большая миссия на новой сборке не запускались.
+
+Контракт и оставшиеся Q5-B/C/D: [ANALYTIC_ENVELOPES_V1](validation/ANALYTIC_ENVELOPES_V1.md).
+Историческая большая Q4 mission относится к прежнему wheel SHA и не переносится
+на эту сборку. Текущая приёмка записана в `acceptance/B11_ENVELOPES.json`.
+
+## Предыдущий пакет — B11-Q4: ground windows и causal ACK release
+
+Добавлены versioned ground control windows 2–8 с (старый default 4 с сохранён),
+опциональные cancellation actions и opt-in controller по наблюдаемому ground ACK.
+Новый product для замены должен быть owned, видимым, ready и иметь remaining>0.
+До ACK, для чужих products, CPU/relay или при incoming relay отмена запрещена.
+Role slots, joint limits, bookings и native cancel→re-admission/rollback сохранены.
+Старый frozen manifest нормализуется с прежним hash; defaults не переписаны.
+
+Conditional preflight описывает narrow controller-window bound и assumptions,
+не является physical infeasibility proof и не подавляет прогоны. В результатах
+разделены runtime, native integrity/witness и mission expectations; общий `ok`,
+failed denominators и formal semantic group не ослаблены.
+
+**1303 reference**, **110 fast**, **1733 collected**, **27 новых ground checks**;
+наборы пересекаются. Native-проверки включают разную геометрию станции, slow RF,
+setup/ACK за пределами окна, future-seed/outage causality, joint ACK cancellation,
+invalid replacement rollback и cold prefix replay. Шесть fault/recovery повторов
+прошли, включая exact parity ACK-reclaim. Installed wheel: **239/239** modules,
+paired short windows + реальный ACK cancel/resubmit + verified RL/SFT прошли.
+Venv использует system-site-packages; remote clean CI и expanded full не запускались.
+
+Новый frozen профиль **прошёл все gates в трёх независимых процессах**:
+12 аппаратов / 40 заявок / 120 физических секунд, **40/40** в каждом повторе;
+одна native/trace signature pair у straight×2 и prefix recovery×1. Наблюдённые
+максимумы: execution 1164.7 с <1200, step p95 26.47 с <60,
+peak RSS 1.76 ГиБ <6, checkpoint 72.2 МиБ <512.
+Физическое definition совпадает с историческим baseline; task diff — только
+окна downlink 4→2 с. Старый 4-секундный случай 28/40 остаётся failed.
+Это приёмка конкретного synthetic formation profile, не всех космических миссий. Физические
+модели, cadence, tolerances, RF rate/setup/ACK и terminal capacity не изменялись.
+
+[Контракт](GROUND_SCHEDULING_CONTRACT.md) ·
+[Приёмка](acceptance/B11_GROUND.json) ·
+[Следующие крупные уровни](INDUSTRIAL_NEXT_AFTER_GROUND.md).
+
+## Исторический пакет — B11-Q3: native copies и диагностика workers
+
+Убран повторный science deepcopy внутри locked runtime observation. Owned scalar/
+dict/list trees копируются с сохранением memo, cycles, aliases и fallback для
+NumPy/subclasses/hooks. Native capture сохраняет полный независимый mutable graph;
+внешние transformers используют прежний standard capture. Расчёт награды использует
+те же scalar outcomes вместо полного научного отчёта; summation order сохранён.
+Compact audit переиспользует validated canonical bytes. Ошибка подготовки event copy
+откатывает физику/revision и не расходует idempotency-key.
+
+Workers атомарно сохраняют bounded stage/PID/input-digest/decision/CPU/RSS diagnostics
+в `workers/000000/progress.json`; snapshots остаются при timeout. Они не являются
+native replay proof, не попадают в policy и не могут сделать failed repeat успешным.
+
+Финальная source-проверка: **1276 reference**, **110 fast**, **1706 collected**,
+из них **24 новых copy/progress checks**; наборы пересекаются. Same-build A/B на
+пяти малых сценариях подтвердил точное совпадение всех переходов, trace и полного
+native report. Четыре frozen fault cases прошли replay/quality/export gates:
+recovery 4/4, ACK loss 6/6 с 9 потерянными ACK/9 повторными фрагментами,
+полный outage и короткий TTL — ожидаемые 0. Installed wheel: **237/237** modules,
+малый paired recovery/native replay/RL-SFT smoke прошёл. Venv с system-site-packages;
+remote clean CI и expanded full не запускались.
+
+Крупный frozen профиль завершён во всех трёх процессах. Технические gates
+(execution 856.4–889.2 с, step p95 ≤26.65 с, peak RSS ≤1.90 ГиБ, checkpoint
+≤71.8 МиБ), native replay, accounting/witness и export прошли. **Overall приёмка
+не пройдена: 28/40 заявок**, при этом acquisition/CPU/custody — 40/40.
+Все три raw native/trace пары совпали; formal comparison group осталась failed.
+У current baseline 4-секундные non-overlapping ground windows и один terminal:
+после начального pipeline 8 с остаётся максимум 28 таких окон. Это ограничение
+controller/profile, не общий physical infeasibility proof.
+[Следующий пакет — окна и ground scheduling](GROUND_DELIVERY_NEXT.md).
+Старые frozen inputs/failed receipts сохранены; пороги не снижались.
+Физические cadence/tolerances/quality/admission не менялись. Immutable/shared history
+и отказ от вложенных snapshots не реализованы; произвольные глобальные миссии не
+квалифицированы.
+
+[Контракт](NATIVE_COPY_AND_WORKER_DIAGNOSTICS.md) ·
+[Приёмка](acceptance/B11_NATIVE_COPY.json) ·
+[Дальнейшая оптимизация](COUPLED_PERFORMANCE_NEXT.md).
+
+## Исторический пакет — B11-Q2: локальные чтения и проекции
+
+Native observe одного аппарата больше не строит телеметрию всей группировки.
+Один `_refresh` переиспользует owned public reads между центральной и локальными
+проекциями; registries ролей независимы. Кэш не живёт между refresh/мутациями,
+а joint admission после cancellation по-прежнему читает реальный candidate.
+Физика, cadence, tolerances, capture/history и публичный ownership не изменены.
+
+Same-build A/B на четырёх малых сценариях подтвердил точное совпадение всех
+переходов, trace и полного native backend report. Новые проверки покрывают
+scope, отсутствие устаревшего кэша, alias isolation и fork. **1251 reference**
+прошёл в sandbox; единственный запрет localhost-сокета отдельно перепроверен:
+**1 HTTP test passed** при разрешённом сокете. **110 fast**, **1682 collected**;
+наборы пересекаются. Installed wheel: **235/235** Python-модулей byte-matched,
+малый paired restore/replay/RL-SFT smoke прошёл. Venv использует system-site-packages.
+
+Крупный профиль завершён и **не прошёл** прежние frozen gates.
+Все три worker превысили 2400 с; итоговые completion/replay/export неизвестны.
+Ошибки сохранены, readiness не подтверждена.
+Прежние B11-Q1 timeouts сохранены. Следующие участки —
+стоимость копирования native evidence/report, capture/trial и рост истории;
+промышленная масштабируемость не следует из малых тестов или числа чтений.
+
+[Реализация и границы](PROJECTION_READ_OPTIMIZATION.md) ·
+[Приёмка](acceptance/B11_PROJECTION_READS.json) ·
+[Дальнейшая оптимизация](COUPLED_PERFORMANCE_NEXT.md).
+
+## Исторический пакет — B11-Q1: измеренная coupled-миссия
+
+Добавлены генератор formation workload, реальные цепочки EO → onboard CPU →
+DTN relay → shared ground, отказы, native witnesses, префиксное восстановление
+и сравнение семантики независимых процессов. Supervisor ограничивает параллелизм,
+фиксирует входы и сохраняет промежуточные результаты без исключения неудачных повторов.
+
+**Крупный профиль не прошёл:** 12 аппаратов, 40 заявок, 120 физических секунд;
+все три повтора превысили заранее установленный wall timeout 2400 секунд.
+Итоговые completion/replay/export показатели этого профиля не получены.
+Порог не повышался; промышленная масштабируемость не подтверждена.
+
+Четыре малых fault-сценария прошли: recovery — 4/4 заявок, ACK loss — 6/6
+с 9 потерянными ACK и 9 повторно сериализованными фрагментами; полный ground outage
+и короткий TTL дали ожидаемые 0 выполненных заявок при проверке промежуточных стадий.
+Малый paired probe подтвердил совпадение native семантики после cold prefix restore.
+Геометрия благоприятная синтетическая, clear-cloud declarations явные; это не
+валидация произвольных многоплоскостных группировок или многосуточных миссий.
+
+Проверки финального исходного пакета: **1247 reference**, **110 fast**,
+**1677 collected** (наборы пересекаются). Installed wheel: **235/235** Python-модулей
+совпали; малый native smoke с replay/export и двумя fresh processes прошёл.
+Venv использует system-site-packages; remote clean CI и expanded full не запускались.
+
+Следующий приоритет — убрать повторное копирование и построение task-проекций,
+сохранив owned observations, role isolation, rollback и физические cadence/tolerances;
+затем повторить **тот же** frozen крупный профиль. Диагностический cProfile малого
+случая указал на deepcopy; это не измерение production latency.
+
+[Контракт](COUPLED_CAMPAIGN_QUALIFICATION.md) ·
+[Фактическая приёмка](acceptance/B11_CAMPAIGN.json) ·
+[План ускорения ядра](COUPLED_PERFORMANCE_NEXT.md).
+
+## Исторический пакет — B10-C2: ограниченный streaming transport
+
+Реализован process-local ArtifactStore: закрытый дисковый spool, 32 МиБ на файл,
+128 МиБ reservations и до 8 transfers; exact-range retry, SHA-256, status/cancel,
+кооперативный TTL и защита занятого файла lease. HTTP upload идёт PUT-фрагментами
+до 1 МиБ с ограниченным чтением и whole-chunk deadline; download читает файл по
+64 КиБ. Старый JSON limit 8 МиБ сохранён. Native interactive bounds не увеличены.
+
+Архивы/checkpoints импортируются через прежние replay/provenance guards. Успешный
+commit имеет cached receipt; неясный/ошибочный restore терминален для transfer и
+не запускается повторно вслепую. ZIP RL/SFT строится на диске через export_to(),
+с проверенным native episode и operator provenance. UI пульта использует новые
+routes и проверяет digest; браузер и native JSON parser не объявлены constant-RSS.
+
+Приёмка: **124 operator/API/durable/cursor/artifact**, из них **30 новых**;
+**5 legacy Studio API**, **1229 reference**, **110 fast**, **1659 collected**
+(наборы пересекаются).
+Источник и installed wheel прошли настоящий HTTP import >8 МиБ (JSON padding
+fixture), native restore, chunk retry и verified ZIP. Chromium проверил restart,
+роли, большой импорт, ZIP и mobile; **234/234** modules и UI assets byte-matched.
+Installed использует system-site-packages; remote clean CI и expanded full не запускались.
+
+[Контракт и протокол](OPERATOR_ARTIFACT_CONTRACT.md) ·
+[Приёмка](acceptance/B10_ARTIFACTS.json).
+
+### Следующий большой блок — B10-C3 / B11
+
+1. Durable artifact/event metadata, indexed event storage и retention policy;
+   восстановление незавершённых transfers после process crash сейчас не реализовано.
+2. Измеренные long-run latency, RSS, recovery и disk-growth gates на frozen workloads;
+   payload с JSON-padding проверяет транспортный порог, не большой mission workload.
+3. Worker isolation, quotas, cancellation/monitoring и deployment-level identities.
+4. B12 независимая калибровка и пилотные отраслевые benchmark-задачи.
+B10-C/B11 целиком не закрыты. Сайт проекта не регенерируется.
+
+## Исторический пакет — B10-C1: история по курсору и online recovery
+
+Добавлены role-scoped journal/navigation pages: capability/session/channel binding,
+подписанный prefix cursor, продолжение после compatible-build restart, явный
+конфликт при изменении прочитанного префикса. Последовательность локальная для
+проекции роли; физическое время и ревизии чтением не изменяются. Старый state API
+сохранён; UI продолжает использовать прежний контракт.
+
+Добавлены OS-owner SDK/CLI online SQLite backup, verify и restore в новый файл.
+Копия живой WAL-базы проходит integrity и active-session native replay до публикации;
+атомарная exclusive publication не перезаписывает существующие outputs, включая
+гонку создания файла. Проверка live-базы тоже использует частный snapshot.
+Restore сохраняет IDs/capability hashes/control epochs и не вращает credentials.
+Source/dependency guards не ослаблены; автоматической миграции между builds нет.
+
+Приёмка: **94 operator/API/durable/maintenance**, из них **38 новых**;
+**1199 reference**, **110 fast**, **1629 collected** (наборы пересекаются).
+SDK и настоящий loopback HTTP backup/restore/cursor прошли из исходников и
+installed wheel вне checkout. **233/233** Python modules и UI assets byte-matched.
+Installed использует system-site-packages; remote clean CI и expanded full не запускались.
+
+[Контракт и команды](OPERATOR_MAINTENANCE_CONTRACT.md) ·
+[Приёмка](acceptance/B10_MAINTENANCE.json).
+
+### Следующий пакет — B10-C2
+
+1. Streamed artifact upload/export, bounded disk spooling, отмена и cleanup.
+2. Индексированный event storage, retention/backup policy, измеренные recovery
+   latency и disk growth на frozen workloads; существующие лимиты пока сохраняются.
+3. Далее B11 workers/quotas/monitoring/identities; B12 независимая калибровка и пилоты.
+B10-C целиком этим пакетом не объявлен закрытым. Сайт не изменяется.
+
+## Исторический пакет — B10-B: восстановление и управление operator ↔ agent
 
 Реализовано постоянное локальное SQLite/WAL-хранение с atomic snapshot/journal
 commit, generation CAS, проверкой целостности и native replay при восстановлении.

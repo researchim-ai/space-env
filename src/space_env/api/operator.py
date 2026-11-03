@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import copy
 import hashlib
-import io
 import json
+import os
 import secrets
+import shutil
 import sqlite3
 import tempfile
 import threading
@@ -15,6 +16,7 @@ from pathlib import Path
 
 from pydantic import Field, model_validator
 
+from space_env.api.operator_events import CursorConflict, EventPageRequest, page_history
 from space_env.api.operator_storage import OperatorRepository, StorageConflict
 from space_env.core.frames import ecef_to_geodetic, geodetic_to_ecef
 from space_env.planning import BaselinePolicy, make_input
@@ -319,6 +321,72 @@ class OperatorSession:
         self.frames.append(navigation_frame(self.session))
         self.frames = self.frames[-257:]
 
+    def _visible_events(self, role):
+        events = []
+        for event in self.events:
+            ids = [
+                i
+                for i in event["action_ids"]
+                if i == "wait"
+                or self.session._by_id[i].role == role
+                or role == "@central"
+            ]
+            if role == "@central" or ids and event["role"] == role:
+                events.append({**event, "action_ids": ids})
+        return events
+
+    def read_events(self, token, payload):
+        with self.lock, self.session._lock:
+            self._guard()
+            role, _, _ = self.permission(token)
+            request = EventPageRequest.model_validate(payload)
+            if request.channel == "journal":
+                ordered = [
+                    ((event["revision"], 0, 0), {"kind": "decision", "event": event})
+                    for event in self._visible_events(role)
+                ]
+                ordered += [
+                    (
+                        (event["revision"], 1, event["epoch"]),
+                        {"kind": "control", "event": event},
+                    )
+                    for event in self.control_events
+                ]
+                entries = [
+                    value for _, value in sorted(ordered, key=lambda item: item[0])
+                ]
+            else:
+                allowed = (
+                    set(self.session._scenario["actor_order"])
+                    if role == "@central"
+                    else set(self.session._task.roles[role].actors)
+                )
+                entries = [
+                    {
+                        "kind": "navigation",
+                        "frame": {
+                            **frame,
+                            "actors": {
+                                actor: value
+                                for actor, value in frame["actors"].items()
+                                if actor in allowed
+                            },
+                        },
+                    }
+                    for frame in self.frames
+                ]
+            try:
+                return page_history(
+                    entries,
+                    session_id=self.id,
+                    token=token,
+                    request=request,
+                    revision=self.session.revision,
+                    control_epoch=self.control["epoch"],
+                )
+            except CursorConflict as exc:
+                raise OperatorError("cursor_conflict", str(exc), 409) from exc
+
     def state(self, token):
         with self.lock, self.session._lock:
             self._guard()
@@ -333,17 +401,7 @@ class OperatorSession:
                 {**f, "actors": {a: v for a, v in f["actors"].items() if a in allowed}}
                 for f in self.frames
             ]
-            events = []
-            for event in self.events:
-                ids = [
-                    i
-                    for i in event["action_ids"]
-                    if i == "wait"
-                    or self.session._by_id[i].role == role
-                    or role == "@central"
-                ]
-                if role == "@central" or ids and event["role"] == role:
-                    events.append({**event, "action_ids": ids})
+            events = self._visible_events(role)
             definition = self.session._scenario["definition"]
             stations = definition.get("operations", definition)["stations"]
             visible = {
@@ -494,11 +552,25 @@ class OperatorSession:
             }
 
     def export(self, token):
+        # Compatibility endpoint retains its 16 MiB bound and bytes result.
+        with tempfile.TemporaryDirectory(prefix="operator-export-") as directory:
+            path = Path(directory) / "training.zip"
+            self.export_to(token, path, max_bytes=16 * 1024 * 1024)
+            return path.read_bytes()
+
+    def export_to(self, token, output, *, max_bytes=32 * 1024 * 1024):
+        from space_env.api.operator_artifacts import BoundedWriter
+
+        if type(max_bytes) is not int or not 1 <= max_bytes <= 32 * 1024 * 1024:
+            raise ValueError("invalid operator export budget")
+        output = Path(output)
         with self.lock:
             verified = VerifiedEpisode(self.checkpoint(token))
-            with tempfile.TemporaryDirectory(prefix="operator-export-") as temp:
+            with tempfile.TemporaryDirectory(
+                prefix="operator-export-", dir=output.parent
+            ) as temp:
                 path = Path(temp) / "bundle"
-                verified.export_bundle(path, max_bytes=16 * 1024 * 1024)
+                verified.export_bundle(path, max_bytes=max_bytes)
                 audit = {
                     "schema": "space-env.operator-provenance/1",
                     "episode_sha256": self.session.checkpoint(compact=True)["sha256"],
@@ -517,21 +589,36 @@ class OperatorSession:
                 if (
                     sum(p.stat().st_size for p in path.rglob("*") if p.is_file())
                     + len(encoded.encode())
-                    > 16 * 1024 * 1024
+                    > max_bytes
                 ):
                     raise ValueError("operator export byte budget exceeded")
                 (path / "operator-provenance.json").write_text(encoded)
-                stream = io.BytesIO()
-                with zipfile.ZipFile(stream, "w") as archive:
-                    for member in sorted(path.rglob("*")):
-                        if member.is_file():
-                            info = zipfile.ZipInfo(
-                                member.relative_to(path).as_posix(),
-                                date_time=(1980, 1, 1, 0, 0, 0),
-                            )
-                            info.compress_type = zipfile.ZIP_DEFLATED
-                            archive.writestr(info, member.read_bytes())
-                return stream.getvalue()
+                created = False
+                try:
+                    with output.open("xb") as file:
+                        created = True
+                        os.chmod(output, 0o600)
+                        bounded = BoundedWriter(file, max_bytes)
+                        with zipfile.ZipFile(bounded, "w") as archive:
+                            for member in sorted(path.rglob("*")):
+                                if member.is_file():
+                                    info = zipfile.ZipInfo(
+                                        member.relative_to(path).as_posix(),
+                                        date_time=(1980, 1, 1, 0, 0, 0),
+                                    )
+                                    info.compress_type = zipfile.ZIP_DEFLATED
+                                    with (
+                                        member.open("rb") as source,
+                                        archive.open(info, "w") as target,
+                                    ):
+                                        shutil.copyfileobj(source, target, length=65536)
+                        file.flush()
+                        os.fsync(file.fileno())
+                except Exception:
+                    if created:
+                        output.unlink(missing_ok=True)
+                    raise
+        return output
 
 
 def navigation_frame(session):
@@ -1073,6 +1160,21 @@ def dispatch(method, path, payload=None, token=None):
         return STORE.create(payload)
     if method == "POST" and parts == ["api", "operator", "restore"]:
         return STORE.restore(payload)
+    if len(parts) == 5 and parts[:3] == ["api", "operator", "transfers"]:
+        from space_env.api.operator_artifacts import ARTIFACTS
+
+        id, action = parts[3:]
+        if method == "GET" and action == "status":
+            return ARTIFACTS.status(STORE, id, token)
+        if method == "GET" and action == "content":
+            return ARTIFACTS.download(STORE, id, token)
+        if method == "PUT" and action == "chunks":
+            return ARTIFACTS.append(STORE, id, token, payload)
+        if method == "POST" and action in {"commit", "cancel"}:
+            if payload != {}:
+                raise ValueError("transfer operation requires an empty JSON object")
+            return getattr(ARTIFACTS, action)(STORE, id, token)
+        raise OperatorError("not_found", "unknown transfer operation", 404)
     if len(parts) not in {4, 5} or parts[:3] != ["api", "operator", "sessions"]:
         raise OperatorError("not_found", "unknown operator route", 404)
     session = STORE.get(parts[3])
@@ -1090,6 +1192,12 @@ def dispatch(method, path, payload=None, token=None):
         return session.handover(token, payload)
     if method == "GET" and suffix == "checkpoint":
         return session.checkpoint(token)
+    if method == "POST" and suffix == "artifacts":
+        from space_env.api.operator_artifacts import ARTIFACTS
+
+        return ARTIFACTS.create(STORE, session.id, token, payload)
+    if method == "POST" and suffix == "events":
+        return session.read_events(token, payload)
     if method == "POST" and suffix == "step":
         return session.step(token, payload)
     if method == "POST" and suffix == "verify":

@@ -1,0 +1,280 @@
+{
+  "schema": "space-env.independent-geometry-acceptance/1",
+  "date": "2026-11-04",
+  "version": "0.134.0",
+  "status": "B11-Q5-D2a independent-input fixed-ephemeris delivery compiler and conditional capacity/native witness blocks verified; coupled EO/pointing D2b open",
+  "industrial_readiness": false,
+  "hardware_calibration_complete": false,
+  "implementation": [
+    "strict independent circular plane/phase/radius and WGS84 site compiler; no orbit-derived station placement or no-contact filtering",
+    "all actor-station onboard delivery products retained, conditional constant-rate/time-slotted capacity relaxation",
+    "exact Fraction weak-duality certificate on binary64 problem coefficients; binary LP floor separate from conservative native ceiling",
+    "native receipt/contact/outage/rate, terminal/actor occupancy, product bits and inventory/energy accounting gates",
+    "CLI/model audit, small/full and terminal-stress workloads, real process restore and installed CI wiring"
+  ],
+  "validation": {
+    "new_tests_passed": 30,
+    "targeted_geometry_restart_ensemble_passed": 110,
+    "reference_passed": 1611,
+    "reference_seconds": 416.85,
+    "fast_passed": 110,
+    "collected": 2041,
+    "counts_overlap": true,
+    "reference_passed_in_single_run": true,
+    "reference_local_http_permission_enabled": true,
+    "logical_native_executions": 16,
+    "successful_process_restores": 8,
+    "prior_materials_34_calibration_14_pointing_612_envelopes_119_passed": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false,
+    "dependency_clean": false
+  },
+  "installed_cases": {
+    "small": {
+      "logical_executions": 6,
+      "observed_rows": [
+        {
+          "id": "independent-nominal",
+          "fulfilled": 3,
+          "total": 6,
+          "binary_lp_floor": 3,
+          "native_sanity_ceiling": 3,
+          "pairs_with_contacts": 3,
+          "pairs_without_contacts": 3,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-nominal-restored",
+          "fulfilled": 3,
+          "total": 6,
+          "binary_lp_floor": 3,
+          "native_sanity_ceiling": 3,
+          "pairs_with_contacts": 3,
+          "pairs_without_contacts": 3,
+          "native_replay": true,
+          "restored_separate_process": true
+        },
+        {
+          "id": "independent-outage",
+          "fulfilled": 0,
+          "total": 6,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 3,
+          "pairs_without_contacts": 3,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-outage-restored",
+          "fulfilled": 0,
+          "total": 6,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 3,
+          "pairs_without_contacts": 3,
+          "native_replay": true,
+          "restored_separate_process": true
+        },
+        {
+          "id": "independent-no-contact",
+          "fulfilled": 0,
+          "total": 2,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 0,
+          "pairs_without_contacts": 2,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-no-contact-restored",
+          "fulfilled": 0,
+          "total": 2,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 0,
+          "pairs_without_contacts": 2,
+          "native_replay": true,
+          "restored_separate_process": true
+        }
+      ],
+      "formal_pair_comparisons_passed": true,
+      "horizon_sec": 6000.0
+    },
+    "full": {
+      "logical_executions": 6,
+      "observed_rows": [
+        {
+          "id": "independent-nominal",
+          "fulfilled": 6,
+          "total": 12,
+          "binary_lp_floor": 6,
+          "native_sanity_ceiling": 6,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-nominal-restored",
+          "fulfilled": 6,
+          "total": 12,
+          "binary_lp_floor": 6,
+          "native_sanity_ceiling": 6,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": true
+        },
+        {
+          "id": "independent-outage",
+          "fulfilled": 0,
+          "total": 12,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-outage-restored",
+          "fulfilled": 0,
+          "total": 12,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": true
+        },
+        {
+          "id": "independent-no-contact",
+          "fulfilled": 0,
+          "total": 4,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 0,
+          "pairs_without_contacts": 4,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-no-contact-restored",
+          "fulfilled": 0,
+          "total": 4,
+          "binary_lp_floor": 0,
+          "native_sanity_ceiling": 0,
+          "pairs_with_contacts": 0,
+          "pairs_without_contacts": 4,
+          "native_replay": true,
+          "restored_separate_process": true
+        }
+      ],
+      "formal_pair_comparisons_passed": true,
+      "horizon_sec": 6000.0
+    },
+    "stress": {
+      "logical_executions": 4,
+      "observed_rows": [
+        {
+          "id": "independent-stress-one",
+          "fulfilled": 1,
+          "total": 12,
+          "binary_lp_floor": 3,
+          "native_sanity_ceiling": 4,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-stress-one-restored",
+          "fulfilled": 1,
+          "total": 12,
+          "binary_lp_floor": 3,
+          "native_sanity_ceiling": 4,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": true
+        },
+        {
+          "id": "independent-stress-two",
+          "fulfilled": 2,
+          "total": 12,
+          "binary_lp_floor": 4,
+          "native_sanity_ceiling": 5,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": false
+        },
+        {
+          "id": "independent-stress-two-restored",
+          "fulfilled": 2,
+          "total": 12,
+          "binary_lp_floor": 4,
+          "native_sanity_ceiling": 5,
+          "pairs_with_contacts": 6,
+          "pairs_without_contacts": 6,
+          "native_replay": true,
+          "restored_separate_process": true
+        }
+      ],
+      "formal_pair_comparisons_passed": true,
+      "horizon_sec": 6000.0
+    }
+  },
+  "source_modules": 253,
+  "source_data_inventory_files": 286,
+  "test_source_sha256": "613e6add5d10477b5d3ef6d23edabadd6acf11f741e3423b68624155804733ee",
+  "example_source_sha256": "f26244b05b7e0ed7685ff2308e29d3c1ede66a50d4acf6c96033587bcbe9fc0e",
+  "limitations": [
+    "independence refers to orbit/site inputs, not independent physical equations or measurements",
+    "native geometric access equations shared; grazing/short contacts between scan nodes may be missed",
+    "capacity certificate exact only for explicit binary-input relaxation; native sanity ceiling is intentionally weaker than integer LP floor",
+    "fixed ephemeris, all-ready preloaded data and constant geometric service rate; no coupled EO/pointing/RF/weather qualification",
+    "stress probes declare no minimum service claim; priority baseline is not expert or proven optimal",
+    "expected outage/no-contact qualification passes do not mean delivered products",
+    "temporary worker export checks do not publish a leakage-controlled teacher corpus"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json",
+    "B11_POINTING.json",
+    "B11_CALIBRATION.json",
+    "B11_MATERIALS.json",
+    "B11_ENSEMBLE.json",
+    "B11_PROCESS_RESTART.json"
+  ],
+  "artifacts_sha256": {
+    "B11_INDEPENDENT_GEOMETRY_CLI_AUDIT.json": "7ed3ef4ca0359fd50a654a93c935325797cb497aacc2920fb1789637c8810293",
+    "B11_INDEPENDENT_GEOMETRY_CLI_BUNDLE.json": "6738b1e1256c4c1c5943c6893ac462b9dd6429aeb64e81f2e950b85ba8cbc1d3",
+    "B11_INDEPENDENT_GEOMETRY_FAST.txt": "ddbf316a10f197802945b519eaec7e59e738d7ef619af62e45cad13522d21a1d",
+    "B11_INDEPENDENT_GEOMETRY_FULL.json": "8decc6f68efcb0f41f366689e88e449dc4474b9f00da891b1bb04d189c526a7a",
+    "B11_INDEPENDENT_GEOMETRY_FULL.manifest.json.gz": "40aea39a9c3427ac13515555bf28001bbc0da0a4f588647e9499ce4e8866bffd",
+    "B11_INDEPENDENT_GEOMETRY_FULL_ASSESSMENTS.json": "0e22daa321f520a16fa56543d17c1908b07723e35f49dabe312393397a5c904d",
+    "B11_INDEPENDENT_GEOMETRY_PRIOR_CALIBRATION.json": "1f9982ab4f69192bd0537d5f4119895ab195d004630f5d8936a187658ee1f6dc",
+    "B11_INDEPENDENT_GEOMETRY_PRIOR_ENVELOPES.json": "7c36ca62d67cb6c3f10ebeb32a55028dc49db24ddcad8adf86534b6459c779e8",
+    "B11_INDEPENDENT_GEOMETRY_PRIOR_MATERIALS.json": "29e005629c279cd7692bca074f9872cc12cf1e3969c64f887f5536944fbf51d1",
+    "B11_INDEPENDENT_GEOMETRY_PRIOR_POINTING.json": "75bb8c2120fdf910bf550355585ec4d69595d653c9308f9ad6c593c0ed9a73e7",
+    "B11_INDEPENDENT_GEOMETRY_REFERENCE.txt": "af81f64e14095fb2ba7f43d60829fa25b2331e19d5c614a14f91432ea6f119ec",
+    "B11_INDEPENDENT_GEOMETRY_SMALL.json": "c88793cefb7a939f2b85b0660195dbead0d3ffbff1dfa4e3f6d0605525f8c0b0",
+    "B11_INDEPENDENT_GEOMETRY_SMALL.manifest.json.gz": "aa5b4e59c621170c63b61829daa69ab0ea736f56523ba390373d39441450ced8",
+    "B11_INDEPENDENT_GEOMETRY_SMALL_ASSESSMENTS.json": "7b56a6ca174baf56dc57bcfefdb388ba498558b0bfe3631ac21684618e01fe43",
+    "B11_INDEPENDENT_GEOMETRY_STRESS.json": "91a273f8fa6ded3d204ef767d953071e86ca21b88048193dfe2753f6fa28a72f",
+    "B11_INDEPENDENT_GEOMETRY_STRESS.manifest.json.gz": "71bbcabb7a677c0510499766a1d966eb7821257d98d6b6527244046d0ffce4dc",
+    "B11_INDEPENDENT_GEOMETRY_STRESS_ASSESSMENTS.json": "e8c79162551c16ee814457bb0a288eeb79cad4bcd5fdb1283e4fbc380056cd66",
+    "B11_INDEPENDENT_GEOMETRY_TARGETED.txt": "f66aedb590d358f4c3f91c3da81ec8ca98f5aef853f3a00e0fd51a1f9e5224eb",
+    "B11_INDEPENDENT_GEOMETRY_WHEEL.json": "7d6516205b3e8561acd50f0b5196932cd7b0ef993d7706e1555afc0be7bc9897"
+  },
+  "next": [
+    "D2b connect independently fixed geometry to controlled pointing/EO/acquisition/processing/shared relay pipeline",
+    "C2 measured-data provenance and calibration holdout",
+    "Q6 teacher/public-view benchmark and Q7 durable jobs/hard quotas"
+  ],
+  "sha256": "1f47c57d04e0d459516312b2ce84b756dc8148a94a26fd089422f2a553140094"
+}

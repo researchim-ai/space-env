@@ -1,0 +1,28 @@
+{
+  "schema": "space-env.material-source-audit/1",
+  "date": "2026-11-03",
+  "passed": true,
+  "source": {
+    "uri": "https://trc.nist.gov/cryogenics/materials/6061%20Aluminum/6061_T6Aluminum_rev.htm",
+    "content_sha256": "a2c62b7f4f774db34903bfcaf1479df326ab42de7a7e734a664aa7a0e76c972f",
+    "retrieved_on": "2026-11-03",
+    "content_scope": "original HTML bytes",
+    "locator": "first property table, Specific Heat column a--i and equation",
+    "kind": "published_material_correlation"
+  },
+  "downloaded_bytes": 13924,
+  "source_sha256": "a2c62b7f4f774db34903bfcaf1479df326ab42de7a7e734a664aa7a0e76c972f",
+  "property_column": "Specific Heat",
+  "coefficient_rows_checked": 9,
+  "units_checked": "J/(kg-K)",
+  "data_and_equation_range_checked_k": [
+    4.0,
+    300.0
+  ],
+  "reported_fit_error_percent_checked": 5.0,
+  "error_is_measurement_sigma": false,
+  "original_html_redistributed": false,
+  "independent_provider_authentication": false,
+  "scope": "byte identity and numerical table transcription, not specimen or flight calibration",
+  "sha256": "54a8425e56f18c0e3fcfa717726f92e43ee6c99f0e771ee77836b73a4aa3f3a8"
+}

@@ -151,7 +151,7 @@ class ReferenceBackend:
             self.mission.dtn.cancel(command_id,self.now())
 
     def observe(self, actor):
-        view = self.mission.observation()["actors"][actor]
+        view = self.mission.observation(actor)["actors"][actor]
         return {
             **view,
             "products": [

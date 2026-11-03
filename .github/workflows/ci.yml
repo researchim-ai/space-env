@@ -63,6 +63,30 @@ jobs:
       - name: Verify outside checkout
         working-directory: /tmp
         run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/scripts/verify_installed.py" --expected-prefix /tmp/space-env-wheel-check
+      - name: Verify analytical physics envelopes outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/validation/envelopes.py" /tmp/space-env-physics-envelopes.json --long --external
+      - name: Verify off-axis dynamics and fixed-station contacts outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/validation/pointing.py" /tmp/space-env-pointing.json
+      - name: Verify evidence and mixed-component ensembles outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/space-env calibration-check /tmp/space-env-calibration.json
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/calibration/demo.py" /tmp/space-env-calibration-native
+      - name: Verify material enthalpy and native domain rollback outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/space-env reference-qualify-materials /tmp/space-env-materials.json
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/materials/demo.py" /tmp/space-env-materials-native
+      - name: Verify complete parameter ensemble execution outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/calibration/qualification.py" /tmp/space-env-ensemble-native --new-process
+          /tmp/space-env-wheel-check/bin/space-env verify-ensemble /tmp/space-env-ensemble-native
+      - name: Verify independent fixed-site multi-plane deliveries outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/scaling/independent.py" /tmp/space-env-independent-native --small
       - name: Verify bounded factory outside checkout
         working-directory: /tmp
         run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/factory/demo.py" /tmp/space-env-factory-check
@@ -85,3 +109,20 @@ jobs:
       - name: Verify durable operator restart and handover outside checkout
         working-directory: /tmp
         run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/durable_smoke.py"
+      - name: Verify operator cursor and online backup outside checkout
+        working-directory: /tmp
+        run: |
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/maintenance_smoke.py"
+          /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/maintenance_http_smoke.py"
+
+      - name: Verify bounded artifact transport outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/operator/artifact_smoke.py"
+
+      - name: Verify paired coupled campaign outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/campaign/installed_smoke.py"
+
+      - name: Verify ground windows and observed ACK cancellation outside checkout
+        working-directory: /tmp
+        run: /tmp/space-env-wheel-check/bin/python -I "$GITHUB_WORKSPACE/examples/campaign/ground_smoke.py"

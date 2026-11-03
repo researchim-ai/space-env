@@ -1,0 +1,294 @@
+{
+  "schema": "space-env.ground-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "ground-window package verified; new large profile qualified",
+  "industrial_readiness": false,
+  "implementation": [
+    "versioned ground_control_sec 2..8s with default 4s and optional declared ACK cancellation actions",
+    "default policy serialization preserves old frozen manifest hash",
+    "ACK-only owned-actor release; locally ready positive-bit replacement; native atomic re-admission and rollback",
+    "conditional bridge exposes current accepted product references and static visible claims only",
+    "conditional preflight never suppresses execution or certifies physical infeasibility",
+    "technical, integrity/witness and mission-expectation domains separate; overall ok and failed denominators unchanged"
+  ],
+  "validation": {
+    "reference_passed": 1303,
+    "fast_passed": 110,
+    "collected": 1733,
+    "new_ground_tests": 27,
+    "counts_overlap": true,
+    "reference_socket_allowed": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false
+  },
+  "faults": {
+    "receipt": "B11_GROUND_FAULTS.json",
+    "manifest": "B11_GROUND_FAULTS.manifest.json.gz",
+    "preflight": "B11_GROUND_FAULTS_PREFLIGHT.json",
+    "passed": true,
+    "scope": "four short-window fault cases plus uninterrupted/prefix-restored three-actor long-window ACK cancellation; 6/6 expected repeats; recovery 4/4, ACK loss 6/6 and 9 lost ACK events, outage/TTL expected zero, ACK cancellation 2/2 with exact native/trace parity"
+  },
+  "installed": {
+    "wheel_receipt": "B11_GROUND_WHEEL.json",
+    "modules_byte_matched": 239,
+    "paired_short_windows_and_replay_passed": true,
+    "observed_ack_cancellation_and_verified_export_passed": true,
+    "scope": "isolated execution outside checkout from installed wheel; system-site-packages venv, not dependency-clean; no large installed run"
+  },
+  "large": {
+    "status": "passed",
+    "manifest_sha256": "620d4b123d26df9f7990455e5b43a7bec5b11c88784f8cc531bfa5525d59ebbe",
+    "actors": 12,
+    "requests": 40,
+    "horizon_sec": 120,
+    "ground_control_sec": 2,
+    "ack_release_actions": false,
+    "expected_repeats": 3,
+    "timeout_sec": 2400,
+    "execution_budget_sec": 1200,
+    "step_p95_budget_sec": 60,
+    "max_checkpoint_bytes": 536870912,
+    "max_peak_rss_bytes": 6442450944,
+    "min_completion_fraction": 1.0,
+    "thresholds_relaxed": false,
+    "preflight": "B11_GROUND_LARGE_PREFLIGHT.json",
+    "scope": "new explicitly versioned task controls; same synthetic physical definition and 40-request/120s target; original four-second case remains failed",
+    "passed": true,
+    "receipt": "B11_GROUND_LARGE.json",
+    "manifest": "B11_GROUND_LARGE.manifest.json.gz",
+    "successful_repeats": 3,
+    "failed_repeats": 0,
+    "semantic_comparisons": {
+      "short-ground-recovery": {
+        "expected_repeats": 3,
+        "passed": true,
+        "semantic_signatures": 1,
+        "successful_repeats": 3,
+        "workloads": [
+          "formation-12-40-ground-2s",
+          "formation-12-40-ground-2s-resumed"
+        ]
+      }
+    },
+    "qualification_domains": {
+      "domains": {
+        "mission_expectations": {
+          "all_expected_passed": true,
+          "expected_repeats": 3,
+          "failed": 0,
+          "not_observed": 0,
+          "observed_repeats": 3,
+          "passed": 3
+        },
+        "native_integrity_and_witnesses": {
+          "all_expected_passed": true,
+          "expected_repeats": 3,
+          "failed": 0,
+          "not_observed": 0,
+          "observed_repeats": 3,
+          "passed": 3
+        },
+        "other_gates": {
+          "all_expected_passed": true,
+          "expected_repeats": 3,
+          "failed": 0,
+          "not_observed": 0,
+          "observed_repeats": 3,
+          "passed": 3
+        },
+        "technical_runtime": {
+          "all_expected_passed": true,
+          "expected_repeats": 3,
+          "failed": 0,
+          "not_observed": 0,
+          "observed_repeats": 3,
+          "passed": 3
+        }
+      },
+      "observed_raw_repeatability": {
+        "short-ground-recovery": {
+          "all_expected_signatures_observed": true,
+          "distinct_signature_pairs": 1,
+          "expected_repeats": 3,
+          "formal_group_passed": true,
+          "observed_signatures": 3,
+          "observed_signatures_identical": true
+        }
+      },
+      "schema": "space-env.qualification-domains/1",
+      "scope": "mission_expectations includes expected negative outcomes; observed signatures do not waive failed gates or change overall ok"
+    },
+    "repeats": [
+      {
+        "id": "formation-12-40-ground-2s",
+        "repeat": 0,
+        "passed": true,
+        "error": null,
+        "failed_gates": [],
+        "fulfilled": 40,
+        "total": 40,
+        "execution_sec": 1126.3412459200008,
+        "replay_sec": 939.3361968540012,
+        "step_p95_sec": 26.466915405599867,
+        "checkpoint_bytes": 75732834,
+        "peak_rss_bytes": 1853272064,
+        "end_to_end_wall_sec": 2091.2985989490007,
+        "last_stage": "export",
+        "pipeline": {
+          "ack_loss_events": 0,
+          "acquired": 40,
+          "checks": {
+            "ack_retry_witness": true,
+            "acquisition": true,
+            "actor_count": true,
+            "coupled_profiles": true,
+            "cpu_jobs": true,
+            "custody": true,
+            "distinct_initial_states": true,
+            "expiry_witness": true,
+            "later_arrivals_completed": true,
+            "no_preloaded_products": true,
+            "request_count": true,
+            "shared_ground_senders": true
+          },
+          "custody_completed": 40,
+          "distinct_initial_states": 12,
+          "ground_senders": [
+            "relay-00",
+            "relay-01",
+            "relay-02",
+            "relay-03"
+          ],
+          "jobs_completed": 40,
+          "later_arrivals_completed": 32,
+          "passed": true,
+          "retransmitted_fragments": 0,
+          "scope": "native evaluator witnesses; geometry is deliberately synthetic and formation-local"
+        }
+      },
+      {
+        "id": "formation-12-40-ground-2s",
+        "repeat": 1,
+        "passed": true,
+        "error": null,
+        "failed_gates": [],
+        "fulfilled": 40,
+        "total": 40,
+        "execution_sec": 1117.4883853710016,
+        "replay_sec": 939.8604075700023,
+        "step_p95_sec": 26.256843588251286,
+        "checkpoint_bytes": 75732838,
+        "peak_rss_bytes": 1854169088,
+        "end_to_end_wall_sec": 2082.6055380769976,
+        "last_stage": "export",
+        "pipeline": {
+          "ack_loss_events": 0,
+          "acquired": 40,
+          "checks": {
+            "ack_retry_witness": true,
+            "acquisition": true,
+            "actor_count": true,
+            "coupled_profiles": true,
+            "cpu_jobs": true,
+            "custody": true,
+            "distinct_initial_states": true,
+            "expiry_witness": true,
+            "later_arrivals_completed": true,
+            "no_preloaded_products": true,
+            "request_count": true,
+            "shared_ground_senders": true
+          },
+          "custody_completed": 40,
+          "distinct_initial_states": 12,
+          "ground_senders": [
+            "relay-00",
+            "relay-01",
+            "relay-02",
+            "relay-03"
+          ],
+          "jobs_completed": 40,
+          "later_arrivals_completed": 32,
+          "passed": true,
+          "retransmitted_fragments": 0,
+          "scope": "native evaluator witnesses; geometry is deliberately synthetic and formation-local"
+        }
+      },
+      {
+        "id": "formation-12-40-ground-2s-resumed",
+        "repeat": 0,
+        "passed": true,
+        "error": null,
+        "failed_gates": [],
+        "fulfilled": 40,
+        "total": 40,
+        "execution_sec": 1164.682298224001,
+        "replay_sec": 935.9181478489991,
+        "step_p95_sec": 26.16702645884925,
+        "checkpoint_bytes": 75732851,
+        "peak_rss_bytes": 1887911936,
+        "end_to_end_wall_sec": 2122.617460038,
+        "last_stage": "export",
+        "pipeline": {
+          "ack_loss_events": 0,
+          "acquired": 40,
+          "checks": {
+            "ack_retry_witness": true,
+            "acquisition": true,
+            "actor_count": true,
+            "coupled_profiles": true,
+            "cpu_jobs": true,
+            "custody": true,
+            "distinct_initial_states": true,
+            "expiry_witness": true,
+            "later_arrivals_completed": true,
+            "no_preloaded_products": true,
+            "request_count": true,
+            "shared_ground_senders": true
+          },
+          "custody_completed": 40,
+          "distinct_initial_states": 12,
+          "ground_senders": [
+            "relay-00",
+            "relay-01",
+            "relay-02",
+            "relay-03"
+          ],
+          "jobs_completed": 40,
+          "later_arrivals_completed": 32,
+          "passed": true,
+          "retransmitted_fragments": 0,
+          "scope": "native evaluator witnesses; geometry is deliberately synthetic and formation-local"
+        }
+      }
+    ],
+    "physical_definition_equals_historical_baseline": true,
+    "task_diff_from_historical": "only downlink command duration 4s -> 2s; scenario id/metadata declare new profile; old failed receipt retained"
+  },
+  "historical_baseline": {
+    "receipt": "B11_NATIVE_COPY_LARGE.json",
+    "requests_fulfilled": 28,
+    "target": 40,
+    "overwritten": false
+  },
+  "limitations": [
+    "constructive nearby formation with synthetic clear weather and engineered baseline",
+    "not arbitrary multi-plane/multi-day or flight calibration",
+    "no hosted multi-tenant quotas/authentication qualification",
+    "conditional window bound is not a physical feasibility certificate"
+  ],
+  "artifacts_sha256": {
+    "B11_GROUND_FAULTS.json": "1cf92537b46e82577d044b24d20ebad58910f55bbd1a44e1aa2c536aa200450b",
+    "B11_GROUND_FAULTS.manifest.json.gz": "a8069de0b4b6a1c191aac56147160cbe93746a2a6a55405b94f3ea001c8ab193",
+    "B11_GROUND_FAULTS_PREFLIGHT.json": "56bda8529a03912e738a231e810e83b58a7877a291cc99b9973a327a5abc065b",
+    "B11_GROUND_LARGE.json": "6946cb36f8d4168c0e6a472dc9560104f2d2cfa0081de7a48d4968d5438986cf",
+    "B11_GROUND_LARGE.manifest.json.gz": "a77a0b07457e3d14a1e2af6e50233300603acd389ac192e4835d283944f898ec",
+    "B11_GROUND_LARGE_PREFLIGHT.json": "03ca3771c9a366581603b5546874b3d7306f605a51173cf7c06bc5beb15576d0",
+    "B11_GROUND_WHEEL.json": "25e489094e670b5921e19cd9a161a33829cd57e67461ad57ca5eaa04ea70c48d",
+    "B11_GROUND_WORKER_000000.json": "b72f05a8ccaad7a271054adf93ea8499f463934207a58d9c86eca9ea84d91ace",
+    "B11_GROUND_WORKER_000001.json": "f1290f81d58c8e1e643c77be83f4439516d88b3c1bbad4829f6763f73161550b",
+    "B11_GROUND_WORKER_000002.json": "4e4323c60eb2de330a5601126381f74fba5fcc27ca86c335fc2fdd32d27a9163"
+  },
+  "next": "INDUSTRIAL_NEXT_AFTER_GROUND.md: independent V&V, broader mission envelopes, calibrated fast RL fidelity and enforced worker quotas",
+  "sha256": "fff97e21935e7ffe658bfb106cf511f018ba5838b50f802ef69d442b1da15aad"
+}

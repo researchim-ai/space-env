@@ -12,6 +12,7 @@ from typing import Literal
 import numpy as np
 from pydantic import Field, model_validator
 
+from space_env.reference.materials import MaterialHeatCapacity
 from space_env.runtime.schema import FiniteScalar, StrictModel
 
 SIGMA_SB = 5.670374419e-8
@@ -31,7 +32,8 @@ HEAT_SOURCES = frozenset(
 
 class ThermalNode(StrictModel):
     initial_k: float = Field(gt=0, le=3000, strict=True)
-    capacity_j_per_k: float = Field(gt=0, le=1e12, strict=True)
+    capacity_j_per_k: float | None = Field(default=None, gt=0, le=1e12, strict=True)
+    material_capacity: MaterialHeatCapacity | None = None
     trip_k: float = Field(gt=0, le=3000, strict=True)
     resume_k: float = Field(gt=0, le=3000, strict=True)
     cold_trip_k: float = Field(default=1.0, gt=0, strict=True)
@@ -50,6 +52,10 @@ class ThermalNode(StrictModel):
 
     @model_validator(mode="after")
     def physical(self):
+        if (self.capacity_j_per_k is None) == (self.material_capacity is None):
+            raise ValueError("node requires exactly one constant or material heat capacity")
+        if self.material_capacity is not None:
+            self.material_capacity.capacity(self.initial_k)
         if not self.cold_trip_k < self.cold_resume_k < self.resume_k < self.trip_k:
             raise ValueError(
                 "node limits require cold trip < cold resume < hot resume < hot trip"
@@ -71,6 +77,16 @@ class ThermalNode(StrictModel):
         elif self.heater_on_below_k is not None or self.heater_off_above_k is not None:
             raise ValueError("heater thresholds require nonzero heater power")
         return self
+
+    def capacity(self, temperature_k):
+        if self.material_capacity is not None:
+            return self.material_capacity.capacity(temperature_k)
+        return self.capacity_j_per_k
+
+    def stored(self, start_k, end_k):
+        if self.material_capacity is not None:
+            return self.material_capacity.stored(start_k, end_k)
+        return self.capacity_j_per_k * (end_k - start_k)
 
 
 class ThermalLink(StrictModel):
@@ -163,7 +179,7 @@ class ThermalNetworkSettings(StrictModel):
 
 
 def advance_network(config, temperatures_k, duration_sec, *, internal_w, external_w):
-    """Pure DOP853 step with independently integrated heat-flow ledgers/events."""
+    """Pure bounded integration with heat-flow ledgers and enthalpy-based storage."""
     from scipy.integrate import solve_ivp
 
     names = list(config.nodes)
@@ -183,7 +199,9 @@ def advance_network(config, temperatures_k, duration_sec, *, internal_w, externa
         raise ValueError(
             "thermal inputs outside finite positive-temperature applicability"
         )
-    c = np.array([config.nodes[k].capacity_j_per_k for k in names])
+    c = np.array([config.nodes[k].capacity(float(t0[i])) for i, k in enumerate(names)])
+    variable = [(i, config.nodes[k].material_capacity) for i, k in enumerate(names)
+                if config.nodes[k].material_capacity is not None]
     g = np.array([config.nodes[k].bath_conductance_w_per_k for k in names])
     bath = np.array([config.nodes[k].bath_k for k in names])
     rad = np.array(
@@ -212,7 +230,10 @@ def advance_network(config, temperatures_k, duration_sec, *, internal_w, externa
             net[a] -= flow
             net[b] += flow
             flows.append(flow)
-        return np.r_[net / c, bath_out, radiation, flows]
+        capacities = c.copy() if variable else c
+        for i, material in variable:
+            capacities[i] = material.capacity(float(t[i]))
+        return np.r_[net / capacities, bath_out, radiation, flows]
 
     events = []
     labels = []
@@ -245,7 +266,8 @@ def advance_network(config, temperatures_k, duration_sec, *, internal_w, externa
     if not result.success or not np.isfinite(result.y).all():
         raise ValueError("thermal integration failed")
     end = result.y[:, -1]
-    stored = c * (end[:n] - t0)
+    stored = np.array([config.nodes[k].stored(float(t0[i]), float(end[i]))
+                       for i, k in enumerate(names)])
     bath_j = end[n : 2 * n]
     rad_j = end[2 * n : 3 * n]
     link_j = end[3 * n :]

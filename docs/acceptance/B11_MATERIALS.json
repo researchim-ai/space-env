@@ -1,0 +1,80 @@
+{
+  "schema": "space-env.material-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-C1b opt-in variable thermal capacity and enthalpy integration verified; measured-data calibration and whole-mission qualification remain open",
+  "industrial_readiness": false,
+  "hardware_calibration_complete": false,
+  "implementation": [
+    "published NIST Al6061-T6 cp correlation with original source bytes SHA and checked table transcription",
+    "exclusive constant/material node contract, explicit mass and homogeneous-lump assumption",
+    "stage-wise C(T), signed integrated enthalpy in kernel/bus/public observations",
+    "no extrapolation or clipping; native domain error rolls back the entire transaction",
+    "independent frozen Decimal/Simpson vectors, CLI, installed example and CI wiring"
+  ],
+  "validation": {
+    "new_material_tests": 31,
+    "targeted_material_thermal_calibration_passed": 158,
+    "reference_initial_passed": 1500,
+    "reference_initial_environment_failures": 1,
+    "reference_environment_failure": "local HTTP bind denied by sandbox",
+    "reference_failed_http_case_rechecked_with_local_server_permission_passed": 1,
+    "reference_distinct_tests_passed_after_environment_recheck": 1501,
+    "reference_profile_passed_in_single_run": false,
+    "fast_passed": 110,
+    "collected": 1931,
+    "counts_overlap": true,
+    "numerical_comparisons": 34,
+    "native_cold_restore_replay": true,
+    "native_domain_escape_atomic_rollback": true,
+    "paid_heater_and_pv_battery_material_tests": true,
+    "prior_pointing_612_and_envelopes_119_and_calibration_14_passed": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false,
+    "large_mission_requalified": false
+  },
+  "domain": {
+    "temperature_k": [
+      4.0,
+      300.0
+    ],
+    "cp_unit": "J/(kg*K)",
+    "material": "6061-T6 Aluminum",
+    "evidence": "published correlation, not raw measurement series",
+    "published_fit_error_percent": 5.0,
+    "error_is_measurement_sigma": false
+  },
+  "limitations": [
+    "no physical calibration or specimen/flight variability qualification",
+    "strict solver-stage domain; no guaranteed integration exactly to the domain boundary",
+    "temperature-dependent conductivity, contact physics, phase changes and thermoelasticity not added",
+    "mass/geometry/routing and homogeneous lump remain scenario assumptions",
+    "numerical budgets are not hardware prediction error bars"
+  ],
+  "historical_receipts_preserved": [
+    "B11_GROUND.json",
+    "B11_ENVELOPES.json",
+    "B11_POINTING.json",
+    "B11_CALIBRATION.json"
+  ],
+  "artifacts_sha256": {
+    "B11_MATERIALS_FULL.json": "6e39ccf8318ddf61027f9d4bf0ba99da608e2d726b97de89e0527610fb93d162",
+    "B11_MATERIALS_HTTP_RECHECK.txt": "73ab25e5a09c8277c54b97bb33c5b1bc964033e409a0798d74ea5db724db749b",
+    "B11_MATERIALS_NATIVE.json": "794e907540c69aabfe8bbdd49ad478722b292ec01d26b3097184676f2e971440",
+    "B11_MATERIALS_NATIVE_FINAL.json.gz": "614921b6a369e4906f36e9b30e0b5256001318a83080d5c606e9e6ad6710be2f",
+    "B11_MATERIALS_NATIVE_PREFIX.json.gz": "3f93a4336a1398d4fb16cd84048ddb8a97abaa6c126c1036d75bf9bc3a0d8191",
+    "B11_MATERIALS_NATIVE_SCENARIO.json.gz": "0c7ad67fb3311db1fe51763490a30c0e22acc136d468ea17e10ed07aefbbfa02",
+    "B11_MATERIALS_PRIOR_CALIBRATION.json": "54cbe6926a36549de79cedbe9495b67f32218bb8534f8f54518f4450dacab491",
+    "B11_MATERIALS_PRIOR_ENVELOPES.json": "83c9f80ce7fe73d097a9a6cd4a7dc8cbd34b4c5a7e752b11d194ee3cb6c9f4a7",
+    "B11_MATERIALS_PRIOR_POINTING.json": "83f49db1a4fb0eb4ede4cda9d54c1c9002d97a27723c06826c4d93c7a5d25591",
+    "B11_MATERIALS_REFERENCE.txt": "f7070630e0ef61f08a5c779193ee4eec8238c06267bf0d6ab3486cd8a5c3b040",
+    "B11_MATERIALS_SOURCE.json": "7427ef57d17c1bad83cb8454170ac69d6bd1c5a661d4dcebcfe4f3dc5b9bae5d",
+    "B11_MATERIALS_WHEEL.json": "6cb87175f87aadb6503f6c85916dfa28bb6eeeb8da41a0309ce7d8e958af6a87"
+  },
+  "next": [
+    "Q5-C2 open measured-data audit and protocol-appropriate estimator with independent holdout",
+    "Q5-D coupled nonconstructive mission qualification and resource gates",
+    "Q6 leakage-controlled native-qualified RL/SFT benchmark"
+  ],
+  "sha256": "3c0ec2d534a3aed5d5d44f5b08d19b7fd6d49685becd183503b09833340705b1"
+}

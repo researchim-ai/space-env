@@ -1,0 +1,135 @@
+{
+  "schema": "space-env.analytic-envelope-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "B11-Q5-A complete; enumerated numerical evidence passed; broader Q5 remains open",
+  "industrial_readiness": false,
+  "implementation": [
+    "10 frozen stdlib-only analytical cases; no native generator import in verifier",
+    "predeclared budgets, pinned input/time domains, finite shape/count bounds and explicit provenance",
+    "sampled orbit versus Hermite interpolation errors measured separately",
+    "failed numerical vectors and solver execution errors retained; CLI nonzero on measured failure",
+    "evidence levels separated; exact evaluated/deferred points and remaining eight-domain gaps",
+    "source version separate from installed distribution metadata; hashed inventory and installed CLI/CI wiring"
+  ],
+  "validation": {
+    "new_tests_passed": 42,
+    "new_tests_seconds": 13.69,
+    "reference_passed": 1339,
+    "reference_seconds": 364.67,
+    "reference_scope": "includes first 36 envelope tests; before provenance-only source/distribution version fix and 6 final tests; all final 42 targeted tests then passed",
+    "fast_passed": 110,
+    "collected": 1775,
+    "counts_overlap": true,
+    "remote_clean_ci_run": false,
+    "expanded_full_run": false
+  },
+  "numerical": {
+    "receipt": "B11_ENVELOPES_FULL.json",
+    "analytic_cases": 10,
+    "analytic_checks": 119,
+    "long_arcs": true,
+    "external_frozen_cases": 3,
+    "all_passed": true,
+    "qualification_status": "needs_external_evidence",
+    "maxima": {
+      "orbit/position_m": {
+        "maximum_measured": 7.484051713487254e-05,
+        "predeclared_tolerance": 2.0
+      },
+      "orbit/velocity_m_s": {
+        "maximum_measured": 2.3286286752353698e-08,
+        "predeclared_tolerance": 0.003
+      },
+      "orbit/interpolated_position_m": {
+        "maximum_measured": 0.5490764256572239,
+        "predeclared_tolerance": 20.0
+      },
+      "orbit/interpolated_velocity_m_s": {
+        "maximum_measured": 0.000301989073345868,
+        "predeclared_tolerance": 0.5
+      },
+      "conduction/temperature_k": {
+        "maximum_measured": 1.0231815394945443e-12,
+        "predeclared_tolerance": 1e-06
+      },
+      "conduction/balance_j": {
+        "maximum_measured": 1.4438228390645236e-10,
+        "predeclared_tolerance": 1e-06
+      },
+      "radiation/temperature_k": {
+        "maximum_measured": 9.663381206337363e-13,
+        "predeclared_tolerance": 1e-05
+      },
+      "radiation/balance_j": {
+        "maximum_measured": 1.1459633242338896e-09,
+        "predeclared_tolerance": 0.001
+      },
+      "rigid/quaternion_chord": {
+        "maximum_measured": 1.1584686508521697e-14,
+        "predeclared_tolerance": 1e-09
+      },
+      "rigid/omega_rad_s": {
+        "maximum_measured": 1.925543058334256e-15,
+        "predeclared_tolerance": 1e-11
+      },
+      "rigid/wheel_nms": {
+        "maximum_measured": 7.702172233337023e-15,
+        "predeclared_tolerance": 1e-11
+      },
+      "rf/fspl_db": {
+        "maximum_measured": 0.0,
+        "predeclared_tolerance": 1e-10
+      },
+      "rf/eirp_dbw": {
+        "maximum_measured": 0.0,
+        "predeclared_tolerance": 1e-10
+      },
+      "rf/cn0_db_hz": {
+        "maximum_measured": 0.0,
+        "predeclared_tolerance": 1e-10
+      },
+      "rf/margin_db": {
+        "maximum_measured": 0.0,
+        "predeclared_tolerance": 1e-10
+      }
+    },
+    "independence": "independently-coded-analytic-equations/shared-parameters; not calibrated flight truth"
+  },
+  "installed": {
+    "wheel_receipt": "B11_ENVELOPES_WHEEL.json",
+    "ground_smoke_receipt": "B11_ENVELOPES_GROUND.json",
+    "final_wheel_physics_and_small_coupled_replay_rl_sft_passed": true,
+    "source_modules_byte_matched": 240,
+    "dependency_clean": false,
+    "scope": "outside checkout with -I; system-site-packages venv"
+  },
+  "historical_large_mission": {
+    "receipt": "B11_GROUND.json",
+    "rerun_for_this_build": false,
+    "scope": "original 40/40 result and wheel SHA retained; no qualification transfer to current build"
+  },
+  "limitations": [
+    "only enumerated synthetic input/time points, not a continuous validated domain",
+    "shared constants/states/parameters/binary64; RF shares analytic form/math backend",
+    "no calibrated hardware, independent operational truth or arbitrary coupled mission qualification",
+    "thermal harness explicitly uses 50000 derivative evaluations; production default unchanged",
+    "inventory is not an author signature, complete wheel signature or native mission qualification ID"
+  ],
+  "artifacts_sha256": {
+    "B11_ENVELOPES_FULL.json": "900e85b6f6500653341b2d9c72014e8cd22df423714501378375b7f933d0d3f7",
+    "B11_ENVELOPES_GROUND.json": "bb005119681201c92673cbdd9c2dacaa7766298271d6b16a097584b616d69cd2",
+    "B11_ENVELOPES_WHEEL.json": "38b1e56e2cfa968c480292610948c708c873482a48bccd05736fc62c2e0e8db8"
+  },
+  "next": [
+    "Q5-B independent off-axis pointing/actuation/contact vectors",
+    "Q5-C hardware calibration and uncertainty",
+    "Q5-D nonconstructive multiplane/multistation native workloads with frozen gates"
+  ],
+  "additional_diagnostics": {
+    "candidate_generic_installed_smoke_passed": true,
+    "candidate_wheel_sha256": "752aa24c9edd1540911dcc31830872d1b59da68ddb18e18d002870d9e6583c48",
+    "scope": "broad scripts/verify_installed.py completed on first candidate before provenance-only version fix; separate from final-wheel physics and ground acceptance; no evidence transfer claim"
+  },
+  "sha256": "5a0d954e13e2aee41b1ebffcc22e9e26d4a925f2f872247d2143baafe0293caa"
+}

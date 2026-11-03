@@ -1,0 +1,90 @@
+{
+  "schema": "space-env.material-oracle/1",
+  "scope": "independent arithmetic/integration of a shared published correlation, not independent measurements",
+  "generator_sha256": "4025cde951154e201aa7b3ad6a0b6005dc7b4a84ba2e7fdddaf4f5094c8f3b7d",
+  "decimal_precision": 45,
+  "integral_absolute_target_j_per_kg": 1e-08,
+  "points": [
+    {
+      "temperature_k": 4,
+      "cp_j_per_kg_k": 0.29197648794449604
+    },
+    {
+      "temperature_k": 5,
+      "cp_j_per_kg_k": 0.4149536564190954
+    },
+    {
+      "temperature_k": 10,
+      "cp_j_per_kg_k": 1.5730408468093204
+    },
+    {
+      "temperature_k": 20,
+      "cp_j_per_kg_k": 8.854270288583747
+    },
+    {
+      "temperature_k": 50,
+      "cp_j_per_kg_k": 148.83821552132005
+    },
+    {
+      "temperature_k": 77,
+      "cp_j_per_kg_k": 348.12792491044394
+    },
+    {
+      "temperature_k": 100,
+      "cp_j_per_kg_k": 492.19817605588776
+    },
+    {
+      "temperature_k": 150,
+      "cp_j_per_kg_k": 713.0313602117262
+    },
+    {
+      "temperature_k": 200,
+      "cp_j_per_kg_k": 835.2390197336241
+    },
+    {
+      "temperature_k": 250,
+      "cp_j_per_kg_k": 895.0404243974842
+    },
+    {
+      "temperature_k": 280,
+      "cp_j_per_kg_k": 925.7543968694703
+    },
+    {
+      "temperature_k": 300,
+      "cp_j_per_kg_k": 953.864360058392
+    }
+  ],
+  "energies": [
+    {
+      "start_k": 4,
+      "end_k": 10,
+      "enthalpy_j_per_kg": 5.095386907394764
+    },
+    {
+      "start_k": 10,
+      "end_k": 77,
+      "enthalpy_j_per_kg": 8672.12753255516
+    },
+    {
+      "start_k": 77,
+      "end_k": 150,
+      "enthalpy_j_per_kg": 40321.39478661084
+    },
+    {
+      "start_k": 150,
+      "end_k": 250,
+      "enthalpy_j_per_kg": 82466.62592286186
+    },
+    {
+      "start_k": 250,
+      "end_k": 300,
+      "enthalpy_j_per_kg": 46074.22319941549
+    },
+    {
+      "start_k": 4,
+      "end_k": 300,
+      "enthalpy_j_per_kg": 177539.46682835073
+    }
+  ],
+  "sha256": "051c3df0e71a69824ce58b0ec6d68d31ff3b1b0abc2ea8751a4f4770658fc3a1"
+}

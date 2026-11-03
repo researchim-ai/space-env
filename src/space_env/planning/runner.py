@@ -66,7 +66,11 @@ class PlanningRun:
             state = self.policy.checkpoint()
             started = time.perf_counter()
             try:
-                public = make_input(self.session, self._feedback)
+                public = make_input(
+                    self.session,
+                    self._feedback,
+                    conditional_claims=self.policy.config.reclaim_acked_downlinks,
+                )
                 decision = self.policy.decide(public)
                 if action_ids is not None:
                     decision = {

@@ -1,0 +1,81 @@
+{
+  "domain_escape_atomic_rollback": true,
+  "hardware_calibration_complete": false,
+  "industrial_readiness": false,
+  "native_restore_replay": true,
+  "passed": true,
+  "scenario_sha256": "b02b3137ac77fbf199855ffd67c20d78bb99978afc8ba82911609b1bcad3b73d",
+  "schema": "space-env.material-native-smoke/1",
+  "scope": "short synthetic host with a published material correlation; no mission service or flight qualification",
+  "sha256": "799113d8feece56828aceb99bccf996ddf3d80b8effb8982ba97f6f44d065a16",
+  "thermal_observation": {
+    "events": [],
+    "heat_capacity_j_per_k": {
+      "body": 8.957158437071117
+    },
+    "heater_power_w": {
+      "body": 0.0
+    },
+    "heater_requested": {
+      "body": false
+    },
+    "ledgers": {
+      "bath_out_j": {
+        "body": 0.0
+      },
+      "dc_heat_j": 5.6,
+      "dc_input_j": 7.0,
+      "declared_nonthermal_export_j": 1.3999999999999995,
+      "evaluations": 196,
+      "external_j": {
+        "body": 0.0
+      },
+      "heater_dc_energy_j": 0.0,
+      "heater_node_j": {
+        "body": 0.0
+      },
+      "internal_j": {
+        "body": 6.377777777777777
+      },
+      "link_out_j": [],
+      "radiation_out_j": {
+        "body": 0.0
+      },
+      "routing_error_j": -3.3306690738754696e-16,
+      "wall_input_j": 0.0,
+      "wheel_work_j": 0.0
+    },
+    "node_balance_error_j": {
+      "body": -6.480149750132114e-12
+    },
+    "node_stored_j": {
+      "body": 6.377777777771297
+    },
+    "sampled_environment": {
+      "body": {
+        "albedo_w": 0.0,
+        "earth_ir_w": 0.0,
+        "earth_view_factor": 0.0,
+        "shadow_fraction": 1.0,
+        "sky_w": 0.0,
+        "solar_w": 0.0
+      }
+    },
+    "schema": "space-env.thermal-network/1",
+    "scope": "lumped network, sampled uniform Earth/Lambert phase and ideal thermostats; no flight calibration",
+    "source_heat_j": {
+      "adcs": 0.0,
+      "base": 5.6,
+      "conversion": 0.7777777777777775,
+      "cpu": 0.0,
+      "payload": 0.0,
+      "propulsion": 0.0,
+      "pv_extraction": 0.0,
+      "radio": 0.0
+    },
+    "temperature_summary": "maximum_node_kelvin",
+    "temperatures_k": {
+      "body": 250.71229990337204
+    }
+  }
+}

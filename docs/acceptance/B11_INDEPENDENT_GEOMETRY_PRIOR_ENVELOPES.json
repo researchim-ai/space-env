@@ -1,0 +1,3385 @@
+{
+  "analytic": {
+    "checks": [
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.0,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 0.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.0,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 0.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.35259178991713036,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 30.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.00011088905083038065,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 30.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 3.343694484050617e-08,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 2.0982537526032187e-11,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.32663024399192725,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 330.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 9.996215526968734e-05,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 330.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 2.4929465252905993e-08,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 600.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 2.0859288743865733e-11,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 600.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.07363741599533921,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 3630.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 4.026726629538593e-06,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 3630.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 3.2297274589574687e-06,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 86400.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 3.0856581924652926e-09,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 86400.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 0.07893161306648012,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 259170.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 6.989794435785106e-06,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 259170.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 1.983149240350834e-05,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 259200.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-leo",
+        "kind": "orbit",
+        "measured": 1.563700039979621e-08,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 259200.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.0,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 0.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.0,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 0.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.5490764256572239,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 30.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.000301989073345868,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 30.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.5244203004624348e-07,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.7687041467171085e-10,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.37364573335923457,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 330.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.00018093940121353586,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 330.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.076574253076398e-08,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 600.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.993121895867364e-11,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 600.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.008119810753032017,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 3630.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.39222920081968e-06,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 3630.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 6.24074747247333e-06,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 86400.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.8106668480499481e-09,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 86400.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 0.008720762420033069,
+        "metric": "interpolated_position_m",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 259170.0,
+        "tolerance": 20.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 1.5059305143921381e-06,
+        "metric": "interpolated_velocity_m_s",
+        "passed": true,
+        "solver": "Hermite/60s",
+        "time_sec": 259170.0,
+        "tolerance": 0.5
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 7.484051713487254e-05,
+        "metric": "position_m",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 259200.0,
+        "tolerance": 2.0
+      },
+      {
+        "case": "elliptic-high-e",
+        "kind": "orbit",
+        "measured": 2.3286286752353698e-08,
+        "metric": "velocity_m_s",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 259200.0,
+        "tolerance": 0.003
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 1.1368683772161603e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 1.170619157164765e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 2.8421709430404007e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 2.913225216616411e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 1.1368683772161603e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 7.958078640513122e-13,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 1.7053025658242404e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 3.410605131648481e-12,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 5.684341886080802e-14,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 5.382361223382759e-12,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 2.2737367544323206e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 2.2723156689608004e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 6.821210263296962e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 7.992184691829607e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 9.094947017729282e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-0w",
+        "kind": "conduction",
+        "measured": 1.3494627637555823e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 2.2737367544323206e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 2.0799362232537533e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 2.8421709430404007e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 2.7753799258789513e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 6.821210263296962e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 8.606093615526333e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 5.684341886080801e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 8.424194675171748e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 5.684341886080802e-14,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 7.72892860823049e-12,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 5.115907697472721e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 5.368860911403317e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 1.0231815394945443e-12,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 1.3091039363644086e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 9.663381206337363e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "conduction-4w",
+        "kind": "conduction",
+        "measured": 1.4438228390645236e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 1e-06
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 5.684341886080802e-14,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 1.674607119639404e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 1.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 0.0,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 1.3460521586239338e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 10.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 5.684341886080802e-14,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 2.000888343900442e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 60.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 5.684341886080802e-14,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 2.1464074961841106e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "DOP853",
+        "time_sec": 100.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 1.7053025658242404e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 6.048139766789973e-11,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 1.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 2.2737367544323206e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 1.014086592476815e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 10.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 9.663381206337363e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 1.1459633242338896e-09,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 60.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 6.252776074688882e-13,
+        "metric": "temperature_k",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 1e-05
+      },
+      {
+        "case": "vacuum-cooling",
+        "kind": "radiation",
+        "measured": 8.949427865445614e-10,
+        "metric": "balance_j",
+        "passed": true,
+        "solver": "Radau",
+        "time_sec": 100.0,
+        "tolerance": 0.001
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 2.0816681711721685e-17,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 3.554447978966673e-16,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 1.0547118733938987e-15,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-coast",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 8.131516293641283e-20,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 4.87890977618477e-19,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 1.951563910473908e-18,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 1.398255992337188e-16,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 5.984795992119984e-17,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 2.393918396847994e-16,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 1.1584686508521697e-14,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 1.925543058334256e-15,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-wheel",
+        "kind": "rigid",
+        "measured": 7.702172233337023e-15,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 8.131516293641283e-20,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 4.87890977618477e-19,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 1.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 1.398255992337188e-16,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 5.984795992119984e-17,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 10.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 1.1584686508521697e-14,
+        "metric": "quaternion_chord",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-09
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 1.925543058334256e-15,
+        "metric": "omega_rad_s",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rigid-external",
+        "kind": "rigid",
+        "measured": 0.0,
+        "metric": "wheel_nms",
+        "passed": true,
+        "solver": "RK4",
+        "time_sec": 60.0,
+        "tolerance": 1e-11
+      },
+      {
+        "case": "rf-s-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "fspl_db",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-s-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "eirp_dbw",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-s-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "cn0_db_hz",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-s-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "margin_db",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-x-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "fspl_db",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-x-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "eirp_dbw",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-x-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "cn0_db_hz",
+        "passed": true,
+        "tolerance": 1e-10
+      },
+      {
+        "case": "rf-x-band",
+        "kind": "rf",
+        "measured": 0.0,
+        "metric": "margin_db",
+        "passed": true,
+        "tolerance": 1e-10
+      }
+    ],
+    "evaluated_cases": [
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          0.0,
+          30.0,
+          60.0,
+          330.0,
+          600.0,
+          3630.0,
+          86400.0,
+          259170.0,
+          259200.0
+        ],
+        "id": "elliptic-leo",
+        "inputs": {
+          "a_m": 8000000.0,
+          "arg_periapsis_rad": 0.3,
+          "e": 0.1,
+          "epoch_utc": "2026-07-18T12:00:00Z",
+          "inclination_rad": 0.7,
+          "initial_si": [
+            4570383.62724302,
+            5041487.4611072745,
+            2412083.3337006383,
+            -5590.318356698686,
+            3236.1038573026262,
+            4344.204696450274
+          ],
+          "mean_anomaly_rad": 0.2,
+          "mu_m3_s2": 398600441800000.0,
+          "raan_rad": 0.4,
+          "sample_sec": 60.0
+        },
+        "kind": "orbit",
+        "scope": "two eccentric inclined central-only GCRS orbits; shared mu/initial state; 60s sampling",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          0.0,
+          30.0,
+          60.0,
+          330.0,
+          600.0,
+          3630.0,
+          86400.0,
+          259170.0,
+          259200.0
+        ],
+        "id": "elliptic-high-e",
+        "inputs": {
+          "a_m": 14000000.0,
+          "arg_periapsis_rad": 0.3,
+          "e": 0.5,
+          "epoch_utc": "2026-07-18T12:00:00Z",
+          "inclination_rad": 1.7,
+          "initial_si": [
+            4287622.862742939,
+            950621.6014776072,
+            6111860.294674352,
+            -5160.747516262953,
+            -3088.2788079228303,
+            6425.149678545012
+          ],
+          "mean_anomaly_rad": 0.2,
+          "mu_m3_s2": 398600441800000.0,
+          "raan_rad": 0.4,
+          "sample_sec": 60.0
+        },
+        "kind": "orbit",
+        "scope": "two eccentric inclined central-only GCRS orbits; shared mu/initial state; 60s sampling",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0,
+          100.0
+        ],
+        "id": "conduction-0w",
+        "inputs": {
+          "capacity_j_per_k": 100.0,
+          "conductance_w_per_k": 0.5,
+          "initial_k": [
+            300.0,
+            280.0
+          ],
+          "internal_w": [
+            0.0,
+            0.0
+          ]
+        },
+        "kind": "conduction",
+        "scope": "two equal-capacity synthetic nodes, constant sources, no bath/radiation/heater",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0,
+          100.0
+        ],
+        "id": "conduction-4w",
+        "inputs": {
+          "capacity_j_per_k": 100.0,
+          "conductance_w_per_k": 0.5,
+          "initial_k": [
+            300.0,
+            280.0
+          ],
+          "internal_w": [
+            4.0,
+            0.0
+          ]
+        },
+        "kind": "conduction",
+        "scope": "two equal-capacity synthetic nodes, constant sources, no bath/radiation/heater",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0,
+          100.0
+        ],
+        "id": "vacuum-cooling",
+        "inputs": {
+          "area_m2": 0.5,
+          "capacity_j_per_k": 1000.0,
+          "emissivity": 0.8,
+          "initial_k": 350.0,
+          "sigma_w_m2_k4": 5.670374419e-08
+        },
+        "kind": "radiation",
+        "scope": "one synthetic node emitting into 0K vacuum; constant capacity/emissivity",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0
+        ],
+        "id": "rigid-coast",
+        "inputs": {
+          "external_z_nm": 0.0,
+          "inertia_kg_m2": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_step_sec": 0.01,
+          "motor_z_nm": 0.0,
+          "omega_z_rad_s": 0.1,
+          "wheel_inertia_kg_m2": 0.01
+        },
+        "kind": "rigid",
+        "scope": "principal-axis coast/unsaturated wheel/external torque; ideal three-wheel standalone kernel",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0
+        ],
+        "id": "rigid-wheel",
+        "inputs": {
+          "external_z_nm": 0.0,
+          "inertia_kg_m2": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_step_sec": 0.01,
+          "motor_z_nm": 0.001,
+          "omega_z_rad_s": 0.0,
+          "wheel_inertia_kg_m2": 0.01
+        },
+        "kind": "rigid",
+        "scope": "principal-axis coast/unsaturated wheel/external torque; ideal three-wheel standalone kernel",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          1.0,
+          10.0,
+          60.0
+        ],
+        "id": "rigid-external",
+        "inputs": {
+          "external_z_nm": 0.001,
+          "inertia_kg_m2": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max_step_sec": 0.01,
+          "motor_z_nm": 0.0,
+          "omega_z_rad_s": 0.0,
+          "wheel_inertia_kg_m2": 0.01
+        },
+        "kind": "rigid",
+        "scope": "principal-axis coast/unsaturated wheel/external torque; ideal three-wheel standalone kernel",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          0.0
+        ],
+        "id": "rf-s-band",
+        "inputs": {
+          "boltzmann_j_k": 1.380649e-23,
+          "c_m_s": 299792458.0,
+          "fade_db": 2.0,
+          "feeder_loss_db": 1.0,
+          "frequency_hz": 2200000000.0,
+          "gain_dbi": 20.0,
+          "gt_db_k": 15.0,
+          "implementation_loss_db": 1.0,
+          "information_rate_bps": 1000000.0,
+          "other_loss_db": 1.0,
+          "polarization_loss_db": 0.5,
+          "range_m": 700000.0,
+          "required_eb_n0_db": 4.0,
+          "rf_power_w": 10.0
+        },
+        "kind": "rf",
+        "scope": "two free-space scalar link budgets; fixed gains/noise and declared scalar losses",
+        "status": "passed"
+      },
+      {
+        "deferred_times_sec": [],
+        "evaluated_times_sec": [
+          0.0
+        ],
+        "id": "rf-x-band",
+        "inputs": {
+          "boltzmann_j_k": 1.380649e-23,
+          "c_m_s": 299792458.0,
+          "fade_db": 2.0,
+          "feeder_loss_db": 1.0,
+          "frequency_hz": 8200000000.0,
+          "gain_dbi": 20.0,
+          "gt_db_k": 15.0,
+          "implementation_loss_db": 1.0,
+          "information_rate_bps": 1000000.0,
+          "other_loss_db": 1.0,
+          "polarization_loss_db": 0.5,
+          "range_m": 2000000.0,
+          "required_eb_n0_db": 4.0,
+          "rf_power_w": 10.0
+        },
+        "kind": "rf",
+        "scope": "two free-space scalar link budgets; fixed gains/noise and declared scalar losses",
+        "status": "passed"
+      }
+    ],
+    "execution_errors": [],
+    "fixture_sha256": "2236f03ffe48d6d68ab8d5b65e3d102c9bf98458fcee765afa96a8e89da1401b",
+    "passed": true,
+    "provenance": {
+      "backend": "Python standard library math; elliptic Kepler bisection, no ODE integrator",
+      "generator": "scripts/generate_analytic_vectors.py",
+      "generator_sha256": "1c96ced9ae10c2833d344b1ec9400d2e8e719086fb97ff237ca95b1cbf7aa3bc",
+      "independence": "independently-coded-analytic-equations/shared-parameters",
+      "scope": "numerical equation verification only; no external flight or hardware calibration",
+      "shared_inputs": [
+        "SI constants",
+        "initial states",
+        "synthetic model parameters",
+        "binary64 arithmetic"
+      ]
+    }
+  },
+  "backend_regression_and_circular": {
+    "checks": [
+      {
+        "measured": 3.635980405647388e-15,
+        "name": "upstream_c2t06a",
+        "passed": true,
+        "scope": "frozen backend regression; not an independent force/ephemeris validation",
+        "source": "https://github.com/liberfa/erfa/blob/master/src/t_erfa_c.c#L2354",
+        "tolerance": 1e-12
+      },
+      {
+        "measured": 9.313225746154785e-10,
+        "name": "circular_600s_position_m",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 1.0
+      },
+      {
+        "measured": 3.749942721349417e-12,
+        "name": "circular_600s_velocity_m_s",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 0.001
+      },
+      {
+        "measured": 1.7498984270452814e-06,
+        "name": "circular_86400s_position_m",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 1.0
+      },
+      {
+        "measured": 1.8740941100261898e-09,
+        "name": "circular_86400s_velocity_m_s",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 0.001
+      },
+      {
+        "measured": 2.771336460190696e-05,
+        "name": "circular_259200s_position_m",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 1.0
+      },
+      {
+        "measured": 2.9837848060333135e-08,
+        "name": "circular_259200s_velocity_m_s",
+        "passed": true,
+        "scope": "closed-form circular two-body orbit only",
+        "tolerance": 0.001
+      }
+    ],
+    "long_arcs": true,
+    "manifest": {
+      "celestial_pole_offsets": "dX/dY not applied",
+      "eop": {
+        "allow_predictions": false,
+        "interpolation": "linear UT1-TAI/xp/yp over TAI seconds",
+        "rows": [
+          {
+            "dut1_s": 0.0115424,
+            "status": "final",
+            "utc": "2026-07-16T00:00:00Z",
+            "xp_arcsec": 0.212967,
+            "yp_arcsec": 0.376427
+          },
+          {
+            "dut1_s": 0.01107,
+            "status": "final",
+            "utc": "2026-07-17T00:00:00Z",
+            "xp_arcsec": 0.213823,
+            "yp_arcsec": 0.37525
+          },
+          {
+            "dut1_s": 0.0104557,
+            "status": "final",
+            "utc": "2026-07-18T00:00:00Z",
+            "xp_arcsec": 0.214843,
+            "yp_arcsec": 0.374315
+          },
+          {
+            "dut1_s": 0.0098758,
+            "status": "final",
+            "utc": "2026-07-19T00:00:00Z",
+            "xp_arcsec": 0.215337,
+            "yp_arcsec": 0.373343
+          },
+          {
+            "dut1_s": 0.0094327,
+            "status": "final",
+            "utc": "2026-07-20T00:00:00Z",
+            "xp_arcsec": 0.215477,
+            "yp_arcsec": 0.372293
+          },
+          {
+            "dut1_s": 0.0092047,
+            "status": "final",
+            "utc": "2026-07-21T00:00:00Z",
+            "xp_arcsec": 0.215988,
+            "yp_arcsec": 0.371392
+          },
+          {
+            "dut1_s": 0.0092116,
+            "status": "final",
+            "utc": "2026-07-22T00:00:00Z",
+            "xp_arcsec": 0.217029,
+            "yp_arcsec": 0.37075
+          },
+          {
+            "dut1_s": 0.0093716,
+            "status": "final",
+            "utc": "2026-07-23T00:00:00Z",
+            "xp_arcsec": 0.217917,
+            "yp_arcsec": 0.370143
+          },
+          {
+            "dut1_s": 0.0097464,
+            "status": "final",
+            "utc": "2026-07-24T00:00:00Z",
+            "xp_arcsec": 0.218631,
+            "yp_arcsec": 0.369535
+          },
+          {
+            "dut1_s": 0.0102796,
+            "status": "final",
+            "utc": "2026-07-25T00:00:00Z",
+            "xp_arcsec": 0.21915,
+            "yp_arcsec": 0.369096
+          },
+          {
+            "dut1_s": 0.0108882,
+            "status": "final",
+            "utc": "2026-07-26T00:00:00Z",
+            "xp_arcsec": 0.219387,
+            "yp_arcsec": 0.368713
+          },
+          {
+            "dut1_s": 0.0115755,
+            "status": "final",
+            "utc": "2026-07-27T00:00:00Z",
+            "xp_arcsec": 0.219367,
+            "yp_arcsec": 0.3682
+          },
+          {
+            "dut1_s": 0.0121805,
+            "status": "final",
+            "utc": "2026-07-28T00:00:00Z",
+            "xp_arcsec": 0.219142,
+            "yp_arcsec": 0.367314
+          },
+          {
+            "dut1_s": 0.0126825,
+            "status": "final",
+            "utc": "2026-07-29T00:00:00Z",
+            "xp_arcsec": 0.219176,
+            "yp_arcsec": 0.366379
+          },
+          {
+            "dut1_s": 0.0129626,
+            "status": "final",
+            "utc": "2026-07-30T00:00:00Z",
+            "xp_arcsec": 0.219641,
+            "yp_arcsec": 0.365805
+          },
+          {
+            "dut1_s": 0.0129405,
+            "status": "final",
+            "utc": "2026-07-31T00:00:00Z",
+            "xp_arcsec": 0.220423,
+            "yp_arcsec": 0.365337
+          },
+          {
+            "dut1_s": 0.0127089,
+            "status": "final",
+            "utc": "2026-08-01T00:00:00Z",
+            "xp_arcsec": 0.221514,
+            "yp_arcsec": 0.364969
+          },
+          {
+            "dut1_s": 0.0122625,
+            "status": "final",
+            "utc": "2026-08-02T00:00:00Z",
+            "xp_arcsec": 0.222424,
+            "yp_arcsec": 0.364632
+          },
+          {
+            "dut1_s": 0.0117555,
+            "status": "final",
+            "utc": "2026-08-03T00:00:00Z",
+            "xp_arcsec": 0.222703,
+            "yp_arcsec": 0.363952
+          },
+          {
+            "dut1_s": 0.0112626,
+            "status": "final",
+            "utc": "2026-08-04T00:00:00Z",
+            "xp_arcsec": 0.22263,
+            "yp_arcsec": 0.36289
+          },
+          {
+            "dut1_s": 0.0108214,
+            "status": "final",
+            "utc": "2026-08-05T00:00:00Z",
+            "xp_arcsec": 0.222696,
+            "yp_arcsec": 0.36172
+          },
+          {
+            "dut1_s": 0.0105946,
+            "status": "final",
+            "utc": "2026-08-06T00:00:00Z",
+            "xp_arcsec": 0.222889,
+            "yp_arcsec": 0.360777
+          },
+          {
+            "dut1_s": 0.0105568,
+            "status": "final",
+            "utc": "2026-08-07T00:00:00Z",
+            "xp_arcsec": 0.22311,
+            "yp_arcsec": 0.360023
+          },
+          {
+            "dut1_s": 0.010738,
+            "status": "final",
+            "utc": "2026-08-08T00:00:00Z",
+            "xp_arcsec": 0.223492,
+            "yp_arcsec": 0.359522
+          },
+          {
+            "dut1_s": 0.0110862,
+            "status": "final",
+            "utc": "2026-08-09T00:00:00Z",
+            "xp_arcsec": 0.223624,
+            "yp_arcsec": 0.35917
+          },
+          {
+            "dut1_s": 0.0114637,
+            "status": "final",
+            "utc": "2026-08-10T00:00:00Z",
+            "xp_arcsec": 0.223253,
+            "yp_arcsec": 0.35866
+          },
+          {
+            "dut1_s": 0.0117133,
+            "status": "final",
+            "utc": "2026-08-11T00:00:00Z",
+            "xp_arcsec": 0.222842,
+            "yp_arcsec": 0.357826
+          },
+          {
+            "dut1_s": 0.0116194,
+            "status": "final",
+            "utc": "2026-08-12T00:00:00Z",
+            "xp_arcsec": 0.222828,
+            "yp_arcsec": 0.356994
+          },
+          {
+            "dut1_s": 0.0111489,
+            "status": "final",
+            "utc": "2026-08-13T00:00:00Z",
+            "xp_arcsec": 0.223002,
+            "yp_arcsec": 0.356174
+          },
+          {
+            "dut1_s": 0.0103867,
+            "status": "final",
+            "utc": "2026-08-14T00:00:00Z",
+            "xp_arcsec": 0.223101,
+            "yp_arcsec": 0.355155
+          },
+          {
+            "dut1_s": 0.0094474,
+            "status": "final",
+            "utc": "2026-08-15T00:00:00Z",
+            "xp_arcsec": 0.223155,
+            "yp_arcsec": 0.354098
+          },
+          {
+            "dut1_s": 0.0085001,
+            "status": "final",
+            "utc": "2026-08-16T00:00:00Z",
+            "xp_arcsec": 0.22304,
+            "yp_arcsec": 0.353008
+          },
+          {
+            "dut1_s": 0.0077269,
+            "status": "final",
+            "utc": "2026-08-17T00:00:00Z",
+            "xp_arcsec": 0.222515,
+            "yp_arcsec": 0.352004
+          },
+          {
+            "dut1_s": 0.0071951,
+            "status": "final",
+            "utc": "2026-08-18T00:00:00Z",
+            "xp_arcsec": 0.221651,
+            "yp_arcsec": 0.351143
+          },
+          {
+            "dut1_s": 0.00689,
+            "status": "final",
+            "utc": "2026-08-19T00:00:00Z",
+            "xp_arcsec": 0.220697,
+            "yp_arcsec": 0.350292
+          },
+          {
+            "dut1_s": 0.0067344,
+            "status": "final",
+            "utc": "2026-08-20T00:00:00Z",
+            "xp_arcsec": 0.219602,
+            "yp_arcsec": 0.349517
+          },
+          {
+            "dut1_s": 0.0067863,
+            "status": "final",
+            "utc": "2026-08-21T00:00:00Z",
+            "xp_arcsec": 0.218549,
+            "yp_arcsec": 0.348738
+          },
+          {
+            "dut1_s": 0.0068563,
+            "status": "final",
+            "utc": "2026-08-22T00:00:00Z",
+            "xp_arcsec": 0.217529,
+            "yp_arcsec": 0.347797
+          },
+          {
+            "dut1_s": 0.0069868,
+            "status": "final",
+            "utc": "2026-08-23T00:00:00Z",
+            "xp_arcsec": 0.216432,
+            "yp_arcsec": 0.346716
+          },
+          {
+            "dut1_s": 0.0070915,
+            "status": "final",
+            "utc": "2026-08-24T00:00:00Z",
+            "xp_arcsec": 0.215302,
+            "yp_arcsec": 0.345638
+          },
+          {
+            "dut1_s": 0.0070607,
+            "status": "final",
+            "utc": "2026-08-25T00:00:00Z",
+            "xp_arcsec": 0.214218,
+            "yp_arcsec": 0.344645
+          },
+          {
+            "dut1_s": 0.0068941,
+            "status": "final",
+            "utc": "2026-08-26T00:00:00Z",
+            "xp_arcsec": 0.213361,
+            "yp_arcsec": 0.343581
+          },
+          {
+            "dut1_s": 0.0064875,
+            "status": "final",
+            "utc": "2026-08-27T00:00:00Z",
+            "xp_arcsec": 0.212998,
+            "yp_arcsec": 0.342396
+          },
+          {
+            "dut1_s": 0.0059022,
+            "status": "final",
+            "utc": "2026-08-28T00:00:00Z",
+            "xp_arcsec": 0.212824,
+            "yp_arcsec": 0.341402
+          },
+          {
+            "dut1_s": 0.0050754,
+            "status": "final",
+            "utc": "2026-08-29T00:00:00Z",
+            "xp_arcsec": 0.212499,
+            "yp_arcsec": 0.340576
+          },
+          {
+            "dut1_s": 0.0041643,
+            "status": "final",
+            "utc": "2026-08-30T00:00:00Z",
+            "xp_arcsec": 0.212087,
+            "yp_arcsec": 0.339942
+          },
+          {
+            "dut1_s": 0.0032721,
+            "status": "final",
+            "utc": "2026-08-31T00:00:00Z",
+            "xp_arcsec": 0.21148,
+            "yp_arcsec": 0.339526
+          },
+          {
+            "dut1_s": 0.0024177,
+            "status": "final",
+            "utc": "2026-09-01T00:00:00Z",
+            "xp_arcsec": 0.210815,
+            "yp_arcsec": 0.33931
+          },
+          {
+            "dut1_s": 0.0017229,
+            "status": "final",
+            "utc": "2026-09-02T00:00:00Z",
+            "xp_arcsec": 0.209899,
+            "yp_arcsec": 0.339098
+          },
+          {
+            "dut1_s": 0.0012147,
+            "status": "final",
+            "utc": "2026-09-03T00:00:00Z",
+            "xp_arcsec": 0.208704,
+            "yp_arcsec": 0.338587
+          },
+          {
+            "dut1_s": 0.0009578,
+            "status": "final",
+            "utc": "2026-09-04T00:00:00Z",
+            "xp_arcsec": 0.207115,
+            "yp_arcsec": 0.337949
+          },
+          {
+            "dut1_s": 0.0009204,
+            "status": "final",
+            "utc": "2026-09-05T00:00:00Z",
+            "xp_arcsec": 0.20523,
+            "yp_arcsec": 0.337127
+          },
+          {
+            "dut1_s": 0.0008859,
+            "status": "final",
+            "utc": "2026-09-06T00:00:00Z",
+            "xp_arcsec": 0.203557,
+            "yp_arcsec": 0.336182
+          },
+          {
+            "dut1_s": 0.0006851,
+            "status": "final",
+            "utc": "2026-09-07T00:00:00Z",
+            "xp_arcsec": 0.20244,
+            "yp_arcsec": 0.335222
+          },
+          {
+            "dut1_s": 0.0002215,
+            "status": "final",
+            "utc": "2026-09-08T00:00:00Z",
+            "xp_arcsec": 0.201823,
+            "yp_arcsec": 0.334462
+          },
+          {
+            "dut1_s": -0.0005075,
+            "status": "final",
+            "utc": "2026-09-09T00:00:00Z",
+            "xp_arcsec": 0.201192,
+            "yp_arcsec": 0.334118
+          },
+          {
+            "dut1_s": -0.0015241,
+            "status": "final",
+            "utc": "2026-09-10T00:00:00Z",
+            "xp_arcsec": 0.200189,
+            "yp_arcsec": 0.333881
+          },
+          {
+            "dut1_s": -0.0026585,
+            "status": "final",
+            "utc": "2026-09-11T00:00:00Z",
+            "xp_arcsec": 0.198562,
+            "yp_arcsec": 0.333421
+          },
+          {
+            "dut1_s": -0.0038584,
+            "status": "final",
+            "utc": "2026-09-12T00:00:00Z",
+            "xp_arcsec": 0.196426,
+            "yp_arcsec": 0.332628
+          },
+          {
+            "dut1_s": -0.0050578,
+            "status": "final",
+            "utc": "2026-09-13T00:00:00Z",
+            "xp_arcsec": 0.194491,
+            "yp_arcsec": 0.331657
+          },
+          {
+            "dut1_s": -0.0061765,
+            "status": "final",
+            "utc": "2026-09-14T00:00:00Z",
+            "xp_arcsec": 0.192935,
+            "yp_arcsec": 0.330541
+          },
+          {
+            "dut1_s": -0.0071289,
+            "status": "final",
+            "utc": "2026-09-15T00:00:00Z",
+            "xp_arcsec": 0.19166,
+            "yp_arcsec": 0.329566
+          },
+          {
+            "dut1_s": -0.0078975,
+            "status": "final",
+            "utc": "2026-09-16T00:00:00Z",
+            "xp_arcsec": 0.190824,
+            "yp_arcsec": 0.329155
+          },
+          {
+            "dut1_s": -0.0085912,
+            "status": "final",
+            "utc": "2026-09-17T00:00:00Z",
+            "xp_arcsec": 0.190044,
+            "yp_arcsec": 0.329082
+          },
+          {
+            "dut1_s": -0.0089631,
+            "status": "final",
+            "utc": "2026-09-18T00:00:00Z",
+            "xp_arcsec": 0.189056,
+            "yp_arcsec": 0.32913
+          },
+          {
+            "dut1_s": -0.0094665,
+            "status": "final",
+            "utc": "2026-09-19T00:00:00Z",
+            "xp_arcsec": 0.187651,
+            "yp_arcsec": 0.329278
+          },
+          {
+            "dut1_s": -0.0099832,
+            "status": "final",
+            "utc": "2026-09-20T00:00:00Z",
+            "xp_arcsec": 0.186195,
+            "yp_arcsec": 0.329068
+          },
+          {
+            "dut1_s": -0.0106337,
+            "status": "final",
+            "utc": "2026-09-21T00:00:00Z",
+            "xp_arcsec": 0.185023,
+            "yp_arcsec": 0.328567
+          },
+          {
+            "dut1_s": -0.0114006,
+            "status": "final",
+            "utc": "2026-09-22T00:00:00Z",
+            "xp_arcsec": 0.183765,
+            "yp_arcsec": 0.328158
+          },
+          {
+            "dut1_s": -0.0123544,
+            "status": "final",
+            "utc": "2026-09-23T00:00:00Z",
+            "xp_arcsec": 0.18245,
+            "yp_arcsec": 0.327683
+          },
+          {
+            "dut1_s": -0.013516,
+            "status": "final",
+            "utc": "2026-09-24T00:00:00Z",
+            "xp_arcsec": 0.181496,
+            "yp_arcsec": 0.327265
+          },
+          {
+            "dut1_s": -0.0148104,
+            "status": "final",
+            "utc": "2026-09-25T00:00:00Z",
+            "xp_arcsec": 0.180837,
+            "yp_arcsec": 0.326958
+          },
+          {
+            "dut1_s": -0.016317,
+            "status": "final",
+            "utc": "2026-09-26T00:00:00Z",
+            "xp_arcsec": 0.180022,
+            "yp_arcsec": 0.326585
+          },
+          {
+            "dut1_s": -0.0178589,
+            "status": "final",
+            "utc": "2026-09-27T00:00:00Z",
+            "xp_arcsec": 0.179154,
+            "yp_arcsec": 0.326129
+          },
+          {
+            "dut1_s": -0.0193322,
+            "status": "final",
+            "utc": "2026-09-28T00:00:00Z",
+            "xp_arcsec": 0.178397,
+            "yp_arcsec": 0.325851
+          },
+          {
+            "dut1_s": -0.0206352,
+            "status": "final",
+            "utc": "2026-09-29T00:00:00Z",
+            "xp_arcsec": 0.177454,
+            "yp_arcsec": 0.325945
+          },
+          {
+            "dut1_s": -0.0217135,
+            "status": "final",
+            "utc": "2026-09-30T00:00:00Z",
+            "xp_arcsec": 0.176115,
+            "yp_arcsec": 0.325828
+          },
+          {
+            "dut1_s": -0.0225344,
+            "status": "final",
+            "utc": "2026-10-01T00:00:00Z",
+            "xp_arcsec": 0.174592,
+            "yp_arcsec": 0.325299
+          },
+          {
+            "dut1_s": -0.0231366,
+            "status": "final",
+            "utc": "2026-10-02T00:00:00Z",
+            "xp_arcsec": 0.173343,
+            "yp_arcsec": 0.324589
+          },
+          {
+            "dut1_s": -0.0236485,
+            "status": "final",
+            "utc": "2026-10-03T00:00:00Z",
+            "xp_arcsec": 0.172581,
+            "yp_arcsec": 0.323944
+          },
+          {
+            "dut1_s": -0.0242194,
+            "status": "final",
+            "utc": "2026-10-04T00:00:00Z",
+            "xp_arcsec": 0.171874,
+            "yp_arcsec": 0.323454
+          },
+          {
+            "dut1_s": -0.0250067,
+            "status": "final",
+            "utc": "2026-10-05T00:00:00Z",
+            "xp_arcsec": 0.170954,
+            "yp_arcsec": 0.322945
+          },
+          {
+            "dut1_s": -0.0260101,
+            "status": "final",
+            "utc": "2026-10-06T00:00:00Z",
+            "xp_arcsec": 0.169823,
+            "yp_arcsec": 0.322499
+          },
+          {
+            "dut1_s": -0.0272696,
+            "status": "final",
+            "utc": "2026-10-07T00:00:00Z",
+            "xp_arcsec": 0.168796,
+            "yp_arcsec": 0.322164
+          },
+          {
+            "dut1_s": -0.0287129,
+            "status": "final",
+            "utc": "2026-10-08T00:00:00Z",
+            "xp_arcsec": 0.168084,
+            "yp_arcsec": 0.322257
+          },
+          {
+            "dut1_s": -0.0301471,
+            "status": "final",
+            "utc": "2026-10-09T00:00:00Z",
+            "xp_arcsec": 0.16725,
+            "yp_arcsec": 0.322735
+          },
+          {
+            "dut1_s": -0.031618,
+            "status": "final",
+            "utc": "2026-10-10T00:00:00Z",
+            "xp_arcsec": 0.166275,
+            "yp_arcsec": 0.323153
+          },
+          {
+            "dut1_s": -0.0329997,
+            "status": "final",
+            "utc": "2026-10-11T00:00:00Z",
+            "xp_arcsec": 0.165222,
+            "yp_arcsec": 0.323525
+          },
+          {
+            "dut1_s": -0.0342543,
+            "status": "final",
+            "utc": "2026-10-12T00:00:00Z",
+            "xp_arcsec": 0.163773,
+            "yp_arcsec": 0.323564
+          },
+          {
+            "dut1_s": -0.0352954,
+            "status": "final",
+            "utc": "2026-10-13T00:00:00Z",
+            "xp_arcsec": 0.161998,
+            "yp_arcsec": 0.322984
+          },
+          {
+            "dut1_s": -0.0361215,
+            "status": "prediction",
+            "utc": "2026-10-14T00:00:00Z",
+            "xp_arcsec": 0.1605,
+            "yp_arcsec": 0.322304
+          },
+          {
+            "dut1_s": -0.0367504,
+            "status": "prediction",
+            "utc": "2026-10-15T00:00:00Z",
+            "xp_arcsec": 0.159127,
+            "yp_arcsec": 0.321537
+          },
+          {
+            "dut1_s": -0.0372531,
+            "status": "prediction",
+            "utc": "2026-10-16T00:00:00Z",
+            "xp_arcsec": 0.157937,
+            "yp_arcsec": 0.320996
+          },
+          {
+            "dut1_s": -0.0377433,
+            "status": "prediction",
+            "utc": "2026-10-17T00:00:00Z",
+            "xp_arcsec": 0.156844,
+            "yp_arcsec": 0.320617
+          },
+          {
+            "dut1_s": -0.0383174,
+            "status": "prediction",
+            "utc": "2026-10-18T00:00:00Z",
+            "xp_arcsec": 0.155814,
+            "yp_arcsec": 0.320444
+          },
+          {
+            "dut1_s": -0.0390386,
+            "status": "prediction",
+            "utc": "2026-10-19T00:00:00Z",
+            "xp_arcsec": 0.154748,
+            "yp_arcsec": 0.320436
+          },
+          {
+            "dut1_s": -0.0399555,
+            "status": "prediction",
+            "utc": "2026-10-20T00:00:00Z",
+            "xp_arcsec": 0.153624,
+            "yp_arcsec": 0.320464
+          },
+          {
+            "dut1_s": -0.0410968,
+            "status": "prediction",
+            "utc": "2026-10-21T00:00:00Z",
+            "xp_arcsec": 0.152455,
+            "yp_arcsec": 0.320488
+          },
+          {
+            "dut1_s": -0.0424657,
+            "status": "prediction",
+            "utc": "2026-10-22T00:00:00Z",
+            "xp_arcsec": 0.151264,
+            "yp_arcsec": 0.320494
+          },
+          {
+            "dut1_s": -0.0440219,
+            "status": "prediction",
+            "utc": "2026-10-23T00:00:00Z",
+            "xp_arcsec": 0.150086,
+            "yp_arcsec": 0.320487
+          },
+          {
+            "dut1_s": -0.0456821,
+            "status": "prediction",
+            "utc": "2026-10-24T00:00:00Z",
+            "xp_arcsec": 0.148909,
+            "yp_arcsec": 0.320461
+          },
+          {
+            "dut1_s": -0.0473614,
+            "status": "prediction",
+            "utc": "2026-10-25T00:00:00Z",
+            "xp_arcsec": 0.147726,
+            "yp_arcsec": 0.320419
+          },
+          {
+            "dut1_s": -0.0489486,
+            "status": "prediction",
+            "utc": "2026-10-26T00:00:00Z",
+            "xp_arcsec": 0.146537,
+            "yp_arcsec": 0.320392
+          },
+          {
+            "dut1_s": -0.0503135,
+            "status": "prediction",
+            "utc": "2026-10-27T00:00:00Z",
+            "xp_arcsec": 0.145354,
+            "yp_arcsec": 0.320398
+          },
+          {
+            "dut1_s": -0.0513988,
+            "status": "prediction",
+            "utc": "2026-10-28T00:00:00Z",
+            "xp_arcsec": 0.144176,
+            "yp_arcsec": 0.320444
+          },
+          {
+            "dut1_s": -0.052262,
+            "status": "prediction",
+            "utc": "2026-10-29T00:00:00Z",
+            "xp_arcsec": 0.142999,
+            "yp_arcsec": 0.320523
+          },
+          {
+            "dut1_s": -0.0530082,
+            "status": "prediction",
+            "utc": "2026-10-30T00:00:00Z",
+            "xp_arcsec": 0.141829,
+            "yp_arcsec": 0.320634
+          },
+          {
+            "dut1_s": -0.0537721,
+            "status": "prediction",
+            "utc": "2026-10-31T00:00:00Z",
+            "xp_arcsec": 0.140665,
+            "yp_arcsec": 0.320777
+          },
+          {
+            "dut1_s": -0.0546885,
+            "status": "prediction",
+            "utc": "2026-11-01T00:00:00Z",
+            "xp_arcsec": 0.139503,
+            "yp_arcsec": 0.320938
+          },
+          {
+            "dut1_s": -0.0558353,
+            "status": "prediction",
+            "utc": "2026-11-02T00:00:00Z",
+            "xp_arcsec": 0.138342,
+            "yp_arcsec": 0.321115
+          },
+          {
+            "dut1_s": -0.0572292,
+            "status": "prediction",
+            "utc": "2026-11-03T00:00:00Z",
+            "xp_arcsec": 0.137181,
+            "yp_arcsec": 0.321307
+          },
+          {
+            "dut1_s": -0.0588261,
+            "status": "prediction",
+            "utc": "2026-11-04T00:00:00Z",
+            "xp_arcsec": 0.136022,
+            "yp_arcsec": 0.321515
+          },
+          {
+            "dut1_s": -0.060549,
+            "status": "prediction",
+            "utc": "2026-11-05T00:00:00Z",
+            "xp_arcsec": 0.134865,
+            "yp_arcsec": 0.321738
+          },
+          {
+            "dut1_s": -0.0622972,
+            "status": "prediction",
+            "utc": "2026-11-06T00:00:00Z",
+            "xp_arcsec": 0.133709,
+            "yp_arcsec": 0.321976
+          },
+          {
+            "dut1_s": -0.0639624,
+            "status": "prediction",
+            "utc": "2026-11-07T00:00:00Z",
+            "xp_arcsec": 0.132553,
+            "yp_arcsec": 0.322232
+          },
+          {
+            "dut1_s": -0.065466,
+            "status": "prediction",
+            "utc": "2026-11-08T00:00:00Z",
+            "xp_arcsec": 0.131398,
+            "yp_arcsec": 0.322509
+          },
+          {
+            "dut1_s": -0.0667605,
+            "status": "prediction",
+            "utc": "2026-11-09T00:00:00Z",
+            "xp_arcsec": 0.130247,
+            "yp_arcsec": 0.322805
+          },
+          {
+            "dut1_s": -0.0678325,
+            "status": "prediction",
+            "utc": "2026-11-10T00:00:00Z",
+            "xp_arcsec": 0.129097,
+            "yp_arcsec": 0.323121
+          },
+          {
+            "dut1_s": -0.0687097,
+            "status": "prediction",
+            "utc": "2026-11-11T00:00:00Z",
+            "xp_arcsec": 0.127951,
+            "yp_arcsec": 0.323456
+          },
+          {
+            "dut1_s": -0.0694539,
+            "status": "prediction",
+            "utc": "2026-11-12T00:00:00Z",
+            "xp_arcsec": 0.12681,
+            "yp_arcsec": 0.32381
+          },
+          {
+            "dut1_s": -0.0701342,
+            "status": "prediction",
+            "utc": "2026-11-13T00:00:00Z",
+            "xp_arcsec": 0.125672,
+            "yp_arcsec": 0.324182
+          },
+          {
+            "dut1_s": -0.0708239,
+            "status": "prediction",
+            "utc": "2026-11-14T00:00:00Z",
+            "xp_arcsec": 0.124539,
+            "yp_arcsec": 0.32457
+          },
+          {
+            "dut1_s": -0.0716012,
+            "status": "prediction",
+            "utc": "2026-11-15T00:00:00Z",
+            "xp_arcsec": 0.12341,
+            "yp_arcsec": 0.324976
+          },
+          {
+            "dut1_s": -0.0725222,
+            "status": "prediction",
+            "utc": "2026-11-16T00:00:00Z",
+            "xp_arcsec": 0.122285,
+            "yp_arcsec": 0.325398
+          },
+          {
+            "dut1_s": -0.0736286,
+            "status": "prediction",
+            "utc": "2026-11-17T00:00:00Z",
+            "xp_arcsec": 0.121164,
+            "yp_arcsec": 0.325837
+          },
+          {
+            "dut1_s": -0.07494,
+            "status": "prediction",
+            "utc": "2026-11-18T00:00:00Z",
+            "xp_arcsec": 0.120049,
+            "yp_arcsec": 0.326293
+          },
+          {
+            "dut1_s": -0.0764468,
+            "status": "prediction",
+            "utc": "2026-11-19T00:00:00Z",
+            "xp_arcsec": 0.118938,
+            "yp_arcsec": 0.326766
+          },
+          {
+            "dut1_s": -0.0781036,
+            "status": "prediction",
+            "utc": "2026-11-20T00:00:00Z",
+            "xp_arcsec": 0.117832,
+            "yp_arcsec": 0.327256
+          },
+          {
+            "dut1_s": -0.079827,
+            "status": "prediction",
+            "utc": "2026-11-21T00:00:00Z",
+            "xp_arcsec": 0.116732,
+            "yp_arcsec": 0.327763
+          },
+          {
+            "dut1_s": -0.0815031,
+            "status": "prediction",
+            "utc": "2026-11-22T00:00:00Z",
+            "xp_arcsec": 0.115638,
+            "yp_arcsec": 0.328287
+          },
+          {
+            "dut1_s": -0.0830177,
+            "status": "prediction",
+            "utc": "2026-11-23T00:00:00Z",
+            "xp_arcsec": 0.11455,
+            "yp_arcsec": 0.328827
+          },
+          {
+            "dut1_s": -0.0842973,
+            "status": "prediction",
+            "utc": "2026-11-24T00:00:00Z",
+            "xp_arcsec": 0.113469,
+            "yp_arcsec": 0.329385
+          },
+          {
+            "dut1_s": -0.085331,
+            "status": "prediction",
+            "utc": "2026-11-25T00:00:00Z",
+            "xp_arcsec": 0.112395,
+            "yp_arcsec": 0.329958
+          },
+          {
+            "dut1_s": -0.0861854,
+            "status": "prediction",
+            "utc": "2026-11-26T00:00:00Z",
+            "xp_arcsec": 0.111328,
+            "yp_arcsec": 0.330548
+          },
+          {
+            "dut1_s": -0.0869915,
+            "status": "prediction",
+            "utc": "2026-11-27T00:00:00Z",
+            "xp_arcsec": 0.110269,
+            "yp_arcsec": 0.331154
+          },
+          {
+            "dut1_s": -0.0878976,
+            "status": "prediction",
+            "utc": "2026-11-28T00:00:00Z",
+            "xp_arcsec": 0.109218,
+            "yp_arcsec": 0.331776
+          },
+          {
+            "dut1_s": -0.0890058,
+            "status": "prediction",
+            "utc": "2026-11-29T00:00:00Z",
+            "xp_arcsec": 0.108175,
+            "yp_arcsec": 0.332414
+          },
+          {
+            "dut1_s": -0.0903435,
+            "status": "prediction",
+            "utc": "2026-11-30T00:00:00Z",
+            "xp_arcsec": 0.10714,
+            "yp_arcsec": 0.333067
+          },
+          {
+            "dut1_s": -0.0918665,
+            "status": "prediction",
+            "utc": "2026-12-01T00:00:00Z",
+            "xp_arcsec": 0.106114,
+            "yp_arcsec": 0.333737
+          },
+          {
+            "dut1_s": -0.0934801,
+            "status": "prediction",
+            "utc": "2026-12-02T00:00:00Z",
+            "xp_arcsec": 0.105097,
+            "yp_arcsec": 0.334422
+          },
+          {
+            "dut1_s": -0.095074,
+            "status": "prediction",
+            "utc": "2026-12-03T00:00:00Z",
+            "xp_arcsec": 0.10409,
+            "yp_arcsec": 0.335122
+          },
+          {
+            "dut1_s": -0.0965545,
+            "status": "prediction",
+            "utc": "2026-12-04T00:00:00Z",
+            "xp_arcsec": 0.103092,
+            "yp_arcsec": 0.335838
+          },
+          {
+            "dut1_s": -0.0978559,
+            "status": "prediction",
+            "utc": "2026-12-05T00:00:00Z",
+            "xp_arcsec": 0.102104,
+            "yp_arcsec": 0.336569
+          },
+          {
+            "dut1_s": -0.0989426,
+            "status": "prediction",
+            "utc": "2026-12-06T00:00:00Z",
+            "xp_arcsec": 0.101126,
+            "yp_arcsec": 0.337315
+          },
+          {
+            "dut1_s": -0.0998101,
+            "status": "prediction",
+            "utc": "2026-12-07T00:00:00Z",
+            "xp_arcsec": 0.100159,
+            "yp_arcsec": 0.338075
+          },
+          {
+            "dut1_s": -0.1004872,
+            "status": "prediction",
+            "utc": "2026-12-08T00:00:00Z",
+            "xp_arcsec": 0.099204,
+            "yp_arcsec": 0.338851
+          },
+          {
+            "dut1_s": -0.1010265,
+            "status": "prediction",
+            "utc": "2026-12-09T00:00:00Z",
+            "xp_arcsec": 0.098259,
+            "yp_arcsec": 0.339641
+          },
+          {
+            "dut1_s": -0.1014955,
+            "status": "prediction",
+            "utc": "2026-12-10T00:00:00Z",
+            "xp_arcsec": 0.097326,
+            "yp_arcsec": 0.340446
+          },
+          {
+            "dut1_s": -0.1019675,
+            "status": "prediction",
+            "utc": "2026-12-11T00:00:00Z",
+            "xp_arcsec": 0.096405,
+            "yp_arcsec": 0.341265
+          },
+          {
+            "dut1_s": -0.1025138,
+            "status": "prediction",
+            "utc": "2026-12-12T00:00:00Z",
+            "xp_arcsec": 0.095495,
+            "yp_arcsec": 0.342098
+          },
+          {
+            "dut1_s": -0.103195,
+            "status": "prediction",
+            "utc": "2026-12-13T00:00:00Z",
+            "xp_arcsec": 0.094599,
+            "yp_arcsec": 0.342945
+          },
+          {
+            "dut1_s": -0.1040503,
+            "status": "prediction",
+            "utc": "2026-12-14T00:00:00Z",
+            "xp_arcsec": 0.093715,
+            "yp_arcsec": 0.343806
+          },
+          {
+            "dut1_s": -0.1050953,
+            "status": "prediction",
+            "utc": "2026-12-15T00:00:00Z",
+            "xp_arcsec": 0.092844,
+            "yp_arcsec": 0.34468
+          },
+          {
+            "dut1_s": -0.1063177,
+            "status": "prediction",
+            "utc": "2026-12-16T00:00:00Z",
+            "xp_arcsec": 0.091987,
+            "yp_arcsec": 0.345568
+          },
+          {
+            "dut1_s": -0.1076763,
+            "status": "prediction",
+            "utc": "2026-12-17T00:00:00Z",
+            "xp_arcsec": 0.091143,
+            "yp_arcsec": 0.346469
+          },
+          {
+            "dut1_s": -0.1091054,
+            "status": "prediction",
+            "utc": "2026-12-18T00:00:00Z",
+            "xp_arcsec": 0.090313,
+            "yp_arcsec": 0.347383
+          },
+          {
+            "dut1_s": -0.1105147,
+            "status": "prediction",
+            "utc": "2026-12-19T00:00:00Z",
+            "xp_arcsec": 0.089498,
+            "yp_arcsec": 0.348311
+          },
+          {
+            "dut1_s": -0.1118023,
+            "status": "prediction",
+            "utc": "2026-12-20T00:00:00Z",
+            "xp_arcsec": 0.088696,
+            "yp_arcsec": 0.34925
+          },
+          {
+            "dut1_s": -0.1128814,
+            "status": "prediction",
+            "utc": "2026-12-21T00:00:00Z",
+            "xp_arcsec": 0.08791,
+            "yp_arcsec": 0.350203
+          },
+          {
+            "dut1_s": -0.1137159,
+            "status": "prediction",
+            "utc": "2026-12-22T00:00:00Z",
+            "xp_arcsec": 0.087139,
+            "yp_arcsec": 0.351167
+          },
+          {
+            "dut1_s": -0.1143445,
+            "status": "prediction",
+            "utc": "2026-12-23T00:00:00Z",
+            "xp_arcsec": 0.086383,
+            "yp_arcsec": 0.352144
+          },
+          {
+            "dut1_s": -0.1148824,
+            "status": "prediction",
+            "utc": "2026-12-24T00:00:00Z",
+            "xp_arcsec": 0.085643,
+            "yp_arcsec": 0.353132
+          },
+          {
+            "dut1_s": -0.1154803,
+            "status": "prediction",
+            "utc": "2026-12-25T00:00:00Z",
+            "xp_arcsec": 0.084919,
+            "yp_arcsec": 0.354132
+          },
+          {
+            "dut1_s": -0.1162714,
+            "status": "prediction",
+            "utc": "2026-12-26T00:00:00Z",
+            "xp_arcsec": 0.084211,
+            "yp_arcsec": 0.355144
+          },
+          {
+            "dut1_s": -0.1173217,
+            "status": "prediction",
+            "utc": "2026-12-27T00:00:00Z",
+            "xp_arcsec": 0.08352,
+            "yp_arcsec": 0.356166
+          },
+          {
+            "dut1_s": -0.1186076,
+            "status": "prediction",
+            "utc": "2026-12-28T00:00:00Z",
+            "xp_arcsec": 0.082845,
+            "yp_arcsec": 0.3572
+          },
+          {
+            "dut1_s": -0.1200351,
+            "status": "prediction",
+            "utc": "2026-12-29T00:00:00Z",
+            "xp_arcsec": 0.082187,
+            "yp_arcsec": 0.358244
+          },
+          {
+            "dut1_s": -0.1214767,
+            "status": "prediction",
+            "utc": "2026-12-30T00:00:00Z",
+            "xp_arcsec": 0.081546,
+            "yp_arcsec": 0.359299
+          },
+          {
+            "dut1_s": -0.1228147,
+            "status": "prediction",
+            "utc": "2026-12-31T00:00:00Z",
+            "xp_arcsec": 0.080923,
+            "yp_arcsec": 0.360364
+          }
+        ],
+        "source": "IERS packaged finals2000A; sha256=03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855"
+      },
+      "leap_applicability": "1972-2026 UTC input",
+      "leap_table_sha256": "70d1364f49fe97099063cd8c92c33e8e91a48b6e74957b331322651944429b53",
+      "profile": "gcrs-reference/1",
+      "rotation": "ERFA c2t06a; IAU2006/2000A",
+      "time": "two-part UTC/TAI/TT/UT1; TAI SI-second arithmetic",
+      "velocity_derivative": "five-point central derivative, h=0.5 SI seconds"
+    },
+    "passed": true,
+    "profile": "gcrs-reference/1",
+    "schema": "space-env.reference-validation/1",
+    "unqualified": [
+      "perturbed 24/72h against independent external force models",
+      "complete mission executor migration",
+      "dX/dY correction",
+      "ADCS/thermal/RF fidelity"
+    ]
+  },
+  "budget_basis": "predeclared engineering comparison thresholds; not physical uncertainty",
+  "budgets": {
+    "conduction": {
+      "balance_j": 1e-06,
+      "temperature_k": 1e-06
+    },
+    "orbit": {
+      "interpolated_position_m": 20.0,
+      "interpolated_velocity_m_s": 0.5,
+      "position_m": 2.0,
+      "velocity_m_s": 0.003
+    },
+    "radiation": {
+      "balance_j": 0.001,
+      "temperature_k": 1e-05
+    },
+    "rf": {
+      "cn0_db_hz": 1e-10,
+      "eirp_dbw": 1e-10,
+      "fspl_db": 1e-10,
+      "margin_db": 1e-10
+    },
+    "rigid": {
+      "omega_rad_s": 1e-11,
+      "quaternion_chord": 1e-09,
+      "wheel_nms": 1e-11
+    }
+  },
+  "build": {
+    "dependencies": {
+      "numpy": "2.2.6",
+      "pydantic": "2.11.7",
+      "pyerfa": "2.0.1.5",
+      "scipy": "1.15.2"
+    },
+    "distribution_matches_source_version": true,
+    "files_sha256": {
+      "__init__.py": "e4773f2221dd8b605e4c890f00df79489e737c80ebd179ce1180ce67f1f0a73d",
+      "api/__init__.py": "fbe7a1cf5de770373048f44d40e2c66d2230cfe5adbfe4bdb4e6b22c5f83de6e",
+      "api/console.py": "3a08ba3a71b9f0b7b5b00c6c6fc2d0fceb13101dde9d21e9d9d98e83a64004f1",
+      "api/operator.py": "e145759ccd47200fe43850a3d2e919d8c5e54be40df4f89c02b05c887889c629",
+      "api/operator_artifacts.py": "b9477a6518509374c8956064b975023ce56ae155a309ac3a5fb1ee6e117fdec2",
+      "api/operator_events.py": "122ba43d29133e2f779c0e83e05febff525d0dfec835a314ca22abe809108aac",
+      "api/operator_maintenance.py": "40e4a4ce8614c00b4123a241e52f0c341b68b638dce651e506df35d8ce906f6e",
+      "api/operator_recovery.py": "3d9c59eeda38820e9117f5f72cc7e2b0600783875d9f2330803fbda4a17683bf",
+      "api/operator_storage.py": "62817cf1d70e251484f0c607eb461f630fc82c35e5861ec6f02c6752a3ce683c",
+      "api/server.py": "a0b91eb576df32979b4d5a27bce2336cbb0a1798db94723f183961d7949b0ec9",
+      "bundled_data/glossary.yaml": "3eb301d98add07edced1f10bbc8ff8a4ca7ae26646c6fa51dac9e794c129382e",
+      "bundled_data/pretraining_templates.yaml": "bd2f30f29513487d111ca10cc29fea5b8a091409ba588ea257ecf1e7d1b930b1",
+      "bundled_data/sft_pairs.yaml": "f90dc5d8eecfc2a90ba443bd69e67de395ff5f508e43f6a175d012b603bdfce7",
+      "calibration/__init__.py": "d4adc6a347ee37dc01708e6de1241c532860004f0d6d5eb605a865f6eda82d22",
+      "calibration/data/hardware_v1.json": "08a653c1b5e61f1a4f75d0e7b0b4511cca385841e930beac8c6744f81279d1e3",
+      "calibration/data/workflow_fixtures_v1.json": "85dbd577b3a34f591230c809c711bbfd8e4c8f6689c95592e8d79ec0b112bcec",
+      "calibration/ensemble.py": "0c8d90bc08ab37239dc9c56712d267ed86b0c32366dbf6ab5516da4104cf1b45",
+      "calibration/fit.py": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+      "calibration/hardware.py": "cdeaa519909fdce4ed34c8baa6256a543de363461d317129e2915e62555255fe",
+      "calibration/schema.py": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3",
+      "catalog/__init__.py": "29177e0534783768c863eb82f61e99c3523087f5c1ec4f5e07fe23b2f0ea1ffd",
+      "catalog/build.py": "2e4f1b558c681bd39845db63f33917d877cf78f527e0e9967ed3ff36cacf992f",
+      "catalog/drag.py": "9dee679ed639e4091a7f885e5e9804cda4b93438ed49cff46abfad2df7b028ab",
+      "catalog/geometry.py": "1c92adc9b9cd253ccd310353f0a5584c6470b37e4030a6daa9ee5474ae0b21d2",
+      "catalog/live.py": "987a8924453315a25da186d05d61ac627018e60539fe77d199ffe748c45fe5f2",
+      "catalog/mesh.py": "3d7f08f67cbaf5098e183818817ee6fc9354424da156965b0701e0845ef9d627",
+      "catalog/phasing.py": "68b3b20944d41daf44e48f20416975602f0e6b0bb0f753737e4a47f683590203",
+      "catalog/references.py": "d40efe550ba1bf90e9ffacab723d2eab16e06b034c41c66231479a065a61455f",
+      "catalog/traffic.py": "cc6d6263d088325afd2739b8e99c6e7065f3a0024b0c5fbe75b0d16beff8f61c",
+      "cli.py": "7eed88137105b669bb0d071df9e641347568158a64e27a4a7da71b26f2fda626",
+      "configs/benchmark_suites/mission_v1_smoke.yaml": "a0a5b4ffb7611fb8fe63fc02c9d2008cc68f9eba32c30ed2e4fa64099494463e",
+      "configs/curriculum.yaml": "362b35e20ca1ac3bf91dc1a12a638c15ede4a16225e82228f9c01179ff1b0a07",
+      "configs/demand_deliver.yaml": "f48cf9500304abbf46fbd09aa5090370b7641593e143818422638dfff698d098",
+      "configs/demand_late.yaml": "446b16449bbac9aac8c92f12274dd1cb8f7a3690cf8ae8b653fc626372c506f5",
+      "configs/eo_72h.yaml": "f6ad8a4487682e03979be86b875d20d5208856210cc25c2a09129e1b01faf838",
+      "configs/eo_72h_16.yaml": "109af0f3a7acb456cf03e6bbe576ab3dc8383439b9bb8f7615f615fbedc3b495",
+      "configs/eo_pass.yaml": "4ba6ee17f732ae19cd9cd4b344eac962be03840d5498f4f08582122179e9b02c",
+      "configs/family_infeasible.yaml": "42f0cffb43024cde11e7e2125615f038f008cbc7c13dac119e2cb60c457177b0",
+      "configs/family_nominal.yaml": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c",
+      "configs/family_outage.yaml": "5cbed335080fd18ebbe7fcc4c626a72cd6ba759b64d842639dee06d98591e6b9",
+      "configs/mission_day.yaml": "640c6e1d2c4e9943579835469a8865272e73503f3cdeb90bf79241edd9a2c171",
+      "configs/mission_holdout.yaml": "a3be68d392a607b8e580fcd4ae701a768b02e5e10011a79bd4d6e05468e09670",
+      "configs/mission_short.yaml": "8cd47d9f777960ee601adf36919f8a7e5b38cebb387dbd2c493b0b5b67e84f2c",
+      "configs/operator_relay.json": "ab02be88451aed79b804b751022c313f00814e50816a42e75320934a82d44e2d",
+      "configs/operator_shift.yaml": "5102f155fa983f6a89be4574bdb22708fa4181632f790cb5be9b27ab1d36b312",
+      "configs/rewards.yaml": "c560f3993b2b4cfdf91d50cc1a2b5b16804f5059b2da83f8971379f6a7428bb4",
+      "configs/tasking_deliver.yaml": "e6e45ace6cab8d100b0d0b7242285e03e658489e513edfab0447f7a70ac5f72c",
+      "configs/tasking_late.yaml": "0b7804fb56b8ce31e9e80d61a4fe508b929c0a0ce560947639959a2719bc4e4b",
+      "core/__init__.py": "a6471fdf17e8d4e24cf9f62936259d58ae32377b8ffdb8de31687f9f9797a9d1",
+      "core/access.py": "fc95ef3296bc5ad80f003aed1b9c5d4f65ae92aef34a7bcebf79fff5d30a6ac8",
+      "core/attitude.py": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+      "core/bodies.py": "10023822c6fb9ce4877d024d03e5884c959abc4330b4df45ff0985fc4d0493fa",
+      "core/cdm.py": "82f12d7c1d59b1636ad17b5cf60d7aef2b45acfce54b63a5a3bc4ccd33131edb",
+      "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+      "core/dut1.py": "ee055bfc4bae745a68690d4ee53dfcfc558262cddfe1715e82c953e554fb2e1d",
+      "core/encounter.py": "c7a7ead7f3fe0c19752c947490c78aa6152ecebf444e90972980960eae8d5e73",
+      "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+      "core/eop/f107_trailing.csv": "6843a2c948ccca24228b8cf78262246c7887654f5268ba12951bfbf1c5747f1f",
+      "core/eop/finals2000A.daily.csv": "03058015be2476088319d5f2c8a3caba6713ec3b9b9fcfd2c3ae31321651e855",
+      "core/eop/swpc_daily.csv": "799952d2253e192e09e8f6fe60eef058acbafa6f1665321a8dd5f26fcfd75043",
+      "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+      "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+      "core/ground.py": "7953a0776b3ebdc968486f7f6a6d303ce38ab93d28ee568d327599819a30e70f",
+      "core/lifetime.py": "75a5ebd3095a6ead1461796dd4c6cdc75a617c0aae47b60140dd0e64af26710d",
+      "core/link.py": "71c87b378fd3713c7ee42da6eebe8fbe65b174d1e8b0ec7afe0e6f7e616cc093",
+      "core/orbit.py": "e65c7144604c459906bde0bbd8039e4f0ad58c34564f862166faeb38e9722092",
+      "core/packets.py": "1b6bd936716b6ab52dde0c71c8a15fdd0a52b769b47ced608aa4905983d1df2b",
+      "core/passes.py": "b2d98c0559e2dd16796699133e2ae20c1d0fb90c276a2b33692b5c1a61ef8022",
+      "core/power.py": "806aecd4d3b96c53d03517fc82fbc9eeadd82501872174d29f2ca4c221417466",
+      "core/probability.py": "4750a4c6f293eef8c01fec9652cc73a92c90cf8561ba3fc9886c8beb920bdde1",
+      "core/propagate.py": "cb8746b07b383ddb3ea2ae40e3f28805f1b107caec489a5f17103f1fc379fa84",
+      "core/propulsion.py": "27463f42a7c0a2496098bc91af1afeac923d13f7a7844925028631270af1b45f",
+      "core/relative.py": "dc2430f6e320cba952b4d7fc7e2d63fe976383b0b9e22e5318d1345fd50ef996",
+      "core/space_weather.py": "5cca284385dbbf0138ef0279c8d30d7636b7453e16dd697ff7f612d16c9b8e5c",
+      "core/spacecraft.py": "382ceff44eeb9a4fb742d4eaf28201ab4f226ca3b347f70bfac02d823243a584",
+      "core/sun.py": "3075fecb9bd843657022f8e8e79d25bea1110d01d16e841d93e05ac93175b9cf",
+      "core/thermal.py": "bf70f9098cac12bdc606b95e001bf2ccf66702f5a943be0a3337878827ba5262",
+      "core/time.py": "eb0b373352e4a2a94d562efcac6befda3298f3e5d958d1383ed35a18e4bfa761",
+      "data_generators/__init__.py": "6da41dfedddedf3073adeb892f155ccd34d06fadb957b57f28005cda50bd85b1",
+      "data_generators/agent_run.py": "6d560e274e89172e0682b86d14890f7fc582122ed623e1328a47e3d39e386175",
+      "data_generators/mission_dataset.py": "7846a59a713f27035c706523bc687efd985b1e7a987d9c96e18bc608cace0b5b",
+      "data_generators/portable_run.py": "ae2d7c5099f556bbe03325632f0ca5446a990877b533869769af97e188d4b15e",
+      "data_generators/pretraining.py": "f65075e3f4960b633764933df931a9548782651a596823a23b0b7a2c1ed9fbe1",
+      "data_generators/reference_operations.py": "3c7d08230ac82b3164a2568dc9612254c53cb24f742067439a922804f1021f21",
+      "data_generators/sft.py": "b8efc9e48d911b4fcf2a49394871d9e1f7018ff42353f0e161a103441d21ac0c",
+      "data_generators/verified_dataset.py": "2cac55468da8a028a04e9b39f7d4863e988d560ba68c427ab6e0aaec8509a8a6",
+      "envs/__init__.py": "acf8ba15e004c17acdb4fcdc9ecd5219a3ab60e55ed348a08f9a767837fc38cf",
+      "envs/anomaly_response_env.py": "bef0bfb0efb07c1c99ea2d8528034a7770f6f5471c8a44ecea1442825b770217",
+      "envs/base.py": "2f39d88fd5f699dbb22ade982f223dd8d3bdb5b9c0384adbdb5b824ba661cbc6",
+      "envs/campaign_env.py": "be4ebde93a272ce8cd0b72ee9ffa858a4b79de8f50e48010510e312da58318f0",
+      "envs/cards.py": "8422ba36317e4df0eda0fdfd1f47d5e16a7dd2c13e1788cdf3f18613cdcdaba0",
+      "envs/conjunction_env.py": "1440d4c299e698460d0ad4a0aad20f86992313d39ecbe74bd12480eb05c77fb4",
+      "envs/constellation_env.py": "09282de6cd0861e72a8e845191da13895ed500473abec540c7c6361f5e9bf182",
+      "envs/constellation_ops_env.py": "fd71dc49957b8ccc1099d96484e662c994648c5c05109753e476a3b60b16643d",
+      "envs/demand_env.py": "28469444594b61d99b6d6ccca3337793a76b45cffa9cca2321c4909b9956736b",
+      "envs/dict_env.py": "028fb024e69fd246688605c815a92b2f28afa48ba563557c5305de87b6b6568f",
+      "envs/fleet_tasking_env.py": "8059d99b6ea13eb363d2e72f098a2585ae5155f76950278daaaae38f7970fbcd",
+      "envs/horizon_envs.py": "1bb2899861faeb16c3b4f0ac960c1575c64f0b7e13ebcf2f902b0575c5116315",
+      "envs/industry_envs.py": "d54f62970111102dc6fafe3ddd684e90da5968b8b0da63a4fdf495ea9977cb3d",
+      "envs/market_envs.py": "68e0a5336018817f60c73338c22b40aa456ceb10270d23143945ee0ac491d0ce",
+      "envs/mission_fleet_env.py": "b45a4038148f746f27dbadf2dceee5528d2beac745467675e0f8a864b3ec5499",
+      "envs/mission_planner_env.py": "894c19a5851f40631cfea1357564d0b002823347de99624512f3db1bdc4bbc69",
+      "envs/phasing_env.py": "53a586922eb29f363f5d4423f32c03b81380d9f22bfca57cf88b3c977a69452c",
+      "envs/regime_envs.py": "3835460c46668cfbba9918bcefe72e2a69af27def16e612387ca8b9b52a052b6",
+      "envs/resource_manager_env.py": "09153e83d1752ffa879a9508f8f5e4234207a17485e0083e379051f576beef5a",
+      "envs/sentinel_env.py": "a885e62e0cea88f986e553dfa9afeb1b3fa6bae4d81fa611fa8002106eb4b02a",
+      "envs/shift_env.py": "cbced487bbdb8725c148720652a23782bf40be83e8c963410b6c4f6789583c04",
+      "envs/tasking_env.py": "6f0da316c878b1c632f284524ed5965823022324210f5b80a9f09b0ac06d7ce1",
+      "envs/workplan_env.py": "868ad57058c095f95acdfcf51f60855c80cebbda571f34f744e78e551f2d6585",
+      "estimation/__init__.py": "e4922f5879ff9033b4c04eb2731d9f3f438d7821f4dea59b5511fdb73d965c18",
+      "estimation/knowledge.py": "244530e91d4a712c93dab4a95f945fcdd0084b9c67d333f3fc174310de625f43",
+      "estimation/range_arc.py": "c921dfe62e9a71a26f0418ccc14171997876082083e5002bd36c3bb7c6837ac1",
+      "eval/__init__.py": "a98991f1eff176510d07fb897da3673962ee664a408da11f9dee3e0489999897",
+      "eval/benchmarks.py": "71bc92151d75a0eb8f540c288f7bd181882614967d40cffa7fd8e7a198adbbff",
+      "eval/ci_profiles.py": "e442230b26b894c4bcd4c62b28ec9387a93d2b278be900bd059d6dc695f18b6d",
+      "eval/demand_report.py": "da1a54c7d93b6f458e47e485917750b8a778b250ec50a51cecf4b3220196b19f",
+      "eval/holdout.py": "a5600aeb03ba1b3597c5362592a90a6cadb13502bb15fd1100927c3ddeb11384",
+      "eval/load_report.py": "bfa1ee70d2d0dce09c12629c6aa6b4e28fd2f7d8480170f6c4451def569a30c8",
+      "eval/mission_benchmark.py": "409d0813f4805e2b560b9cd42661fd0fd57efd8349e6836526468c23fde132dc",
+      "eval/operator_report.py": "3a0b761b9d17a771bcb13c2ed79161d53fa4b2be0106ff5e01081baa48ab1ee9",
+      "eval/run_record.py": "876a5892cf0f76548850f12f248ed110975d49eb5989e7eee216feed3769d5a9",
+      "eval/scale.py": "248272c3957b25ad914ae4e18b120b94d90fcd49d9ee3122527625ce02d33e5b",
+      "eval/sft_rubric.py": "8342740dda4e0aa46d27f0f73b13e14b2500bae8f92ba9571a9368ca0934638d",
+      "eval/statistics.py": "03912916a721ba440fa42bb3bd9b42835d13115df6ad4c9c9f5cf2e5cfc68adb",
+      "eval/tasking_report.py": "2d5bad8b6ee56c9c132bce2f095323297f8346eb1bd5f493de8f65920f1047fa",
+      "eval/tracks.py": "cd382c224ee97b49a2633fd4acf6821297cdc2bdebc723b9a3723c4b424e2cbf",
+      "eval/transfer.py": "9758b898fb02f4cec46b19df3c46a1eb518b38c279af988f7c2c3303c6af0f1b",
+      "factory/__init__.py": "20bac2719f9172d68e05d6d1e7d7e01567a0df91ca72e4a07962cc1ee0ee02d0",
+      "factory/bundle.py": "bf16dcd3d3bf0a77ae01be131ff1802f82a0c53ebef03b4a4fe0c95e500af47c",
+      "factory/cli.py": "5f5c143fa3bfb721a1925b86b9ea192699ca526e656ac25b92a81ae84658a967",
+      "factory/generate.py": "a792fdb5bf6a76a9f0134835c4e7efab274967dc18b8f7bd55065f3490cac141",
+      "factory/quality.py": "b4491b17fd654ae055c9406be6318769426e960a0baae334a1021a73a034d8d5",
+      "factory/registry.py": "a7a3d07c57aaeec13b7a18f9c92e6905285e729b85ea32ce1c528b4fa1c0cbb3",
+      "factory/schema.py": "6699d528010a98752a97a22a997fb4830904c75dfd5ba72ca13ad07eba6878df",
+      "factory/semantic.py": "5458a73a7c24d092c96dc89c6465be4ab7bef5f18a6bf496e227b14988b6899a",
+      "integrations/__init__.py": "109e71f4c9bc7e74d91a223e32e73169295be1476562748ded647cca03785f7b",
+      "integrations/ccsds_backend.py": "1b137311e39ddb645260b10f3e92f8861067e223f4de28c9f05b554801545c38",
+      "integrations/orekit_prop.py": "9bcadf3cd969a927c71b74262d0391dcce67b285b589a9c6f3da95f30c9b19a8",
+      "integrations/sgp4_prop.py": "a974c6e806ebcdc106ee6703abe3d256fdff55b82a029f05126655a7681be4e7",
+      "integrations/spice_ephem.py": "fa3be0eec4db702e49b1ab318642508700ade889c3ac97e7e6146345bcdb3039",
+      "mission/__init__.py": "97d65da09c8acb995cbaa8768dcbe6114ea76fc4a159b6be9f1e69a81776805c",
+      "mission/agent_protocol.py": "da0823df0e014cb476ca5f20265dce9aba8fdb8b595e9b8581aa9c3401ee1556",
+      "mission/avoidance.py": "7b5a7f6b2056410ed29bb251a5b5827e1f3ccc3a85ce4d6c11bb29a5f2e622e4",
+      "mission/awareness.py": "e8a492e492c60f0f3b489ce1cdb2d7afe56c5ebfce140510bc7957d46ce4d5cd",
+      "mission/campaign.py": "f1ee4350448bb956491a400fcbf723ad712738db1e468e6e54d7dfad74dce0fc",
+      "mission/coast.py": "dde8107c413a54dca801a93c09383fe0f904c303b393b8a502700bc4335c3ddb",
+      "mission/constraints.py": "30a0fe8fdf403e0ac6302b1c5b6f37756a4df3fccf4fd8437b0feb2c03561a15",
+      "mission/demand.py": "3129219e0cdc711d7b974be7903278e4efd93bac248b5f1ece8b23de2fe2b768",
+      "mission/events.py": "ef523a47d895d4a26d78378efd2497a9feaf2269b70b408bf86f08e368e41e1b",
+      "mission/factory.py": "d33161ad012691511578e7a3bd045391e3f05e517b91cd2eb1b411da0c3ef4ff",
+      "mission/fleet_plan.py": "c6509821ea0213fc9443fa75d4eab21b98e7e58251d2b7d686da8ad647299900",
+      "mission/geometry_requests.py": "709eccc2c951232291fb6f12ef9024db6fcba7121cc273970347049ef673cee4",
+      "mission/goals.py": "171085cad082039425dc019af8605545c4cf201d970d674c1c5cf22239c8adbd",
+      "mission/ground_schedule.py": "c38bade02612968732d40bb33f4fa8aaadc4f5cbb8a059487d37f8dfc6b474c4",
+      "mission/horizon.py": "b3f248c6f2b0dc38761ba18cc05040e879fcfcd118014c0db3e850968c04be3e",
+      "mission/loader.py": "cf2e9109ef7b90ba4639c22d3a4fed405ca480d8fab1340da0dc936c2a1c8b57",
+      "mission/outcome.py": "f36878940961c06d089b7ef6d4a416d98f8abce8cc905e7e3d288e93d951b8af",
+      "mission/phasing.py": "56ab270367af9faad2471a8d155f65989e8d1bc2cb73fa5c06c9c57e227972fe",
+      "mission/quality.py": "c97213ba851bd171edea1e6eb2ddb630a89b2d510150f58319d2b687ecd27cda",
+      "mission/registry.py": "c115635f5b0371579cd393ae50cbef8a7ec49fc35539f11f0554712a7640b719",
+      "mission/sar_ops.py": "20da52b15651ec6a761c9a58b7685025ce5fbc5756a33dc4d1a8b56c7d6cc85d",
+      "mission/scenario_v2.py": "0b9502319d8dff10eb6bd6980665efcf1ab9f1f39bcd6c4bd4bca2c6a01895a3",
+      "mission/scenarios.py": "43f9e822c1b2fe87e43ea0204cae098312ab7b9cced54ef68a66239da0e83a2d",
+      "mission/session.py": "31d4454753c5091355a8f573ffcec6fe0c561b1433006a88163270fb4c157c3f",
+      "mission/shift_scenario.py": "e9229680d35a10f109caadd064069bb61e2c074028791ddc02586aabbd809710",
+      "mission/stationkeep.py": "14da84d35b897a8f65efce6582279fa79924c5bae446cef7627a751945a54887",
+      "mission/tasking.py": "00f8c22afc3102e3c17ecc503ca228e6c684f849eed95591a392a06f144315cb",
+      "mission/tools.py": "98475ec464c4ebc1efe2055ffa4b766403feaddcfaa1a736825aca6e893cb01b",
+      "mission/types.py": "b3582570cd1e5a5f441b5297ea482164fe19d2a13d735638a6de4a78063f36a1",
+      "mission/workplan.py": "529d2dd62266bcf50b4d34062125bf0b9ccc0d77a0cfbea99998ca4d5e93c2e6",
+      "planning/__init__.py": "bf0603acc28f08c2ae78056ba2a452b9d9851604b5b612f177cd10c810c390f4",
+      "planning/benchmark.py": "85754736c7e2e39b14b085022505c5ad0d8051484692f560e98558e42eb6cb84",
+      "planning/cli.py": "4cd89330c461f2db75bcf14431c2688adf070026aba71579be318ebb36757f4d",
+      "planning/model.py": "d37292e71901f74402e4b876a7ebd777b7d704f15d9d54f483fd603f7cff6555",
+      "planning/oracle.py": "fe24a664a314edb0d61ab43f441074a693d1fd56794b39b21b20fc5abac8a219",
+      "planning/policy.py": "38b2d8ea13eb3ba972d7d6e6e5c0316f28dd5bbf66d3ae938fe9ab0e31002af1",
+      "planning/runner.py": "f042e3a54be326e7f6372086927355c36a49d57dc15a03f9f3d68124bed71698",
+      "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+      "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+      "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+      "reference/actuation.py": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+      "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+      "reference/area_coverage.py": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+      "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+      "reference/booking.py": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+      "reference/covariance.py": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+      "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+      "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+      "reference/dynamic.py": "561de5d04912b53724a55ac50b9e04c4d2c8c350481acbbb02db7456454c3319",
+      "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+      "reference/events.py": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+      "reference/fixtures/analytic_vectors_v1.json": "fcb8da46457f2cf44e3ca5769a739d246816bd337257ccd6313f1c4262a32011",
+      "reference/fixtures/boinor_j2_24h.json": "9207b34272d9358c9e41a39cc3e5d0f71e1c4823d19af778e247d0236fc0ed78",
+      "reference/fixtures/boinor_j2_24h_third_body_other_epoch.json": "bada4373e7a9eac0d364fdc1a983657c5357f3e80b140a06bb3395e9e38f4b7a",
+      "reference/fixtures/boinor_j2_72h.json": "85ef02fb9672ad9ca2a8efd7822f6b03f3f76433a04ddfcb7a014c192b3d80bc",
+      "reference/fixtures/c2t06a.json": "6d67648cc557fa13643dad27e5778c2144716761c030318730ba9b24f1e5bb05",
+      "reference/fixtures/material_vectors_v1.json": "f2277f0967503b40c91400f8f6a632eee40957c5ec0db73d38028352fe8cb148",
+      "reference/fixtures/pointing_vectors_v1.json": "ed329d7afe1aa9fba20fbb559533ada258ce109b02c8acc0b4c46393200a081a",
+      "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+      "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+      "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+      "reference/materials.py": "2fb360547a4e5e3c86bc8695f0f55f84898f5922fc9c1cf090046845e8f66caf",
+      "reference/observations.py": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+      "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+      "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+      "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+      "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+      "reference/payload_quality.py": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+      "reference/providers.py": "0355a7cf8124e818d68d85da27f4b4996d55d6bacad6ecd857d6a5375659e3e1",
+      "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+      "reference/radio_network.py": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+      "reference/resource_lanes.py": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+      "reference/rigid_attitude.py": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+      "reference/rigid_bus.py": "66eadb83ca163ae3bafe74c87b8b15ad0fff74ad72ab7d97db73cd913d2af116",
+      "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+      "reference/spacecraft_bus.py": "51b47bc29758b706f022193cc308e319efb0e34585df441e441e3e4969f0425d",
+      "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+      "reference/thermal_bus.py": "ad4c59878404562717c7054ee7edcae1d712851124de234111ba93b2d8a2f7ab",
+      "reference/thermal_network.py": "fde80a00756a07ce52632b9f396244369528b2465de4347b41c90e1a24655092",
+      "reference/thrust.py": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+      "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+      "reference/unloading.py": "72daed084fb23d3d212de5a34872299357f44bdd7f66bdecf317970e7f2c123e",
+      "rl/__init__.py": "2cabf080a0171f639722d20d86b3fdd8f942ec1c91028f2eee7a57d6e63e2591",
+      "rl/curriculum.py": "028a23f6b35b0162595b83927f0fb9e41b8027b4410017d247bb9d35bf73e451",
+      "rl/expert.py": "13271abccad47668336481b798cc8dbde4cd4b806ff9fbce116a28f9d4ec7d0a",
+      "rl/reinforce.py": "95cb1947d08370024390d30008efac9bca4c016655d3a641d7ba7ae857024314",
+      "rl/report.py": "6a2e0aef6f92c96f9c2a61f64479431ced16a43921b999cfc76da6d7a8ec49f0",
+      "rl/rewards.py": "aef265db4775e0766b88fbca861d7d4cab7f1179d227091adf624cc6ca5810f7",
+      "rl/trajectories.py": "a8301be813787e8b6d0c51d28938eb6ad050f6045df31d031e94167c74d149d4",
+      "runtime/__init__.py": "11e57aa1a3801f07ec0a750438fa6f71b340dc2be56ab096c33af29255f22d32",
+      "runtime/adapters.py": "fa3a15e49bf52ff42c95c79533ba908f8fd9aa7cc97a24b3257883304183544b",
+      "runtime/cli.py": "7032fde67ac2528f032d49c665a363adf78fc3a2caae6d62426baef61e2a9b12",
+      "runtime/mission.py": "5330a6c025ee10c3a42ec5fd2f8f2f579bb5ab2715406714f6d1cb45333b7207",
+      "runtime/schema.py": "299e589eefe1603f064d669a06e471fbbb61d66a6c60297277c73639ff0ec555",
+      "scaling/__init__.py": "d4df8255de58a81f4b754ae3c0d55eb75ffd45d74fd8b868b8d93d11f749527f",
+      "scaling/benchmark.py": "2dbf369eb388e3a7972312392b23ef3830a9473f62f1fd3ed682d80b55596595",
+      "scaling/campaign.py": "4ac4069334ed21d83ad4a04793965e8e3b08e46e40558032746877682cc06946",
+      "scaling/contact_capacity.py": "8be407e17bb6cc0e17307bc8fb62c3dabd73106ca0966276851aea9108c9075f",
+      "scaling/ensemble.py": "c3906a84e7994206c470ecd2c78e24858551ad047980d8b6279333a3f55cb741",
+      "scaling/ground.py": "9eb6c51ee127d78ce0d143a66e775530a83faa7d6dc839f61c4ac61029a85fa0",
+      "scaling/independent.py": "e3b9567119d08a3559cc6ee62cd5fd46f6a6f6a80941971cea070c818b2a11f9",
+      "scaling/progress.py": "30f7a212740ae50d9368d926400a1740b9058a2dbc30ec29ca2b254a91bb8ca1",
+      "scaling/qualification.py": "ea646aa26a4fe21919f042bae1c8e040bf032f3e4616c691917b092453d25ec6",
+      "scaling/restart.py": "620e1f544d1097cae56f9dff9aefbf85c417e42aac11d1cc5a9cc6fad451e2fb",
+      "scaling/spool.py": "e3e3b05df1e998dbb38df68427b33054efdadec4ccf675d00ad0686a48ce1804",
+      "scaling/worker.py": "bcfb29e4840ffebc0e2474a5c90c533ba8279f8adca8a11efbf16ba1695aea9c",
+      "scaling/workloads.py": "4a3121cf5e9d48ab5aea6a740c5e1180b8341a6955c009c10584a23474c1491c",
+      "simulation/__init__.py": "c7d7dd310e44d473154f3dcd7a2e352c774f27faa5d0f5580da1d00fff930ac0",
+      "simulation/commands.py": "80ab8175f728e96b9fa7bebfbf9a5ecd8e5911965eacf3d029b631e87fdfbcb6",
+      "simulation/dtn.py": "6365f5c8d9d007d9ed6582139a803305f21164c2283c7c6b3ba4c494d3cc766e",
+      "simulation/engine.py": "ab3213c35207b083ca12ec09b967227afb5eaa9f3f06cb272f9bfa4e8435689e",
+      "simulation/fleet.py": "a013ee09158ef7bd53644b08cb4236a3518ab52608339f479623a724b801b643",
+      "simulation/fleet_view.py": "351ba690a20c1831545b6461180645fb0e7c9180a747d738baddcfd31238677a",
+      "simulation/joint.py": "b2d3f8746dd36320450b9f2f6fcffad64e0d395916a67ac6a868654bb8ad74d6",
+      "simulation/owned.py": "83305b273a26f5a22d647f90c528dd9c11ec41a6fe3a065c35a923e2aaec46e9",
+      "simulation/parallel.py": "14c14b7617006d71e0926ff42d728ad0fcbcd34322050a89ffd373b9ff180d4f",
+      "simulation/relay.py": "00086567aea7b1b05b6b5dcb280b72167f2996d0aab2faa35519539edf6f4cb5",
+      "simulation/snapshot.py": "1e7a77827d85ac4345d6721b420505622885fb27de36967375a631cc61561335",
+      "simulation/state.py": "96c122240cf8f1717e7ef457d4a99049bdf2d5457bd6991de0d23cf7663aecc2",
+      "simulation/streaming.py": "f26323e1fb9c4fe481f3f1133da6df73548464ee187ed2a3c554fc6982555c6a",
+      "simulation/terminals.py": "7f579ef4e90d567a149e96c657cedf208a3e31110d0bc4b530e2ac859af3033f",
+      "simulation/world.py": "608db4ae86d845a9c4dc94a2fd21416073313fd13085d18e206fac961674fcdf",
+      "tasks/__init__.py": "ea6dfbc66ef1c2bd16b5dc7b5d6d6644bf1da1698d7ac30d99cfed59dce970f4",
+      "tasks/cli.py": "6a21c5be4c3e31f92c2aac69a39962a9a6d795743e90f3ecc471a2e49153d51a",
+      "tasks/dataset.py": "f2882fba61f43e1d7c1fb73f1dc4c8dce47951d5f4b1fd67d0e0716d6143f1d8",
+      "tasks/env.py": "969e0ec7a651362f9a7d83ce6635590761ff0949f8ce36b7d4fc311188e559a2",
+      "tasks/observation.py": "d284172a4be80beebd3ff605f3b49eb417e93044f606ed803ca08a9a797c4bf7",
+      "tasks/parallel.py": "e654193d4297d1a81bb9d3736fe353568454489e0910c5ded572aa0c0f800e7e",
+      "tasks/schema.py": "2c3b269cee545433f55ef236411479c4fdd10c09e2b546063400e0c08d42fea6",
+      "tasks/session.py": "ca7cc46252961ef2ad84aedad44bf59dbb307a93e14d12c637d275e3e27b3083",
+      "tasks/tools.py": "b0b62a1363ff072a22fd822bac7f6d30a85c11add5b3b28e5a78404d77ad9729",
+      "validation/__init__.py": "e8aabc05c9032cdcba2b5a0fe6f0e4003c33fad17c291a0d34dec84fc2ec557a",
+      "validation/calibration.py": "3112e9e026257faf7c8ed9a399028c3a4eda470cd2b064290257ea5f7b015296",
+      "validation/covariance.py": "c95798743d864576b6188a2f4294e00c8950f6bd877bf21859043ab6c6ca3613",
+      "validation/envelopes.py": "7cfd10ec2d30c09e6480709deec5408ec1f8b5e4c671edd92ad6f051947c75b3",
+      "validation/force_crosscheck.py": "efd4e8989d44991a1bfcecb91e7a4e409c0902eae691e1f6f9c1addc185741ab",
+      "validation/gcrs_report.py": "cc9bab8e58a177d58a2eac9327c3bf036fdcb51003c7a3873e21adca4883d6e1",
+      "validation/geometry_events.py": "2f15803171b32a61fcd790e537b5e783e0169157a7d68c8906929be102f0869e",
+      "validation/maneuvers.py": "6c90c05f8dd393e5031813c6c4e816bf48c21e28a61e89088d9764b9cbe2602a",
+      "validation/materials.py": "3ffee81da0f6faf687e3163a9fdba47cef17c17751f2e0f5f545c7abf8e1a02c",
+      "validation/orbit_fixtures.py": "ab3fea5d3a3cde5f8b8530bcee8417d32f8d7f559067899afa3cba4058cf7cc9",
+      "validation/pointing.py": "2ffb6db2e1b18484c5d4c9601e5c50d74e652489d1b59f158d97ded72bd5564e",
+      "validation/profiles.py": "c17b5a90ce38f397d0719ff5839d255922271b6f0e938a0b72d2ae5631cfea49",
+      "validation/report.py": "728b9f19ff6f452f8d5b7dc86784b3b22d0ccff2faedb88602ffccdbeed111d1",
+      "viz/__init__.py": "35a661ed597d5ba4982a4dbc9a7928410e89de36e32adfe9dd2afa963aa1cb00",
+      "viz/export.py": "4188890a994e047eb7e201ba443ce8dc2d41294c757aa94f9a3ef50e3ee9627b"
+    },
+    "installed_distribution_version": "0.134.0",
+    "inventory_policy": "all package .py/.json/.csv/.yaml/.yml files; not a wheel signature or native mission build ID",
+    "package_version": "0.134.0",
+    "source_data_sha256": "731af9e524f795e9f6331fb8fe9dea95058ab498cce005063a3160394c21817f"
+  },
+  "evidence_registry": [
+    {
+      "fixture_sha256": "2236f03ffe48d6d68ab8d5b65e3d102c9bf98458fcee765afa96a8e89da1401b",
+      "id": "analytic-vectors/1",
+      "independence": "independently-coded-analytic-equations/shared-parameters",
+      "scope": "only enumerated input/time points; no continuous validated parameter interval",
+      "status": "passed"
+    },
+    {
+      "id": "frozen-boinor-j2",
+      "independence": "external-force-formula/shared-inputs",
+      "scope": "existing 24/72h J2 and 24h J2+third-body cases; shared ERFA/EOP/constants",
+      "status": "passed"
+    },
+    {
+      "id": "erfa-c2t06a",
+      "independence": "same-backend-upstream-regression",
+      "scope": "one upstream frame vector; not independent frame truth",
+      "status": "passed"
+    },
+    {
+      "id": "operational-campaigns",
+      "independence": "native-replay-and-resource-ledgers",
+      "scope": "historical B11-Q4 receipt belongs to its original wheel; not transferred",
+      "status": "not_run"
+    }
+  ],
+  "external_formula_shared_inputs": {
+    "cases": [
+      {
+        "duration_sec": 86400.0,
+        "fixture_sha256": "4340232a3e23aa4d958c6205e552b7b787bc4e4b4542fc2acd62b261ca40169b",
+        "not_qualified": [
+          "independent frames/EOP/constants",
+          "combined drag/SRP perturbations",
+          "SRP/eclipse",
+          "atmosphere/weather",
+          "navigation covariance",
+          "flight or mission-wide accuracy"
+        ],
+        "passed": true,
+        "position_error_m": 0.005346958018363761,
+        "position_tolerance_m": 10.0,
+        "production_sources": {
+          "core/attitude.py": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/actuation.py": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/area_coverage.py": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+          "reference/covariance.py": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+          "reference/dynamic.py": "561de5d04912b53724a55ac50b9e04c4d2c8c350481acbbb02db7456454c3319",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+          "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+          "reference/materials.py": "2fb360547a4e5e3c86bc8695f0f55f84898f5922fc9c1cf090046845e8f66caf",
+          "reference/observations.py": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+          "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+          "reference/payload_quality.py": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+          "reference/providers.py": "0355a7cf8124e818d68d85da27f4b4996d55d6bacad6ecd857d6a5375659e3e1",
+          "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+          "reference/radio_network.py": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+          "reference/resource_lanes.py": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+          "reference/rigid_attitude.py": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+          "reference/rigid_bus.py": "66eadb83ca163ae3bafe74c87b8b15ad0fff74ad72ab7d97db73cd913d2af116",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/spacecraft_bus.py": "51b47bc29758b706f022193cc308e319efb0e34585df441e441e3e4969f0425d",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thermal_bus.py": "ad4c59878404562717c7054ee7edcae1d712851124de234111ba93b2d8a2f7ab",
+          "reference/thermal_network.py": "fde80a00756a07ce52632b9f396244369528b2465de4347b41c90e1a24655092",
+          "reference/thrust.py": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+          "reference/unloading.py": "72daed084fb23d3d212de5a34872299357f44bdd7f66bdecf317970e7f2c123e"
+        },
+        "provenance": {
+          "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+          "independence": "external-force-formula/shared-inputs",
+          "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+          "library": "boinor",
+          "license": "MIT",
+          "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+          "shared_inputs": [
+            "ERFA frames",
+            "EOP",
+            "SI constants",
+            "initial state"
+          ],
+          "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+          "source_url": "https://github.com/boinor/boinor",
+          "version": "0.19.0"
+        },
+        "schema": "space-env.external-orbit-comparison/1",
+        "velocity_error_m_s": 5.898632953591653e-06,
+        "velocity_tolerance_m_s": 0.01
+      },
+      {
+        "duration_sec": 86400.0,
+        "fixture_sha256": "b5a1fb9b5df3d3bdc14dbcaeca240a44fc2bc6c4cf4c567c111bcef7185004a9",
+        "not_qualified": [
+          "independent frames/EOP/constants",
+          "combined drag/SRP perturbations",
+          "SRP/eclipse",
+          "atmosphere/weather",
+          "navigation covariance",
+          "flight or mission-wide accuracy"
+        ],
+        "passed": true,
+        "position_error_m": 0.006956438377732578,
+        "position_tolerance_m": 10.0,
+        "production_sources": {
+          "core/attitude.py": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/actuation.py": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/area_coverage.py": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+          "reference/covariance.py": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+          "reference/dynamic.py": "561de5d04912b53724a55ac50b9e04c4d2c8c350481acbbb02db7456454c3319",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+          "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+          "reference/materials.py": "2fb360547a4e5e3c86bc8695f0f55f84898f5922fc9c1cf090046845e8f66caf",
+          "reference/observations.py": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+          "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+          "reference/payload_quality.py": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+          "reference/providers.py": "0355a7cf8124e818d68d85da27f4b4996d55d6bacad6ecd857d6a5375659e3e1",
+          "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+          "reference/radio_network.py": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+          "reference/resource_lanes.py": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+          "reference/rigid_attitude.py": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+          "reference/rigid_bus.py": "66eadb83ca163ae3bafe74c87b8b15ad0fff74ad72ab7d97db73cd913d2af116",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/spacecraft_bus.py": "51b47bc29758b706f022193cc308e319efb0e34585df441e441e3e4969f0425d",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thermal_bus.py": "ad4c59878404562717c7054ee7edcae1d712851124de234111ba93b2d8a2f7ab",
+          "reference/thermal_network.py": "fde80a00756a07ce52632b9f396244369528b2465de4347b41c90e1a24655092",
+          "reference/thrust.py": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+          "reference/unloading.py": "72daed084fb23d3d212de5a34872299357f44bdd7f66bdecf317970e7f2c123e"
+        },
+        "provenance": {
+          "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+          "independence": "external-force-formula/shared-inputs",
+          "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+          "library": "boinor",
+          "license": "MIT",
+          "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+          "shared_inputs": [
+            "ERFA frames",
+            "EOP",
+            "SI constants",
+            "initial state",
+            "ERFA Sun/Moon positions via shared _ephemerides provider"
+          ],
+          "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+          "source_url": "https://github.com/boinor/boinor",
+          "version": "0.19.0"
+        },
+        "schema": "space-env.external-orbit-comparison/1",
+        "velocity_error_m_s": 7.754570208504022e-06,
+        "velocity_tolerance_m_s": 0.01
+      },
+      {
+        "duration_sec": 259200.0,
+        "fixture_sha256": "98cb7b95def68fe36440b663947f5535ed7d9bae8de4be2b6d60c162c55cf76f",
+        "not_qualified": [
+          "independent frames/EOP/constants",
+          "combined drag/SRP perturbations",
+          "SRP/eclipse",
+          "atmosphere/weather",
+          "navigation covariance",
+          "flight or mission-wide accuracy"
+        ],
+        "passed": true,
+        "position_error_m": 0.01924906843470389,
+        "position_tolerance_m": 10.0,
+        "production_sources": {
+          "core/attitude.py": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+          "core/constants.py": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+          "core/environment.py": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+          "core/frames.py": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+          "core/gravity.py": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+          "reference/__init__.py": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+          "reference/access.py": "fface688c7f8894d34e754962e1a3fb149346ce1824a0b0890c84cd8cc113843",
+          "reference/acquisition.py": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+          "reference/actuation.py": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+          "reference/adaptation.py": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+          "reference/area_coverage.py": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+          "reference/benchmark.py": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+          "reference/booking.py": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+          "reference/covariance.py": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+          "reference/dependencies.py": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+          "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+          "reference/dynamic.py": "561de5d04912b53724a55ac50b9e04c4d2c8c350481acbbb02db7456454c3319",
+          "reference/event_env.py": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+          "reference/events.py": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+          "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+          "reference/geometry_events.py": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+          "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+          "reference/materials.py": "2fb360547a4e5e3c86bc8695f0f55f84898f5922fc9c1cf090046845e8f66caf",
+          "reference/observations.py": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+          "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+          "reference/operations_env.py": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+          "reference/optimal.py": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+          "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+          "reference/payload_quality.py": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+          "reference/providers.py": "0355a7cf8124e818d68d85da27f4b4996d55d6bacad6ecd857d6a5375659e3e1",
+          "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+          "reference/radio_network.py": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+          "reference/resource_lanes.py": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+          "reference/rigid_attitude.py": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+          "reference/rigid_bus.py": "66eadb83ca163ae3bafe74c87b8b15ad0fff74ad72ab7d97db73cd913d2af116",
+          "reference/scheduling.py": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+          "reference/spacecraft_bus.py": "51b47bc29758b706f022193cc308e319efb0e34585df441e441e3e4969f0425d",
+          "reference/thermal.py": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+          "reference/thermal_bus.py": "ad4c59878404562717c7054ee7edcae1d712851124de234111ba93b2d8a2f7ab",
+          "reference/thermal_network.py": "fde80a00756a07ce52632b9f396244369528b2465de4347b41c90e1a24655092",
+          "reference/thrust.py": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+          "reference/time.py": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+          "reference/unloading.py": "72daed084fb23d3d212de5a34872299357f44bdd7f66bdecf317970e7f2c123e"
+        },
+        "provenance": {
+          "generator_sha256": "d45c2ce2f6d4af51ed5db8f9235728e5238482dd825207a6873158d184f81492",
+          "independence": "external-force-formula/shared-inputs",
+          "integrator": "SciPy 1.15.2 LSODA; rtol=1e-12; position_atol=1e-5m; velocity_atol=1e-8m/s; max_step=30s",
+          "library": "boinor",
+          "license": "MIT",
+          "scope": "frozen external J2 and optional Sun/Moon third-body formulas; different integration family, no independent operational truth",
+          "shared_inputs": [
+            "ERFA frames",
+            "EOP",
+            "SI constants",
+            "initial state"
+          ],
+          "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+          "source_url": "https://github.com/boinor/boinor",
+          "version": "0.19.0"
+        },
+        "schema": "space-env.external-orbit-comparison/1",
+        "velocity_error_m_s": 2.061123684084503e-05,
+        "velocity_tolerance_m_s": 0.01
+      }
+    ],
+    "passed": true,
+    "qualification_status": "needs_external_evidence",
+    "schema": "space-env.orbit-fixture-suite/1"
+  },
+  "industrial_readiness": false,
+  "long_arcs": true,
+  "mission_evidence_policy": "historical campaign receipts bind their original build; this report grants no mission qualification",
+  "passed": true,
+  "qualification_status": "needs_external_evidence",
+  "schema": "space-env.physics-envelopes/1",
+  "sha256": "1787c7501c6bdd08885f2bd0637fe05fcb12ace11c2c92ae8d680518b71a92d1",
+  "solver_controls": {
+    "orbit": {
+      "max_step_sec": 60.0,
+      "position_atol_m": 0.0001,
+      "rtol": 1e-11,
+      "velocity_atol_m_s": 1e-07
+    },
+    "thermal": {
+      "atol_k": 1e-07,
+      "max_evaluations_per_call": 50000,
+      "max_step_sec": 0.05,
+      "rtol": 1e-09
+    }
+  },
+  "unqualified": {
+    "attitude": [
+      "off-axis coupled pointing/tracking truth",
+      "wheel hardware/friction/calibration"
+    ],
+    "coupled_mission": [
+      "real tasking/slew/multiplane/multistation workload qualification",
+      "external flight/operations validation",
+      "long-run resource enforcement"
+    ],
+    "dtn": [
+      "external network/protocol traces and operational interoperability"
+    ],
+    "orbit": [
+      "flight ephemeris/calibrated force uncertainty",
+      "joint drag/SRP/attitude truth"
+    ],
+    "payload": [
+      "instrument/scene-calibrated image/SAR quality and pointing error"
+    ],
+    "power": [
+      "external battery/PV/PMAD calibration and uncertainty under coupled loads"
+    ],
+    "rf": [
+      "measured channel/weather/antenna/modem performance"
+    ],
+    "thermal": [
+      "thermal-vacuum measurements",
+      "time-varying Earth/surface optical properties"
+    ]
+  }
+}

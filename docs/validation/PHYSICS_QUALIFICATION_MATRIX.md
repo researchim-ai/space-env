@@ -1,5 +1,43 @@
 # B02: управляемая GCRS-динамика и границы квалификации
 
+D2a: [independent geometry](INDEPENDENT_GEOMETRY_V1.md) — независимые initial
+planes/sites и fixed-ephemeris delivery, resource/receipt witnesses и exact
+binary-input relaxation certificate. Геометрические equations общие с runtime;
+это не новая independent physical truth/calibration или coupled EO qualification.
+
+
+D1b: [process restart](PROCESS_RESTART_V1.md) проверяет continuation в отдельном
+interpreter после выхода prefix producer и сохранение causal/native signatures.
+Это recovery/numerical integrity evidence; не новая physical calibration и не
+qualification произвольной independently located mission/controller.
+
+
+D1: [native ensemble qualification bridge](NATIVE_ENSEMBLE_QUALIFICATION_V1.md)
+связывает assumptions с исполнением frozen миссий и retained failure denominator.
+Это execution evidence конкретного workload; не новая hardware calibration и
+не qualification произвольного multi-plane controller. D2/C2/Q6 остаются открытыми.
+
+
+Текущий additive пакет C1b: [material cp(T)/enthalpy](MATERIAL_ENTHALPY_V1.md).
+Численно проверена опубликованная Al6061-T6 корреляция и opt-in thermal-network
+integration в 4–300 K. Это не measured hardware calibration; Q5-C2/Q5-D открыты.
+Исторические receipts не переносятся на новую сборку автоматически.
+
+
+Обновление Q5-C1 2026-11-03: [HARDWARE_EVIDENCE_CALIBRATION_V1](HARDWARE_EVIDENCE_CALIBRATION_V1.md)
+добавляет published component points, conditional fit и assumed sensitivity.
+Это не measurement-based hardware calibration; Q5-C2 остаётся открытым.
+
+Обновление Q5-B 2026-11-03: [POINTING_ACTUATION_CONTACTS_V1](POINTING_ACTUATION_CONTACTS_V1.md),
+CLI `reference-qualify-pointing`; 16 frozen synthetic cases, отдельно shared frame
+backend и hardware/mission gaps. Исходный B02 scope ниже сохранён.
+
+Обновление 2026-11-03: новая точечная numerical qualification —
+[ANALYTIC_ENVELOPES_V1](ANALYTIC_ENVELOPES_V1.md), CLI
+`reference-qualify-envelopes --long --external`. Она разделяет analytic vectors,
+external-force/shared-input cases и backend regressions. Ниже сохранён исходный
+B02 scope; новая проверка не означает независимую квалификацию whole mission.
+
 Дата: 2026-10-31. Профиль `reference-dynamic-downlink/1`.
 Статус: **needs_external_evidence**. Инженерный путь команд реализован;
 полная независимая квалификация возмущенной миссии не завершена.

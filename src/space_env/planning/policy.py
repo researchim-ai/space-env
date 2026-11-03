@@ -23,6 +23,60 @@ def conflicts(left, right):
     )
 
 
+def _acked_releases(value, entities, owns):
+    """Only owned, observed ground ACKs; never TX completion or future success."""
+    result = {}
+    active = value["active"]
+    for action in value["observation"]["catalogue"]:
+        actors = action.get("actors", [])
+        if (
+            action["kind"] != "cancel_actor"
+            or not action["enabled"]
+            or len(actors) != 1
+        ):
+            continue
+        actor = actors[0]
+        role = value["actions"][action["id"]]["role"]
+        if actor not in value["roles"].get(role, {}).get("actors", []):
+            continue
+        controls = [c for c in active if c["actor"] == actor]
+        if not controls or any(c["kind"] != "downlink" for c in controls):
+            continue
+        if any(c["kind"] == "relay" and c["destination"] == actor for c in active):
+            continue
+        acknowledged = True
+        for control in controls:
+            product = control.get("product_id", "")
+            values = entities.get("product:" + product, {}).get("values", {})
+            if (
+                values.get("status_code") != STATES["delivered"]
+                or values.get("remaining_bits") != 0.0
+                or ("actor:" + actor, "product:" + product) not in owns
+            ):
+                acknowledged = False
+                break
+        if acknowledged:
+            result[action["id"]] = actor
+    return result
+
+
+def _ready_ground_product(command, entities, owns, now):
+    key = "product:" + command.get("product_id", "")
+    if ("actor:" + command["actor_id"], key) not in owns:
+        return False
+    values = entities.get(key, {}).get("values", {})
+    return (
+        values.get("remaining_bits", 0.0) > 0
+        and values.get("remaining_work_sec", 0.0) <= 0
+        and values.get("ready_sec", 0.0) <= now
+        and values.get("status_code")
+        not in {
+            STATES[k]
+            for k in ("delivered", "cancelled", "expired", "failed", "await_ack")
+        }
+    )
+
+
 class BaselinePolicy:
     def __init__(self, config=None):
         self.config = PolicyConfig.model_validate(config or {})
@@ -135,16 +189,53 @@ class BaselinePolicy:
             if control["kind"] == "relay" and control["actor"] in stalled_actors:
                 key = digest([control["actor"], control["destination"]])
                 self._route_cooldown[key] = revision + self.config.cooldown_steps
+        owns = (
+            {
+                (
+                    by_index.get(r["source"], {}).get("key"),
+                    by_index.get(r["destination"], {}).get("key"),
+                )
+                for r in obs["relations"]
+                if r["kind"] == "owns"
+            }
+            if self.config.reclaim_acked_downlinks
+            else set()
+        )
+        releases = (
+            _acked_releases(value, entities, owns)
+            if self.config.reclaim_acked_downlinks
+            else {}
+        )
+        release_actors = {
+            actor for id, actor in releases.items() if id not in self._cooldown
+        }
         candidates = []
         for a in sorted(obs["catalogue"], key=lambda a: a["id"]):
-            if a["id"] == "wait" or not a["enabled"] or a["id"] in self._cooldown:
-                continue
             commands = a.get("commands", [])
+            conditional = (
+                self.config.reclaim_acked_downlinks
+                and not a["enabled"]
+                and a.get("reason") == "actor_busy"
+                and bool(commands)
+                and all(
+                    c["kind"] == "downlink"
+                    and c["actor_id"] in release_actors
+                    and _ready_ground_product(c, entities, owns, now)
+                    for c in commands
+                )
+            )
+            if (
+                a["id"] == "wait"
+                or not (a["enabled"] or conditional)
+                or a["id"] in self._cooldown
+            ):
+                continue
             if a["kind"] == "submit" and not commands:
                 continue
             if (
                 a["kind"] == "cancel_actor"
                 and not set(a.get("actors", [])) & stalled_actors
+                and a["id"] not in releases
             ):
                 continue
             if a["kind"] == "inject" and a.get("operator_event", {}).get(
@@ -248,6 +339,14 @@ class BaselinePolicy:
                     <= 0.05
                 ):
                     utility *= 0.1
+            if conditional:
+                assumptions.append(
+                    "native admission conditional on selected observed-ACK cancellation"
+                )
+            if a["id"] in releases:
+                assumptions.append(
+                    "release only controls whose owned product has observed ground ACK"
+                )
             if not commands:
                 utility = 500.0
             priority = max(priorities, default=1.0)
@@ -269,6 +368,21 @@ class BaselinePolicy:
                     {
                         "id": a["id"],
                         "role": info["role"],
+                        **(
+                            {
+                                "release_actor": releases.get(a["id"]),
+                                "cancel_actor": next(iter(a.get("actors", [])), None)
+                                if a["kind"] == "cancel_actor"
+                                else None,
+                                "requires_release": sorted(
+                                    {c["actor_id"] for c in commands}
+                                )
+                                if conditional
+                                else [],
+                            }
+                            if self.config.reclaim_acked_downlinks
+                            else {}
+                        ),
                         "claims": claims,
                         "products": sorted(products),
                         "stations": stations,
@@ -283,7 +397,9 @@ class BaselinePolicy:
                         "assumptions": assumptions,
                     }
                 )
-        candidates.sort(key=lambda c: (-c["score"], c["id"]))
+        candidates.sort(
+            key=lambda c: (not bool(c.get("release_actor")), -c["score"], c["id"])
+        )
         omitted = max(0, len(candidates) - self.config.max_candidates)
         candidates = candidates[: self.config.max_candidates]
         occupied, station_users = [], {}
@@ -302,16 +418,41 @@ class BaselinePolicy:
                 >= value["roles"][c["role"]]["action_slots"]
             ):
                 return False
-            # Cancellation is a separate epoch; it must be able to address active claims.
+            released = {s["release_actor"] for s in selected if s.get("release_actor")}
+            if not set(c.get("requires_release", [])) <= released:
+                return False
+            if c.get("cancel_actor") and any(
+                s.get("cancel_actor") == c["cancel_actor"] for s in selected
+            ):
+                return False
+            active_controls = [a for a in value["active"] if a["actor"] not in released]
+            effective_occupied = occupied
+            if released:
+                effective_occupied = [
+                    tuple(claim) for a in active_controls for claim in a["claims"]
+                ]
+                effective_occupied += [
+                    (a["destination"], "actor")
+                    for a in active_controls
+                    if a["kind"] == "relay"
+                ]
+            # Native TaskSession still rechecks the real state after cancellation.
             active_claims = (
                 []
                 if not next(a for a in obs["catalogue"] if a["id"] == c["id"]).get(
                     "commands"
                 )
-                else occupied
+                else effective_occupied
             )
             if conflicts(
-                c["claims"], active_claims + [v for s in selected for v in s["claims"]]
+                c["claims"],
+                active_claims
+                + [
+                    v
+                    for s in selected
+                    if not s.get("release_actor")
+                    for v in s["claims"]
+                ],
             ):
                 return False
             if set(c["products"]) & {p for s in selected for p in s["products"]}:
@@ -326,7 +467,7 @@ class BaselinePolicy:
                 proposed = {a for st, a in c["station_users"] if st == station}
                 used = (
                     reserved
-                    | station_users.get(station, set())
+                    | (station_users.get(station, set()) - released)
                     | proposed
                     | {
                         a
@@ -347,6 +488,8 @@ class BaselinePolicy:
             if self.config.name == "random_masked":
                 self._rng.shuffle(order)
                 order = order[: int(self._rng.integers(0, len(order) + 1))]
+            if self.config.reclaim_acked_downlinks:
+                order.sort(key=lambda c: not bool(c.get("release_actor")))
             for c in order:
                 if feasible(selected, c):
                     selected.append(c)

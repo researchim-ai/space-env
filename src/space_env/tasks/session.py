@@ -9,7 +9,7 @@ from threading import RLock
 
 from space_env.runtime import AccessPolicy, MissionRuntime, RuntimeContractError
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
-from space_env.tasks.observation import Projection, admissible
+from space_env.tasks.observation import Projection, _ProjectionReads, admissible
 from space_env.tasks.schema import TaskDecision, TaskSpec
 
 _OBJECTIVES = {
@@ -96,6 +96,9 @@ def seeded_scenario(scenario, seed, policy):
 
 
 def score(runtime):
+    optimized = runtime._task_score()
+    if optimized is not None:
+        return optimized
     # Trainer-only outcome accounting. These truth ledgers are never observations.
     report = runtime.observe(view="truth")["backend"]["report"]
     life = report.get("lifecycle")
@@ -182,8 +185,9 @@ class TaskSession:
         self._done = False
 
     def _refresh(self, runtime, projections, revision):
+        reads = _ProjectionReads(runtime)
         return {
-            r: p.build(runtime, r, revision, self._actions)
+            r: p.build(reads, r, revision, self._actions)
             for r, p in projections.items()
         }
 
@@ -375,7 +379,7 @@ class TaskSession:
                 weights[k] * v * (1 if k in {"completion", "mbits", "priority"} else -1)
                 for k, v in components.items()
             )
-            terminal = candidate.time_sec >= candidate.report()["horizon_sec"] - 1e-9
+            terminal = candidate.time_sec >= candidate.horizon_sec - 1e-9
             truncated = self.revision + 1 >= self._task.max_decisions and not terminal
             projections = copy.deepcopy(self._projections)
             views = self._refresh(candidate, projections, self.revision + 1)

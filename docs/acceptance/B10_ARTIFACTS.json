@@ -1,0 +1,135 @@
+{
+  "schema": "space-env.acceptance/1",
+  "package": "B10-C2",
+  "version": "0.134.0",
+  "date": "2026-11-03",
+  "status": "verified_bounded_process_local_artifact_transport",
+  "contract": "../OPERATOR_ARTIFACT_CONTRACT.md",
+  "scope": [
+    "disk-spooled archive/checkpoint upload, SHA-256, exact accepted-range retry and native restore",
+    "chunked reads via PUT and file-backed download with bounded 64 KiB writes",
+    "verified RL/SFT ZIP assembled on disk with external operator provenance",
+    "process-local quotas, private files, cooperative expiry and cancellation boundaries",
+    "cached successful import receipt and terminal uncertain failure preventing blind duplicate restore",
+    "local operator UI transfer integration with SHA-256 verification"
+  ],
+  "checks": {
+    "operator_api_durable_cursor_artifacts": {
+      "passed": 124,
+      "new_artifact_cases": 30,
+      "seconds": 83.74,
+      "log": "/tmp/space-env-b10c2-api.log"
+    },
+    "reference": {
+      "passed": 1229,
+      "warnings": 15,
+      "seconds": 288.06,
+      "log": "/tmp/space-env-b10c2-reference.log"
+    },
+    "fast": {
+      "passed": 110,
+      "warnings": 2,
+      "seconds": 16.55,
+      "log": "/tmp/space-env-b10c2-fast.log"
+    },
+    "collected": 1659,
+    "test_counts_overlap": true,
+    "source_http": {
+      "passed": true,
+      "wire_bytes": 9599778,
+      "wire_fixture": "native archive plus JSON whitespace padding; transport threshold, not a large mission workload",
+      "legacy_guard": 413,
+      "chunk_retry": true,
+      "native_restore": true,
+      "idempotent_commit": true,
+      "training_zip": true,
+      "released_spool": true,
+      "log": "/tmp/space-env-b10c2-http2.log"
+    },
+    "installed_http": {
+      "passed": true,
+      "wire_bytes": 9599774,
+      "outside_checkout": true,
+      "isolated_python": true,
+      "system_site_packages": true,
+      "negative_headers_statuses": [
+        415,
+        413,
+        400,
+        403,
+        401,
+        409
+      ],
+      "log": "/tmp/space-env-b10c2-installed.log"
+    },
+    "source_browser": {
+      "passed": true,
+      "restart_reconnect": true,
+      "controller_transfer": true,
+      "archive_restore": true,
+      "mobile_no_overflow": true,
+      "page_errors": [],
+      "log": "/tmp/space-env-b10c2-browser.log"
+    },
+    "installed_browser": {
+      "passed": true,
+      "outside_checkout": true,
+      "restart_reconnect": true,
+      "controller_transfer": true,
+      "archive_restore": true,
+      "padded_import_bytes": 9975037,
+      "verified_training_zip_download": true,
+      "mobile_no_overflow": true,
+      "page_errors": [],
+      "log": "/tmp/space-env-b10c2-installed-browser.log"
+    },
+    "wheel": {
+      "modules_byte_matched": 234,
+      "operator_assets_byte_matched": 3,
+      "sha256": "99defc388486652ef467e754f2498b4cc1b34f69d4fe3c365f8e18d6309b22df"
+    },
+    "lint": "explicit changed Python files, JS module syntax, CI YAML parsing and git diff --check passed",
+    "legacy_studio_api": {
+      "passed": 5,
+      "warnings": 2,
+      "seconds": 113.36,
+      "log": "/tmp/space-env-b10c2-legacy.log"
+    }
+  },
+  "failure_cases": [
+    "unauthorized/different/revoked capabilities and unsupported formats rejected",
+    "repeat chunk does not duplicate bytes; gap/conflicting replay rejected",
+    "EOF/timeout rollback preserves received offset and allows retry",
+    "SHA mismatch clears failed upload and reservation",
+    "leased file resists cancellation/expiry; release allows cleanup",
+    "job and byte reservation budgets enforced",
+    "native validation failure never acknowledges an import",
+    "post-commit response error makes import terminal rather than re-executing restore",
+    "cleanup IO failure keeps accounting; cached successful receipt remains usable",
+    "slow socket stream does not hold the global mission lock"
+  ],
+  "bounds": {
+    "max_file_bytes": 33554432,
+    "max_spool_reservation_bytes": 134217728,
+    "training_peak_reservation_bytes": 67108864,
+    "max_jobs": 8,
+    "max_chunk_bytes": 1048576,
+    "io_block_bytes": 65536,
+    "idle_ttl_sec": 600,
+    "whole_http_chunk_deadline_sec": 15,
+    "legacy_json_limit_bytes": 8388608,
+    "native_interactive_limits_unchanged": true
+  },
+  "not_claimed": [
+    "constant RSS for browser, native replay or full JSON decoding",
+    "large/long mission latency qualification from padded transport fixture",
+    "durable transfer resumption or cross-process exactly-once import",
+    "automatic retention scheduler, hard cancellation of native replay or object storage",
+    "automatic cleanup of abrupt-kill temporary directories",
+    "SSO/TLS, deployment isolation or quotas across processes",
+    "source/dependency checkpoint migration or flight/hardware qualification",
+    "dependency-clean remote CI or expanded full regression executed"
+  ],
+  "website": "not changed or regenerated; local Mission Control assets updated",
+  "git": "No stage, commit, push or PR performed."
+}

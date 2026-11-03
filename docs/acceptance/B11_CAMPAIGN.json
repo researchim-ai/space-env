@@ -1,0 +1,73 @@
+{
+  "schema": "space-env.campaign-acceptance/1",
+  "date": "2026-11-03",
+  "version": "0.134.0",
+  "status": "functional bounded cases passed; large formation qualification failed",
+  "industrial_readiness": false,
+  "large": {
+    "receipt": "B11_CAMPAIGN_LARGE.json",
+    "manifest": "B11_CAMPAIGN_LARGE.manifest.json.gz",
+    "actors": 12,
+    "requests": 40,
+    "horizon_sec": 120,
+    "expected_repeats": 3,
+    "successful_repeats": 0,
+    "timeout_sec": 2400,
+    "outcome": "all three fresh workers exceeded frozen timeout; no final completion/replay/export evidence available; no limits relaxed"
+  },
+  "faults": {
+    "receipt": "B11_CAMPAIGN_FAULTS.json",
+    "manifest": "B11_CAMPAIGN_FAULTS.manifest.json.gz",
+    "passed": true,
+    "scope": "4 actors, synthetic favorable formation geometry; ground recovery, seeded ACK loss, full ground outage, short TTL"
+  },
+  "small_probe": {
+    "receipt": "B11_CAMPAIGN_SMALL.json",
+    "manifest": "B11_CAMPAIGN_SMALL.manifest.json.gz",
+    "scope": "4 actors, 4 requests, 40s; straight and prefix restore semantic parity; earlier supervisor revision"
+  },
+  "initial_failure": {
+    "receipt": "B11_CAMPAIGN_INITIAL_UNKNOWN_CLOUD.json",
+    "outcome": "ACK delivery without valid cloud evidence did not fulfill requests; explicit synthetic clear cells added without weakening quality gates"
+  },
+  "aborted_launch": {
+    "receipt": "B11_CAMPAIGN_LAUNCH_ABORTED.json",
+    "counted_as_qualification": false,
+    "cause": "not established"
+  },
+  "validation": {
+    "reference_passed": 1247,
+    "fast_passed": 110,
+    "collected": 1677,
+    "counts_overlap": true,
+    "expanded_full_run": false,
+    "remote_clean_ci_run": false
+  },
+  "installed": {
+    "modules_byte_matched": 235,
+    "wheel_sha256": "5a54627499534da0e5af82359ea4e38ae511f78e5947c893de233efc95a99d5d",
+    "smoke": "2 fresh processes; one request each; native replay, verified training export and restore semantic parity passed",
+    "environment": "isolated execution outside checkout; venv uses system-site-packages, not dependency-clean",
+    "large_installed_run": false
+  },
+  "next": "COUPLED_PERFORMANCE_NEXT.md: reduce redundant copying and projection construction, preserve native semantics, repeat unchanged frozen large gates",
+  "scope_limits": [
+    "synthetic favorable nearby formation, not global arbitrary constellations",
+    "20–300s generator envelope, not validated multi-hour missions",
+    "no new maneuvers or flight-qualified rigid-body control",
+    "no industrial readiness inferred from test count"
+  ],
+  "artifacts_sha256": {
+    "B11_CAMPAIGN_FAULTS.json": "15188f641b8d1a9606738ac4d61fa4c583037e7dc8b4ed127e3a9cc9a73370ae",
+    "B11_CAMPAIGN_FAULTS.manifest.json.gz": "bbe5ad06134c21825787f45a9aaad8bcd686f711111a9a5cded7d91ca42c65f1",
+    "B11_CAMPAIGN_INITIAL_UNKNOWN_CLOUD.json": "aa93ff5f475124e74e617738076943e9cb240d7759e2a0319a1055d743688b8e",
+    "B11_CAMPAIGN_INITIAL_UNKNOWN_CLOUD.manifest.json.gz": "c622136127ab0fea0fb9acf2824935fc58a129b13b0fcb0c436bb55f5def0f29",
+    "B11_CAMPAIGN_LARGE.json": "47fb1a4da42d8b4cb2a1752dd84d2f0c2be1200966b34fafdb60a37f1796aafb",
+    "B11_CAMPAIGN_LARGE.manifest.json.gz": "b1a3f237a158d71f55e74471fe2ebde8c22d4b5eee4ff5460ddbdeda02e3087b",
+    "B11_CAMPAIGN_LAUNCH_ABORTED.json": "76c14e6836a87546b8f6cd80b3d90115d623212e018de3e65862e7aeb61635c7",
+    "B11_CAMPAIGN_PROFILE.json": "0db5660772af17113aa8aa00f2163c56e008feff822d53dc63dfdaaa5ef8d9a4",
+    "B11_CAMPAIGN_PROFILE.txt": "5ed48393a884f616f446747960eef997975d512ba4bd2f3de43f9e35e19ea012",
+    "B11_CAMPAIGN_SMALL.json": "e8fc577ab407d236e813d1be558d596e2a863713a9ae092c755bd6606642beea",
+    "B11_CAMPAIGN_SMALL.manifest.json.gz": "e48d6b8625b8f279059992254b531ebc6494470bf0f298b886862df77ece5515"
+  }
+}
