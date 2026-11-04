@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+import sys
 from pathlib import Path
 
 from space_env.api.operator import OperatorStore
@@ -16,7 +18,14 @@ def main(argv=None):
     parser.add_argument("session_id", nargs="?")
     parser.add_argument("output", nargs="?")
     parser.add_argument("--list", action="store_true")
-    args = parser.parse_args(argv)
+    tokens = list(sys.argv[1:] if argv is None else argv)
+    # URL-safe generated IDs may begin with '-' (including '--'). Keep flags
+    # intact while accepting the existing three-positional recovery contract.
+    if (len(tokens) == 3 and tokens[1].startswith("-")
+        and re.fullmatch(r"[A-Za-z0-9_-]{24}", tokens[1])
+        and not tokens[2].startswith("-")):
+        tokens.insert(1, "--")
+    args = parser.parse_args(tokens)
     if args.list:
         if args.session_id or args.output:
             parser.error("--list takes only database")

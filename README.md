@@ -6,6 +6,34 @@
 
 Это инженерная модель для обучения, не цифровой двойник конкретной миссии. Крупные пакеты развития и критерии промышленной приемки — в [основном плане](docs/INDUSTRIAL_AI_SIMULATOR_PLAN.md); реализованные возможности и проверки — в [статусе пакета](docs/IMPLEMENTATION_STATUS.md).
 
+[Исполнимый план и сохраняемые RL/SFT bundles](docs/validation/MISSION_PLAN_BUNDLE_V1.md):
+sealed fixed-input schedule, native goal certificate, fresh-process continuation,
+retained episode и два режима аудита. Failed mission goal сохраняется в RL;
+native verification не выдаётся за expert teacher qualification.
+
+[Полные орбитальные циклы](docs/validation/FULL_ORBIT_MISSIONS_V1.md):
+отдельный bounded multi-cycle compiler, периодические задачи без preload,
+явные kinematic/rigid уровни ADCS и проверки доставки в разных release epochs.
+Геометрический diagnostic отделён от доказательства выполнимости плана.
+
+[Совместное управление колёсами и RCS](docs/validation/FIXED_CLOCK_ACTUATORS_V1.md):
+held wheel/RCS commands, rotating chemical thrust, shared-tank bookkeeping,
+fixed-input RK/partition checks и extended600s service regression.
+
+[Контроллер с независимым тактом](docs/validation/FIXED_CONTROLLER_CLOCK_V1.md):
+opt-in sample-and-hold motor commands, немедленные команды/защита и проверки
+независимости от частоты событий. Прежняя event-driven модель сохранена отдельно.
+
+[Исследование численного разрешения](docs/validation/MISSION_REFINEMENT_STUDY_V1.md):
+условная self-refinement проверка, отдельная чувствительность к частоте контроллера
+и событий, фиксированные unseen geometries и сохранение неудачных попыток.
+Evaluator-only diagnostics не попадают в признаки агента или обучающие строки.
+
+[Связанная многоспутниковая миссия](docs/validation/COUPLED_INDEPENDENT_MISSION_V1.md):
+независимые плоскости, цели и станции; платное наведение, геометрическая съёмка,
+обработка и доставка. Все запросы и отказы сохраняются. Синтетическая аппаратура
+и metadata products; точность реального сенсора этим не заявляется.
+
 [B09 масштабирование](docs/SCALING_CONTRACT.md): потоковые RL/SFT exports и дисковый
 буфер фабрики, compact checkpoints с cold replay, изолированные workers и локальный
 cross-bundle registry. [Профиль нагрузки](examples/scaling/README.md) измеряет
@@ -485,3 +513,14 @@ delivery-only workload на6000s: две орбитальные плоскост
 ресурсы и receipts, а conditional LP capacity bound пересчитывается точной
 рациональной арифметикой. Есть outage/no-contact cases и отдельный процесс для
 восстановления. [Модель и ограничения](docs/validation/INDEPENDENT_GEOMETRY_V1.md).
+
+### D2h-A: forecast-first планирование доставки
+
+Планировщик создаёт исполнимый MissionPlan до native rollout: разрешённые
+оператору окна связи, ready/deadline, actor exclusivity, терминалы станций,
+консервативная энергия и TX quota. Поддерживается ограниченный fixed-ephemeris
+профиль готовых данных с идеальным радио; acquisition/ADCS/RF в него не входят.
+Сохранённый benchmark сравнивает план с reactive baselines, удерживает ошибки
+и negative control и проверяет native replay перед teacher gates. Forecast
+candidate и reactive baselines имеют разные information budgets; passing gates
+не означает expert qualification. [Контракт и запуск](docs/validation/FORECAST_DELIVERY_V1.md).

@@ -1,0 +1,74 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+..................F..................................................... [ 97%]
+..................................................                       [100%]
+=================================== FAILURES ===================================
+_____________ test_http_origin_content_type_body_limits_and_bearer _____________
+
+configuration = {'scenario': {'schema_version': 3, 'id': 'multi-plane', 'lineage': 'scale-multi-plane', 'backend': 'reference-fixed', ...'action_slots': 8}, 'control-1': {'actors': ['sat-008', 'sat-009'], 'action_slots': 2}}, 'max_joint_actions': 10, ...}}
+
+    def test_http_origin_content_type_body_limits_and_bearer(configuration):
+>       server = ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_operator.py:307: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/lib/python3.12/socketserver.py:453: in __init__
+    self.socket = socket.socket(self.address_family,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../../miniconda3/lib/python3.12/socket.py:233: PermissionError
+=============================== warnings summary ===============================
+tests/test_reference_operations.py: 13 warnings
+  /home/user/miniconda3/lib/python3.12/site-packages/gymnasium/utils/passive_env_checker.py:35: UserWarning: [33mWARN: A Box observation space maximum and minimum values are equal.[0m
+    logger.warn("A Box observation space maximum and minimum values are equal.")
+
+tests/test_runtime_tasks.py::test_pettingzoo_parallel_api_and_live_agents
+tests/test_runtime_tasks.py::test_pettingzoo_parallel_api_and_live_agents
+  /home/user/miniconda3/lib/python3.12/site-packages/pettingzoo/utils/deprecated_module.py:99: DeprecationWarning: The old environment creation API has been deprecated in favor of a Gymnasium-like registry implementation, please use the make function instead.
+  The old API will eventually be removed in a future release.
+    spec.loader.exec_module(module)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_operator.py::test_http_origin_content_type_body_limits_and_bearer
+1 failed, 1705 passed, 15 warnings in 476.97s (0:07:56)

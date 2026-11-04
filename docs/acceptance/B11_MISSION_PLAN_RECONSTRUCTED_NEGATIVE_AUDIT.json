@@ -1,0 +1,1 @@
+{"schema": "space-env.mission-plan-bundle-audit/1", "integrity_passed": true, "mission_goal_passed": false, "native_execution_replayed": true, "bundle_sha256": "730289655bbc9edc7e480a7af9abbbb5fcb7269a1b5b6a0cb0fc521f13f9ac6b", "plan_sha256": "be6bd4372475e3c7dc4ea012ead07d7458dd4e3970ea21246aaf9a1a2e3d3f35", "expert_teacher_qualified": false, "dataset_rows": {"rl.jsonl": 90}}

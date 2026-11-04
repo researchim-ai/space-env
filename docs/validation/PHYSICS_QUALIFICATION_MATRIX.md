@@ -1,5 +1,23 @@
 # B02: управляемая GCRS-динамика и границы квалификации
 
+D2d: [fixed controller clock](FIXED_CONTROLLER_CLOCK_V1.md) — opt-in sampled
+motor hold, interrupts, native partition checks и mandatory event-resolution
+gate пройдены. Это не hardware calibration и не invariance между разными
+digital periods. Новые engine/RCS profiles квалифицируются отдельно.
+
+
+D2c: [mission studies](MISSION_REFINEMENT_STUDY_V1.md) — conditional rigid kernel
+self-refinement и отдельная discrete cadence sensitivity на common decision grid.
+Изменение controller/event cadence не называется погрешностью интегратора.
+Это empirical model evidence, не независимая физическая истина или flight qualification.
+
+
+D2b: [coupled metadata mission](COUPLED_INDEPENDENT_MISSION_V1.md) связывает
+independent input geometry с paid rigid control, acquisition, CPU и доставкой.
+Это native model/integrity evidence; sensor fidelity, measured calibration,
+step refinement и independent mission holdout не закрыты.
+
+
 D2a: [independent geometry](INDEPENDENT_GEOMETRY_V1.md) — независимые initial
 planes/sites и fixed-ephemeris delivery, resource/receipt witnesses и exact
 binary-input relaxation certificate. Геометрические equations общие с runtime;
@@ -231,3 +249,33 @@ sphere geometry, с явным model-comparison budget. Новая геомет�
 B02.05 geometry gate закрыт; B02.09/.10/.11 production qualification открыта.
 B03 может развивать execution на проверенном surrogate, не выдавая это за
 завершенную промышленную квалификацию.
+
+## 12. D2f: long horizon и mass-only coast reuse
+
+[Full-orbit contract](FULL_ORBIT_MISSIONS_V1.md) добавляет bounded12000–21600s
+миссии и раздельные kinematic/rigid ADCS tiers. Projected winding на J2 orbit
+и geometric contact coverage не заменяют service feasibility. Long kinematic
+service/recovery и short dense rigid-actuator ledger regression должны иметь
+раздельную приёмку; successful long kinematic mission не квалифицирует long
+rigid controller или измерительную точность аппаратуры.
+
+Opt-in `reuse_balanced_coast` требует sample_sec≤1 и выключает повторную
+translational propagation только для built-in ideal zero-force balanced RCS
+на mass-independent gravity coast без navigation/другой active/future тяги.
+Drag/SRP остаются eager. Default eager и legacy serialization сохранены.
+Coarse spline/restarted integration comparison, превысивший velocity budget,
+сохраняется как finding; он не выдаётся за passed convergence study.
+Suffix contact refresh сохраняет старую scan lattice и past history.
+Repeated decimal burn endpoint fix использует representable end-clock.
+
+Measured calibration C2, независимый executable feasibility certificate,
+полная long rigid numerical qualification и Q6/Q7 остаются открытыми.
+
+## D2h-A — forecast planning scope
+
+Это engineering scheduler qualification, не новая physics calibration. Только
+reference-fixed, ready preloaded products, known outage и ideal constant rate.
+Conservative battery без PV credit; unsupported thermal/ADCS/RF/dependencies
+отвергаются. Native replay проверяет fixed plan против выбранной модели;
+teacher thresholds не доказывают optimality, generalization или measured fidelity.
+[Контракт](FORECAST_DELIVERY_V1.md).

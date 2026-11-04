@@ -1,6 +1,284 @@
 # Следующие крупные пакеты реализации
 
-## Текущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
+## Текущий пакет D2h-A — forecast-first ready-data delivery
+
+Добавлены value-only operator-authorized forecast, bounded deterministic scheduler,
+fixed MissionPlan до rollout, CLI proposal/paired benchmark и независимый audit.
+Учитываются ready/deadline, actor/terminal capacity, initial conservative energy,
+TX quota и полный знаменатель. [Контракт](validation/FORECAST_DELIVERY_V1.md).
+
+Frozen benchmark: train, два разных географических holdout и full-outage negative
+control, одинаковые физические ресурсы для forecast/priority/earliest_deadline.
+Information budgets различны и явно записаны. Limited teacher gates включают
+native replay, service/rejection thresholds, prediction realization и paired
+noninferiority. `expert_teacher_qualified=false` независимо от passing gates.
+
+Следующий D2h-B: acquisition/processing/paid pointing dependencies, rolling
+replanning, forecast baselines с равной информацией и более сложная конкуренция.
+Новый scheduler не закрывает long rigid, measured calibration C2, hosted Q7
+или универсальное промышленное моделирование. Проверки и receipt — ниже.
+
+
+Приёмка D2h-A: [B11_FORECAST_ACCEPTANCE](acceptance/B11_FORECAST_ACCEPTANCE.json),
+wheel `4223f2f462e6…`, 266 Python modules / 306 source+data files byte-matched.
+**1792 reference, 31 targeted, 110 fast passed** (пересекаются); full regression
+и remote/dependency-clean CI не запускались. Installed venv использует system-site-packages.
+12 paired native runs + 12 обязательных cold replays + 12 дополнительных native
+audit replays. Candidate/оба baseline:4/16 на каждом из3 positive cases,
+0/16 на outage,0 rejection. Passing minimal declared gates означает только
+noninferiority в этом наборе, не superiority или expert quality. Сохранены400 RL
+и300 SFT-кандидатов;62-file archive восстановлен и проверен по inventory,
+после восстановления — consistency audit, не повторный native rollout.
+
+## Следующий пакет D2h-B — связанный план наблюдений и доставки
+
+Порядок реализации:
+
+1. Расширить value-only contract release/capture/processing/pointing dependencies;
+   запретить чтение private state и native admission при поиске плана. Разделить
+   идеальные/кинематические/rigid предположения, неподдержанное отвергать.
+2. Построить resource calendar для payload/CPU/attitude/radio и release/deadline;
+   явно учитывать длительность и энергозатраты наведения. План до исполнения,
+   diagnosis невыполнимости с полным request denominator.
+3. Replan по новому наблюдению: immutable executed prefix, новые bindings,
+   отказ от stale forecasts; interruption и fresh-process continuation.
+4. Добавить forecast-aware baselines с теми же входными прогнозами, frozen
+   contention/deadline/release/load cases, разные широты станций и отказы.
+   Заранее объявить service floors и сравнивать каждый paired case без pruning.
+5. Сохранить планы/неуспехи/датасеты и native replay receipts. Для SFT отдельно
+   указывать goal feasibility, benchmark selection и expert qualification.
+
+Критерии закрытия: native capture→processing→delivery без preload, оплаченные
+ресурсы наведения, корректный forecast invalidation, terminal/resource conflicts,
+negative controls без SFT и не менее двух независимых positive holdout на
+семейство. Long rigid и measured calibration закрывать отдельными receipts;
+прохождение kinematic tests не повышает автоматически уровень fidelity.
+
+## Предыдущий пакет D2g-A — исполнимый план и сохраняемый RL/SFT bundle
+
+Добавлены sealed `MissionPlan`, fixed `PlanExecution` поверх TaskSession,
+build/seed/scenario/task bindings и native checkpoint continuation. Публикация
+сохраняет plan, execution, goal certificate и RL/SFT вместе; failed goal сохраняет
+RL, не получает SFT. Atomic staging, byte limits, строгий inventory и typed
+canonical JSON audit покрывают повреждения и подмены. Native mode пересоздаёт
+каждую строку из independently replayed episode. [Контракт](validation/MISSION_PLAN_BUNDLE_V1.md).
+
+Recorded candidate из existing causal rolling baseline — первая реализация
+proposal, не новый forecast optimizer. Компиляция чужого record не доказывает
+causality его source policy. Certificate доказывает declared model-goal
+feasibility фиксированного плана, не optimality, measurement calibration или
+expert teacher quality. Последний статус всегда false. Remaining D2g/D2h ниже.
+
+Приёмка: [B11_MISSION_PLAN](acceptance/B11_MISSION_PLAN.json), wheel `2f7811dbad94…`.
+1761 reference,129 targeted,110 fast passed (пересекаются),33 новых tests.
+3 installed workflows с fresh-process continuation и native export replay:
+positive2/24, intentionally infeasible goal0/24 (RL only), full12600s8/32.
+Сохранены1440 RL+1350 SFT строк,68-file exact archive и17 linked artifacts.
+Short bundles прошли отдельный native audit, в том числе после archive restore;
+full — mandatory native export replay и integrity audit. Source policy causality,
+expertise и forecast optimizer этим не квалифицируются. Следующий пакет — D2h.
+
+## Предыдущий пакет D2f — bounded full-orbit missions и geometry refresh
+
+Добавлен отдельный `FullOrbitSpec`/`full_orbit_workload`, CLI
+`compile-full-orbit`, cycle-specific requests без preload и явно выбранные
+kinematic/rigid ADCS tiers. Geometric diagnostic измеряет actual J2 winding
+и сохраняет все actor×station пары. Epoch service gate требует release,
+acquisition и delivery в одном периоде, сохраняя весь request denominator.
+
+После maneuver пересчитывается suffix на прежней scan lattice, past windows
+сохраняются. Для dense gravity-only balanced RCS добавлен explicit opt-in
+coast reuse; legacy default остаётся eager. Drag/SRP/navigation/active thrust
+не попадают в fast path. Исправлен ulp endpoint bug repeated decimal burns.
+[Контракт и запуск](validation/FULL_ORBIT_MISSIONS_V1.md).
+
+Приёмка: [B11_FULL_ORBIT](acceptance/B11_FULL_ORBIT.json), wheel `894d6d435420…`.
+4 full-mission attempts по12600s прошли: nominal8/32, outage0/32 при8 captures;
+2 fresh-process restores на6300s совпали с direct. Winding обоих actors>2.
+Dense-coast envelope40→0 propagation calls и2 native actuator programs прошли.
+1728 reference,176 targeted,110 fast passed (пересекаются); findings сохранены.
+Long rigid qualification и independent executable feasibility certificate
+не объявлены закрытыми. Следующий самостоятельный раздел — D2g ниже.
+
+Это первые bounded full-cycle workloads, не универсальный calibrated mission
+simulator. Геометрический diagnostic не заменяет executable feasibility schedule.
+Критерии remaining D2f ниже остаются актуальными для teacher/feasibility,
+long rigid refinement и realistic station/network deployment.
+
+## Предыдущий пакет D2e — fixed-clock actuator coupling
+
+Unloading получил собственный joint sample-and-hold wheel/RCS loop с immediate
+guards, owned latch, capture/fork/rollback/replay. Добавлена frozen18-member
+RK/partition программа rotating chemical thrust + unloading, shared tank,
+analytic axial impulse и retained limited-authority failure. Extended600s
+nominal/outage direct/restored profiles имеют заранее заданные service minima.
+[Контракт](validation/FIXED_CLOCK_ACTUATORS_V1.md).
+Это synthetic hardware verification, не flight calibration, активный engine
+attitude hold или полный orbital mission. Full-cycle service/C2/Q6/Q7 открыты.
+
+Офлайн-аудит `verify-coupled-actuators` пересчитывает witnesses и comparisons,
+проверяет frozen recipe, полный member/file inventory, scenario identity и
+checkpoint digests. Integrity и qualification разделены: корректно сохранённый
+failed member остаётся неудачей. Отдельный weekly/manual installed-wheel CI job
+сохраняет артефакты независимо от результата. Remote CI локально не заявляется.
+
+Приёмка D2e: [B11_ACTUATORS](acceptance/B11_ACTUATORS.json), wheel
+`87228be247b2…`.18 actuator members и audit прошли;2 midphase и4 extended
+installed executions прошли с3 fresh-process restores. Nominal600s2/24,
+all-outage0/24 при2 acquisitions. Reference1705 passed+1 HTTP test отдельно
+с localhost permission;21 actuator tests+1 CLI test,110 fast (пересекаются).
+Подробные границы и полный archive описаны в контракте. D2f ещё не реализован.
+
+### D2f — следующий большой пакет: полный цикл миссии и производительность
+
+1. **Сначала стоимость geometry refresh.** Измерить число propagation/access
+   calls на фиксированной actuator программе для partitions0.1/0.025/0.01s.
+   Оптимизировать пересчёт будущих окон после maneuver без изменения прошедшей
+   истории; отдельно доказать допустимость fast path для ideal balanced RCS.
+   Нельзя пропускать изменение массы при drag/SRP, забывать active burns или
+   использовать stale contact cache. Сверить с eager reference на общей сетке.
+2. **Full-orbit compiler.** Текущий coupled compiler ограничен600s; не выдавать
+   снятие bound за готовую long-horizon модель. Добавить явно bounded новый
+   профиль минимум на два оборота с независимыми fixed sites и несколькими
+   contact cycles, лимитами памяти/числа действий/segments и closed-loop
+   acquisition→CPU→delivery. Зафиксировать входы до оценки политики.
+3. **Положительная проверка feasibility.** Раздельно считать геометрическую
+   возможность, paid pointing/settling, storage/CPU/energy и occupied terminals.
+   Минимальный service floor обосновать воспроизводимым executable schedule,
+   затем сравнить baseline с теми же ресурсами. Все requests остаются в denominator.
+4. **Восстановление на физических границах.** Direct/fresh-process пары перед
+   acquisition, внутри transform и между AOS/LOS; повреждение и остановка
+   worker сохраняются как failed rows. Измерять replay cost отдельно от step cost.
+5. **Приёмка и границы.** Зафиксировать mesh/partition/event envelopes,
+   conservation ledgers, installed-wheel identity и все failed attempts.
+   Затем Q6: frozen train/dev/test task families и baselines; Q7: durable jobs,
+   OS quotas, tenancy/auth. C2 требует измерений; открытые specifications
+   продолжают маркироваться как specifications, синтетические данные — synthetic.
+
+Критерий завершения D2f: два полных оборота и несколько доставок в разные
+контактные окна, обоснованный положительный service floor, matching process
+continuation, regression относительно eager geometry и retained negative controls.
+Это ещё не flight qualification или универсальная модель всех spacecraft systems.
+
+### D2g — исполнимый mission plan и сохраняемый teacher dataset
+
+1. Ввести bounded JSON `MissionPlan`: scenario/task/source/data hashes,
+   время выпуска, горизонты, actor/command IDs, planned start/end и declared
+   assumptions. Отделить прогноз от фактических execution receipts.
+2. Сделать детерминированный planner на доступных forecasts и публичных
+   constraints: paid slew/settling → dwell → CPU/storage → ground opportunity.
+   Нельзя планировать с truth-only admission oracle, перемещать targets/sites
+   или удалять неудобные requests. First feasible plan не объявлять optimal.
+3. Исполнять план через native revision/idempotency API, сохраняя rejections,
+   interruptions, actual times и resource ledgers. Никакой принудительной смены
+   attitude, inventory или request status для получения service floor.
+4. Сохранять полный executed checkpoint/trace и независимый feasibility
+   certificate. Проверять два release epochs, разные contact windows,
+   acquired→CPU→delivery lineage, resource occupancy и direct/restored equality.
+   Geometric capacity ceiling и feasible native lower bound считать отдельно.
+5. Сравнить plan executor и rolling baseline на одних frozen inputs и ресурсах;
+   retained infeasible/outage/weak-hardware controls обязательны. Holdouts
+   зафиксировать до разработки эвристики; calibration claims не добавлять.
+6. Сохранить verified RL/SFT export рядом с certificate, вместо временного
+   удаления export после benchmark timing. Offline audit должен восстанавливать
+   связь строки dataset с native trace, plan, code/data identity и split.
+7. Критерий закрытия: installed-wheel executable positive-service plan,
+   два full cycles, separate-process continuation, повторный offline dataset
+   audit из сохранённого bundle и сохранённые failed attempts. Long rigid
+   sensitivity/refinement остаётся отдельным физическим пакетом.
+
+### D2h — forecast planner, teacher gates и frozen benchmark
+
+1. Сначала зафиксировать independent train/dev/holdout inputs и budgets:
+   actor planes/phases, fixed sites, releases, outages и explicit service quotas.
+   Known D2f/D2g development cases не выдавать за unseen generalization.
+2. Добавить value-only public forecast adapter: interval/trajectory-token/source/
+   validity bindings и declared geometric/RF assumptions. Запретить private
+   truth, future stochastic outcomes и native admission oracle в policy input.
+3. Реализовать bounded deterministic interval scheduler для paid pointing/
+   settling, dwell, CPU/storage и ground occupancy. Schedule должен явно
+   включать waiting/holds; нельзя получать результат принудительным изменением
+   physical state или удалением необслуженных requests.
+4. Передавать candidate schedule новому fixed executor, сохраняя rejected и
+   failed operations. First feasible lower bound и independent conditional
+   capacity upper bound считать отдельно, не называть эвристику optimal.
+5. Сравнить с rolling/priority baselines на одинаковых frozen resources.
+   Teacher gates должны явно требовать service/rejection/robustness thresholds,
+   а не только native replay. Infeasible/outage controls обязательны.
+6. Использовать retained bundles для central и затем local-role RL/SFT с
+   episode-family split и duplicate audit; исключать failed/weak teachers по
+   declared gates. Metadata/native certificates не вкладывать в prompts.
+7. Приёмка: installed-wheel forecast proposal → native plan execution →
+   retained dataset → independent native audit, positive heldout service и
+   сохранённые все failures. Long rigid refinement/C2/Q7 остаются отдельно.
+
+
+## Предыдущий пакет D2d — independent controller clock
+
+Opt-in fixed-tick/1 удерживает motor torque между global ticks и реагирует на
+команды/protection без ожидания tick. Сохранены legacy event-driven semantics,
+энергоучёт, saturation, capture/rollback/fork/replay. Добавлены frozen native
+command partition program и mandatory event-resolution gate в fixed-clock study.
+[Контракт](validation/FIXED_CONTROLLER_CLOCK_V1.md).
+Разные digital controller periods остаются разными моделями; controller sensitivity
+не объявляется закрытой одним event-invariance gate. Long-horizon service/C2/Q6/Q7 открыты.
+Приёмка: [B11_FIXED_CLOCK](acceptance/B11_FIXED_CLOCK.json), wheel `062b7b4d9bd0…`.
+1685 reference,154 targeted,110 fast passed (наборы пересекаются).18 final installed
+attempts:13 mission+3 frozen programs+2 mid-tick process runs. Event gate обязателен
+и пройден; q difference на контрольной сетке≤2.431e−12deg при прежнем budget0.1deg.
+Fresh-process prefix5.15s сохранил last sample5.1s. Multi-period robustness gate
+по-прежнему false (0.2↔0.1s:5.1738deg); разные periods — разные controllers.
+Следующий D2e: disturbances/engine qualification, fixed-input RK oracle, затем
+independent feasible long-horizon positive-service benchmark. Calibration C2/Q6/Q7 открыты.
+
+
+
+## Предыдущий пакет D2c — refinement и unseen geometry studies
+
+Добавлены bounded evaluator-only numerical samples, max/RMS comparison,
+условная трёхсеточная kernel self-refinement проверка и отдельные controller/
+lifecycle cadence sensitivity reports. Frozen study compiler объединяет7
+resolution configurations и direct/restored пары3 геометрически новых случаев.
+Все неуспешные attempts и service outcomes сохраняются. SDK/CLI плюс offline
+checksum/recomputation audit. [Контракт](validation/MISSION_REFINEMENT_STUDY_V1.md).
+Это model verification, не calibrated physical truth и не ML generalization.
+Fixed-input/orbit/contact refinement, измерительная калибровка C2 и Q6/Q7 открыты.
+Приёмка: [B11_MISSION_STUDY](acceptance/B11_MISSION_STUDY.json), источник257 modules/
+290 files, wheel `89bf4fc8cb1e…`. 1671 reference,198 targeted,110 fast passed
+(пересекаются);13 corrected installed attempts и3 restore pairs. Первые13 попыток
+с дефектом witness и failed reference log сохранены в B11_STUDY_FINDING.
+Kernel self-refinement прошёл, **temporal_stable=False**, strict release gate
+не пройден: controller max attitude difference4.1571°,event-resolution0.6558°.
+Unseen cases имеют0 deliveries и declared min service0; SLA не квалифицирован.
+Следующий D2d: explicit latched controller clocks/safety interrupts, fixed-input
+replay refinement, затем feasible long-horizon service и новый untouched набор.
+
+
+
+## Предыдущий пакет D2b — independent coupled metadata mission
+
+Реализованы bounded compiler независимых planes/targets/stations, rigid paid
+slew/tracking, acquisition→CPU→ground без preload; полный actor×target denominator.
+Public-only rolling heuristic использует current pointing и даёт время на settling.
+Nominal/weak-wheels/all-outage direct/restored workloads, coupled lineage/resource
+witnesses интегрированы в scale worker и ensemble audit. Это metadata acquisition,
+не изображение реального сенсора. [Контракт](validation/COUPLED_INDEPENDENT_MISSION_V1.md).
+Numerical refinement, independent mission holdout и C2/Q6/Q7 остаются открытыми.
+Приёмка: [B11_COUPLED.json](acceptance/B11_COUPLED.json), wheel `ccd258b24a00…`.
+1641 reference,162 targeted,110 fast passed (пересекающиеся наборы),6 installed
+attempts и3 separate-process restore. Nominal2/24; weak0/24; outage0/24 при2
+acquired+processed. Full expanded suite/remote dependency-clean CI не запускались.
+
+
+## Предыдущий шаг D2b — reference pointing
+
+Добавлены snapshot-at-admission команды наведения на registered target/station,
+current ideal pointing telemetry и opt-in causal masks. Legacy quaternion/task
+serialization сохранена. [Контракт](validation/REFERENCE_POINTING_V1.md).
+Prerequisite использован в последующем coupled profile; ограничения его
+приёмки и независимой физической достоверности описаны отдельно.
+
+## Предыдущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
 
 Добавлен отдельный fixed-ephemeris delivery compiler: independently specified
 initial planes/phases/radii и synthetic fixed WGS84 sites. Станции не строятся

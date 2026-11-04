@@ -217,6 +217,10 @@ datasets/
 # Built Python distributions
 *.whl
 *.tar.gz
+# Exact retained acceptance datasets; other build/run archives remain ignored.
+!docs/acceptance/B11_MISSION_PLAN_BUNDLES.tar.gz
+!docs/acceptance/B11_FORECAST_BUNDLES.tar.gz
+!docs/acceptance/B11_MISSION_PLAN_PREHARDENING.tar.gz
 
 # Local editor / operating-system files
 .idea/

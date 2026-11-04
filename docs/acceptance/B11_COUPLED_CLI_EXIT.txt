@@ -1,0 +1,3 @@
+{"ok":false}
+{"ok":true}
+CLI success/failure exit-status contract passed

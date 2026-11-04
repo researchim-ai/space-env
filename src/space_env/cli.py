@@ -125,6 +125,45 @@ def main(argv: list[str] | None = None) -> None:
     ensemble.add_argument("output")
     ensemble_audit = sub.add_parser("verify-ensemble", help="Audit ensemble artifact identity and aggregation without rerunning physics")
     ensemble_audit.add_argument("directory")
+    actuators = sub.add_parser("qualify-coupled-actuators", help="Verify frozen fixed-clock RCS/rotating chemical thrust programs and RK/partition budgets")
+    actuators.add_argument("spec")
+    actuators.add_argument("output")
+    actuator_audit = sub.add_parser("verify-coupled-actuators", help="Audit frozen actuator artifacts and recompute witnesses without native replay")
+    actuator_audit.add_argument("directory")
+    orbital = sub.add_parser("compile-full-orbit", help="Compile bounded multi-cycle metadata mission with explicit attitude fidelity")
+    orbital.add_argument("spec")
+    orbital.add_argument("output")
+    forecast=sub.add_parser('forecast-delivery-plan',help='Operator-authorized fixed-ephemeris ready-data forecast schedule')
+    forecast.add_argument('scenario');forecast.add_argument('task');forecast.add_argument('output')
+    forecast.add_argument('--goals',default=None)
+    forecast_bench=sub.add_parser('forecast-benchmark',help='Frozen forecast/reactive comparisons and model teacher thresholds')
+    forecast_bench.add_argument('spec');forecast_bench.add_argument('output')
+    forecast_audit=sub.add_parser('verify-forecast-benchmark',help='Audit forecast schedules, native data and paired teacher gates')
+    forecast_audit.add_argument('directory');forecast_audit.add_argument('--native',action='store_true')
+    for name in ('mission-plan-schema','mission-plan-from-record','mission-plan-run',
+                 'mission-plan-resume','mission-plan-export','verify-mission-plan-bundle'):
+        mission_plan = sub.add_parser(name,help='Sealed fixed-input mission schedules, native feasibility and retained RL/SFT bundles')
+        if name=='verify-mission-plan-bundle':
+            mission_plan.add_argument('directory')
+            mission_plan.add_argument('--native',action='store_true')
+            continue
+        if name in {'mission-plan-run','mission-plan-resume','mission-plan-export'}:
+            mission_plan.add_argument('plan')
+        if name in {'mission-plan-from-record','mission-plan-resume','mission-plan-export'}:
+            mission_plan.add_argument('record')
+        mission_plan.add_argument('output')
+        if name in {'mission-plan-run','mission-plan-resume'}:
+            mission_plan.add_argument('--decisions',type=int,default=None)
+        if name=='mission-plan-from-record':mission_plan.add_argument('--goals',default=None)
+        if name=='mission-plan-export':mission_plan.add_argument('--max-bytes',type=int,default=1073741824)
+    clock = sub.add_parser("qualify-controller-clock", help="Verify frozen native commands and off-tick interrupts under different caller partitions")
+    clock.add_argument("scenario")
+    clock.add_argument("output")
+    study = sub.add_parser("mission-study", help="Execute frozen refinement, cadence sensitivity and holdout missions")
+    study.add_argument("spec")
+    study.add_argument("output")
+    study_audit = sub.add_parser("verify-mission-study", help="Audit study artifacts and recompute comparisons without mission replay")
+    study_audit.add_argument("directory")
     independent = sub.add_parser("independent-fleet", help="Freeze independent orbit/site delivery workload and diagnostic capacity certificate")
     independent.add_argument("spec")
     independent.add_argument("output")
@@ -184,6 +223,29 @@ def main(argv: list[str] | None = None) -> None:
     scale_parser.add_argument("manifest")
     scale_parser.add_argument("output")
     args = parser.parse_args(argv)
+    if args.command in {'forecast-delivery-plan','forecast-benchmark','verify-forecast-benchmark'}:
+        from space_env.planning.forecast_cli import run_command as forecast_command
+        try:
+            response=forecast_command(args)
+        except (OSError,ValueError,TypeError,KeyError,IndexError,AttributeError) as exc:
+            print(json.dumps({'passed':False,'error':str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(response))
+        if response.get('execution_integrity_passed') is False or response.get('teacher_status')=='failed_declared_gates':
+            raise SystemExit(1)
+        return
+    if args.command in {'mission-plan-schema','mission-plan-from-record','mission-plan-run',
+                        'mission-plan-resume','mission-plan-export','verify-mission-plan-bundle'}:
+        from space_env.planning.mission_cli import run_command as mission_plan_command
+        try:
+            response=mission_plan_command(args)
+        except (OSError,ValueError,TypeError,KeyError,IndexError,AttributeError) as exc:
+            print(json.dumps({'passed':False,'error':str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(response))
+        if response.get('mission_goal_passed') is False or response.get('error') is not None:
+            raise SystemExit(1)
+        return
     if args.command == "scale-benchmark":
         from space_env.scaling.benchmark import run_scale
         try:
@@ -262,6 +324,93 @@ def main(argv: list[str] | None = None) -> None:
         passed = result.get("passed", result.get("rejected", 0) == 0)
         print(json.dumps({"schema": result["schema"], "passed": passed, "sha256": result["sha256"],
                           "native_execution_validated": result.get("native_execution_validated", False)}))
+        if not passed:
+            raise SystemExit(1)
+        return
+
+    if args.command == "compile-full-orbit":
+        from space_env.scaling.full_orbit import full_orbit_workload
+        from space_env.simulation.snapshot import atomic_write, canonical_json
+        try:
+            with Path(args.spec).open('rb') as stream:
+                raw = stream.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError('full-orbit input exceeds 2MB')
+            workload = full_orbit_workload(json.loads(raw))
+            output = Path(args.output)
+            if output.exists():
+                raise ValueError('full-orbit output already exists')
+            atomic_write(output, canonical_json(workload))
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({'passed':False,'error':str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps({'passed':True,'family':workload['family'],
+                          'requests':len(workload['scenario']['definition']['lifecycle']['requests'])}))
+        return
+
+    if args.command == "verify-coupled-actuators":
+        from space_env.validation.coupled_actuators import verify_coupled_actuators
+        try:
+            result = verify_coupled_actuators(args.directory)
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            print(json.dumps({"valid":False,"passed":False,"error":str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(result))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command == "qualify-coupled-actuators":
+        from space_env.validation.coupled_actuators import qualify_coupled_actuators
+        try:
+            with Path(args.spec).open("rb") as stream:
+                raw = stream.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError("actuator input exceeds 2MB")
+            result = qualify_coupled_actuators(json.loads(raw), args.output)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({"passed":False,"error":str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps({"passed":result["passed"],"sha256":result["sha256"],"attempts":len(result["rows"])}))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command == "qualify-controller-clock":
+        from space_env.validation.controller_clock import qualify_controller_clock
+        try:
+            with Path(args.scenario).open("rb") as stream:
+                raw = stream.read(2_000_001)
+            if len(raw) > 2_000_000:
+                raise ValueError("clock scenario exceeds 2MB")
+            result = qualify_controller_clock(json.loads(raw), args.output)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({"passed": False, "error": str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps({"passed":result["passed"],"sha256":result["sha256"]}))
+        if not result["passed"]:
+            raise SystemExit(1)
+        return
+
+    if args.command in {"mission-study", "verify-mission-study"}:
+        from space_env.scaling.study import run_mission_study, audit_mission_study
+        try:
+            if args.command == "verify-mission-study":
+                result = audit_mission_study(args.directory)
+                passed = result["qualification_passed"]
+            else:
+                with Path(args.spec).open("rb") as stream:
+                    raw = stream.read(2_000_001)
+                if len(raw) > 2_000_000:
+                    raise ValueError("mission study input exceeds 2MB")
+                result = run_mission_study(json.loads(raw), args.output)
+                passed = result["assessment"]["passed"]
+                result = {"passed": passed, "sha256": result["sha256"],
+                          "gates": result["assessment"]["gates"]}
+            print(json.dumps(result))
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            print(json.dumps({"passed": False, "error": {"code": "mission_study_contract_error", "message": str(exc)}}))
+            raise SystemExit(2) from exc
         if not passed:
             raise SystemExit(1)
         return

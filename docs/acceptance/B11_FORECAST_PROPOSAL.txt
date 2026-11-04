@@ -1,0 +1,1 @@
+{"plan_sha256": "42e4fc8e323e10543805ef2f2f27726d8062e145bd7b67a714c09ef17c57f933", "predicted_fulfilled": 4, "total": 16, "native_feasibility_validated": false}

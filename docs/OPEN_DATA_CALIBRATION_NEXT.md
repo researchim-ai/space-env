@@ -11,6 +11,12 @@
 Это основа для подготовки экспериментов, а не подтверждённая аппаратная калибровка.
 Собственных измерений пока нет; следующий пакет работает с открытыми источниками.
 
+Дополнение D2f: [multi-cycle workloads](validation/FULL_ORBIT_MISSIONS_V1.md)
+используют явно synthetic hardware и fixed global sites. Ни увеличение
+горизонта, ни ledger/replay checks, ни dense-coast envelope не заменяют
+измерительный dataset или параметры operating station network. C2 остаётся
+открытым; long kinematic и rigid model tiers должны квалифицироваться отдельно.
+
 ## Дополнительный физический пакет C1b
 
 Реализована температурная теплоёмкость NIST Al6061-T6 в thermal nodes с
@@ -80,6 +86,17 @@ constant-rate geometric service, не qualification связанной съём�
 
 ## D2b. Замкнутая EO/pointing-миссия на независимой геометрии
 
+Подготовлен prerequisite: slew по target/station с snapshot-at-admission,
+current pointing read и opt-in causal task masks. См.
+[REFERENCE_POINTING_V1](validation/REFERENCE_POINTING_V1.md).
+Добавлен bounded independent coupled metadata compiler и native witness bridge:
+[COUPLED_INDEPENDENT_MISSION_V1](validation/COUPLED_INDEPENDENT_MISSION_V1.md).
+Добавлен [D2c study bridge](validation/MISSION_REFINEMENT_STUDY_V1.md):
+conditional kernel self-refinement, cadence sensitivity и fixed unseen geometries.
+Independent oracle, fixed-input/orbit/contact refinement и statistical
+mission/controller holdout всё ещё открыты.
+
+
 1. Собрать fixed-site multi-plane workload: независимо заданные станции и цели,
    реальные slew/tracking intervals, окна связи, ограничения мощности/тепла,
    насыщение маховиков и доступность наземных ресурсов.
@@ -118,3 +135,17 @@ constant-rate geometric service, не qualification связанной съём�
 реализовывать D на явно synthetic/mixed-evidence моделях, сохраняя C2 открытым.
 Новые defaults, версии контрактов и ранее выпущенные receipts не переписывать
 ради прохождения проверки. Каждый пакет завершать отдельной проверяемой приёмкой.
+
+## Результат D2c — 2026-11-04
+
+[Приёмка](acceptance/B11_MISSION_STUDY.json): conditional RK self-refinement
+прошёл; controller/event resolution sensitivity budgets не пройдены. D2d должен
+разделить fixed digital control clock и event boundaries и повторить frozen
+проверки. C2 measured calibration не закрывается численной self-consistency.
+
+## D2d — independent controller clock
+
+[Приёмка](acceptance/B11_FIXED_CLOCK.json) закрыла mandatory event-cadence budget
+для fixed-tick profile и mid-tick process restoration. Изменение самого digital
+period остаётся параметром другой модели. Следующий D2e — engine/disturbance
+clock qualification и nonzero-service long-horizon missions; C2/Q6/Q7 открыты.

@@ -12,6 +12,7 @@ from space_env.core.propulsion import G0_M_S2
 from space_env.reference.access import ReferenceEphemeris
 from space_env.reference.covariance import CovarianceArc
 from space_env.reference.orbit import ForceModel, ReferenceState, propagate
+from space_env.reference.thrust import BalancedCoupleThrust
 from space_env.simulation.snapshot import digest
 
 
@@ -24,7 +25,27 @@ class StateProvider(Protocol):
 
     def state(self, clock: float) -> np.ndarray: ...
     def look(self, station, clock: float, *, frequency_hz=None) -> dict: ...
-    def access(self, station, *, scan_sec=30.0, root_tolerance_sec=0.001) -> dict: ...
+    def access(self, station, *, scan_sec=30.0, root_tolerance_sec=0.001, start_sec=0.0) -> dict: ...
+
+
+class _CoastSlice:
+    """Owned time coordinates over an immutable, already propagated coast arc."""
+
+    def __init__(self, parent, offset, duration):
+        if isinstance(parent, _CoastSlice):
+            offset += parent.offset
+            parent = parent.parent
+        self.parent, self.offset = parent, float(offset)
+        self.epoch = parent.epoch.shifted(offset)
+        self.duration_sec = float(duration)
+        self.max_interval_sec = parent.max_interval_sec
+        self.sha256 = digest({'coast_sha256':parent.sha256,'offset_sec':self.offset,
+                              'duration_sec':self.duration_sec})
+
+    def state(self, clock):
+        if not 0 <= clock <= self.duration_sec:
+            raise ValueError('coast slice query outside coverage')
+        return self.parent.state(min(self.parent.duration_sec,self.offset+clock))
 
 
 class DynamicStateProvider(ReferenceEphemeris):
@@ -51,6 +72,11 @@ class DynamicStateProvider(ReferenceEphemeris):
         self.duration_sec = float(horizon_sec)
         self.model = model or ForceModel()
         self.integration = dict(integration or {})
+        self.reuse_balanced_coast = self.integration.pop('reuse_balanced_coast',False)
+        if type(self.reuse_balanced_coast) is not bool or (
+            self.reuse_balanced_coast and self.integration.get('sample_sec',30.) > 1.
+        ):
+            raise ValueError('balanced coast reuse requires boolean opt-in and sample_sec <= 1')
         self.dry_mass_kg, self.isp_s = float(dry_mass_kg), float(isp_s)
         if not 0 < self.dry_mass_kg <= self.model.mass_kg or self.isp_s <= 0:
             raise ValueError("invalid dynamic mass/propulsion configuration")
@@ -184,6 +210,12 @@ class DynamicStateProvider(ReferenceEphemeris):
         self._seal()
 
     def burn(self, clock, duration, thrust):
+        """Apply burn; return whether translational geometry must be refreshed.
+
+        Only exact built-in balanced couples on mass-independent gravity/coasts
+        reuse sealed position/velocity. Mass, maneuver history and identity change.
+        Drag, SRP, navigation or an already active/future burn use the full path.
+        """
         state, mass = self.state(clock), self.mass(clock)
         end = clock + duration
         if (
@@ -191,26 +223,42 @@ class DynamicStateProvider(ReferenceEphemeris):
             or duration > thrust.fuel_seconds(mass) + 1e-9
         ):
             raise ValueError("finite burn exceeds time or propellant budget")
+        # Propagation covers the representable endpoint interval, which can be
+        # a few ulps shorter than the requested duration. Never query beyond the
+        # resulting sealed arc or charge a different interval to its mass law.
+        span = end-clock
+        active = self._segment(clock)
+        mass_only = (self.reuse_balanced_coast and type(thrust) is BalancedCoupleThrust and not self.model.drag
+                     and not self.model.srp and self.navigation is None
+                     and active[3] is None
+                     and all(row[3] is None for row in self.segments if row[0] > clock))
         uncertainty = self._navigation_state(clock)
         self._cut(clock)
-        self._append(
-            clock,
-            ReferenceState(self.epoch.shifted(clock), state[:3], state[3:]),
-            mass,
-            end=end,
-            thrust=thrust,
-            **uncertainty,
-        )
-        burn_arc = self.segments[-1][1]
-        final = burn_arc.state(duration)
-        final_mass = thrust.mass(mass, duration)
-        uncertainty = self._navigation_state(end)
-        self._append(
-            end,
-            ReferenceState(self.epoch.shifted(end), final[:3], final[3:]),
-            final_mass,
-            **uncertainty,
-        )
+        if mass_only:
+            start, coast, _, _ = active
+            self.segments.append((float(clock),_CoastSlice(coast,clock-start,span),mass,thrust))
+            final_mass = thrust.mass(mass,span)
+            if end < self.duration_sec:
+                self.segments.append((float(end),_CoastSlice(coast,end-start,self.duration_sec-end),final_mass,None))
+        else:
+            self._append(
+                clock,
+                ReferenceState(self.epoch.shifted(clock), state[:3], state[3:]),
+                mass,
+                end=end,
+                thrust=thrust,
+                **uncertainty,
+            )
+            burn_arc = self.segments[-1][1]
+            final = burn_arc.state(span)
+            final_mass = thrust.mass(mass, span)
+            uncertainty = self._navigation_state(end)
+            self._append(
+                end,
+                ReferenceState(self.epoch.shifted(end), final[:3], final[3:]),
+                final_mass,
+                **uncertainty,
+            )
         self.revision += 1
         self.maneuvers.append(
             {
@@ -232,6 +280,7 @@ class DynamicStateProvider(ReferenceEphemeris):
             }
         )
         self._seal()
+        return not mass_only
 
     def stop_burn(self, clock):
         if clock >= self.duration_sec:

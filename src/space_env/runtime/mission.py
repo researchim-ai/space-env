@@ -190,6 +190,56 @@ class MissionRuntime:
         }
 
     @_synchronized
+    def pointing_observation(self, actor, *, target_id=None, station_id=None):
+        """Ideal current pointing error; no visibility or future success promise."""
+        if actor not in self._spec.actor_order:
+            raise RuntimeContractError("unknown_actor", "unknown actor")
+        from space_env.core.attitude import boresight
+        from space_env.reference.pointing import resolve_slew_goal
+        from space_env.reference.spacecraft_bus import angle_deg
+
+        try:
+            command = RuntimeCommand.model_validate({
+                "command_id": "pointing-read", "actor_id": actor,
+                "kind": "slew", "duration_sec": 1.0,
+                "slew": {"frame": "GCRS", "target_id": target_id,
+                         "station_id": station_id},
+            })
+            goal = resolve_slew_goal(self._backend, command)
+            state = self._backend.bus.states[actor]
+        except (ValueError, AttributeError, KeyError) as exc:
+            raise RuntimeContractError("invalid_request", str(exc)) from exc
+        geometry = None
+        if target_id is not None and actor in self._backend.config.acquisition_sensors:
+            from space_env.reference.acquisition import acquisition_geometry
+
+            geometry = acquisition_geometry(
+                self._backend.mission.ephemerides[actor],
+                self._backend.acquisition_targets[target_id],
+                self._backend.config.acquisition_sensors[actor], self.time_sec,
+            )
+        rigid = self._backend.bus.rigid
+        body_rate = (math.hypot(*rigid.states[actor].omega_body_rad_s)
+                     if actor in rigid.models else None)
+        return {
+            "body_rate_rad_s": body_rate,
+            "payload_max_body_rate_rad_s": (
+                rigid.models[actor].payload_max_body_rate_rad_s
+                if actor in rigid.models else None
+            ),
+            "geometry": geometry,
+            "payload_tolerance_deg": self._backend.bus.models[actor].attitude.payload_tolerance_deg,
+            "actor_id": actor, "time_sec": self.time_sec,
+            "target_id": target_id, "station_id": station_id,
+            "goal_quaternion_wxyz": goal,
+            "boresight_error_deg": angle_deg(
+                boresight(state["quaternion_wxyz"]), boresight(goal)
+            ),
+            "settle_remaining_sec": state["settle_remaining_sec"],
+            "scope": "current ideal geometry; future dwell not evaluated",
+        }
+
+    @_synchronized
     def station_observation(self, station):
         """Current ideal operator telemetry; scheduled future outages are omitted."""
         mission = getattr(self._backend, "mission", None)

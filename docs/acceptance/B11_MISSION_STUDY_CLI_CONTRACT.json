@@ -1,0 +1,1 @@
+{"checks":[{"case":"invalid","error_code":"mission_study_contract_error","exit_code":2},{"case":"oversized","error_code":"mission_study_contract_error","exit_code":2},{"case":"missing-audit","exit_code":2}],"dependency_clean":false,"isolated":true,"module":"/tmp/space-env-study-final-venv/lib/python3.12/site-packages/space_env/__init__.py"}

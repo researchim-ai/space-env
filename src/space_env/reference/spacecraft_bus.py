@@ -334,15 +334,14 @@ class SpacecraftBus:
                 "settle_remaining_sec": 0.0,
             }
             return
+        from space_env.reference.pointing import resolve_slew_goal
+
         self.operations[command.command_id] = {
             "actor": command.actor_id,
             "pointing_tolerance_deg": self.models[
                 command.actor_id
             ].attitude.rigid_pointing_tolerance_deg,
-            "goal": (
-                np.asarray(command.slew.quaternion_wxyz)
-                / np.linalg.norm(command.slew.quaternion_wxyz)
-            ).tolist(),
+            "goal": resolve_slew_goal(backend, command),
             "status": "accepted",
             "until_sec": backend.now() + command.duration_sec,
             "reason": None,

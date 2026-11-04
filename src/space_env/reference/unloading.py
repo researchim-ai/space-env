@@ -82,6 +82,13 @@ class MomentumUnloader:
         self.fuel_used = dict.fromkeys(config.actors, 0.0)
         self.operations, self.plans, self.pending = {}, {}, {}
         self.intervals = []
+        self.control_latches = {}
+        self.control_samples = dict.fromkeys(config.actors, 0)
+        self.fixed_periods = {
+            a: backend.config.spacecraft_bus[a].attitude.rigid.control_step_sec
+            for a in config.actors
+            if backend.config.spacecraft_bus[a].attitude.rigid.clock_mode == "fixed-tick/1"
+        }
 
     def validate(self, c, backend):
         if c.actor_id not in self.config.actors:
@@ -123,9 +130,11 @@ class MomentumUnloader:
         if op is None or op["status"] in {"completed", "failed", "cancelled"}:
             return False
         op.update(status="cancelled", reason="operator_cancelled")
+        self.control_latches.pop(op["actor"], None)
         return True
 
     def stop(self, a, backend, reason):
+        self.control_latches.pop(a, None)
         plan = self.plans.pop(a, None)
         if plan is not None:
             self.operations[plan["cid"]].update(status="failed", reason=reason)
@@ -134,6 +143,11 @@ class MomentumUnloader:
 
     def prepare(self, backend, active):
         self.plans, self.pending = {}, {}
+        live = {row["command"]["actor_id"] for row in active
+                if row["command"]["kind"] == "momentum_unload"
+                and self.operations[row["command"]["command_id"]]["status"]
+                not in {"completed", "failed", "cancelled"}}
+        self.control_latches = {a: p for a, p in self.control_latches.items() if a in live}
         total = sum(len(p.maneuvers) for p in backend.mission.ephemerides.values())
         main = backend.lifecycle.actuation
         reserved = (
@@ -167,34 +181,48 @@ class MomentumUnloader:
             vehicle = backend.mission.vehicles[a]
             phase = "startup" if op["startup_remaining_sec"] > 1e-9 else "control"
             u, external = np.zeros(3), np.zeros(3)
+            period = self.fixed_periods.get(a)
+            key = (c["command_id"], math.floor((backend.now()+1e-9)/r.control_step_sec),
+                   bus.states[a]["rate_scale"])
+            latch = self.control_latches.get(a)
+            held = period is not None and latch is not None and latch["key"] == key
+            if phase == "startup":
+                self.control_latches.pop(a, None)
             if phase == "control":
-                w = np.asarray(s.omega_body_rad_s)
-                h = np.asarray(s.wheel_momentum_nms)
-                error = error_vector(s.quaternion_wxyz, op["hold_quaternion_wxyz"])
-                body = (
-                    r.proportional_nm_per_rad * error
-                    - r.damping_nm_per_rad_s * w
-                    + np.cross(w, np.asarray(r.model.inertia_kg_m2) @ w + h)
-                )
-                cap = np.asarray(cfg.max_torque_nm) * bus.states[a]["rate_scale"]
-                body = np.clip(body, -cap, cap)
-                available = np.maximum(0.0, cap - np.abs(body))
-                wheel = np.minimum(
-                    available,
-                    np.asarray(r.model.max_torque_nm) * bus.states[a]["rate_scale"],
-                )
-                u = np.clip(
-                    (np.asarray(op["target_momentum_nms"]) - h) / r.control_step_sec,
-                    -wheel,
-                    wheel,
-                )
-                external = body + u
+                if held:
+                    u, external = latch["motor"].copy(), latch["external"].copy()
+                else:
+                    w = np.asarray(s.omega_body_rad_s)
+                    h = np.asarray(s.wheel_momentum_nms)
+                    error = error_vector(s.quaternion_wxyz, op["hold_quaternion_wxyz"])
+                    body = (
+                        r.proportional_nm_per_rad * error
+                        - r.damping_nm_per_rad_s * w
+                        + np.cross(w, np.asarray(r.model.inertia_kg_m2) @ w + h)
+                    )
+                    cap = np.asarray(cfg.max_torque_nm) * bus.states[a]["rate_scale"]
+                    body = np.clip(body, -cap, cap)
+                    available = np.maximum(0.0, cap - np.abs(body))
+                    wheel = np.minimum(
+                        available,
+                        np.asarray(r.model.max_torque_nm) * bus.states[a]["rate_scale"],
+                    )
+                    u = np.clip(
+                        (np.asarray(op["target_momentum_nms"]) - h) / r.control_step_sec,
+                        -wheel,
+                        wheel,
+                    )
+                    external = body + u
             scalar = float(np.sum(np.abs(external) / cfg.lever_arm_m))
             if scalar > cfg.max_total_nozzle_thrust_n:
                 scale = cfg.max_total_nozzle_thrust_n / scalar
                 u *= scale
                 external *= scale
                 scalar = cfg.max_total_nozzle_thrust_n
+            if phase == "control" and period is not None and not held:
+                self.control_samples[a] += 1
+                self.control_latches[a] = {"key":key,"motor":u.copy(),"external":external.copy(),
+                                           "sample_sec":backend.now()}
             power = (
                 cfg.startup_power_w
                 if phase == "startup"
@@ -325,13 +353,14 @@ class MomentumUnloader:
                 tuple(p["torque_body_nm"]),
                 cfg.lever_arm_m,
             )
-            provider.burn(backend.now(), span, law)
+            geometry_changed = provider.burn(backend.now(), span, law)
             self.pending[a] = {
                 "mass_before": before,
                 "mass_after": provider.mass(backend.now() + span),
             }
-            backend.geometry_revision += 1
-            backend._refresh_geometry(a)
+            if geometry_changed:
+                backend.geometry_revision += 1
+                backend._refresh_geometry(a)
 
     def finish(self, backend, start, span):
         for a, p in self.plans.items():
@@ -392,10 +421,17 @@ class MomentumUnloader:
             if op["status"] != "completed" and backend.now() >= op["until_sec"] - 1e-9:
                 op.update(status="failed", reason="unload_window_ended")
 
+    def clock_observation(self, actor):
+        return {"mode":"fixed-joint-wheel-rcs/1", "period_sec":self.fixed_periods[actor],
+                "samples":self.control_samples[actor],
+                "last_sample_sec":self.control_latches[actor]["sample_sec"]
+                if actor in self.control_latches else None}
+
     def observation(self, actor):
         if actor not in self.config.actors:
             return None
         return {
+            **({"control_clock":self.clock_observation(actor)} if actor in self.fixed_periods else {}),
             "model": self.config.actors[actor].model_dump(mode="json"),
             "consumed_propellant_kg": self.fuel_used[actor],
             "operations": {
@@ -408,6 +444,8 @@ class MomentumUnloader:
     def report(self, backend):
         return {
             "schema": "space-env.momentum-unloading/1",
+            **({"control_clocks": {a:self.clock_observation(a) for a in self.fixed_periods}}
+               if self.fixed_periods else {}),
             "models": {
                 a: c.model_dump(mode="json") for a, c in self.config.actors.items()
             },

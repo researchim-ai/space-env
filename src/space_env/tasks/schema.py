@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
 from space_env.runtime.schema import FiniteScalar, RuntimeCommand, StrictModel
 
@@ -64,6 +64,14 @@ class TaskSpec(StrictModel):
     seed_policy: Literal["preserve", "derive-network"] = "preserve"
     policy_origin: Literal["scripted", "random", "external"] = "external"
     runtime_audit: Literal["full", "compact"] = "full"
+    pointing_masks: bool = Field(default=False, strict=True)
+
+    @model_serializer(mode="wrap")
+    def serialize_optional_pointing(self, handler):
+        value = handler(self)
+        if not self.pointing_masks:
+            value.pop("pointing_masks", None)
+        return value
 
     @model_validator(mode="after")
     def contract(self):

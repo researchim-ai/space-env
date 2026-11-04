@@ -128,6 +128,14 @@ class _ProjectionReads:
     def station_observation(self, station):
         return self._read("station_observation", station)
 
+    def pointing_observation(self, actor, *, target_id=None, station_id=None):
+        key = ("pointing_observation", actor, target_id, station_id)
+        if key not in self._reads:
+            self._reads[key] = self._runtime.pointing_observation(
+                actor, target_id=target_id, station_id=station_id
+            )
+        return self._reads[key]
+
     def command_status(self):
         return self._read("command_status")
 
@@ -394,6 +402,9 @@ class Projection:
                 visible = True
                 for c in action.commands:
                     life = views.get(c.actor_id, {}).get("lifecycle", {})
+                    if self.spec.pointing_masks and c.kind == "slew" and c.slew.target_id is not None:
+                        if not any(r["target_id"] == c.slew.target_id for r in life.get("requests", [])):
+                            visible = False
                     if c.product_id and c.product_id not in inventory.get(
                         c.actor_id, {}
                     ):
@@ -416,6 +427,12 @@ class Projection:
                             and v != ""
                         }
                         for c in action.commands
+                    ]
+                if visible and enabled and self.spec.pointing_masks:
+                    item["pointing"] = [
+                        runtime.pointing_observation(c.actor_id, target_id=c.slew.target_id)
+                        for c in action.commands
+                        if c.kind == "slew" and c.slew.target_id is not None
                     ]
                 if action.event is not None:
                     item["operator_event"] = {
@@ -527,6 +544,25 @@ def admissible(runtime, spec, action, role, views=None, inventory=None, commands
             )
             if r is None or r["status"] != "released":
                 return False, "request_not_available"
+            if spec.pointing_masks:
+                pointing = runtime.pointing_observation(c.actor_id, target_id=r["target_id"])
+                if pointing["geometry"] is None or not pointing["geometry"]["feasible_geometry"]:
+                    return False, "current_geometry_unavailable"
+                if (pointing["body_rate_rad_s"] is not None
+                    and pointing["body_rate_rad_s"] > pointing["payload_max_body_rate_rad_s"]):
+                    return False, "current_body_rate"
+                if pointing["settle_remaining_sec"] > 1e-9:
+                    return False, "current_settling"
+                if pointing["boresight_error_deg"] > pointing["payload_tolerance_deg"]:
+                    return False, "current_pointing_error"
+        if c.kind == "slew" and spec.pointing_masks and c.slew.target_id is not None:
+            requests = [r for r in life.get("requests", [])
+                        if r["target_id"] == c.slew.target_id and r["status"] == "released"]
+            if not requests:
+                return False, "request_not_available"
+            pointing = runtime.pointing_observation(c.actor_id, target_id=c.slew.target_id)
+            if pointing["geometry"] is None or not pointing["geometry"]["feasible_geometry"]:
+                return False, "current_geometry_unavailable"
         if c.kind == "transform":
             j = next((j for j in life.get("jobs", []) if j["id"] == c.job_id), None)
             if j is None or j["status"] in {

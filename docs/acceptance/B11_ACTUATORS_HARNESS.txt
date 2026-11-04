@@ -1,0 +1,55 @@
+"""Installed-wheel verification harness; exact frozen recipe, independent workers."""
+import copy,hashlib,json,shutil
+from concurrent.futures import ProcessPoolExecutor,as_completed
+from pathlib import Path
+from space_env.validation.coupled_actuators import actuator_scenario,_execute,_witness,_compare,MESHES,PARTITIONS,TIMES,BUDGETS,verify_coupled_actuators
+from space_env.simulation.snapshot import atomic_write,canonical_json,digest
+from space_env.scaling.coupled import CoupledMissionSpec
+ROOT=Path('/tmp/actuator-current-parallel')
+
+def execute(item):
+ mode,mesh,part=item
+ path=ROOT/f'{mode}-{mesh}-{part}';path.mkdir()
+ cfg=json.loads((ROOT/'configuration.json').read_text());scenario=actuator_scenario(cfg,mode=mode,mesh=mesh)
+ atomic_write(path/'scenario.json',canonical_json(scenario))
+ try:
+  samples,report,replay=_execute(scenario,part,path)
+  atomic_write(path/'report.json',canonical_json(report))
+  return {'mode':mode,'mesh_sec':mesh,'partition_sec':part,'samples':samples,'witness':_witness(scenario,report,mode),'native_replay':replay}
+ except (ValueError,RuntimeError,KeyError) as exc:
+  return {'mode':mode,'mesh_sec':mesh,'partition_sec':part,'passed':False,'error':str(exc)}
+
+if __name__=='__main__':
+ ROOT.mkdir()
+ cfg=CoupledMissionSpec.model_validate(json.loads(Path('/tmp/actuator-current-config.json').read_text()))
+ atomic_write(ROOT/'configuration.json',canonical_json(cfg.model_dump(mode='json')))
+ grid=[(mode,mesh,p) for mode in ('nominal','limited') for mesh in MESHES for p in PARTITIONS]
+ # Reuse only fully published members from the same installed wheel and frozen input.
+ prior=Path('/tmp/actuator-current-matrix');published=json.loads((prior/'progress.json').read_text())['rows']
+ done={}
+ for r in published:
+  key=(r['mode'],r['mesh_sec'],r['partition_sec']);done[key]=copy.deepcopy(r)
+  name=f'{key[0]}-{key[1]}-{key[2]}';shutil.copytree(prior/name,ROOT/name)
+ print('reused',len(done),flush=True)
+ with ProcessPoolExecutor(max_workers=6) as pool:
+  futures={pool.submit(execute,key):key for key in grid if key not in done}
+  for f in as_completed(futures):
+   key=futures[f]
+   try:done[key]=f.result()
+   except Exception as exc:done[key]={'mode':key[0],'mesh_sec':key[1],'partition_sec':key[2],'passed':False,'error':repr(exc)}
+   atomic_write(ROOT/'parallel-progress.json',canonical_json({'finished':len(done),'expected':18}))
+   print('finished',len(done),key,flush=True)
+ rows=[];refs={}
+ for key in grid:
+  r=done[key];mode,mesh,part=key
+  if 'error' not in r:
+   if mesh==MESHES[0] and part==PARTITIONS[0]:refs[mode]=r['samples']
+   r['comparison']=_compare(refs[mode],r['samples']) if mode in refs else {'passed':False,'reason':'designated reference execution missing'}
+   r['passed']=r['native_replay'] and r['witness']['passed'] and r['comparison']['passed']
+  rows.append(r)
+ (ROOT/'parallel-progress.json').unlink(missing_ok=True)
+ atomic_write(ROOT/'progress.json',canonical_json({'expected':18,'finished':18,'rows':rows}))
+ files={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in ROOT.rglob('*.json')}
+ body={'schema':'space-env.coupled-actuator-qualification/1','passed':all(r['passed'] for r in rows),'rows':rows,'budgets':dict(BUDGETS),'files_sha256':files,'fixed_controller_period_sec':.1,'program_times_sec':list(TIMES),'meshes_sec':list(MESHES),'partitions_sec':list(PARTITIONS),'scope':'fixed native commands, RK/caller partition bounds and retained negative control; not convergence order, flight hardware or service qualification'}
+ atomic_write(ROOT/'result.json',canonical_json(body|{'sha256':digest(body)}))
+ print(canonical_json(verify_coupled_actuators(ROOT)),flush=True)

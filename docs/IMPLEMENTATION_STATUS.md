@@ -1,6 +1,161 @@
 # Статус пакета исполнения миссии
 
-## Текущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
+## Текущий пакет D2h-A — forecast-first ready-data delivery
+
+Добавлены value-only operator-authorized forecast, bounded deterministic scheduler,
+fixed MissionPlan до rollout, CLI proposal/paired benchmark и независимый audit.
+Учитываются ready/deadline, actor/terminal capacity, initial conservative energy,
+TX quota и полный знаменатель. [Контракт](validation/FORECAST_DELIVERY_V1.md).
+
+Frozen benchmark: train, два разных географических holdout и full-outage negative
+control, одинаковые физические ресурсы для forecast/priority/earliest_deadline.
+Information budgets различны и явно записаны. Limited teacher gates включают
+native replay, service/rejection thresholds, prediction realization и paired
+noninferiority. `expert_teacher_qualified=false` независимо от passing gates.
+
+Следующий D2h-B: acquisition/processing/paid pointing dependencies, rolling
+replanning, forecast baselines с равной информацией и более сложная конкуренция.
+Новый scheduler не закрывает long rigid, measured calibration C2, hosted Q7
+или универсальное промышленное моделирование. Проверки и receipt — ниже.
+
+
+Приёмка D2h-A: [B11_FORECAST_ACCEPTANCE](acceptance/B11_FORECAST_ACCEPTANCE.json),
+wheel `4223f2f462e6…`, 266 Python modules / 306 source+data files byte-matched.
+**1792 reference, 31 targeted, 110 fast passed** (пересекаются); full regression
+и remote/dependency-clean CI не запускались. Installed venv использует system-site-packages.
+12 paired native runs + 12 обязательных cold replays + 12 дополнительных native
+audit replays. Candidate/оба baseline:4/16 на каждом из3 positive cases,
+0/16 на outage,0 rejection. Passing minimal declared gates означает только
+noninferiority в этом наборе, не superiority или expert quality. Сохранены400 RL
+и300 SFT-кандидатов;62-file archive восстановлен и проверен по inventory,
+после восстановления — consistency audit, не повторный native rollout.
+
+## Предыдущий пакет D2g-A — mission plan и retained dataset
+
+Sealed fixed-input schedule исполняется через native TaskSession. Epoch/lineage/
+conservation goals проверяются после cold replay. Plan/execution/certificate и
+central RL/SFT сохраняются как связанный atomic bundle; failed goal оставляет
+RL, SFT подавляется. Отдельный integrity audit и native audit с регенерацией
+каждой строки, включая typed canonical JSON comparison, имеют разные статусы.
+[Контракт](validation/MISSION_PLAN_BUNDLE_V1.md).
+
+Recorded baseline proposal не объявляется новым forecast planner или expert
+teacher. Native feasibility conditional на данном build/model/scenario;
+optimality, independently frozen holdouts, measured calibration и long rigid
+qualification этим не закрываются.
+
+Приёмка: [B11_MISSION_PLAN](acceptance/B11_MISSION_PLAN.json), wheel `2f7811dbad94…`.
+1761 reference,129 targeted,110 fast passed (наборы пересекаются),33 новых tests.
+3 installed workflows:180s positive2/24,180s infeasible goal0/24 с RL only,
+full12600s8/32.3 fresh-process restores,3 mandatory native export replays;
+short native audits дополнительно проверены после archive reconstruction.
+Сохранены1440 RL+1350 SFT строк,68-file exact archive и17 linked artifacts.
+263 modules/296 source+data files byte-matched; remote/dependency-clean CI
+локально не запускались. D2h далее: forecast planner и настоящие teacher gates.
+
+## Предыдущий пакет D2f — full-orbit metadata missions
+
+Отдельный bounded compiler поддерживает multi-cycle horizons и periodic requests
+без preload, явные kinematic/rigid ADCS tiers, winding/contact diagnostic и
+epoch-bound acquisition/delivery gates. Короткий coupled compiler сохраняет600s
+контракт. Geometry suffix refresh сохраняет past history; balanced coast reuse
+только opt-in при sample_sec≤1 и mass-independent gravity, без navigation и
+другой активной тяги. Legacy default eager сохранён. Исправлены repeated decimal
+burn endpoints. [Контракт](validation/FULL_ORBIT_MISSIONS_V1.md).
+
+Геометрия не является feasible schedule; long rigid qualification, measured
+calibration C2, Q6 teacher/benchmark и Q7 durable/OS isolation остаются открытыми.
+
+Приёмка: [B11_FULL_ORBIT](acceptance/B11_FULL_ORBIT.json), wheel `894d6d435420…`.
+1728 reference,176 targeted,110 fast passed (пересекаются).4 installed missions
+завершили12600s: nominal8/32, outage0/32 при8 captures.2 restores на6300s
+совпали с direct, winding обоих actors>2. Dense envelope40→0 propagations и
+2 дополнительных native actuator programs прошли. Long mission использует
+явный kinematic ADCS tier; long rigid qualification этим не закрывается.
+16 linked artifacts и26-file exact archive сохранены вместе с findings;
+remote/dependency-clean CI локально не запускались. Следующий D2g — сохраняемый
+executable plan/teacher bundle и independent feasibility certificate.
+
+## Предыдущий пакет D2e — fixed-clock actuator coupling
+
+Unloading получил собственный joint sample-and-hold wheel/RCS loop с immediate
+guards, owned latch, capture/fork/rollback/replay. Добавлена frozen18-member
+RK/partition программа rotating chemical thrust + unloading, shared tank,
+analytic axial impulse и retained limited-authority failure. Extended600s
+nominal/outage direct/restored profiles имеют заранее заданные service minima.
+[Контракт](validation/FIXED_CLOCK_ACTUATORS_V1.md).
+Это synthetic hardware verification, не flight calibration, активный engine
+attitude hold или полный orbital mission. Full-cycle service/C2/Q6/Q7 открыты.
+
+Приёмка: [B11_ACTUATORS](acceptance/B11_ACTUATORS.json), wheel `87228be247b2…`.
+18 actuator members и офлайн-аудит прошли,2 midphase и4 extended installed
+исполнения прошли;3 fresh-process restores. Nominal600s2/24, outage0/24 при2
+acquisitions; positive service floor не менялся. Reference1705 passed+1 HTTP
+test отдельно с localhost permission;21 actuator tests+1 CLI test и110 fast
+(наборы пересекаются).259 modules/292 source+data files byte-matched.
+Remote/dependency-clean CI не запускались. Следующий D2f: geometry refresh cost,
+full-orbit compiler и executable positive-service feasibility certificate;
+[пошаговый план](PRODUCT_EXECUTION_NEXT.md#d2f--следующий-большой-пакет-полный-цикл-миссии-и-производительность).
+
+
+## Предыдущий пакет D2d — independent controller clock
+
+Opt-in fixed-tick/1 удерживает motor torque между global ticks и реагирует на
+команды/protection без ожидания tick. Сохранены legacy event-driven semantics,
+энергоучёт, saturation, capture/rollback/fork/replay. Добавлены frozen native
+command partition program и mandatory event-resolution gate в fixed-clock study.
+[Контракт](validation/FIXED_CONTROLLER_CLOCK_V1.md).
+Разные digital controller periods остаются разными моделями; controller sensitivity
+не объявляется закрытой одним event-invariance gate. Long-horizon service/C2/Q6/Q7 открыты.
+Приёмка: [B11_FIXED_CLOCK](acceptance/B11_FIXED_CLOCK.json), wheel `062b7b4d9bd0…`.
+1685 reference,154 targeted,110 fast passed (наборы пересекаются).18 final installed
+attempts:13 mission+3 frozen programs+2 mid-tick process runs. Event gate обязателен
+и пройден; q difference на контрольной сетке≤2.431e−12deg при прежнем budget0.1deg.
+Fresh-process prefix5.15s сохранил last sample5.1s. Multi-period robustness gate
+по-прежнему false (0.2↔0.1s:5.1738deg); разные periods — разные controllers.
+Следующий D2e: disturbances/engine qualification, fixed-input RK oracle, затем
+independent feasible long-horizon positive-service benchmark. Calibration C2/Q6/Q7 открыты.
+
+
+
+## Предыдущий пакет D2c — refinement и unseen geometry studies
+
+Добавлены bounded evaluator-only numerical samples, max/RMS comparison,
+условная трёхсеточная kernel self-refinement проверка и отдельные controller/
+lifecycle cadence sensitivity reports. Frozen study compiler объединяет7
+resolution configurations и direct/restored пары3 геометрически новых случаев.
+Все неуспешные attempts и service outcomes сохраняются. SDK/CLI плюс offline
+checksum/recomputation audit. [Контракт](validation/MISSION_REFINEMENT_STUDY_V1.md).
+Это model verification, не calibrated physical truth и не ML generalization.
+Fixed-input/orbit/contact refinement, измерительная калибровка C2 и Q6/Q7 открыты.
+Приёмка: [B11_MISSION_STUDY](acceptance/B11_MISSION_STUDY.json), источник257 modules/
+290 files, wheel `89bf4fc8cb1e…`. 1671 reference,198 targeted,110 fast passed
+(пересекаются);13 corrected installed attempts и3 restore pairs. Первые13 попыток
+с дефектом witness и failed reference log сохранены в B11_STUDY_FINDING.
+Kernel self-refinement прошёл, **temporal_stable=False**, strict release gate
+не пройден: controller max attitude difference4.1571°,event-resolution0.6558°.
+Unseen cases имеют0 deliveries и declared min service0; SLA не квалифицирован.
+Следующий D2d: explicit latched controller clocks/safety interrupts, fixed-input
+replay refinement, затем feasible long-horizon service и новый untouched набор.
+
+
+
+## Предыдущий пакет D2b — independent coupled metadata mission
+
+Реализованы bounded compiler независимых planes/targets/stations, rigid paid
+slew/tracking, acquisition→CPU→ground без preload; полный actor×target denominator.
+Public-only rolling heuristic использует current pointing и даёт время на settling.
+Nominal/weak-wheels/all-outage direct/restored workloads, coupled lineage/resource
+witnesses интегрированы в scale worker и ensemble audit. Это metadata acquisition,
+не изображение реального сенсора. [Контракт](validation/COUPLED_INDEPENDENT_MISSION_V1.md).
+Numerical refinement, independent mission holdout и C2/Q6/Q7 остаются открытыми.
+Приёмка: [B11_COUPLED.json](acceptance/B11_COUPLED.json), wheel `ccd258b24a00…`.
+1641 reference,162 targeted,110 fast passed (пересекающиеся наборы),6 installed
+attempts и3 separate-process restore. Nominal2/24; weak0/24; outage0/24 при2
+acquired+processed. Full expanded suite/remote dependency-clean CI не запускались.
+
+
+## Предыдущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
 
 Добавлен отдельный fixed-ephemeris delivery compiler: independently specified
 initial planes/phases/radii и synthetic fixed WGS84 sites. Станции не строятся

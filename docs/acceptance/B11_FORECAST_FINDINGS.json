@@ -1,0 +1,30 @@
+{
+  "development_only": true,
+  "failed_physical_cases_dropped": false,
+  "final_receipt_is": "B11_FORECAST_ACCEPTANCE.json",
+  "findings": [
+    {
+      "detail": "Initial test patched nonexistent Runtime.validate_command; corrected to backend.validate_command. No runtime API changed.",
+      "kind": "test_harness"
+    },
+    {
+      "detail": "CLI main success convention is None, failure is SystemExit; test corrected to existing convention.",
+      "kind": "test_harness"
+    },
+    {
+      "detail": "Cross-pair scenario/trajectory consistency and saved row/progress metadata checked before source freeze.",
+      "kind": "hardening"
+    },
+    {
+      "detail": "Geographic benchmark ties both reactive baselines at 4/16 on all three positive scenarios. No superiority claimed.",
+      "kind": "scope"
+    },
+    {
+      "detail": "No-isolation build lacked hatchling. Standard isolated pip wheel build succeeded; installed runtime uses system-site-packages, not dependency-clean.",
+      "kind": "build_environment"
+    }
+  ],
+  "frozen_spec_identical_between_development_and_qualification": true,
+  "measured_telemetry_available": false,
+  "thresholds_relaxed_after_outcomes": false
+}

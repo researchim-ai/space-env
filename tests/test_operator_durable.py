@@ -444,3 +444,21 @@ def test_local_controller_idempotency_namespaces_do_not_collide(
     op.step(r["tokens"]["role:" + names[1]], step(1))
     assert op.session.revision == 2
     assert OperatorStore(tmp_path / "roles").get(op.id).session.revision == 2
+
+
+@pytest.mark.parametrize('prefix', ['-', '--'])
+def test_recovery_accepts_generated_dash_prefixed_id(tmp_path, configuration, monkeypatch, prefix):
+    import secrets
+    from space_env.api.operator_recovery import main
+    original = secrets.token_urlsafe
+    identifier = prefix + 'a' * (24-len(prefix))
+    monkeypatch.setattr(secrets, 'token_urlsafe', lambda n: identifier if n == 18 else original(n))
+    path = tmp_path / 'dash.sqlite'
+    store = OperatorStore(path)
+    reply = store.create(copy.deepcopy(configuration))
+    assert reply['session_id'] == identifier
+    output = tmp_path / 'connection.json'
+    main([str(path), identifier, str(output)])
+    assert output.stat().st_mode & 0o777 == 0o600
+    connection = json.loads(output.read_text())
+    assert OperatorStore(path).get(identifier).state(connection['tokens']['viewer'])['control']['epoch'] == 1

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from space_env.simulation.snapshot import canonical_json
 
@@ -150,11 +150,21 @@ class BurnSpec(StrictModel):
 
 class SlewSpec(StrictModel):
     frame: Literal["GCRS"]
-    quaternion_wxyz: tuple[FiniteScalar, FiniteScalar, FiniteScalar, FiniteScalar]
+    quaternion_wxyz: tuple[FiniteScalar, FiniteScalar, FiniteScalar, FiniteScalar] | None = None
+    target_id: str | None = Field(default=None, min_length=1)
+    station_id: str | None = Field(default=None, min_length=1)
+
+    @model_serializer(mode="wrap")
+    def serialize_goal(self, handler):
+        return {k: v for k, v in handler(self).items() if v is not None}
 
     @model_validator(mode="after")
     def unit_quaternion(self):
-        if not math.isclose(
+        if sum(v is not None for v in (self.quaternion_wxyz, self.target_id, self.station_id)) != 1:
+            raise ValueError("slew requires exactly one quaternion, target or station")
+        if any(v is not None and not v.strip() for v in (self.target_id, self.station_id)):
+            raise ValueError("slew reference must be nonblank")
+        if self.quaternion_wxyz is not None and not math.isclose(
             math.hypot(*self.quaternion_wxyz), 1.0, rel_tol=0, abs_tol=1e-9
         ):
             raise ValueError("slew requires unit body-to-GCRS quaternion wxyz")

@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import copy
 import math
+from typing import Literal
 
 import numpy as np
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
 from space_env.reference.rigid_attitude import (
     RigidAttitudeModel,
@@ -24,6 +25,14 @@ from space_env.runtime.schema import FiniteScalar, StrictModel
 
 class RigidControllerSettings(StrictModel):
     model: RigidAttitudeModel
+    clock_mode: Literal["event-driven/1", "fixed-tick/1"] = "event-driven/1"
+
+    @model_serializer(mode="wrap")
+    def legacy_clock(self, handler):
+        value = handler(self)
+        if self.clock_mode == "event-driven/1":
+            value.pop("clock_mode", None)
+        return value
     initial_omega_body_rad_s: tuple[FiniteScalar, FiniteScalar, FiniteScalar] = (
         0.0,
         0.0,
@@ -115,6 +124,8 @@ class RigidBus:
         }
         self.plans, self.cache = {}, {}
         self.external_impulse = {a: np.zeros(3) for a in self.models}
+        self.latches = {}
+        self.clock_samples = dict.fromkeys(self.models, 0)
         self.substeps = dict.fromkeys(self.models, 0)
         self.saturation_sec = {a: np.zeros(3) for a in self.models}
 
@@ -126,6 +137,7 @@ class RigidBus:
         )
 
     def disable(self, actor, reason):
+        self.latches.pop(actor, None)
         self.plans[actor].update(enabled=False, torque=np.zeros(3), reason=reason)
         self.cache = {key: v for key, v in self.cache.items() if key[0] != actor}
 
@@ -142,8 +154,17 @@ class RigidBus:
                 "external_torque_body_nm": np.zeros(3),
                 "rotating_burn": False,
             }
+            tick = math.floor((backend.now() + 1e-9) / c.control_step_sec)
+            token = (plan["cid"], plan["kind"], bus.states[a]["rate_scale"])
+            latch = self.latches.get(a)
+            held = (c.clock_mode == "fixed-tick/1" and latch is not None
+                    and latch["tick"] == tick and latch["token"] == token)
+            if not enabled:
+                self.latches.pop(a, None)
             if enabled:
-                if plan["kind"] == "wheel_torque":
+                if held:
+                    requested = latch["torque"].copy()
+                elif plan["kind"] == "wheel_torque":
                     requested = np.asarray(
                         bus.operations[plan["cid"]]["motor_torque_nm"]
                     )
@@ -190,6 +211,13 @@ class RigidBus:
                         )
                 else:
                     self.plans[a].update(enabled=True, torque=requested)
+                    if c.clock_mode == "fixed-tick/1" and not held:
+                        self.clock_samples[a] += 1
+                        self.latches[a] = {
+                            "tick": tick, "token": token, "torque": requested.copy(),
+                            "sample_sec": backend.now(),
+                            "trigger": "tick" if latch is not None and latch["token"] == token else "command_or_enable",
+                        }
 
     def set_external_torque(self, actor, torque, *, rotating_burn=False):
         self.plans[actor].update(
@@ -343,6 +371,12 @@ class RigidBus:
                 - self.initial[actor]["momentum_inertial_nms"]
                 - self.external_impulse[actor]
             ).tolist(),
+            **({"sample_clock": {
+                "mode": "fixed-tick/1", "period_sec": self.models[actor].control_step_sec,
+                "samples": self.clock_samples[actor],
+                "last_sample_sec": self.latches[actor]["sample_sec"] if actor in self.latches else None,
+                "last_trigger": self.latches[actor]["trigger"] if actor in self.latches else None,
+            }} if self.models[actor].clock_mode == "fixed-tick/1" else {}),
             "substeps": self.substeps[actor],
             "capacity_limited_sec": self.saturation_sec[actor].tolist(),
             "controller": copy.deepcopy(

@@ -7,7 +7,7 @@ import math
 from dataclasses import asdict
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, model_serializer
 
 from space_env.reference.acquisition import (
     AcquisitionSensor,
@@ -40,11 +40,25 @@ from space_env.simulation.owned import owned_copy
 
 
 class IntegratorSettings(StrictModel):
+    reuse_balanced_coast: bool = Field(default=False, strict=True)
     sample_sec: float = Field(default=10.0, gt=0, le=60, strict=True)
     rtol: float = Field(default=1e-11, ge=1e-13, le=1e-5, strict=True)
     position_atol_m: float = Field(default=1e-4, gt=0, strict=True)
     velocity_atol_m_s: float = Field(default=1e-7, gt=0, strict=True)
     max_step_sec: float = Field(default=30.0, gt=0, le=120, strict=True)
+
+    @model_validator(mode='after')
+    def coast_cadence(self):
+        if self.reuse_balanced_coast and self.sample_sec > 1.:
+            raise ValueError('balanced coast reuse requires sample_sec <= 1')
+        return self
+
+    @model_serializer(mode='wrap')
+    def legacy(self, handler):
+        result=handler(self)
+        if not self.reuse_balanced_coast:
+            result.pop('reuse_balanced_coast',None)
+        return result
 
 
 class PropulsionSettings(StrictModel):
@@ -333,6 +347,10 @@ class DynamicReferenceBackend(ReferenceBackend):
 
     def validate_command(self, c):
         super().validate_command(c)
+        if c.kind == "slew":
+            from space_env.reference.pointing import resolve_slew_goal
+
+            resolve_slew_goal(self, c)
         if c.kind == "wheel_torque" and (self.bus is None or c.actor_id not in self.bus.rigid.models):
             raise ValueError("wheel torque requires actor rigid attitude model")
 
@@ -439,11 +457,18 @@ class DynamicReferenceBackend(ReferenceBackend):
     def _refresh_geometry(self, actor):
         provider = self.mission.ephemerides[actor]
         boundaries = set(self.mission._boundaries)
+        # Keep the original 30s scan lattice: changing the root brackets would
+        # introduce an unrelated event-resolution change after each maneuver.
+        start = math.floor(self.now()/30.)*30.
+        if start >= self.horizon():
+            return
         for name, station in self.mission.stations.items():
-            rows = provider.access(station)["windows"]
-            self.mission.windows[actor, name] = [
-                (r["aos_sec"], r["los_sec"]) for r in rows
-            ]
+            rows = provider.access(station, start_sec=start)["windows"]
+            past = [(a,min(b,start)) for a,b in self.mission.windows[actor,name] if a < start]
+            future = [(r['aos_sec'],r['los_sec']) for r in rows]
+            if past and future and abs(past[-1][1]-future[0][0]) <= 1e-9:
+                future[0] = (past.pop()[0],future[0][1])
+            self.mission.windows[actor, name] = past+future
             boundaries.update(t for r in rows for t in (r["aos_sec"], r["los_sec"]))
         # Old boundaries remain harmless integration splits; old windows are replaced.
         self.mission._boundaries = sorted(boundaries)

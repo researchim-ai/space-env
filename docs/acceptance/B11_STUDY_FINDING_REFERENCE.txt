@@ -1,0 +1,77 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 95%]
+...........F............................................................ [ 99%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+___________________ test_local_cli_recovers_to_private_file ____________________
+
+opened = (PosixPath('/tmp/pytest-of-user/pytest-26/test_local_cli_recovers_to_pri0/operator.sqlite'), <space_env.api.operator.O...operator-state/1', 'physics_profile': 'reference-fixed-downlink/1', 'task_id': 'multi-plane', 'action_slots': 2, ...}})
+tmp_path = PosixPath('/tmp/pytest-of-user/pytest-26/test_local_cli_recovers_to_pri0')
+
+    def test_local_cli_recovers_to_private_file(opened, tmp_path):
+        from space_env.api.operator_recovery import main
+    
+        path, _, op, reply = opened
+        output = tmp_path / "operator-connection.json"
+>       main([str(path), op.id, str(output)])
+
+tests/test_operator_durable.py:411: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/space_env/api/operator_recovery.py:19: in main
+    args = parser.parse_args(argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.12/argparse.py:1908: in parse_args
+    self.error(msg)
+../../miniconda3/lib/python3.12/argparse.py:2650: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='__main__.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = '__main__.py: error: unrecognized arguments: -NymakLZUyilMGQ_Sf-RGaEX\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+../../miniconda3/lib/python3.12/argparse.py:2637: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: __main__.py [-h] [--list] database [session_id] [output]
+__main__.py: error: unrecognized arguments: -NymakLZUyilMGQ_Sf-RGaEX
+=============================== warnings summary ===============================
+tests/test_reference_operations.py: 13 warnings
+  /home/user/miniconda3/lib/python3.12/site-packages/gymnasium/utils/passive_env_checker.py:35: UserWarning: [33mWARN: A Box observation space maximum and minimum values are equal.[0m
+    logger.warn("A Box observation space maximum and minimum values are equal.")
+
+tests/test_runtime_tasks.py::test_pettingzoo_parallel_api_and_live_agents
+tests/test_runtime_tasks.py::test_pettingzoo_parallel_api_and_live_agents
+  /home/user/miniconda3/lib/python3.12/site-packages/pettingzoo/utils/deprecated_module.py:99: DeprecationWarning: The old environment creation API has been deprecated in favor of a Gymnasium-like registry implementation, please use the make function instead.
+  The old API will eventually be removed in a future release.
+    spec.loader.exec_module(module)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_operator_durable.py::test_local_cli_recovers_to_private_file
+1 failed, 1665 passed, 15 warnings in 417.34s (0:06:57)

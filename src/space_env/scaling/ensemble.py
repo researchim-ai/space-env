@@ -177,6 +177,8 @@ def summarize_ensemble_qualification(prepared, scale_result):
                 required.add("completion_upper_bound")
             if by_id[key[0]].campaign_gates is not None:
                 required.add("campaign_witnesses")
+            if by_id[key[0]].coupled_gates is not None:
+                required.add("coupled_mission")
             if by_id[key[0]].geometry_gates is not None:
                 required.add("geometry_delivery")
             if by_id[key[0]].resume_in_new_process:

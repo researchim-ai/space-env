@@ -22,18 +22,25 @@ from space_env.simulation.snapshot import atomic_write, canonical_json, digest
 from space_env.tasks import VerifiedEpisode
 
 
-def _run(run, progress, decisions=None):
-    if progress is None:
+def _run(run, progress, decisions=None, samples=None):
+    if samples is not None:
+        from space_env.scaling.numerics import numerical_snapshot
+        if not samples or samples[-1]["time_sec"] != run.session._runtime.time_sec:
+            samples.append(numerical_snapshot(run))
+    if progress is None and samples is None:
         return run.run(decisions=decisions)
     count = 0
     while not run.done and (decisions is None or count < decisions):
         run.step()
         count += 1
-        progress.emit(
-            progress.stage,
-            decisions=len(run.trace),
-            physical_sec=run.session._runtime.time_sec,
-        )
+        if samples is not None:
+            samples.append(numerical_snapshot(run))
+        if progress is not None:
+            progress.emit(
+                progress.stage,
+                decisions=len(run.trace),
+                physical_sec=run.session._runtime.time_sec,
+            )
     return run.metrics()
 
 
@@ -44,6 +51,7 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
 
     stage("initialize")
     w = Workload.model_validate(value)
+    samples = [] if w.sample_numerics else None
     packet = None
     resume_sec = 0.0
     prefix_bytes = 0
@@ -85,7 +93,7 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
     started = time.perf_counter()
     if w.resume_after_decisions is not None and not w.resume_in_new_process:
         stage("prefix_execution")
-        _run(run, progress, decisions=w.resume_after_decisions)
+        _run(run, progress, decisions=w.resume_after_decisions, samples=samples)
         if run.done:
             raise ValueError("declared resume point reached a terminated episode")
         stage("prefix_checkpoint")
@@ -96,7 +104,7 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
         run = PlanningRun.from_checkpoint(prefix)
         resume_sec = time.perf_counter() - resumed_at
     stage("execution")
-    metrics = _run(run, progress)
+    metrics = _run(run, progress, samples=samples)
     execution_sec = time.perf_counter() - started
     if packet is not None:
         execution_sec += packet["prefix_elapsed_sec"] + resume_sec
@@ -129,6 +137,12 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
 
         geometry = geometry_delivery_evidence(
             w.scenario, record["episode"]["runtime"]["backend_report"], w.geometry_gates
+        )
+    coupled = None
+    if w.coupled_gates is not None:
+        from space_env.scaling.coupled import coupled_evidence
+        coupled = coupled_evidence(
+            w.scenario, record["episode"]["runtime"]["backend_report"], w.coupled_gates
         )
     steps = [r["step_wall_sec"] for r in run.measurements]
     expected_trace = digest(run.trace)
@@ -172,6 +186,8 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
         )
     if witness is not None:
         gates["campaign_witnesses"] = witness["passed"]
+    if coupled is not None:
+        gates["coupled_mission"] = coupled["passed"]
     if geometry is not None:
         gates["geometry_delivery"] = geometry["passed"]
     if process_restart is not None:
@@ -181,6 +197,9 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
     return {
         "passed": all(gates.values()),
         **({"process_restart": process_restart} if process_restart is not None else {}),
+        **({"numerical_samples": {"samples": samples, "sha256": digest(samples),
+              "scope": "evaluator-only current state; fresh-process restore covers continuation only"}}
+           if samples is not None else {}),
         "worker_environment": worker_environment(),
         "gates": gates,
         "metrics": metrics,
@@ -191,6 +210,7 @@ def measure(value, *, progress=None, restart_packet=None, restart_nonce=None):
         "resume_sec": resume_sec,
         "prefix_checkpoint_bytes": prefix_bytes,
         "campaign_evidence": witness,
+        **({"coupled_evidence": coupled} if coupled is not None else {}),
         **({"geometry_evidence": geometry} if geometry is not None else {}),
         "execution_scope": "execution includes prefix checkpoint/native resume when configured; timing is not replay evidence",
         "fork_sec": fork_sec,

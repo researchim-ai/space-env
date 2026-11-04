@@ -19,6 +19,7 @@ from pydantic import Field, model_serializer, model_validator
 from space_env.planning.model import PolicyConfig
 from space_env.runtime.schema import StrictModel
 from space_env.scaling.campaign import CampaignGates
+from space_env.scaling.coupled import CoupledGates
 from space_env.scaling.ground import ground_window_diagnostic
 from space_env.scaling.independent import GeometryDeliveryGates
 from space_env.scaling.progress import read_progress
@@ -49,12 +50,24 @@ class Workload(StrictModel):
     max_completion_fraction: float | None = Field(default=None, ge=0, le=1, strict=True)
     campaign_gates: CampaignGates | None = None
     geometry_gates: GeometryDeliveryGates | None = None
+    coupled_gates: CoupledGates | None = None
+    sample_numerics: bool = Field(default=False, strict=True)
     resume_after_decisions: int | None = Field(default=None, ge=1, le=9999, strict=True)
     resume_in_new_process: bool = Field(default=False, strict=True)
     comparison_group: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_-]{1,64}$")
 
     @model_validator(mode="after")
     def completion_bounds(self):
+        if self.sample_numerics and (
+            self.coupled_gates is None or len(self.scenario.get("actor_order", [])) > 4
+            or self.task.get("max_decisions", 256) > 601
+        ):
+            raise ValueError("numerical sampling requires bounded coupled workload")
+        if self.coupled_gates is not None and (
+            self.scenario.get("backend") != "reference-spacecraft"
+            or self.geometry_gates is not None or self.campaign_gates is not None
+        ):
+            raise ValueError("coupled gates require exclusive spacecraft profile")
         if self.geometry_gates is not None and (
             self.scenario.get("backend") != "reference-fixed"
             or self.campaign_gates is not None
@@ -83,6 +96,10 @@ class Workload(StrictModel):
         value = handler(self)
         if not self.resume_in_new_process:
             value.pop("resume_in_new_process", None)
+        if not self.sample_numerics:
+            value.pop("sample_numerics", None)
+        if self.coupled_gates is None:
+            value.pop("coupled_gates", None)
         if self.geometry_gates is None:
             value.pop("geometry_gates", None)
         return value

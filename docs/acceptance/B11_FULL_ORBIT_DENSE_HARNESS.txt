@@ -1,0 +1,18 @@
+import importlib.util
+from pathlib import Path
+from space_env.validation.coupled_actuators import actuator_scenario,_execute,_witness
+from space_env.runtime import spacecraft_scenario
+from space_env.simulation.snapshot import atomic_write,canonical_json,digest
+spec=importlib.util.spec_from_file_location('frozen','/home/user/workspace/space-env/examples/coupled/study.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+root=Path('/tmp/d2f-corrected-dense-actuators');root.mkdir();rows=[]
+for mode in ('nominal','limited'):
+ p=root/mode;p.mkdir();native=actuator_scenario(module.configuration(True)['development'],mode=mode)['definition']
+ for orbit in native['orbits'].values():orbit['integration']=(orbit.get('integration') or {})|{'sample_sec':1.,'reuse_balanced_coast':True}
+ scenario=spacecraft_scenario(native,id='dense-'+mode,lineage='D2f-dense-actuator-regression')
+ atomic_write(p/'scenario.json',canonical_json(scenario))
+ samples,report,replay=_execute(scenario,.025,p)
+ atomic_write(p/'report.json',canonical_json(report));row={'mode':mode,'native_replay':replay,'witness':_witness(scenario,report,mode),'samples':samples};rows.append(row)
+ atomic_write(root/'progress.json',canonical_json({'expected':2,'finished':len(rows)}))
+body={'schema':'space-env.dense-actuator-regression/1','passed':all(r['native_replay'] and r['witness']['passed'] for r in rows),'rows':rows,'partition_sec':.025,'scope':'two dense opt-in native programs; not the complete 18-member actuator matrix'}
+atomic_write(root/'result.json',canonical_json(body|{'sha256':digest(body)}));print(body['passed'])
+raise SystemExit(0 if body['passed'] else 1)

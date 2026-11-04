@@ -95,23 +95,27 @@ class ReferenceEphemeris:
             result["doppler_hz"] = -frequency_hz * rate / C_LIGHT
         return result
 
-    def access(self, station: GroundStation, *, scan_sec: float = 30., root_tolerance_sec: float = .001) -> dict:
+    def access(self, station: GroundStation, *, scan_sec: float = 30., root_tolerance_sec: float = .001,
+               start_sec: float = 0.) -> dict:
         if not math.isfinite(scan_sec) or not 0 < scan_sec <= 120:
             raise ValueError("access scan must be in (0,120] seconds")
         if not math.isfinite(root_tolerance_sec) or not 1e-6 <= root_tolerance_sec <= 1:
             raise ValueError("root tolerance must be in [1e-6,1] seconds")
-        if math.ceil(self.duration_sec/scan_sec) > 100000:
+        if isinstance(start_sec, bool) or not math.isfinite(start_sec) or not 0 <= start_sec < self.duration_sec:
+            raise ValueError("access start outside coverage")
+        if math.ceil((self.duration_sec-start_sec)/scan_sec) > 100000:
             raise ValueError("access scan exceeds 100000 intervals")
         # Velocity needs adjacent EOP nodes, even when position itself is covered.
-        self.context.jacobian(self.epoch)
+        self.context.jacobian(self.epoch.shifted(start_sec))
         self.context.jacobian(self.epoch.shifted(self.duration_sec))
-        grid = np.append(np.arange(0, self.duration_sec, scan_sec), self.duration_sec)
+        nodes = np.arange((math.floor(start_sec/scan_sec)+1)*scan_sec, self.duration_sec, scan_sec)
+        grid = np.concatenate(([float(start_sec)],nodes,[self.duration_sec]))
 
         def margin(clock):
             return self.look(station, float(clock))["elevation_deg"] - station.min_elevation_deg
 
         values = [margin(clock) for clock in grid]
-        start = 0. if values[0] >= 0 else None
+        start = float(start_sec) if values[0] >= 0 else None
         windows = []
         for i, (left, right) in enumerate(pairwise(grid)):
             before, after = values[i], values[i+1]
@@ -140,10 +144,10 @@ class ReferenceEphemeris:
             tca = max(choices, key=lambda t: self.look(station, t)["elevation_deg"])
             rows.append({"aos_sec": begin, "los_sec": end, "peak_sec": tca,
                          "max_elevation_deg": self.look(station, tca)["elevation_deg"],
-                         "clipped_start": begin == 0, "clipped_end": end == self.duration_sec})
+                         "clipped_start": begin == start_sec, "clipped_end": end == self.duration_sec})
         return {"schema": "space-env.reference-access/1", "station": station.model_dump(mode="json"),
                 "ephemeris_sha256": self.sha256, "profile": "gcrs-reference/1", "windows": rows,
-                "coverage_sec": [0., self.duration_sec], "scan_sec": scan_sec,
+                "coverage_sec": [float(start_sec), self.duration_sec], "scan_sec": scan_sec,
                 "root_tolerance_sec": root_tolerance_sec, "interpolation": "cubic Hermite GCRS position/velocity",
                 "max_input_interval_sec": self.max_interval_sec,
                 "derivation": {"source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),

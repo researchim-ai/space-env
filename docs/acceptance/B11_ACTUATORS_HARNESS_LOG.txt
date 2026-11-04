@@ -1,0 +1,17 @@
+reused 3
+finished 4 ('nominal', 0.01, 0.1)
+finished 5 ('nominal', 0.005, 0.1)
+finished 6 ('limited', 0.02, 0.1)
+finished 7 ('nominal', 0.01, 0.025)
+finished 8 ('nominal', 0.005, 0.025)
+finished 9 ('limited', 0.02, 0.025)
+finished 10 ('limited', 0.01, 0.1)
+finished 11 ('limited', 0.005, 0.1)
+finished 12 ('limited', 0.01, 0.025)
+finished 13 ('limited', 0.005, 0.025)
+finished 14 ('nominal', 0.01, 0.01)
+finished 15 ('nominal', 0.005, 0.01)
+finished 16 ('limited', 0.02, 0.01)
+finished 17 ('limited', 0.01, 0.01)
+finished 18 ('limited', 0.005, 0.01)
+{"attempts":18,"failed":0,"native_execution_rerun":false,"passed":true,"result_sha256":"b08c960bde1edbf27f44b43cb3dd13e9c14401c923a11eeb38ed74808c6c85ae","schema":"space-env.coupled-actuator-audit/1","valid":true}

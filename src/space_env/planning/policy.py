@@ -289,6 +289,18 @@ class BaselinePolicy:
                     "processing": 30.0,
                     "imaging": 20.0,
                 }.get(kind, 1.0)
+                if kind == "slew":
+                    # Causal tie-break only; no forecast or promised capture.
+                    pointing = next((p for p in a.get("pointing", [])
+                                     if p["actor_id"] == actor
+                                     and p["target_id"] == c.get("slew", {}).get("target_id")), None)
+                    if pointing is not None:
+                        rate = pointing["body_rate_rad_s"]
+                        limit = pointing["payload_max_body_rate_rad_s"]
+                        if (pointing["boresight_error_deg"] <= pointing["payload_tolerance_deg"]
+                            and (rate is None or rate <= limit)):
+                            possible = False  # Allow paid settling/coast before acquisition.
+                        utility += 2.0 / (1.0 + pointing["boresight_error_deg"])
                 if kind == "relay":
                     dest = c["destination_id"]
                     if (
