@@ -10,9 +10,10 @@ import os
 from threading import RLock
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
-from space_env.runtime.schema import StrictModel, ScenarioSpec
+from space_env.planning.demand_contract import DemandGoals, validate_demand_schedule
+from space_env.runtime.schema import ScenarioSpec, StrictModel
 from space_env.scaling.coupled import CoupledGates
 from space_env.scaling.restart import build_identity
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
@@ -28,6 +29,13 @@ class PlanGoals(StrictModel):
     max_rejections: int = Field(default=0, ge=0, le=10000, strict=True)
     require_no_failed_operations: bool = Field(default=False, strict=True)
     coupled: CoupledGates | None = None
+    demand: DemandGoals | None = None
+
+    @model_serializer(mode='wrap')
+    def legacy_demand(self,handler):
+        value=handler(self)
+        if self.demand is None:value.pop('demand',None)
+        return value
 
     @model_validator(mode='after')
     def bounds(self):
@@ -112,6 +120,8 @@ def validate_plan(value, *, check_build=True):
         or digest(scenario.definition) != spec.goals.coupled.native_spec_sha256
     ):
         raise ValueError('mission plan coupled goals/scenario mismatch')
+    if spec.goals.demand is not None:
+        validate_demand_schedule(spec.scenario, task, spec.steps, spec.goals.demand)
     return spec
 
 

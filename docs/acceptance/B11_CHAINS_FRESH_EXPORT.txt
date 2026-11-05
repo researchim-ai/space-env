@@ -1,0 +1,1 @@
+{"mission_goal_passed": true, "sha256": "63b88364b55b467cac3d4543a014385c37c51e94e0cf23cbc24e825202bf4f3d", "sft_exported": true}

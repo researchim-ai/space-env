@@ -1,0 +1,44 @@
+{
+  "calibration": "synthetic hardware/metadata only; no measured telemetry",
+  "date": "2026-11-05",
+  "dependency_clean": false,
+  "expert_teacher_qualified": false,
+  "failed_service_cases_retained": [
+    "lost_capture",
+    "blocked"
+  ],
+  "findings": [
+    {
+      "detail": "Downlink cancellation preserves remaining bits; CPU cancellation pauses job; max-attempt capture cancellation remains terminal.",
+      "kind": "existing native semantics reused"
+    },
+    {
+      "detail": "Added early interval validation for station_outage_added. Existing malformed-outage TaskSpec rejection preserved; six compatibility checks passed.",
+      "kind": "schema compatibility hardening"
+    },
+    {
+      "detail": "Pre-hardening installed campaign and reference run stopped before source change; available files/logs and old wheel retained separately. They do not count as final qualification.",
+      "kind": "development interruption"
+    },
+    {
+      "detail": "One development test run interrupted for fixture wiring; final incident tests share cached four-case corpus instead of repeating adversarial checks for every mode.",
+      "kind": "test organization"
+    },
+    {
+      "detail": "Operator role needs sum of all declared role slots in max_joint_actions; fixed before final qualification.",
+      "kind": "joint slot validation"
+    },
+    {
+      "detail": "Core local catalogue includes masked foreign IDs. Export derives role-only catalogue/mask with separate schema/native-binding link; rows are regenerated against native execution.",
+      "kind": "ML role interface"
+    },
+    {
+      "detail": "on_time_bits counts complete on-time products, not partial transmitted traffic. Seal harness now checks acknowledged service separately from lifecycle ledger transmitted; blocked case retains 200000 transmitted bits and 800000 remaining bits, zero on_time_bits.",
+      "kind": "receipt metric binding"
+    }
+  ],
+  "inputs_or_service_floors_retuned_after_outcomes": false,
+  "prehardening_receipt": "B11_INCIDENT_PREHARDENING.json",
+  "remote_ci_run": false,
+  "scope": "D2h-B2a single committed incident; not full dynamic mission modeller"
+}

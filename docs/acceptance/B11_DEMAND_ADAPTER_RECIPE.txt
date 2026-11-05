@@ -1,0 +1,26 @@
+import json
+from pathlib import Path
+from space_env.planning.actor_gym import ActorMissionEnv
+from space_env.simulation.snapshot import canonical_json,digest
+root=Path('/tmp/demand-installed-two_updates')
+journal=json.loads((root/'journal.json').read_text())
+expected=json.loads((root/'execution.json').read_text())['execution']['episode']['runtime']['backend_report']
+results={}
+for name in ('gym','parallel'):
+ if name=='gym': env=ActorMissionEnv(journal); joint=env
+ else:
+  from space_env.planning.actor_parallel import ActorParallelEnv
+  env=ActorParallelEnv(journal);joint=env.joint
+ obs,info=env.reset(seed=7);count=0
+ while not joint.coordinator.done:
+  c=joint.coordinator
+  if name=='gym': assert env.observation_space.contains(obs)
+  else: assert all(env.observation_space(r).contains(obs[r]) for r in env.agents)
+  ids=c._plan['steps'][c.cursor]['action_ids'];owners={a['id']:a['role'] for a in c._plan['task']['actions']}
+  actions={r:joint.action_ids[r].index(next((a for a in ids if owners.get(a)==r),'wait')) for r in c.roles}
+  if name=='gym':obs,*_=env.step(actions)
+  else:obs,*_=env.step(actions)
+  count+=1
+ assert digest(joint.coordinator.as_execution()['execution']['episode']['runtime']['backend_report'])==digest(expected)
+ results[name]={'steps':count,'spaces_checked':True,'physical_report_equal':True,'catalogue_version':joint.coordinator.catalogue_version}
+print(canonical_json(results))

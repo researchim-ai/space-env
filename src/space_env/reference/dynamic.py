@@ -264,7 +264,7 @@ class DynamicReferenceBackend(ReferenceBackend):
             a for a in spec.actor_order if a in config.acquisition_sensors
         ]
         if self.acquisition_targets and self.acquisition_actors:
-            self.capabilities = self.capabilities | {"forecast.acquisition.geometry"}
+            self.capabilities = self.capabilities | {"forecast.acquisition.geometry", "forecast.pointing.geometry"}
         for provider in providers.values():
             del provider.initial_payload
         self.mission.ephemerides = providers

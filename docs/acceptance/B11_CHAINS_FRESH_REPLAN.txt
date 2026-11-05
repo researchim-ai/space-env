@@ -1,0 +1,1 @@
+{"sha256": "599fd2938f824c0291d6b44ee88ee8a40ad893221f2587247a2269fc9a942539", "plan_sha256": "7036828117dcb278a018575641f4e0774911a167c1504caf4bedcb427a08b1f0", "predicted_fulfilled": 2, "total": 24, "native_feasibility_validated": false, "expert_teacher_qualified": false}

@@ -1,0 +1,17 @@
+{
+  "after_requests": 4,
+  "before_requests": 2,
+  "checks": {
+    "a-00-t02-incoming": {
+      "attempts": 0,
+      "final_preloaded": false,
+      "raw_preloaded": false
+    },
+    "b-00-t06-incoming": {
+      "attempts": 0,
+      "final_preloaded": false,
+      "raw_preloaded": false
+    }
+  },
+  "native_request_events": 2
+}

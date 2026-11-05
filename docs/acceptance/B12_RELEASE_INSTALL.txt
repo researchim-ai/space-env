@@ -1,0 +1,41 @@
+Processing /tmp/b12-release-wheel/space_env-0.134.0-py3-none-any.whl (from space-env==0.134.0)
+Collecting pytest
+  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+Collecting build
+  Downloading build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting boinor>=0.18 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached boinor-0.19.0-py3-none-any.whl.metadata (20 kB)
+Collecting gymnasium>=0.29 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached gymnasium-1.2.0-py3-none-any.whl.metadata (9.9 kB)
+Collecting numpy>=1.24 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (62 kB)
+Collecting pandas>=2.0 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (91 kB)
+Collecting pydantic>=2.0 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+Collecting pyyaml>=6.0 (from space-env==0.134.0->space-env==0.134.0)
+  Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting iniconfig>=1.0.1 (from pytest)
+  Using cached iniconfig-2.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting packaging>=22 (from pytest)
+  Downloading packaging-23.2-py3-none-any.whl.metadata (3.2 kB)
+Collecting pluggy<2,>=1.5 (from pytest)
+  Downloading pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest)
+  Using cached pygments-2.19.2-py3-none-any.whl.metadata (2.5 kB)
+INFO: pip is looking at multiple versions of build to determine which version is compatible with other requirements. This could take a while.
+ERROR: Cannot install build==1.6.1 and pytest==9.1.1 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    pytest 9.1.1 depends on packaging>=22
+    build 1.6.1 depends on packaging>=24.0
+    The user requested (constraint) packaging==23.2
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip to attempt to solve the dependency conflict
+
+
+[notice] A new release of pip is available: 24.3.1 -> 26.3
+[notice] To update, run: python -m pip install --upgrade pip
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/#dealing-with-dependency-conflicts

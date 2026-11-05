@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-05",
+  "dependency_clean": false,
+  "development_findings": [
+    {
+      "detail": "Manually removing rigid model invalidated coupled goal native hash. Harness now recomputes binding, core check retained.",
+      "kind": "input binding"
+    },
+    {
+      "detail": "Development used nonexistent station reservation_required and bus safe_exit_soc attributes; corrected to supported ground profile and recovery_soc before qualification.",
+      "kind": "schema API"
+    },
+    {
+      "detail": "Mutated release/quota cases needed updated coupled goal hash; no native binding check weakened.",
+      "kind": "test harness"
+    },
+    {
+      "detail": "Direct script could not import examples namespace. Fixed by declaring identical geographic inputs locally; all three frozen JSON specs checked unchanged.",
+      "kind": "standalone example"
+    },
+    {
+      "detail": "Independent shifted case predicts and realizes zero of 24. Case retained with failed goal and no SFT. No geometry or floor search performed.",
+      "kind": "service limit"
+    }
+  ],
+  "expert_teacher_qualified": false,
+  "remote_ci_run": false,
+  "scope": "D2h-B1 bounded kinematic chains and single idle-boundary replan; not full D2h-B"
+}

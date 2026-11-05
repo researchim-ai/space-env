@@ -1,0 +1,8 @@
+Collecting packaging>=24.0
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Installing collected packages: packaging
+Successfully installed packaging-26.3
+
+[notice] A new release of pip is available: 24.3.1 -> 26.3
+[notice] To update, run: python -m pip install --upgrade pip

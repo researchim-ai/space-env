@@ -1,0 +1,59 @@
+{
+  "batch": {
+    "actors": {
+      "a-00": {
+        "acquired_bits": 2000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 1000000.0,
+        "transmitted_bits": 1000000.0
+      },
+      "b-00": {
+        "acquired_bits": 2000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 1000000.0,
+        "transmitted_bits": 1000000.0
+      }
+    },
+    "scope": "native metadata/resource bit accounting, not scientific image validation"
+  },
+  "tight_deadline": {
+    "actors": {
+      "a-00": {
+        "acquired_bits": 1000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 500000.0,
+        "transmitted_bits": 500000.0
+      },
+      "b-00": {
+        "acquired_bits": 1000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 500000.0,
+        "transmitted_bits": 500000.0
+      }
+    },
+    "scope": "native metadata/resource bit accounting, not scientific image validation"
+  },
+  "two_updates": {
+    "actors": {
+      "a-00": {
+        "acquired_bits": 2000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 1000000.0,
+        "transmitted_bits": 1000000.0
+      },
+      "b-00": {
+        "acquired_bits": 2000000,
+        "balance_error_bits": 0.0,
+        "preloaded_or_injected_bits": 0,
+        "receipt_bits": 1000000.0,
+        "transmitted_bits": 1000000.0
+      }
+    },
+    "scope": "native metadata/resource bit accounting, not scientific image validation"
+  }
+}

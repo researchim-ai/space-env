@@ -1,0 +1,52 @@
+"""Synthetic pending-suffix native regression, not independent teacher holdout."""
+import copy,json
+from pathlib import Path
+from space_env.runtime import MissionRuntime,AccessPolicy
+from space_env.planning.chain import propose_chain,replan_chain,verify_chain_replan
+from space_env.planning.mission_plan import PlanExecution
+from space_env.planning.mission_bundle import publish_plan_bundle
+from space_env.simulation.snapshot import digest,canonical_json,atomic_write
+
+v=json.loads(Path('/tmp/chain-nominal-input.json').read_text());d=v['scenario']['definition'];d['horizon_sec']=180.
+for b in d['spacecraft_bus'].values():b['attitude']['max_rate_deg_s']=90.
+for r in d['lifecycle']['requests']:r['deadline_sec']=180.
+v['task'].update(decision_sec=2.,max_decision_sec=2.,max_decisions=91)
+for actor,target in [('a-00','t02'),('b-00','t06')]:
+ original=next(r for r in d['lifecycle']['requests'] if r['id']==actor+'-'+target)
+ r=copy.deepcopy(original)
+ for key in ('id','target_id','raw_product_id','delivery_product_id'):r[key]+='-late'
+ r['release_sec']=60.
+ t=copy.deepcopy(next(t for t in d['acquisition_targets'] if t['id']==target));t['id']+='-late';t['available_from_sec']=60.
+ d['acquisition_targets'].append(t);d['lifecycle']['requests'].append(r)
+ oldjob=next(j for j in d['lifecycle']['jobs'] if j['inputs']==[original['raw_product_id']])
+ j=copy.deepcopy(oldjob);j['id']+='-late';j['inputs']=[r['raw_product_id']];j['outputs'][0]['id']=r['delivery_product_id']
+ d['lifecycle']['jobs'].append(j)
+ for kind in ('slew','imaging','transform','downlink'):
+  action=copy.deepcopy(next(a for a in v['task']['actions'] if a['id']==kind+'-'+original['id']))
+  action['id']+='-late';c=action['commands'][0];c['command_id']+='-late'
+  if kind=='slew':c['slew']['target_id']=r['target_id']
+  elif kind=='imaging':c['request_id']=r['id']
+  elif kind=='transform':c['job_id']=j['id']
+  else:c['product_id']=r['delivery_product_id']
+  v['task']['actions'].append(action)
+v['task']['max_actions']=len(v['task']['actions'])+1
+v['goals']['min_fulfilled']=4;v['goals']['coupled'].update(native_spec_sha256=digest(d),min_acquired=4)
+root=Path('/tmp/chain-final-pending');root.mkdir()
+atomic_write(root/'input.json',canonical_json(v))
+p=propose_chain(MissionRuntime(v['scenario'],access=AccessPolicy(forecast=True)),v['scenario'],v['task'],goals=v['goals'])
+atomic_write(root/'proposal.json',canonical_json(p))
+assert p['schedule']['predicted_fulfilled']==4,p['schedule']
+x=PlanExecution(p['plan']);x.run(decisions=10);record=x.save(root/'prefix.json')
+updated=replan_chain(p,record);atomic_write(root/'replan.json',canonical_json(updated))
+assert len(updated['schedule']['allocations'])==2 and len(updated['forecast']['completed'])==2
+assert all(p['binding']['revision']>0 for p in updated['pointings'].values())
+assert updated['plan']['steps'][:10]==p['plan']['steps'][:10]
+atomic_write(root/'replan_audit.json',canonical_json(verify_chain_replan(updated)))
+y=PlanExecution(updated['plan']);y.run();record=y.save(root/'execution.json')
+atomic_write(root/'plan.json',canonical_json(updated['plan']))
+bundle=publish_plan_bundle(updated['plan'],record,root/'dataset')
+assert bundle['mission_goal_passed']
+result={'mission_goal_passed':True,'pending_allocations_replanned':2,'completed_prefix_chains':2,
+        'fulfilled':4,'total':26,'sft_exported':bundle['sft_exported'],
+        'scope':'synthetic 90deg/s controller fixture; pending suffix regression, not real hardware/teacher holdout'}
+atomic_write(root/'result.json',canonical_json(result));print(canonical_json(result))

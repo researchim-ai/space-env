@@ -1,0 +1,1 @@
+{"exact_inventory_verified":true,"file_count":77,"native_replay_on_restore":false,"restored_wheel_sha256":"adb72e0aaff175b48d8cfaa07546ca5df9214a859ffab004826eed59f73d10da","scope":"restored archive consistency; native audits ran on original installed outputs"}

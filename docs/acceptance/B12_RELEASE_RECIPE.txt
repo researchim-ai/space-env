@@ -1,0 +1,22 @@
+No git staging/commit/push/publication.
+Version0.134.0; use exact wheel/source+data hashes, not version string alone.
+python -m pip wheel . --no-deps -w /tmp/b12-release-wheel
+python -m space_env.eval.ci_profiles fast
+python -m space_env.eval.ci_profiles reference
+python -m venv /tmp/b12-clean-venv
+# Final resolved lock includes8 advisory repairs and packaging26.3 compatibility fix.
+/tmp/b12-clean-venv/bin/python -m pip install -c requirements/release-py311-py312-linux.txt '/tmp/b12-release-wheel/space_env-0.134.0-py3-none-any.whl[reference,coverage,marl]' pytest build
+# All installed probes use Python -I outside checkout or explicit absolute script paths.
+/tmp/b12-clean-venv/bin/python -I scripts/verify_release_install.py --prefix /tmp/b12-clean-venv --constraints requirements/release-py311-py312-linux.txt --output <new-receipt>
+# Frozen inputs: B12_RELEASE_FROZEN_INPUT (1GiB), STORAGE4G_INPUT (4GiB/64MB), CAPACITY_INPUT (same long case/128MB).
+/tmp/b12-clean-venv/bin/python -I scripts/run_release_qualification.py run <frozen-input> <new-output> --workers 4
+/tmp/b12-clean-venv/bin/python -I scripts/run_release_qualification.py verify <output>
+#128MB probe executes same3 policies concurrently, checks exact episode equality: CAPACITY_RECIPE.txt.
+#Fresh process recipes: FRESH_RECIPE.txt and FRESH_ACTIVE_RECIPE.txt; reported distinct PID witnesses.
+/tmp/b12-clean-venv/bin/python -I scripts/export_release_data.py export <complete-4g-source> <new-data-output>
+/tmp/b12-clean-venv/bin/python -I scripts/export_release_data.py verify <complete-4g-source> <new-data-output>
+#Current approved dataset is RL-only; native rawSFT candidates are not suite-approved.
+#Advisory tool in separate venv: pip-audit==2.10.1; initial88 records and final0 retained separately.
+#ARCHIVE_RECIPE records17 split local archives, exact wheel/lock/scripts, and restored consistency checks.
+#Remote workflow configured for full4GiB/128MB profile; that homogeneous full profile was not run locally.
+#Explicit baseline-vs-candidate service/uncertainty failures are preserved; expert_teacher_qualified=false.

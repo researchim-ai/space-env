@@ -1,0 +1,37 @@
+{
+  "calibration": "synthetic kinematic metadata cases; no measured flight calibration",
+  "date": "2026-11-05",
+  "dependency_clean": false,
+  "expert_teacher_qualified": false,
+  "failed_policy_retained": true,
+  "findings": [
+    {
+      "detail": "Actor online/offline schema and binding projection shared; native transition paired equality tested.",
+      "kind": "shared projection"
+    },
+    {
+      "detail": "Boolean cursor and duplicated idempotent trace refused by canonical full-checkpoint comparison.",
+      "kind": "checkpoint hardening"
+    },
+    {
+      "detail": "Role mask length matches own Discrete vocabulary; multi-slot wait padding/duplicates canonicalized.",
+      "kind": "numeric adapter"
+    },
+    {
+      "detail": "PettingZoo API test supplies metadata reset options. Adapter now accepts mapping, reports ignored keys in Gym info and does not alter verified physical epoch.",
+      "kind": "standard reset protocol"
+    },
+    {
+      "detail": "Actor waiting at 122s replaces planned TX; actual executed prefix is sealed and carried into next incident without rewriting committed history.",
+      "kind": "policy ancestry"
+    },
+    {
+      "detail": "Eight-epoch journal verified, but audited reset/restore replays ancestry; no O(1) restore or throughput SLA.",
+      "kind": "cost boundary"
+    }
+  ],
+  "inputs_changed_after_outcomes": false,
+  "new_customer_demand_implemented": false,
+  "remote_ci_run": false,
+  "scope": "D2h-B2b-A actor interface + bounded flat history, not all B2b"
+}

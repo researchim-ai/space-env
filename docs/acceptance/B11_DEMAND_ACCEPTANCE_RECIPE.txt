@@ -1,0 +1,26 @@
+import hashlib,json,re
+from pathlib import Path
+from space_env.simulation.snapshot import canonical_json,digest
+root=Path('/home/user/workspace/space-env');base=root/'docs/acceptance'
+reference=(base/'B11_DEMAND_REFERENCE.txt').read_text();fast=(base/'B11_DEMAND_FAST.txt').read_text()
+assert not re.search(r'\b[1-9]\d* (failed|errors?)\b',reference),reference[-3000:]
+counts={name:int(re.findall(r'(\d+) passed',text)[-1]) for name,text in [('reference',reference),('fast',fast)]}
+assert counts=={'reference':1889,'fast':110},counts
+load=lambda name:json.loads((base/name).read_text())
+results=load('B11_DEMAND_RESULTS.json');wheel=load('B11_DEMAND_WHEEL.json');equivalence=load('B11_DEMAND_PROCESS_EQUIVALENCE.json');archive=load('B11_DEMAND_ARCHIVE.json')
+assert results['batch']['result']['fulfilled']==4 and results['two_updates']['result']['fulfilled']==4
+assert results['tight_deadline']['result']['fulfilled']==2 and results['tight_deadline']['result']['actor_rows']['sft']==0
+assert equivalence['full_checkpoint_equal'] and equivalence['full_data_manifest_equal']
+assert load('B11_DEMAND_ARCHIVE_AUDIT.json')['exact_inventory_verified']
+for name in ('docs/IMPLEMENTATION_STATUS.md','docs/PRODUCT_EXECUTION_NEXT.md'):
+ p=root/name;s=p.read_text();s=s.replace('Общая reference-регрессия этого пакета фиксируется отдельным receipt.','**1889 reference и110 fast passed**;19 новых demand cases включены в reference.\nЭти профили пересекаются и не являются полной repository/remote CI.')
+ if name.endswith('PRODUCT_EXECUTION_NEXT.md'):
+  s=s.replace('Числа и wheel предыдущего пакета ниже относятся только к предыдущему коду.','1889 reference/110 fast passed (профили пересекаются);19 новых demand cases.\nЧисла и wheel предыдущего пакета ниже относятся только к предыдущему коду.')
+ p.write_text(s)
+files={}
+paths=list(base.glob('B11_DEMAND_*'))+[root/'docs/validation/VERSIONED_DEMAND_V1.md',root/'docs/RELEASE_FINISH_PLAN.md',root/'tests/test_demand_journal.py',root/'examples/planning/demand_mission.py',root/'README.md',root/'docs/IMPLEMENTATION_STATUS.md',root/'docs/PRODUCT_EXECUTION_NEXT.md',root/'docs/validation/PHYSICS_QUALIFICATION_MATRIX.md']
+for p in sorted(paths):
+ if p.name=='B11_DEMAND_ACCEPTANCE.json':continue
+ files[p.relative_to(root).as_posix()]={'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+body={'schema':'space-env.demand-acceptance/1','package':'D2h-B2b-B','package_version':'0.134.0','date':'2026-11-05','wheel_sha256':wheel['wheel_sha256'],'modules':wheel['modules'],'source_data_files':wheel['source_data_files'],'checkout_and_installed_payload_match':True,'tests':counts|{'new_demand_cases_in_reference':19,'profiles_overlap':True,'full_repository_ci':False,'remote_ci':False},'installed_cases':results,'actor_rows_primary_cases':{'rl':sum(v['result']['actor_rows']['rl'] for v in results.values()),'sft_candidates':sum(v['result']['actor_rows']['sft'] for v in results.values())},'fresh_process':equivalence,'adapters':load('B11_DEMAND_ADAPTERS.json'),'cli':load('B11_DEMAND_CLI_RESULT.json'),'native_request_no_preload':load('B11_DEMAND_NO_PRELOAD.json'),'archive':{'files':archive['file_count'],'sha256':archive['archive_sha256'],'includes_exact_wheel':True,'restored_inventory_verified':True,'native_replay_on_restore':False},'dependency_clean':False,'installed_environment':'system-site-packages venv; Python -I outside checkout','expert_teacher_qualified':False,'supported_profile':'kinematic chain planner, existing targets, one metadata processing job/request; 4 actors,16 stations,64 total requests,4 updates of1-4 additions;64MB journal','limitations':['fixed synthetic mechanism cases, not independent holdouts','cold audited prefix replay, not constant-time state restore','no measured calibration or flight qualification','no industrial scale or teacher optimality claim','independent workloads/equal-information baselines, stress envelope and clean CI remain release gates','C2 measured data, long rigid and Q7 hosted isolation remain open'],'git_actions':'none; user stages, commits and pushes','files':files}
+body['sha256']=digest(body);(base/'B11_DEMAND_ACCEPTANCE.json').write_text(canonical_json(body)+'\n');print(canonical_json({k:body[k] for k in ('sha256','wheel_sha256','tests','actor_rows_primary_cases')}))

@@ -1,0 +1,1 @@
+{"sha256": "6b1da4ffc8fee961767f57a59c914e952a43c230442f664f52d8e9f0f3d21a88", "plan_sha256": "05958a41ec6f6a9ee786cd333fec86a23b51559dd9f41bf66a2380b3dae42e72", "predicted_fulfilled": 2, "total": 24, "committed_prefix_steps": 52, "native_feasibility_validated": false, "expert_teacher_qualified": false}

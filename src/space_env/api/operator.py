@@ -392,6 +392,14 @@ class OperatorSession:
             self._guard()
             role, write, admin = self.permission(token)
             observation = self.session.observe(role)
+            from space_env.api.workspace import describe
+
+            workspace = (
+                describe(self)
+                if role == "@central"
+                and self.identities[token_digest(token)] == "operator"
+                else None
+            )
             allowed = (
                 set(self.session._scenario["actor_order"])
                 if role == "@central"
@@ -409,6 +417,7 @@ class OperatorSession:
             }
             return copy.deepcopy(
                 {
+                    **({"workspace": workspace} if workspace is not None else {}),
                     "schema": "space-env.operator-state/1",
                     "physics_profile": self.session._scenario["physics_profile"],
                     "task_id": self.session._task.id,
@@ -528,6 +537,11 @@ class OperatorSession:
                 )
             if self.session._done:
                 raise OperatorError("episode_done", "mission has ended", 409)
+            from space_env.api.workspace import suggest
+
+            planned = suggest(self)
+            if planned is not None:
+                return planned
             return BaselinePolicy(
                 {"name": "route_aware_rolling", "max_candidates": 64, "max_nodes": 256}
             ).decide(make_input(self.session))
@@ -1139,6 +1153,25 @@ STORE = OperatorStore()
 
 def dispatch(method, path, payload=None, token=None):
     parts = path.strip("/").split("/")
+    if method == "GET" and parts == ["api", "operator", "workspace", "presets"]:
+        from space_env.api.workspace import default_configuration
+
+        return {
+            "configuration": default_configuration(),
+            "limits": {"actors": 4, "requests": 64, "stations": 16, "decisions": 240},
+        }
+    if method == "POST" and parts == ["api", "operator", "workspace", "configuration"]:
+        from space_env.api.workspace import parse_configuration
+
+        return {
+            "configuration": parse_configuration(payload).model_dump(
+                mode="json", by_alias=True
+            )
+        }
+    if method == "POST" and parts == ["api", "operator", "workspace"]:
+        from space_env.api.workspace import create_mission
+
+        return create_mission(payload, STORE)
     if parts == ["api", "operator", "catalogue"] and method == "GET":
         return {
             "durable": STORE.repository is not None,

@@ -1,0 +1,18 @@
+{
+  "conservation_check": "all three installed cases: ledger transmitted equals native delivery receipt bits; zero initial/injected bits and balance error",
+  "interrupted_development_runs": [
+    "initial targeted run interrupted after assertion failures; no production source changes",
+    "initial reference run interrupted and restarted after test-only corrections"
+  ],
+  "outcomes_not_tuned": true,
+  "packaging_inventory_scope": "281 package Python modules and 321 source/data files; studio_assets excluded from this count",
+  "qualification_cases": "fixed synthetic mechanism cases; geometry known during development, not independent holdouts",
+  "scope": "development and qualification bookkeeping; not flight evidence",
+  "source_changed_after_wheel": false,
+  "telemetry": "open specifications and synthetic cases only",
+  "test_assertion_fixes": [
+    "request.value replaced by actual deadline_sec field",
+    "manifest rejection may occur at stricter denominator validation",
+    "physical backend report read from saved execution, not control-plane runtime.report"
+  ]
+}

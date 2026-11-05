@@ -1,0 +1,44 @@
+{
+  "capacity_probe_design": "additional capacity budgets declared after observed storage pressure; original profiles retained, no claim of blind independent holdout",
+  "case_parameters_or_service_gates_tuned": false,
+  "data_splits": {
+    "approved_sft_exported": false,
+    "legacy_test_group_hashes_to_train": "release-v1/test-orbits-b",
+    "raw_benchmark_bundles": "immutable evaluation/provenance; not approved training splits",
+    "resolution": "versioned explicit train/development/test exporter; original split preserved as legacy_lineage_split; streaming source hash and regenerated row verification; suite teacher gate controls SFT"
+  },
+  "dependency_snapshot": {
+    "final_known_advisory_records": 0,
+    "initial_advisory_records": 88,
+    "initial_affected_packages": [
+      "certifi",
+      "cryptography",
+      "fonttools",
+      "idna",
+      "pillow",
+      "pygments",
+      "requests",
+      "urllib3"
+    ],
+    "packaging_conflict": "initial dev packaging23.2 did not satisfy build>=24; clean resolver selected packaging26.3; generator now rejects inconsistent transitive metadata"
+  },
+  "git_actions": "no stage,commit,push or publication; large generated archives ignored",
+  "package_source_frozen_after_final_wheel": true,
+  "remaining_limits": [
+    "teacher service/uncertainty gates failed",
+    "frozen deterministic geometries do not prove population coverage",
+    "baselines can tie on uniform-priority/deadline cases",
+    "remote Python3.11/3.12 and full repository CI not run locally",
+    "dependency lock is version-pinned CPython3.12 snapshot, not universal hash-locked resolution",
+    "license metadata inventory is not legal review",
+    "C2 measured calibration, long rigid and Q7 remain separate"
+  ],
+  "resource_profiles": {
+    "full_128m_profile_locally_run": false,
+    "result128m": "3 repeated policies on same long case passed; same native episodes; not new independent cases",
+    "storage1g": "72 native rows,24 reserved-group storage rejects retained",
+    "storage4g": "96 native rows,93 passed strict64MB result gate;3 long exports around64.36MB retained as failures"
+  },
+  "schema": "space-env.release-findings/1",
+  "verification_helpers": "aggregation and split checks strengthened without modifying frozen simulator code/data"
+}

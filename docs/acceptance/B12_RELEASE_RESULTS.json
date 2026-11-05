@@ -1,0 +1,161 @@
+{
+  "capacity_probe_same_native_episodes": true,
+  "explicit_training_export": {
+    "expert_teacher_qualified": false,
+    "files": {
+      "development/rl.jsonl": {
+        "bytes": 285245736,
+        "file_sha256": "21a464d97e06a221baef3b3bd93d07fe5c863dd84f7719dfb6d49c573ea0549f",
+        "format": "rl",
+        "partition": "development",
+        "rows": 3600,
+        "rows_sha256": "b338a2e51acc7c471023862a19a3948903af1264e54a4758edd1ac700a398772"
+      },
+      "test/rl.jsonl": {
+        "bytes": 581198769,
+        "file_sha256": "c3f8ba7ab2d2800f3197c0c252aaf3c588e77f19878ce571b97ed5b83b233826",
+        "format": "rl",
+        "partition": "test",
+        "rows": 7200,
+        "rows_sha256": "1caca8a5685e4de69771853528eaa98e7739f81024d7c636fbc44c0467abe97a"
+      },
+      "train/rl.jsonl": {
+        "bytes": 285860214,
+        "file_sha256": "4830d859612ef7aac7107b52697481157ca8b43e0e3efbe8fea644a3f412e9cf",
+        "format": "rl",
+        "partition": "train",
+        "rows": 3600,
+        "rows_sha256": "48753d6400edda5fd519b4f34b790750265299efe7a718c4f65022e9fef9b4d7"
+      }
+    },
+    "native_replay_on_export": false,
+    "schema": "space-env.release-training-splits/1",
+    "sft_exported": false,
+    "sha256": "ea7d23c8fd4885d425ce1d7d8895f2e744a67e1f21ee4cc7d494a395b1900027",
+    "source_sha256": "a74683e286c341dea51db23d370e18a9746c3299288a44ebaf3f6d06c04bfa64",
+    "spec_sha256": "51f8a7fffb29accf3bb73eca044e0881769d056581df6ecea7a7a721d6e23854",
+    "split_authority": "explicit frozen benchmark geometry groups; legacy lineage hash is provenance only",
+    "teacher_gates_passed": false
+  },
+  "result128m": {
+    "errors": {},
+    "native_verified": 3,
+    "observed_envelope": {
+      "cells": {
+        "actors=2/requests=24/horizon=1800.0": {
+          "max_checkpoint_bytes": 3935113,
+          "max_peak_rss_bytes": 622612480,
+          "max_step_p95_sec": 0.3793374601507822,
+          "native_verified": 3,
+          "resource_passed": 3,
+          "rows": 3,
+          "service_passed": 3
+        }
+      },
+      "scope": "observed fresh-process probes on this host; variants/policies are not independent performance repeats; no interpolation or fleet-scale SLA; RSS is an observed gate, not OS memory isolation"
+    },
+    "policy_rows": 3,
+    "report_sha256": "2cd7451e51177c4239da7960d389f2ae9247044dd3e777068d1add41e82ed877",
+    "resource_passed": 3,
+    "source_data_rows": {
+      "rl": 1080,
+      "sft": 1080
+    },
+    "spec_sha256": "2e4936a85718fae3bb09dbc3a69a6857f24d238bee0afcc4389e3d812c3d8116",
+    "teacher_gates_passed": false
+  },
+  "sft_status": "Raw native bundles contain per-mission candidates; suite-level teacher not qualified; approved split export has no SFT.",
+  "storage1g": {
+    "errors": {
+      "global_artifact_budget_exhausted": 24
+    },
+    "native_verified": 72,
+    "observed_envelope": {
+      "cells": {
+        "actors=2/requests=24/horizon=1800.0": {
+          "max_checkpoint_bytes": 0,
+          "max_peak_rss_bytes": 0,
+          "max_step_p95_sec": 0.0,
+          "native_verified": 0,
+          "resource_passed": 0,
+          "rows": 12,
+          "service_passed": 0
+        },
+        "actors=2/requests=24/horizon=600.0": {
+          "max_checkpoint_bytes": 1291342,
+          "max_peak_rss_bytes": 356364288,
+          "max_step_p95_sec": 0.18416652789765067,
+          "native_verified": 69,
+          "resource_passed": 69,
+          "rows": 72,
+          "service_passed": 6
+        },
+        "actors=4/requests=48/horizon=600.0": {
+          "max_checkpoint_bytes": 2188398,
+          "max_peak_rss_bytes": 482062336,
+          "max_step_p95_sec": 0.27766124000118,
+          "native_verified": 3,
+          "resource_passed": 3,
+          "rows": 12,
+          "service_passed": 3
+        }
+      },
+      "scope": "observed fresh-process probes on this host; variants/policies are not independent performance repeats; no interpolation or fleet-scale SLA; RSS is an observed gate, not OS memory isolation"
+    },
+    "policy_rows": 96,
+    "report_sha256": "758916c376e3ca0dd155bacbbfb356f02ee9e171676443f6ce9fe64a20c6c095",
+    "resource_passed": 72,
+    "source_data_rows": {
+      "rl": 8640,
+      "sft": 1080
+    },
+    "spec_sha256": "d20d783e53e09d07199c4c275590865c5ca63deb8578248f12081c62c96f1302",
+    "teacher_gates_passed": false
+  },
+  "storage4g": {
+    "errors": {},
+    "native_verified": 96,
+    "observed_envelope": {
+      "cells": {
+        "actors=2/requests=24/horizon=1800.0": {
+          "max_checkpoint_bytes": 3935113,
+          "max_peak_rss_bytes": 621899776,
+          "max_step_p95_sec": 0.46842964455099717,
+          "native_verified": 12,
+          "resource_passed": 9,
+          "rows": 12,
+          "service_passed": 12
+        },
+        "actors=2/requests=24/horizon=600.0": {
+          "max_checkpoint_bytes": 1291342,
+          "max_peak_rss_bytes": 351657984,
+          "max_step_p95_sec": 0.19907784379993243,
+          "native_verified": 72,
+          "resource_passed": 72,
+          "rows": 72,
+          "service_passed": 6
+        },
+        "actors=4/requests=48/horizon=600.0": {
+          "max_checkpoint_bytes": 2188398,
+          "max_peak_rss_bytes": 498606080,
+          "max_step_p95_sec": 0.3704796960517342,
+          "native_verified": 12,
+          "resource_passed": 12,
+          "rows": 12,
+          "service_passed": 12
+        }
+      },
+      "scope": "observed fresh-process probes on this host; variants/policies are not independent performance repeats; no interpolation or fleet-scale SLA; RSS is an observed gate, not OS memory isolation"
+    },
+    "policy_rows": 96,
+    "report_sha256": "a74683e286c341dea51db23d370e18a9746c3299288a44ebaf3f6d06c04bfa64",
+    "resource_passed": 93,
+    "source_data_rows": {
+      "rl": 14400,
+      "sft": 6480
+    },
+    "spec_sha256": "51f8a7fffb29accf3bb73eca044e0881769d056581df6ecea7a7a721d6e23854",
+    "teacher_gates_passed": false
+  },
+  "unique_physical_cases": 32
+}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from pydantic import Field, model_serializer, model_validator
@@ -13,6 +14,17 @@ class TaskRole(StrictModel):
     action_slots: int = Field(default=1, ge=1, le=8, strict=True)
     actors: tuple[str, ...] = Field(default=(), max_length=64)
     stations: tuple[str, ...] = Field(default=(), max_length=128)
+    demand_actors: tuple[str, ...] = Field(default=(), max_length=64)
+    demand_stations: tuple[str, ...] = Field(default=(), max_length=128)
+
+    @model_serializer(mode="wrap")
+    def legacy_demand_authority(self, handler):
+        value = handler(self)
+        if not self.demand_actors:
+            value.pop("demand_actors", None)
+        if not self.demand_stations:
+            value.pop("demand_stations", None)
+        return value
 
 
 class TaskAction(StrictModel):
@@ -22,9 +34,19 @@ class TaskAction(StrictModel):
     commands: tuple[RuntimeCommand, ...] = Field(default=(), max_length=64)
     actor: str = ""
     event: dict | None = None
+    request_ref: str | None = Field(default=None, min_length=1, max_length=128)
+
+    @model_serializer(mode="wrap")
+    def legacy_request_ref(self, handler):
+        value = handler(self)
+        if self.request_ref is None:
+            value.pop("request_ref", None)
+        return value
 
     @model_validator(mode="after")
     def payload(self):
+        if self.request_ref is not None and self.kind != "submit":
+            raise ValueError("request_ref is only for submission intent")
         if any(c.forecast is not None for c in self.commands):
             raise ValueError(
                 "task templates cannot contain privileged forecast bindings"
@@ -113,10 +135,37 @@ class TaskSpec(StrictModel):
                     raise ValueError("task event requires type/payload only")
                 payload = event["payload"]
                 kind = event["type"]
-                if kind in {"spacecraft_recover", "spacecraft_fault_cleared"}:
+                if kind == "station_outage_added" and (
+                    set(payload) != {"station", "start_sec", "end_sec"}
+                    or any(
+                        type(payload.get(k)) not in (int, float)
+                        or not math.isfinite(payload[k])
+                        for k in ("start_sec", "end_sec")
+                    )
+                    or not 0 <= payload["start_sec"] < payload["end_sec"]
+                ):
+                    raise ValueError(
+                        "unsupported or invalid station outage declaration"
+                    )
+                if kind == "request_added":
+                    from space_env.planning.demand_contract import DemandPayload
+
+                    try:
+                        declaration = DemandPayload.model_validate(payload)
+                    except ValueError as exc:
+                        raise ValueError(
+                            "unsupported or invalid demand declaration"
+                        ) from exc
+                    request = declaration.request
+                    allowed = (
+                        set(request.eligible_actors) <= set(role.demand_actors)
+                        and request.destination_id in role.demand_stations
+                    )
+                elif kind in {"spacecraft_recover", "spacecraft_fault_cleared"}:
                     allowed = payload.get("actor") in role.actors
                 elif kind in {
                     "station_recovered",
+                    "station_outage_added",
                     "station_reservation_policy_changed",
                     "terminal_booking_added",
                 }:

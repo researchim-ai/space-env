@@ -15,8 +15,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from space_env.eval.statistics import assign_split
-from space_env.factory.quality import quality_report, public_view_gate
-from space_env.planning.mission_plan import validate_plan, validate_execution, _sealed
+from space_env.factory.quality import public_view_gate, quality_report
+from space_env.planning.mission_plan import _sealed, validate_execution, validate_plan
 from space_env.scaling.coupled import coupled_evidence
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
 from space_env.simulation.streaming import atomic_jsonl, file_digest
@@ -94,9 +94,16 @@ def certificate(plan, execution, quality):
              'maximum_service':goals.max_fulfilled is None or fulfilled<=goals.max_fulfilled,
              'rejection_limit':rejected<=goals.max_rejections,
              'operation_failure_limit':not goals.require_no_failed_operations or not failed}
+    effective_scenario = spec.scenario
+    demand = None
+    if goals.demand is not None:
+        from space_env.planning.demand_contract import demand_evidence
+        effective_scenario, demand = demand_evidence(spec.scenario,native,goals.demand)
+        gates['dynamic_demand'] = demand['passed']
     coupled = None
     if goals.coupled is not None:
-        coupled = coupled_evidence(spec.scenario,native,goals.coupled)
+        effective_gates = goals.coupled.model_copy(update={"native_spec_sha256":digest(effective_scenario["definition"])})
+        coupled = coupled_evidence(effective_scenario,native,effective_gates)
         gates['coupled_mission'] = coupled['passed']
     body = {'schema':'space-env.mission-plan-certificate/1','plan_sha256':spec.sha256,
         'execution_sha256':execution['sha256'],'episode_sha256':episode['sha256'],
@@ -106,7 +113,8 @@ def certificate(plan, execution, quality):
         'noncompleted_operations':unfinished,'all_reported_operations_successful':not unfinished,
         'coupled_evidence':coupled,'quality':copy.deepcopy(quality),
         'expert_teacher_qualified':False,
-        'scope':'native model feasibility for this fixed schedule/build and declared goals; not optimality, independent physical truth, causality of the source proposal or flight qualification'}
+        'scope':'native model feasibility for this fixed schedule/build and declared goals; not optimality, independent physical truth, causality of the source proposal or flight qualification',
+        **({'demand_evidence':demand} if demand is not None else {})}
     return body | {'sha256':digest(body)}
 
 

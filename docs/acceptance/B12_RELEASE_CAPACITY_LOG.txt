@@ -1,0 +1,1 @@
+{"audit":{"expert_teacher_qualified":false,"integrity_passed":true,"native_replayed":false,"paired_rows":3,"teacher_gates_passed":false},"policy_rows":3,"resource_rows_passed":3,"same_native_episodes":true,"scope":"three repeated policies on the same physical case; no new independent holdout and no teacher promotion"}

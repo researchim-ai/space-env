@@ -6,6 +6,16 @@
 
 Это инженерная модель для обучения, не цифровой двойник конкретной миссии. Крупные пакеты развития и критерии промышленной приемки — в [основном плане](docs/INDUSTRIAL_AI_SIMULATOR_PLAN.md); реализованные возможности и проверки — в [статусе пакета](docs/IMPLEMENTATION_STATUS.md).
 
+**Настроить и выполнить свою миссию:** `python -m space_env.api.server`, затем
+[localhost:8766](http://127.0.0.1:8766/). Орбиты, станции, заявки, горизонт,
+план, фактическая доставка, карты и экспорт RL/SFT доступны на одной странице.
+Тот же путь доступен через `space_env.workspace.MissionWorkspace` и
+`python -m examples.workspace.run`. [Инструкция и ограничения](docs/MISSION_WORKSPACE.md).
+Для автоматического выбора спутника и станции укажите «Автоматически» в форме
+или `null` в конфигурации; явные назначения сохраняются.
+Планировщик сравнивает исходную эвристику с ограниченным поиском порядка заявок
+и компактного резервирования ресурсов; прогноз не подменяет результат симуляции.
+
 [Исполнимый план и сохраняемые RL/SFT bundles](docs/validation/MISSION_PLAN_BUNDLE_V1.md):
 sealed fixed-input schedule, native goal certificate, fresh-process continuation,
 retained episode и два режима аудита. Failed mission goal сохраняется в RL;
@@ -524,3 +534,80 @@ delivery-only workload на6000s: две орбитальные плоскост
 и negative control и проверяет native replay перед teacher gates. Forecast
 candidate и reactive baselines имеют разные information budgets; passing gates
 не означает expert qualification. [Контракт и запуск](docs/validation/FORECAST_DELIVERY_V1.md).
+
+### D2h-B1: полный цикл с прогнозным наведением
+
+Операторский planner формирует paid slew → acquisition → metadata transform →
+downlink без preload. Использует явно разрешённые будущие quaternion и окна,
+резервирует actor/terminal/time/energy/memory и проверяется native исполнением.
+Добавлен idle-boundary replan с неизменным исполненным префиксом и повторным
+сравнением его physical state. Это ограниченная kinematic модель; mid-flight
+interrupts, неизвестные отказы, rigid tracking и expert teacher quality не заявлены.
+[Контракт, ограничения и запуск](docs/validation/FORECAST_CHAINS_V1.md).
+
+### D2h-B2a: incident recovery и данные actor policy
+
+Операторский incident останавливает активные команды и объявляет outage станции.
+План восстанавливается по native remaining bits / paused CPU / живому raw без
+повторной съёмки; потерянный capture остаётся failed. Старый и committed prefix
+проверяются replay. Actor suffix RL/SFT экспортируются отдельно от operator
+controls, с role-only catalogue и явным team reward. Это один incident в
+ограниченном kinematic профиле, не универсальная failure/replanning модель.
+[Контракт и примеры](docs/validation/INCIDENT_RECOVERY_V1.md).
+
+### D2h-B2b-A: live actor policy и несколько incident epochs
+
+Общая projection для online SDK и offline actor RL/SFT; Gym joint Dict и
+PettingZoo Parallel adapters с собственными каталогами/масками ролей. Checkpoint
+проверяется полным native replay. Flat journal хранит до8 incident epochs,
+фиксирует actor deviations и immutable committed prefix без рекурсивных records.
+Данные условно допускаются в SFT по completed model-goal, не по expert promotion.
+[Контракт, ограничения и CLI](docs/validation/ACTOR_POLICY_JOURNAL_V1.md).
+
+### D2h-B2b-B: заявки во время миссии и версии каталога
+
+[Контракт incoming demand](docs/validation/VERSIONED_DEMAND_V1.md): новые заявки
+входят через native events, а не через preload продуктов. Повторная съёмка одной
+цели имеет свой `request_ref`; выполненные команды и история сохраняются.
+`ActorCoordinator.rebind()` проверяет переход к новому каталогу, старые bindings
+отклоняются. Gym/Parallel создаются заново для следующего epoch с фиксированными
+spaces. Полный знаменатель включает невыполненные новые заявки; провал service
+цели сохраняет RL и блокирует успешные SFT-кандидаты. Ограниченный профиль:
+существующие цели, один metadata job/request, до4 actors/64 total requests.
+
+```bash
+python -m examples.planning.demand_mission /tmp/demand-demo --mode two_updates
+python -m space_env.cli verify-demand-journal /tmp/demand-demo/journal.json --native
+```
+
+[План завершения](docs/RELEASE_FINISH_PLAN.md): рабочий симулятор, понятная
+установка, локальные тесты и примеры для самостоятельного запуска. CI и
+обязательные приёмочные кампании в процесс разработки не входят.
+
+### B12: воспроизводимая квалификация и общий forecast для baselines
+
+[Контракт benchmark](docs/validation/RELEASE_BENCHMARK_V1.md) и
+[область выпуска v1](docs/RELEASE_SCOPE_V1.md):32 фиксированных миссии в8 семействах,
+раздельные группы геометрии train/development/test, три метода с одинаковой
+forecast-информацией и лимитом поиска. Все ошибки, нехватка ресурсов и
+невыполненные заявки сохраняются. Bounded order search не выдаётся за глобальный
+оптимум; native replay не подтверждает экспертность teacher.
+
+```bash
+python -I -m space_env.planning.release_benchmark freeze /tmp/release-smoke.json --smoke
+python -I -m space_env.planning.release_benchmark run /tmp/release-smoke.json /tmp/release-smoke
+python -I -m space_env.planning.release_benchmark verify /tmp/release-smoke --native
+```
+
+Для полного набора с раздельными geometry-group workers используйте
+`scripts/run_release_qualification.py` и контракт профилей1GiB/4GiB. Exact wheel,
+clean venv, pinned dependency closure, advisory audit и исходные findings
+сохраняются отдельно. Разработка ведётся без CI: локальные тесты и ручной запуск
+примеров пользователем. [Установка, запуск и тесты](docs/LOCAL_RUN.md).
+
+[Безопасные benchmark splits](docs/validation/RELEASE_DATA_SPLITS_V1.md): для
+обучения используйте `scripts/export_release_data.py`. Он применяет явные
+train/development/test geometry groups; старый hash-split исходных native bundles
+остаётся только provenance. Нельзя обучаться по raw benchmark JSONL метке
+`train`: она может относиться к тестовой группе. Approved-SFT закрыт до прохождения
+suite-level teacher gates; RL сохраняет успешные и неуспешные миссии.

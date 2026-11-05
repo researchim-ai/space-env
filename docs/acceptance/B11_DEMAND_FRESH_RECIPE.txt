@@ -1,0 +1,25 @@
+import json
+from pathlib import Path
+from space_env.planning.actor_online import ActorCoordinator
+from space_env.planning.actor_data import publish_actor_data,verify_actor_data
+from space_env.simulation.snapshot import atomic_write,canonical_json,digest
+root=Path('/tmp/demand-installed-two_updates')
+out=Path('/tmp/demand-installed-fresh');out.mkdir()
+actor=ActorCoordinator.from_checkpoint(json.loads((root/'actor-prefix.json').read_text()))
+start=actor.cursor
+while not actor.done:
+ ids=actor._plan['steps'][actor.cursor]['action_ids']
+ owners={a['id']:a['role'] for a in actor._plan['task']['actions']}
+ obs=actor.observe()
+ actor.step({r:[a for a in ids if owners.get(a)==r] or ['wait'] for r in actor.roles},expected_bindings={r:o['binding'] for r,o in obs.items()},idempotency_key=f'policy/{actor.cursor}')
+record=actor.checkpoint();expected=json.loads((root/'controller.json').read_text())
+assert record==expected
+atomic_write(out/'controller.json',canonical_json(record))
+manifest=publish_actor_data(record,out/'data')
+audit=verify_actor_data(out/'data',native=True)
+original=json.loads((root/'data/manifest.json').read_text())
+assert manifest==original
+atomic_write(out/'data-audit.json',canonical_json(audit))
+result={'fresh_process':True,'start_cursor':start,'end_cursor':actor.cursor,'full_checkpoint_equal':True,'full_data_manifest_equal':True,'controller_sha256':record['sha256'],'data_manifest_sha256':manifest['sha256'],'native_data_audit':audit}
+atomic_write(out/'equivalence.json',canonical_json(result))
+print(canonical_json(result),flush=True)

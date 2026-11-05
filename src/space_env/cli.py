@@ -133,6 +133,43 @@ def main(argv: list[str] | None = None) -> None:
     orbital = sub.add_parser("compile-full-orbit", help="Compile bounded multi-cycle metadata mission with explicit attitude fidelity")
     orbital.add_argument("spec")
     orbital.add_argument("output")
+    for name in ('demand-journal-create','demand-journal-append','verify-demand-journal','actor-controller-rebind'):
+        entry=sub.add_parser(name,help='Native incoming requests, versioned catalogue and explicit actor epoch rebinding')
+        if name=='demand-journal-create':entry.add_argument('reference')
+        else:entry.add_argument('journal')
+        if name=='demand-journal-append':entry.add_argument('record');entry.add_argument('batch')
+        if name=='actor-controller-rebind':entry.add_argument('checkpoint')
+        if name=='verify-demand-journal':entry.add_argument('--native',action='store_true')
+        else:entry.add_argument('output')
+    for name in ('incident-journal-create','incident-journal-append','verify-incident-journal',
+                 'actor-controller-start','actor-controller-step','actor-controller-observe','actor-controller-verify',
+                 'actor-controller-execution','actor-data-export','verify-actor-data'):
+        entry = sub.add_parser(name, help='Verified live actor policy and bounded incident journal workflows')
+        if name=='incident-journal-create': entry.add_argument('proposal')
+        elif name in {'incident-journal-append','verify-incident-journal'}: entry.add_argument('journal')
+        elif name=='actor-controller-start': entry.add_argument('reference')
+        elif name=='verify-actor-data': entry.add_argument('directory')
+        else: entry.add_argument('checkpoint')
+        if name=='incident-journal-append': entry.add_argument('record'); entry.add_argument('--incident',default=None)
+        if name=='actor-controller-step': entry.add_argument('request')
+        if name in {'verify-incident-journal','verify-actor-data'}: entry.add_argument('--native',action='store_true')
+        if name not in {'verify-incident-journal','actor-controller-verify','verify-actor-data'}: entry.add_argument('output')
+    incident_data = sub.add_parser('incident-data-export', help='Native-verified actor suffix RL/SFT; operator faults excluded from agent targets')
+    incident_data.add_argument('proposal'); incident_data.add_argument('record'); incident_data.add_argument('output')
+    incident_data_audit = sub.add_parser('verify-incident-data', help='Audit actor data; optionally regenerate every row from native replay')
+    incident_data_audit.add_argument('directory'); incident_data_audit.add_argument('--native', action='store_true')
+    incident = sub.add_parser('chain-incident', help='Committed operator interruption/outage and phase-aware remaining-work proposal')
+    incident.add_argument('proposal'); incident.add_argument('record'); incident.add_argument('output')
+    incident.add_argument('--incident', default=None)
+    incident_audit = sub.add_parser('verify-chain-incident', help='Native replay committed incident prefix and recompute recovery proposal')
+    incident_audit.add_argument('proposal')
+    chain = sub.add_parser('chain-plan', help='Operator-authorized paid-pointing acquisition/CPU/delivery proposal')
+    chain.add_argument('scenario'); chain.add_argument('task'); chain.add_argument('output')
+    chain.add_argument('--goals', default=None)
+    chain_replan = sub.add_parser('chain-replan', help='Audited idle-boundary suffix replanning with frozen executed prefix')
+    chain_replan.add_argument('proposal'); chain_replan.add_argument('record'); chain_replan.add_argument('output')
+    chain_audit = sub.add_parser('verify-chain-plan', help='Recompute chain search and authorized forecasts; replan prefix audit is always native')
+    chain_audit.add_argument('proposal'); chain_audit.add_argument('--native', action='store_true')
     forecast=sub.add_parser('forecast-delivery-plan',help='Operator-authorized fixed-ephemeris ready-data forecast schedule')
     forecast.add_argument('scenario');forecast.add_argument('task');forecast.add_argument('output')
     forecast.add_argument('--goals',default=None)
@@ -223,6 +260,41 @@ def main(argv: list[str] | None = None) -> None:
     scale_parser.add_argument("manifest")
     scale_parser.add_argument("output")
     args = parser.parse_args(argv)
+    if args.command in {'demand-journal-create','demand-journal-append','verify-demand-journal','actor-controller-rebind'}:
+        from space_env.planning.demand_cli import run_command as demand_command
+        try:
+            response=demand_command(args)
+        except (OSError,ValueError,TypeError,KeyError,IndexError,AttributeError) as exc:
+            print(json.dumps({'passed':False,'error':str(exc)}));raise SystemExit(2) from exc
+        print(json.dumps(response));return
+    if args.command in {'incident-journal-create','incident-journal-append','verify-incident-journal',
+                        'actor-controller-start','actor-controller-step','actor-controller-observe',
+                        'actor-controller-verify','actor-controller-execution','actor-data-export','verify-actor-data'}:
+        from space_env.planning.actor_cli import run_command as actor_command
+        try:
+            response = actor_command(args)
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            print(json.dumps({'passed': False, 'error': str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(response)); return
+    if args.command in {'chain-incident', 'verify-chain-incident', 'incident-data-export', 'verify-incident-data'}:
+        from space_env.planning.incident_cli import run_command as incident_command
+        try:
+            response = incident_command(args)
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            print(json.dumps({'passed': False, 'error': str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(response))
+        return
+    if args.command in {'chain-plan', 'chain-replan', 'verify-chain-plan'}:
+        from space_env.planning.chain_cli import run_command as chain_command
+        try:
+            response = chain_command(args)
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            print(json.dumps({'passed': False, 'error': str(exc)}))
+            raise SystemExit(2) from exc
+        print(json.dumps(response))
+        return
     if args.command in {'forecast-delivery-plan','forecast-benchmark','verify-forecast-benchmark'}:
         from space_env.planning.forecast_cli import run_command as forecast_command
         try:

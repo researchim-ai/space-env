@@ -1,5 +1,19 @@
 # B02: управляемая GCRS-динамика и границы квалификации
 
+## D2h-B2b-B: no additional physical-fidelity claim
+
+Incoming customer requests now enter the native lifecycle, with versioned policy
+catalogues and cumulative service certificates. The planning/goal-only effective
+graph is never substituted for the simulator initial state. Installed cases
+exercise actual acquisition/processing/transmission metadata and zero-error bit
+accounting, including a retained failed deadline. They add lifecycle/provenance
+evidence, not new orbit, RF, rigid-body or scientific image calibration.
+See [contract](VERSIONED_DEMAND_V1.md) and
+[finite release gates](../RELEASE_FINISH_PLAN.md). Independent workload performance,
+expert teacher quality, C2 measured calibration and long rigid qualification remain
+separate. Prior receipts below retain their original source fingerprints.
+
+
 D2d: [fixed controller clock](FIXED_CONTROLLER_CLOCK_V1.md) — opt-in sampled
 motor hold, interrupts, native partition checks и mandatory event-resolution
 gate пройдены. Это не hardware calibration и не invariance между разными
@@ -279,3 +293,29 @@ Conservative battery без PV credit; unsupported thermal/ADCS/RF/dependencies
 отвергаются. Native replay проверяет fixed plan против выбранной модели;
 teacher thresholds не доказывают optimality, generalization или measured fidelity.
 [Контракт](FORECAST_DELIVERY_V1.md).
+
+## D2h-B1 — geometric pointing и serial kinematic chain planner
+
+Forecast pointing — future geometric snapshot с privileged permission и binding,
+а не prediction actual ADCS. Native paid kinematic slew/acquire/transform/deliver
+проверяет proposal, thermal/continuous tracking не решаются planner. Idle-boundary
+replan сохраняет physical prefix через cold replay; injected events и mid-flight
+interrupts не квалифицированы. [Контракт](FORECAST_CHAINS_V1.md).
+
+## D2h-B2a — recovery accounting, не новая физическая калибровка
+
+Native cancelled downlink сохраняет remaining bits; paused transform продолжает
+work; failed capture не порождает raw. Operator incident history и physical prefix
+сверяются до поиска suffix. Модель B1 остаётся kinematic/ideal-radio; никакой
+калибровки RF/thermal/rigid или неизвестных будущих отказов не добавлено.
+Actor datasets отделяют внешние controls и используют joint-team reward.
+[Контракт](INCIDENT_RECOVERY_V1.md).
+
+## D2h-B2b-A — live actor/journal verification
+
+Online/offline projector и numerical action masks имеют общий контракт. Native
+replay проверяет actor decisions, fixed executed-prefix edits и несколько
+committed incidents. Это проверка интерфейса/истории, не новая калибровка физики
+или гарантия неизвестных future failures. Case profile прежний kinematic/ideal
+radio; new demand, long rigid, C2 и hosted Q7 отдельно.
+[Контракт](ACTOR_POLICY_JOURNAL_V1.md).

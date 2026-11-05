@@ -1,0 +1,17 @@
+import json
+from pathlib import Path
+from space_env.planning.actor_online import ActorCoordinator
+from space_env.planning.actor_data import publish_actor_data,verify_actor_data
+from space_env.simulation.snapshot import atomic_write,canonical_json
+source=Path('/tmp/actor-final-policy_fork/actor-prefix.json')
+c=ActorCoordinator.from_checkpoint(json.loads(source.read_text()))
+while not c.done:
+ owners={a['id']:a['role'] for a in c._plan['task']['actions']};ids=c._plan['steps'][c.cursor]['action_ids']
+ choices={r:[a for a in ids if owners.get(a)==r] or ['wait'] for r in c.roles};obs=c.observe()
+ c.step(choices,expected_bindings={r:v['binding'] for r,v in obs.items()},idempotency_key=f'policy/{c.cursor}')
+root=Path('/tmp/actor-final-fresh');root.mkdir()
+atomic_write(root/'controller.json',canonical_json(c.checkpoint()))
+atomic_write(root/'execution.json',canonical_json(c.as_execution()))
+r=publish_actor_data(c.checkpoint(),root/'data')
+atomic_write(root/'data-audit.json',canonical_json(verify_actor_data(root/'data',native=True)))
+print(canonical_json({'controller_sha256':c.checkpoint()['sha256'],'goal_passed':r['goal']['passed'],'rows':{f:sum(v['rows'] for v in r['training_files'].values() if v['format']==f) for f in ('rl','sft')}}))

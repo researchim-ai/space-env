@@ -1,12 +1,14 @@
 import * as THREE from './vendor/three.module.js';
 import { OrbitControls } from './vendor/OrbitControls.js';
 import { makeSatellite } from './studio.js';
+import { mountWorkspace } from './workspace.js';
 
 const $ = (id) => document.getElementById(id);
 const COLORS = ['#8edfc5','#91c9ff','#f0bf80','#d6adff','#f297b1','#9bd77d'];
 const actorColor=(name)=>{let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length];};
 const reason = {observable_checks_passed:'Доступно сейчас',product_not_local:'Продукт отсутствует или уже доставлен',no_current_contact:'Нет текущего контакта',actor_busy:'Аппарат занят',role_scope:'Другая роль',control_exceeds_horizon:'Выходит за горизонт',product_not_ready:'Продукт ещё не готов',safe_mode:'Безопасный режим',accepted:'Принято',runtime_rejected:'Отклонено нативным runtime',wait:'Ожидание'};
 let credentials=null, state=null, busy=false, selected=new Set(), pending=null, autorun=false;
+let workspaceUI=null;
 const mapImage=new Image();mapImage.src='/viz/textures/earth_day.jpg';mapImage.onload=()=>drawMap();
 const fmt=(value,digits=1)=>Number(value).toLocaleString('ru-RU',{maximumFractionDigits:digits});
 const say=(message,error=false)=>{$('notice').textContent=message;$('notice').classList.toggle('error',error);};
@@ -20,6 +22,7 @@ async function api(path,{method='GET',body,admin=false,anonymous=false,binary=fa
 }
 const endpoint=(suffix='')=>`/api/operator/sessions/${credentials.session_id}${suffix?'/'+suffix:''}`;
 function buttons(){
+  workspaceUI?.setBusy(busy);
   for(const id of ['new','import','role','preset','refresh','close'])$(id).disabled=busy;
   for(const id of ['execute','wait'])$(id).disabled=busy||!state||state.done||!state.permissions.step;
   $('run').disabled=busy&&!autorun||!state||state.done||!state.permissions.step||state.role!=='@central';$('run').textContent=autorun?'Остановить прогон':'Прогон планировщика';
@@ -30,6 +33,8 @@ function buttons(){
   $('connection-save').disabled=busy||!credentials;
   if(state){$('to-agent').disabled||=state.control.controller==='agent';$('to-operator').disabled||=state.control.controller==='operator';}
   $('close').disabled=busy||!credentials?.tokens.admin;
+  $('workspace-result').disabled=busy||!state?.workspace;
+  if(state?.workspace&&!state.workspace.plan_aligned){$('suggest').disabled=true;$('run').disabled=true;}
 }
 async function task(fn){if(busy)return;busy=true;buttons();try{await fn();}catch(error){say(error.message,true);if(error.status===409&&credentials)try{await refresh();}catch{} }finally{busy=false;buttons();}}
 async function refresh(){if(!credentials)return;state=await api(endpoint());render();}
@@ -71,7 +76,7 @@ function render(){
   $('products').replaceChildren();for(const entity of state.observation.entities.filter(e=>['product','request','job'].includes(e.kind))){const item=document.createElement('div');item.className='product';const title=document.createElement('b'),detail=document.createElement('small');title.textContent=entity.id;detail.textContent=`${entity.kind} · ${entity.values.remaining_bits!==undefined?fmt(entity.values.remaining_bits/1e6,3)+' Мбит осталось':(state.status_labels[String(entity.values.status_code)]||'нет статуса')}`;item.append(title,detail);$('products').append(item);}
   if(!$('products').children.length)$('products').textContent='Нет видимых продуктов или заданий.';
   const previousFocus=$('focus').value;$('focus').replaceChildren();for(const name of Object.keys(nav)){const option=document.createElement('option');option.value=name;option.textContent=name;$('focus').append(option);}if(nav[previousFocus])$('focus').value=previousFocus;
-  drawMap();globe?.update(state);buttons();
+  drawMap();globe?.update(state);buttons();workspaceUI?.render(state);
 }
 async function step(ids){
   const advance=Number($('duration').value);if(!Number.isFinite(advance)||advance<=0)throw new Error('Задайте положительную длительность шага.');
@@ -83,8 +88,8 @@ async function step(ids){
 }
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 $('new').onclick=()=>task(()=>open({preset:$('preset').value}));$('refresh').onclick=()=>task(refresh);$('filter').oninput=()=>state&&actionNodes();$('role').onchange=()=>task(async()=>{pending=null;selected.clear();await refresh();say('Роль изменена; права и видимость проверяются сервером.');});
-$('execute').onclick=()=>task(()=>step([...selected].length?[...selected]:['wait']));$('wait').onclick=()=>task(()=>step(['wait']));$('suggest').onclick=()=>task(async()=>{const suggestion=await api(endpoint('suggest'));await step(suggestion.action_ids);});
-$('run').onclick=()=>{if(autorun){autorun=false;buttons();return;}task(async()=>{autorun=true;buttons();try{for(let i=0;i<256&&autorun&&state&&!state.done;i++){const suggestion=await api(endpoint('suggest'));await step(suggestion.action_ids);await new Promise(resolve=>setTimeout(resolve,120));}}finally{autorun=false;}say(state?.done?'Эпизод завершён нативной средой; итог виден в продуктах и заданиях.':'Прогон остановлен. Уже принятый шаг завершён.');});};
+$('execute').onclick=()=>task(()=>step([...selected].length?[...selected]:['wait']));$('wait').onclick=()=>task(()=>step(['wait']));$('suggest').onclick=()=>task(async()=>{const suggestion=await api(endpoint('suggest'));if(suggestion.advance_sec!==undefined)$('duration').value=suggestion.advance_sec;await step(suggestion.action_ids);});
+$('run').onclick=()=>{if(autorun){autorun=false;buttons();return;}task(async()=>{autorun=true;buttons();try{for(let i=0;i<256&&autorun&&state&&!state.done;i++){const suggestion=await api(endpoint('suggest'));if(suggestion.advance_sec!==undefined)$('duration').value=suggestion.advance_sec;await step(suggestion.action_ids);await new Promise(resolve=>setTimeout(resolve,120));}}finally{autorun=false;}say(state?.done?'Эпизод завершён нативной средой; итог виден в продуктах и заданиях.':'Прогон остановлен. Уже принятый шаг завершён.');});};
 async function artifactDigest(blob){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function artifactDownload(format,filename){
  const job=await api(endpoint('artifacts'),{method:'POST',body:{direction:'download',format},admin:true});
@@ -135,4 +140,6 @@ let globe=null;try{globe=mountGlobe();}catch{ $('globe-note').textContent='WebGL
 $('focus').onchange=()=>globe?.focus($('focus').value);
 new ResizeObserver(drawMap).observe($('ground-map'));
 // Browser/tab closure never closes a durable mission or stores secrets in localStorage.
-task(async()=>{const catalogue=await api('/api/operator/catalogue',{anonymous:true});if(catalogue.active_sessions===0)await open({preset:$('preset').value});else{$('connection').textContent='Подключите сохранённую сессию';say('Есть активные сессии. Импортируйте секретный файл доступа или откройте новую миссию.');}});
+workspaceUI=mountWorkspace({api,task,adopt,say,download});
+$('workspace-result').onclick=()=>{if(state?.workspace)download(new Blob([JSON.stringify({schema:'space-env.mission-result/1',time_sec:state.time_sec,...state.workspace},null,2)],{type:'application/json'}),'mission-result.json');};
+task(async()=>{await workspaceUI.initialize();const catalogue=await api('/api/operator/catalogue',{anonymous:true});$('connection').textContent='Готово к запуску';say(catalogue.active_sessions?'Есть сохранённые сессии: импортируйте файл доступа или создайте новую миссию.':'Настройте миссию выше или оставьте пример и нажмите «Составить план и открыть миссию».');});

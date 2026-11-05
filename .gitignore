@@ -220,6 +220,10 @@ datasets/
 # Exact retained acceptance datasets; other build/run archives remain ignored.
 !docs/acceptance/B11_MISSION_PLAN_BUNDLES.tar.gz
 !docs/acceptance/B11_FORECAST_BUNDLES.tar.gz
+!docs/acceptance/B11_CHAINS_BUNDLES.tar.gz
+!docs/acceptance/B11_INCIDENT_BUNDLES.tar.gz
+!docs/acceptance/B11_ACTOR_BUNDLES.tar.gz
+!docs/acceptance/B11_INCIDENT_PREHARDENING.tar.gz
 !docs/acceptance/B11_MISSION_PLAN_PREHARDENING.tar.gz
 
 # Local editor / operating-system files
@@ -254,3 +258,8 @@ coverage.json
 # Local durable Mission Control state and private connection capabilities
 /.space-env/
 /operator-connection*.json
+
+# Exact accepted incoming-demand bundles and matching wheel
+!docs/acceptance/B11_DEMAND_BUNDLES.tar.gz
+
+# B12 generated dataset/evidence archives stay local; receipts and recipes are versioned.

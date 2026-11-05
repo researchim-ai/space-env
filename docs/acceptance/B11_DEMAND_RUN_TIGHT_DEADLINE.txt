@@ -1,0 +1,1 @@
+{"actor_rows":{"rl":256,"sft":0},"catalogue_versions":["86412b860dca3f33d58dc4e5fe901b63d30007dce63cc49129dab4900c46f052","7a9fee54c0fee69c8cf991385401b04a79185393165d8d614ca5048985b9616c"],"epochs":1,"expert_teacher_qualified":false,"fulfilled":2,"mission_goal_passed":false,"total":3}

@@ -1,0 +1,1 @@
+{"mission_goal_passed": true, "training_files": 4, "sha256": "9ae69d330ae1ebf7ed4ffacc0ef195d5a65419caaf47640fd125e06420497ea5"}

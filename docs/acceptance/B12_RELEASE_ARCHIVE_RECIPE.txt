@@ -1,0 +1,60 @@
+import gzip, hashlib, json, tarfile
+from pathlib import Path
+import importlib.util
+from space_env.simulation.snapshot import canonical_json,digest
+from space_env.simulation.streaming import file_digest
+base=Path('/home/user/workspace/space-env');out=base/'docs/acceptance'
+profiles={'1G':Path('/tmp/b12-release-full-results'),'4G':Path('/tmp/b12-release-4g-results'),'128M':Path('/tmp/b12-capacity-results')}
+files={};archives={}
+def normalize(info):
+ info.uid=info.gid=info.mtime=0;info.uname=info.gname='';info.mode=0o644
+ return info
+def write_archive(name,items):
+ path=out/name
+ with path.open('wb') as raw:
+  with gzip.GzipFile(filename='',mode='wb',fileobj=raw,mtime=0,compresslevel=6) as stream:
+   with tarfile.open(fileobj=stream,mode='w') as tar:
+    for arc,p in sorted(items):
+     assert p.is_file() and not p.is_symlink(),p
+     assert arc not in files,arc
+     files[arc]={'bytes':p.stat().st_size,'sha256':file_digest(p)}
+     tar.add(p,arcname=arc,recursive=False,filter=normalize)
+ archives[name]={'bytes':path.stat().st_size,'sha256':file_digest(path),'files':len(items)}
+ assert path.stat().st_size<95_000_000,'archive exceeds repository artifact policy; split finer'
+for profile,root in profiles.items():
+ assert (root/'report.json').exists(),profile
+ headers=[(profile+'/'+p.relative_to(root).as_posix(),p) for p in root.iterdir() if p.is_file()]
+ write_archive(f'B12_RELEASE_BUNDLES_{profile}_META.tar.gz',headers)
+ directories=sorted((root/'parts').iterdir()) if (root/'parts').exists() else sorted(p for p in root.iterdir() if p.is_dir())
+ for directory in directories:
+  items=[(profile+'/'+p.relative_to(root).as_posix(),p) for p in directory.rglob('*') if p.is_file()]
+  write_archive(f'B12_RELEASE_BUNDLES_{profile}_{directory.name}.tar.gz',items)
+training=Path('/tmp/b12-release-training')
+write_archive('B12_RELEASE_BUNDLES_MLDATA_META.tar.gz',[('MLDATA/manifest.json',training/'manifest.json')])
+for partition in ('train','development','test'):
+ items=[('MLDATA/'+p.relative_to(training).as_posix(),p) for p in (training/partition).rglob('*') if p.is_file()]
+ write_archive(f'B12_RELEASE_BUNDLES_MLDATA_{partition.upper()}.tar.gz',items)
+wheel=Path('/tmp/b12-release-wheel/space_env-0.134.0-py3-none-any.whl')
+recipe_paths=['scripts/export_release_data.py','scripts/run_release_qualification.py','scripts/verify_release_install.py','scripts/freeze_release_constraints.py','requirements/release-py311-py312-linux.txt','requirements/build-release.txt','requirements/audit-release.txt','requirements/release-licenses.json','.github/workflows/release-qualification.yml']
+fresh=[]
+for label,path in [('idle',Path('/tmp/b12-release-fresh')),('active',Path('/tmp/b12-release-fresh-active'))]:
+ fresh += [('fresh/'+label+'/'+p.relative_to(path).as_posix(),p) for p in path.rglob('*') if p.is_file()]
+write_archive('B12_RELEASE_BUNDLES_RUNTIME.tar.gz',[('wheel/'+wheel.name,wheel)]+[('recipe/'+n,base/n) for n in recipe_paths]+fresh)
+body={'schema':'space-env.release-archive/1','files':files,'archives':archives,'file_count':len(files),'uncompressed_bytes':sum(x['bytes'] for x in files.values()),'compressed_bytes':sum(x['bytes'] for x in archives.values()),'scope':'two different capacity profiles over identical physical inputs; exact wheel and dependency closure; not independent extra holdouts'}
+body['sha256']=digest(body);(out/'B12_RELEASE_ARCHIVE.json').write_text(canonical_json(body)+'\n')
+restore=Path('/tmp/b12-release-restored');restore.mkdir()
+for name in archives:
+ with tarfile.open(out/name) as tar:tar.extractall(restore,filter='data')
+actual={p.relative_to(restore).as_posix() for p in restore.rglob('*') if p.is_file()}
+assert actual==set(files)
+for name,m in files.items():
+ p=restore/name;assert p.stat().st_size==m['bytes'] and file_digest(p)==m['sha256'],name
+spec=importlib.util.spec_from_file_location('orchestrator',base/'scripts/run_release_qualification.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+from space_env.planning.release_benchmark import verify_suite
+audits={profile:(verify_suite(restore/profile,native=False) if profile=='128M' else m.verify(restore/profile,native=False)) for profile in profiles}
+data_spec=importlib.util.spec_from_file_location('release_data',base/'scripts/export_release_data.py');data_module=importlib.util.module_from_spec(data_spec);data_spec.loader.exec_module(data_module)
+audits['MLDATA']=data_module.verify(restore/'4G',restore/'MLDATA',native=False)
+result={'exact_inventory_verified':True,'file_count':len(files),'archive_files':len(archives),'restored_native_replay':False,'audits':audits,'scope':'restored consistency; original workers performed audited cold replay and native-verified export'}
+(out/'B12_RELEASE_ARCHIVE_AUDIT.json').write_text(canonical_json(result)+'\n')
+print(canonical_json({k:body[k] for k in ('file_count','uncompressed_bytes','compressed_bytes','sha256')}),flush=True)
+print(canonical_json(result),flush=True)

@@ -1,0 +1,30 @@
+import json,time
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+from space_env.planning.release_benchmark import (Suite,POLICIES,_launch,teacher_report,summarize_envelope,verify_suite)
+from space_env.simulation.snapshot import atomic_write,canonical_json,digest
+from space_env.simulation.streaming import file_digest
+from space_env.planning.mission_bundle import read_json
+spec=Suite.model_validate(read_json('/tmp/b12-capacity-input.json'));frozen=spec.model_dump(mode='json',by_alias=True)
+root=Path('/tmp/b12-capacity-results');root.mkdir();atomic_write(root/'spec.json',canonical_json(frozen))
+case=spec.cases[0].model_dump(mode='json');directory=root/'000';directory.mkdir()
+t=time.perf_counter();assert _launch({'case':case,'policy':'prepare','budget':frozen['budget'],'directory':str(directory)},directory,spec.budget) is None
+forecast_sec=time.perf_counter()-t;view=read_json(directory/'forecast.json')
+old=Path('/tmp/b12-release-4g-results/parts/002/results/007')
+assert view==read_json(old/'forecast.json')
+def job(policy):
+ path=directory/policy;path.mkdir()
+ error=_launch({'case':case,'policy':policy,'budget':frozen['budget'],'directory':str(path),'forecast':view},path,spec.budget)
+ assert error is None,error
+ row=read_json(path/'result.json');assert row['resource_gate_passed']
+ before=read_json(old/policy/'dataset/execution.json');after=read_json(path/'dataset/execution.json')
+ assert before['episode']==after['episode']
+ row.update(split=case['split'],group=case['group'],family=case['family'],shared_forecast_sec=forecast_sec)
+ return row
+with ThreadPoolExecutor(max_workers=3) as pool:rows=list(pool.map(job,POLICIES))
+files={p.relative_to(root).as_posix():{'bytes':p.stat().st_size,'sha256':file_digest(p)} for p in sorted(root.rglob('*')) if p.is_file()}
+body={'schema':'space-env.release-benchmark/1','spec_sha256':digest(frozen),'rows':rows,'teacher':teacher_report(spec,rows),'measured_envelope':summarize_envelope(spec,rows),'files':files,'policies':list(POLICIES),'information_contract':'capacity retry at128 MB; same case/forecast/search/physical goals, concurrent policy workers','expert_teacher_qualified':False}
+body['sha256']=digest(body);atomic_write(root/'report.json',canonical_json(body))
+audit=verify_suite(root,native=False)
+result={'audit':audit,'same_native_episodes':True,'resource_rows_passed':sum(r['resource_gate_passed'] for r in rows),'policy_rows':len(rows),'scope':'three repeated policies on the same physical case; no new independent holdout and no teacher promotion'}
+print(canonical_json(result),flush=True)

@@ -1,0 +1,3 @@
+{"mode": "nominal", "predicted_fulfilled": 2, "total": 24, "mission_goal_passed": true, "sft_exported": true, "expert_teacher_qualified": false}
+{"mode": "shifted", "predicted_fulfilled": 0, "total": 24, "mission_goal_passed": false, "sft_exported": false, "expert_teacher_qualified": false}
+{"mode": "outage", "predicted_fulfilled": 0, "total": 24, "mission_goal_passed": false, "sft_exported": false, "expert_teacher_qualified": false}

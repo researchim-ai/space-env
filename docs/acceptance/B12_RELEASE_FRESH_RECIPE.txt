@@ -1,0 +1,38 @@
+import json,math,os,subprocess,sys
+from pathlib import Path
+from space_env.planning.mission_plan import PlanExecution
+from space_env.simulation.snapshot import canonical_json,atomic_write,digest
+source=Path('/tmp/b12-release-4g-results/parts/000/results/000/priority_greedy')
+root=Path('/tmp/b12-release-fresh')
+mode=sys.argv[1]
+if mode=='parent':
+ root.mkdir()
+ selection=json.loads((source/'selection.json').read_text())
+ q=selection['schedule']['steps'][0]['advance_sec']
+ allocations=selection['schedule']['allocations']
+ first=allocations[0] if allocations else None
+ cutoff=max(1,round((first['start_sec']+(first['capture_sec']-first['start_sec'])/2)/q)) if first else 60
+ atomic_write(root/'settings.json',canonical_json({'source_case':'release-0-nominal','policy':'priority_greedy','cutoff':cutoff,'selection_rule':'midpoint of first declared slew, or fixed60 if no allocations; no native outcome search'}))
+ atomic_write(root/'plan.json',(source/'dataset/plan.json').read_text())
+ for command in ('produce','consume'):
+  subprocess.run([sys.executable,'-I',__file__,command],check=True)
+ print((root/'result.json').read_text())
+elif mode=='produce':
+ plan=json.loads((root/'plan.json').read_text());x=PlanExecution(plan)
+ x.run(decisions=json.loads((root/'settings.json').read_text())['cutoff'])
+ record=x.checkpoint();atomic_write(root/'prefix.json',canonical_json(record))
+ active=[{'id':c['id'] if 'id' in c else c.get('command_id'),'status':c['status']} for c in x._session._runtime.command_status() if c['status'] in ('accepted','running')]
+ atomic_write(root/'producer.json',canonical_json({'pid':os.getpid(),'active_commands':active,'cursor':x.cursor}))
+else:
+ plan=json.loads((root/'plan.json').read_text());prefix=json.loads((root/'prefix.json').read_text())
+ x=PlanExecution.from_checkpoint(plan,prefix);x.run();record=x.checkpoint()
+ expected=json.loads((source/'dataset/execution.json').read_text())
+ assert record['episode']==expected['episode']
+ assert record['recovery']['fresh_process'] is True
+ assert record['producer_pid']!=prefix['producer_pid']
+ atomic_write(root/'execution.json',canonical_json(record))
+ result={'fresh_process':True,'producer_pid':prefix['producer_pid'],'consumer_pid':record['producer_pid'],
+  'episode_equal':True,'physical_report_equal':digest(record['episode']['runtime']['backend_report'])==digest(expected['episode']['runtime']['backend_report']),
+  'prefix_steps':len(prefix['episode']['transitions']),'final_steps':len(record['episode']['transitions']),
+  'episode_sha256':record['episode']['sha256'],'scope':'audited cold replay in another interpreter; reported PID witness, not OS isolation'}
+ atomic_write(root/'result.json',canonical_json(result))

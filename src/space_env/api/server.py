@@ -70,7 +70,7 @@ def handle_get(
     """Ответ на GET. Путь без хоста."""
     if path.startswith("/api/operator/"):
         return _operator_response("GET", path, token=token)
-    if path == "/operator":
+    if path in {"/", "/operator", "/workspace"}:
         return _file(studio_root() / "operator.html")
     if path == "/api/health":
         return _json_bytes({"status": "ok", "version": __version__})
@@ -111,7 +111,7 @@ def handle_get(
         except ValueError as exc:
             return _json_bytes({"error": str(exc)}, 400)
         return _json_bytes(payload)
-    if path in {"/", "/studio"}:
+    if path in {"/studio", "/demos"}:
         return _file(studio_root() / "studio.html")
     if path.startswith("/viz/"):
         return _file(studio_root() / path.removeprefix("/viz/"))

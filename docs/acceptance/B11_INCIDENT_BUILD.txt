@@ -1,0 +1,16 @@
+Processing /home/user/workspace/space-env
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: space-env
+  Building wheel for space-env (pyproject.toml): started
+  Building wheel for space-env (pyproject.toml): finished with status 'done'
+  Created wheel for space-env: filename=space_env-0.134.0-py3-none-any.whl size=2220625 sha256=fa04a5c476f3621257e54a1ec7d4e680807b33d56e704b5dd47d6e78378a6388
+  Stored in directory: /home/user/.cache/pip/wheels/98/3e/53/1892f8e2d9af9e7eb7d30d62bcea7d38f2faf6d58396ea8557
+Successfully built space-env
+
+[notice] A new release of pip is available: 25.1.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip

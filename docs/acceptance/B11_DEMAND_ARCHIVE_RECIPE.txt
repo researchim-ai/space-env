@@ -1,0 +1,35 @@
+import hashlib,json,tarfile
+from pathlib import Path
+from space_env.planning.demand_journal import verify_demand_journal
+from space_env.planning.actor_data import verify_actor_data
+from space_env.simulation.snapshot import canonical_json,digest
+base=Path('/home/user/workspace/space-env/docs/acceptance')
+roots={m:Path('/tmp/demand-installed-'+m) for m in ('batch','two_updates','tight_deadline','fresh','cli')}
+archive=base/'B11_DEMAND_BUNDLES.tar.gz'; inventory={}
+with tarfile.open(archive,'w:gz') as tar:
+ for name,root in roots.items():
+  assert root.exists(),name
+  for p in sorted(root.rglob('*')):
+   assert not p.is_symlink()
+   if not p.is_file():continue
+   relative=(Path(name)/p.relative_to(root)).as_posix()
+   inventory[relative]={'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+   tar.add(p,arcname=relative,recursive=False)
+ wheel=Path('/tmp/demand-wheel-final/space_env-0.134.0-py3-none-any.whl')
+ relative='wheel/'+wheel.name
+ inventory[relative]={'bytes':wheel.stat().st_size,'sha256':hashlib.sha256(wheel.read_bytes()).hexdigest()}
+ tar.add(wheel,arcname=relative,recursive=False)
+body={'schema':'space-env.demand-acceptance-archive/1','archive':archive.name,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'compressed_bytes':archive.stat().st_size,'files':inventory,'file_count':len(inventory),'uncompressed_bytes':sum(m['bytes'] for m in inventory.values())}
+body['sha256']=digest(body);(base/'B11_DEMAND_ARCHIVE.json').write_text(canonical_json(body)+'\n')
+restore=Path('/tmp/demand-archive-restored');restore.mkdir()
+with tarfile.open(archive) as tar:tar.extractall(restore,filter='data')
+assert {p.relative_to(restore).as_posix() for p in restore.rglob('*') if p.is_file()}==set(inventory)
+for name,m in inventory.items():
+ p=restore/name;assert p.stat().st_size==m['bytes'];assert hashlib.sha256(p.read_bytes()).hexdigest()==m['sha256']
+audits={}
+for name in ('batch','two_updates','tight_deadline'):
+ root=restore/name
+ audits[name]={'journal':verify_demand_journal(json.loads((root/'journal.json').read_text()),native=False),'data':verify_actor_data(root/'data',native=False)}
+audits['fresh']={'data':verify_actor_data(restore/'fresh/data',native=False)}
+result={'exact_inventory_verified':True,'file_count':len(inventory),'restored_wheel_sha256':inventory[relative]['sha256'],'native_replay_on_restore':False,'scope':'restored archive consistency; native audits ran on original installed outputs','audits':audits}
+(base/'B11_DEMAND_ARCHIVE_AUDIT.json').write_text(canonical_json(result)+'\n');print(canonical_json({k:v for k,v in result.items() if k!='audits'}))

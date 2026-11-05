@@ -1,0 +1,15 @@
+Source frozen before native qualification. No git stage/commit/push.
+python -m pytest tests/test_demand_journal.py -q
+python -m space_env.eval.ci_profiles fast
+python -m space_env.eval.ci_profiles reference
+python -m pip wheel . --no-deps -w /tmp/demand-wheel-final
+python -m venv --system-site-packages /tmp/demand-final-venv
+/tmp/demand-final-venv/bin/python -m pip install --no-deps /tmp/demand-wheel-final/space_env-0.134.0-py3-none-any.whl
+# From /tmp, Python -I, installed modules only:
+/tmp/demand-final-venv/bin/python -I /tmp/demand-installed-harness.py <frozen-input> <new-output-directory>
+# Three inputs: batch, two_updates, tight_deadline. Do not overwrite existing outputs.
+# Separate process, after two_updates case:
+/tmp/demand-final-venv/bin/python -I /tmp/demand-fresh.py
+/tmp/demand-final-venv/bin/python -I /tmp/demand-adapters.py
+# Recipes archived as B11_DEMAND_HARNESS/FRESH_RECIPE/ADAPTER_RECIPE.txt.
+# venv uses system dependencies: not dependency-clean CI.

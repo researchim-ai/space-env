@@ -1,0 +1,79 @@
+import json
+from pathlib import Path
+from space_env.planning.chain import propose_chain
+from space_env.planning.incident import recover_incident,verify_incident
+from space_env.planning.incident_data import publish_incident_data,verify_incident_data
+from space_env.planning.mission_bundle import publish_plan_bundle
+from space_env.planning.mission_plan import PlanExecution
+from space_env.runtime import AccessPolicy,MissionRuntime
+from space_env.simulation.snapshot import atomic_write,canonical_json
+
+def run(value, output):
+    root = Path(output)
+    if root.exists():
+        raise ValueError("output must not exist")
+    root.mkdir(parents=True)
+    atomic_write(root / "input.json", canonical_json(value))
+    proposal = propose_chain(
+        MissionRuntime(value["scenario"], access=AccessPolicy(forecast=True)),
+        value["scenario"],
+        value["task"],
+        goals=value["goals"],
+    )
+    atomic_write(root / "source_proposal.json", canonical_json(proposal))
+    first = proposal["schedule"]["allocations"][0]
+    q = value["task"]["decision_sec"]
+    field = {
+        "partial_tx": "delivery_sec",
+        "blocked": "delivery_sec",
+        "paused_cpu": "cpu_sec",
+        "lost_capture": "capture_sec",
+        "slew": "start_sec",
+    }[value["mode"]]
+    boundary = first[field] + q
+    x = PlanExecution(proposal["plan"])
+    x.run(decisions=round(boundary / q))
+    record = x.save(root / "source_prefix.json")
+    stations = sorted({a["station"] for a in proposal["schedule"]["allocations"]})
+    incident = {
+        "disruptions": [
+            {"station": s, "end_sec": value["outage_end_sec"]} for s in stations
+        ]
+    }
+    atomic_write(root / "incident.json", canonical_json(incident))
+    updated = recover_incident(proposal, record, incident)
+    atomic_write(root / "recovery.json", canonical_json(updated))
+    atomic_write(root / "prefix_audit.json", canonical_json(verify_incident(updated)))
+    execution = PlanExecution(updated["plan"])
+    execution.run()
+    record = execution.save(root / "execution.json")
+    atomic_write(root / "plan.json", canonical_json(updated["plan"]))
+    bundle = publish_plan_bundle(updated["plan"], record, root / "dataset")
+    fulfilled = record["episode"]["runtime"]["backend_report"]["lifecycle"]["metrics"][
+        "fulfilled_requests"
+    ]
+    result = {
+        "mode": value["mode"],
+        "fulfilled": fulfilled,
+        "total": updated["schedule"]["total"],
+        "predicted_fulfilled": updated["schedule"]["predicted_fulfilled"],
+        "mission_goal_passed": bundle["mission_goal_passed"],
+        "sft_exported": bundle["sft_exported"],
+        "phases": {
+            phase: sum(s["phase"] == phase for s in updated["states"].values())
+            for phase in ("fresh", "raw", "final", "completed", "terminal")
+        },
+        "expert_teacher_qualified": False,
+    }
+    atomic_write(root / "result.json", canonical_json(result))
+    return result
+
+for mode in ('partial_tx','paused_cpu','lost_capture','blocked','slew'):
+ value=json.loads(Path('/tmp/incident-input-'+mode+'.json').read_text())
+ root=Path('/tmp/incident-qualified-'+mode)
+ result=run(value,root)
+ recovery=json.loads((root/'recovery.json').read_text());execution=json.loads((root/'execution.json').read_text())
+ data=publish_incident_data(recovery,execution,root/'actor_data')
+ audit=verify_incident_data(root/'actor_data',native=True)
+ atomic_write(root/'actor_audit.json',canonical_json(audit))
+ print(canonical_json({'mode':mode,**result,'agent_training_files':len(data['training_files']),'agent_native_audit':audit['native_rows_recomputed']}),flush=True)

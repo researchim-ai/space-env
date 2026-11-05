@@ -1,0 +1,31 @@
+import json,re
+from pathlib import Path
+from space_env.simulation.snapshot import canonical_json,digest
+from space_env.simulation.streaming import file_digest
+root=Path('/home/user/workspace/space-env');base=root/'docs/acceptance'
+load=lambda name:json.loads((base/name).read_text())
+def count(name):
+ text=(base/name).read_text();assert not re.search(r'\b[1-9]\d* (failed|errors?)\b',text),text[-2000:]
+ return int(re.findall(r'(\d+) passed',text)[-1])
+counts={'reference':count('B12_RELEASE_REFERENCE.txt'),'fast':count('B12_RELEASE_FAST.txt'),'benchmark_clean_dependencies':count('B12_RELEASE_CLEAN_TESTS.txt'),'orchestration_and_split_guards_clean':count('B12_RELEASE_SPLIT_ORCHESTRATION_TESTS.txt')}
+assert counts=={'reference':1911,'fast':110,'benchmark_clean_dependencies':22,'orchestration_and_split_guards_clean':8}
+wheel=load('B12_RELEASE_WHEEL.json');assert wheel['source_and_installed_match'] and wheel['dependency_clean']
+install=load('B12_RELEASE_CLEAN_INSTALL.json');assert install['dependency_clean']
+results=load('B12_RELEASE_RESULTS.json');assert results['storage4g']['native_verified']==96 and results['storage4g']['resource_passed']==93
+assert results['storage1g']['errors']=={'global_artifact_budget_exhausted':24}
+assert results['result128m']['native_verified']==results['result128m']['resource_passed']==3
+archive=load('B12_RELEASE_ARCHIVE.json');archive_audit=load('B12_RELEASE_ARCHIVE_AUDIT.json');assert archive_audit['exact_inventory_verified']
+advisories=load('B12_RELEASE_ADVISORIES.json');assert not any(d.get('vulns') for d in advisories['dependencies'])
+data=load('B12_RELEASE_DATA_AUDIT.json');assert data['integrity_passed'] and not data['sft_exported']
+assert data['rows']=={'train/rl.jsonl':3600,'development/rl.jsonl':3600,'test/rl.jsonl':7200}
+for label in ('B12_RELEASE_FRESH_RESULT.json','B12_RELEASE_FRESH_ACTIVE_RESULT.json'):
+ r=load(label);assert r['fresh_process'] and r['episode_equal'] and r['physical_report_equal']
+assert load('B12_RELEASE_FRESH_ACTIVE_PREFIX.json')['active_commands']
+paths=list(base.glob('B12_RELEASE_*'))+[root/n for n in ['README.md','pyproject.toml','.gitignore','docs/RELEASE_FINISH_PLAN.md','docs/RELEASE_SCOPE_V1.md','docs/IMPLEMENTATION_STATUS.md','docs/PRODUCT_EXECUTION_NEXT.md','docs/validation/RELEASE_BENCHMARK_V1.md','docs/validation/RELEASE_DATA_SPLITS_V1.md','src/space_env/configs/release_scope_v1.json','src/space_env/planning/release_benchmark.py','src/space_env/planning/release_cases.py','src/space_env/planning/chain.py','src/space_env/eval/ci_profiles.py','scripts/freeze_release_constraints.py','scripts/verify_release_install.py','scripts/run_release_qualification.py','scripts/export_release_data.py','tests/test_release_benchmark.py','tests/test_release_orchestration.py','tests/test_release_data.py','.github/workflows/release-qualification.yml','requirements/release-py311-py312-linux.txt','requirements/release-licenses.json','requirements/build-release.txt','requirements/audit-release.txt']]
+files={}
+for p in sorted(paths):
+ if p.name in ('B12_RELEASE_ACCEPTANCE.json','B12_RELEASE_FINAL_LOG.txt'):continue
+ if p.is_file():files[p.relative_to(root).as_posix()]={'bytes':p.stat().st_size,'sha256':file_digest(p)}
+body={'schema':'space-env.release-acceptance/1','package':'B12 equal-information benchmark, clean dependency qualification and explicit ML partitions','date':'2026-11-05','version':'0.134.0','wheel_sha256':wheel['wheel_sha256'],'source_data_sha256':wheel['build']['source_data_sha256'],'modules':wheel['modules'],'source_data_files':wheel['source_data_files'],'assets':wheel['assets'],'tests':counts,'test_profiles_overlap':True,'dependency_clean_python':'3.12.9','pinned_dependencies':len(install['dependencies']),'advisory_initial_records':88,'advisory_final_known_records':0,'advisory_tool':'pip-audit2.10.1','physical_cases':32,'geometry_groups':4,'test_groups':2,'storage1g':{k:results['storage1g'][k] for k in ('policy_rows','native_verified','resource_passed','errors')},'storage4g':{k:results['storage4g'][k] for k in ('policy_rows','native_verified','resource_passed','errors')},'result128m':{'policy_rows':3,'resource_passed':3,'same_native_episodes':True,'scope':'same long case repeated; not independent holdout'},'full_homogeneous_128m_locally_run':False,'teacher_gates_passed':False,'expert_teacher_qualified':False,'approved_dataset':data,'legacy_raw_benchmark_splits_are_not_training_authority':True,'fresh_process_tests':{'idle':load('B12_RELEASE_FRESH_RESULT.json'),'active':load('B12_RELEASE_FRESH_ACTIVE_RESULT.json'),'active_prefix':load('B12_RELEASE_FRESH_ACTIVE_PREFIX.json')},'archive':{'file_count':archive['file_count'],'archives':len(archive['archives']),'compressed_bytes':archive['compressed_bytes'],'uncompressed_bytes':archive['uncompressed_bytes'],'restored_exact_inventory':True,'restored_native_replay':False,'generated_blobs_gitignored':True,'scope':'local exact evidence; native replay/export audits on originals; restored checks are consistency only'},'remote_ci_run':False,'full_repository_ci_run':False,'limits':['bounded kinematic chain/metadata/ideal geometric downlink benchmark, not all physics profiles','deterministic grouped cases do not prove population sampling or superiority','uniform-priority/deadline cases can make greedy/rule baselines coincide','time/RSS probes ran on shared host, not independent isolated performance repetitions','version-pinned3.12 dependency snapshot is not a universal hash-locked resolution','legal/license review, measured C2 calibration, long rigid qualification and Q7 hosted isolation remain separate','native replay and per-case SFT candidates do not establish expert demonstrations'],'git_actions':'no stage/commit/push/publication; generated large archives excluded from ordinary git add','files':files}
+body['sha256']=digest(body);(base/'B12_RELEASE_ACCEPTANCE.json').write_text(canonical_json(body)+'\n')
+print(canonical_json({k:body[k] for k in ('sha256','wheel_sha256','tests','approved_dataset','archive')}))

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.33.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -7,6 +7,8 @@ name = "space-env"
 version = "0.134.0"
 description = "Environment for generating pretraining/SFT/RL data for space industry agents"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24",
@@ -58,6 +60,8 @@ packages = ["src/space_env"]
 "viz/operator.html" = "space_env/studio_assets/operator.html"
 "viz/operator.js" = "space_env/studio_assets/operator.js"
 "viz/operator.css" = "space_env/studio_assets/operator.css"
+"viz/workspace.js" = "space_env/studio_assets/workspace.js"
+"viz/workspace.css" = "space_env/studio_assets/workspace.css"
 "viz/studio.html" = "space_env/studio_assets/studio.html"
 "viz/studio.js" = "space_env/studio_assets/studio.js"
 "viz/app.js" = "space_env/studio_assets/app.js"

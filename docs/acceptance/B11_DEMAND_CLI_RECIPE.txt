@@ -1,0 +1,25 @@
+import json,subprocess
+from pathlib import Path
+from space_env.planning.actor_online import ActorCoordinator
+from space_env.simulation.snapshot import atomic_write,canonical_json
+root=Path('/tmp/demand-installed-batch');out=Path('/tmp/demand-installed-cli');out.mkdir()
+initial=json.loads((root/'initial-reference.json').read_text())
+atomic_write(out/'origin.json',canonical_json(initial['origin']))
+input=json.loads((root/'input.json').read_text());atomic_write(out/'batch.json',canonical_json(input['updates'][0]['batch']))
+actor=ActorCoordinator.from_checkpoint(json.loads((root/'before-0.json').read_text()))
+atomic_write(out/'prefix.json',canonical_json(actor.as_execution()))
+python='/tmp/demand-final-venv/bin/python'
+def cli(name,*args,ok=True):
+ p=subprocess.run([python,'-I','-m','space_env.cli',name,*map(str,args)],cwd='/tmp',capture_output=True,text=True)
+ atomic_write(out/(name+('-reject' if not ok else '')+'.txt'),p.stdout+p.stderr)
+ assert (p.returncode==0)==ok,(name,p.stdout,p.stderr)
+ return p
+cli('demand-journal-create',out/'origin.json',out/'journal-empty.json')
+cli('demand-journal-append',out/'journal-empty.json',out/'prefix.json',out/'batch.json',out/'journal.json')
+assert json.loads((out/'journal.json').read_text())==json.loads((root/'journal.json').read_text())
+cli('verify-demand-journal',out/'journal.json','--native')
+cli('actor-controller-rebind',out/'journal.json',root/'before-0.json',out/'controller.json')
+assert json.loads((out/'controller.json').read_text())==json.loads((root/'after-0.json').read_text())
+cli('demand-journal-create',out/'origin.json',out/'journal-empty.json',ok=False)
+atomic_write(out/'result.json',canonical_json({'installed_cli':True,'native_audit':True,'journal_matches_sdk':True,'rebind_matches_sdk':True,'refuses_overwrite':True,'execution_container_used':True}))
+print((out/'result.json').read_text())

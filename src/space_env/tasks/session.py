@@ -160,7 +160,7 @@ class TaskSession:
         operations = definition.get("operations", definition)
         station_ids = {g["name"] for g in operations["stations"]}
         if any(
-            set(r.actors) - actor_ids or set(r.stations) - station_ids
+            (set(r.actors) | set(r.demand_actors)) - actor_ids or (set(r.stations) | set(r.demand_stations)) - station_ids
             for r in self._task.roles.values()
         ):
             raise ValueError("task role references unknown actor/station")

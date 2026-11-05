@@ -393,6 +393,8 @@ class Projection:
                 "reason": reason,
             }
             if action is not None and (role == "@central" or action.role == role):
+                if action.request_ref is not None:
+                    item['request_ref'] = action.request_ref
                 item["actors"] = sorted(
                     {c.actor_id for c in action.commands}
                     | ({action.actor} if action.actor else set())

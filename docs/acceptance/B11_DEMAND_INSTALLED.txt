@@ -1,0 +1,8 @@
+WARNING: The directory '/home/user/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/demand-wheel-final/space_env-0.134.0-py3-none-any.whl
+Installing collected packages: space-env
+  Attempting uninstall: space-env
+    Found existing installation: space-env 0.24.0
+    Not uninstalling space-env at /home/user/miniconda3/lib/python3.12/site-packages, outside environment /tmp/demand-final-venv
+    Can't uninstall 'space-env'. No files were found to uninstall.
+Successfully installed space-env-0.134.0

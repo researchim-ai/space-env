@@ -1,0 +1,1 @@
+{"consumer_pid":98,"episode_equal":true,"episode_sha256":"8bbeb39fa7335ea67f910adf77315f215b27a3180f7bf237224d11b38e011927","final_steps":120,"fresh_process":true,"physical_report_equal":true,"prefix_steps":10,"producer_pid":51,"scope":"audited cold replay in another interpreter; reported PID witness, not OS isolation"}

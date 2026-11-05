@@ -1,6 +1,210 @@
 # Следующие крупные пакеты реализации
 
-## Текущий пакет D2h-A — forecast-first ready-data delivery
+## Рабочая страница миссии и улучшенный fleet scheduler
+
+Реализован единый путь: редактирование орбит/станций/заявок → план → native
+выполнение → фактические результаты → RL/SFT export. Главная страница сервера
+открывает этот интерфейс; SDK `MissionWorkspace` использует ту же сессию.
+Планировщик сравнивает исходное расписание с ограниченным поиском порядка
+и компактным резервированием; общий бюджет узлов ограничен. Локальные проверки:
+128 passed; стартовая миссия доставляет 2/2 заявки, включая прогон в браузере.
+[Инструкция и точные ограничения](MISSION_WORKSPACE.md). Профиль ограничен
+4 аппаратами; общей оптимальности,
+автоматического перепланирования и квалификации реальной аппаратуры не заявляем.
+
+## Следующий блок — автоматическое назначение заявок
+
+Добавлен ограниченный поиск пары аппарат/станция для свободных полей заявки.
+Ручные назначения сохраняются; исходная и разрешённая конфигурации разделены,
+история вариантов и общий расход бюджета доступны оператору. SDK, API и форма
+используют один механизм; успех подтверждается физическим исполнением.
+Это поиск начального плана, без автоматического перепланирования после отклонения.
+Локальный объединённый набор: 139 тестов прошли (138 в основном запуске;
+HTTP loopback-тест отдельно с разрешённым сокетом после sandbox PermissionError).
+В браузере: 7 вариантов назначения, фактическая доставка 2/2 за 120 с.
+
+## Текущий порядок разработки: без CI
+
+По решению пользователя GitHub Actions/workflows удалены. Для разработки и
+выпуска используем локальные тесты и ручной запуск примеров. Remote/full CI,
+матрицы и обязательные кампании приёмки не являются открытыми задачами или
+блокерами. [Установка и запуск](LOCAL_RUN.md), [актуальный план](RELEASE_FINISH_PLAN.md).
+Ниже сохранена история выполненных пакетов; прежние упоминания CI описывают
+прошлые планы и не задают текущие требования.
+
+## B12 — release qualification, общий forecast и явные ML splits
+
+Реализованы bundled scope manifest и [область выпуска](RELEASE_SCOPE_V1.md),
+[32-case benchmark](validation/RELEASE_BENCHMARK_V1.md), одинаковая forecast
+информация для трёх методов и bounded ordering search. Frozen train/development/
+test geometry groups, независимые процессы, полный знаменатель и error rows.
+Measured step p50/p95, RSS, checkpoint/replay/export и storage-capacity probes.
+
+Wheel `39d1db7680ea…`:283 modules/324 source+data files и13 assets совпали с
+checkout/installed payload. **1911 reference и110 fast passed** (пересекаются);
+22 benchmark tests с clean dependencies,4 orchestration и4 split-guard cases.
+Чистый Python3.12 venv:63 точные зависимости, pip check passed. Восемь зависимостей
+обновлены после88 initial advisory records; повторный audit не нашёл известных
+записей. Исходные findings сохранены. Это не remote/full CI и не legal review.
+
+32 физических сценария ×3 policies:4GiB profile дал96 native-verified rows.
+93 прошли strict64 MB per-result resource gate; три long exports заняли около
+64.36 MB. Их повтор с128 MB сохранил эпизоды побайтно и прошёл resource gates.
+Homogeneous full128 MB profile локально не выдаётся за выполненный; он задан
+как необязательный локальный профиль.1GiB profile:72 native rows,24 storage-budget rejects.
+Оба профиля и capacity retry относятся к тем же32 cases, не к новым holdouts.
+Cold recovery проверен в отдельных PID на idle и active-command prefix.
+
+Важный split finding:legacy lineage hash маркирует одну test geometry group как
+train. Raw native benchmark bundles остаются evaluation/provenance.
+[Новый exporter](validation/RELEASE_DATA_SPLITS_V1.md) создаёт явные partitions:
+3600 train,3600 development,7200 test RL rows. Approved-SFT отсутствует:teacher
+service/uncertainty gates не пройдены; expert_teacher_qualified=false.
+Исходные observations/actions не меняются, source row/file SHA проверяются.
+
+Приёмка и точные receipts: B12_RELEASE_ACCEPTANCE.json. Архивы сохраняют source
+bundles, исправленное ML-разбиение, wheel, lock и recipes. Большие generated archives
+исключены из обычного git add; receipts/inputs/recipes остаются reviewable. Restored archive audit
+проверяет consistency; native replay выполнен на originals. CI удалён из плана;
+дополнительные measurements и benchmarks необязательны. C2, long rigid, Q7 и
+экспертная teacher qualification относятся к отдельным областям применимости.
+
+
+## Исторический пакет D2h-B2b-B — incoming demand и версия каталога
+
+Реализованы native request_added, append-only journal, request_ref для повторных
+съёмок существующих целей, explicit actor rebind и cumulative demand certificate.
+Полный знаменатель включает новые невыполненные заявки; SFT разрешён только при
+выполнении mission gates. [Контракт](validation/VERSIONED_DEMAND_V1.md).
+Приёмка: B11_DEMAND_ACCEPTANCE.json (точный wheel и завершённые проверки).
+Installed cases:4/4 batch,4/4 two updates,2/3 tight deadline с RL-only;
+fresh-process checkpoint/data equality и Gym/Parallel physical equality подтверждены.
+1889 reference/110 fast passed (профили пересекаются);19 новых demand cases.
+Числа и wheel предыдущего пакета ниже относятся только к предыдущему коду.
+
+Дальнейшая разработка ограничена [конечным планом выпуска](RELEASE_FINISH_PLAN.md):
+independent workload/baselines → stress envelope → clean CI → RC. Equal-information
+teacher qualification, C2, long rigid и Q7 не объявляются закрытыми.
+
+
+## Историческая приёмка D2h-B2b-A — live actors и flat incident history
+
+Общий projector связывает actor datasets и live SDK. Добавлены atomic coordinator
+с binding/idempotency/authority checks, Gym joint Dict и optional PettingZoo
+Parallel adapters. Checkpoint восстанавливает reference и actor trace через
+native replay; actor policy может materialize реально выбранный prefix как plan.
+[Контракт](validation/ACTOR_POLICY_JOURNAL_V1.md).
+
+Flat journal хранит origin один раз, до8 epoch nodes с delta actor edits и native
+source witnesses. Committed history неизменна, новые operator injections не
+разрешены в actor edits. Actor RL и условный completed-goal SFT проверяются
+построчно. New demand/catalogue mutation, measured calibration, rigid и hosted
+изоляция остаются открыты. Весь D2h-B2b не объявляется закрытым.
+
+
+Приёмка: [B11_ACTOR_ACCEPTANCE](acceptance/B11_ACTOR_ACCEPTANCE.json), wheel
+`dc388d030ae6…`;278 modules/318 source+data files совпали с wheel/installed payload.
+**1870 reference,110 fast,3 adapter smoke passed** (пересекаются);22 новых actor
+cases включены в reference. Полная/remote CI и dependency-clean окружение не
+запускались: installed venv с system-site-packages, Python -I вне checkout.
+Три synthetic mechanism cases:2 epochs с actor wait вместо TX →2/24;
+failed policy →0/24 с RL-only;8 native epochs →2/24. Journal8=1077272 bytes.
+SDK/Gym/Parallel по27 actor steps дали одинаковый physical report. Отдельный
+процесс128→180s восстановил полный checkpoint и data manifest побайтно;
+CLI start/observe/step совпал с SDK, третья CLI-эпоха прошла native prefix audit.
+Сохранены206 actor RL+130 SFT-кандидатов (включая повторный replay-вариант,
+не новый независимый workload).61-file archive восстановлен и прошёл consistency
+аудиты; native audits выполнены на originals. Expert qualification остаётся false.
+
+## Исходный scope D2h-B2b-B — mechanism реализован; independent baselines остаются
+
+1. Typed incoming customer requests/jobs на decision boundary; строгая graph/
+   ownership/release/deadline validation и сохранённый полный demand denominator.
+2. Versioned action catalogue с immutable executed templates и явным rebind
+   actor policy observation/action mapping после обновления. Новый epoch Env
+   вместо скрытого изменения spaces внутри episode.
+3. Увязать новые заявки с journal native witnesses, checkpoint/replay и actor
+   dataset lineage, включая rejects/неполучившие обслуживание заявки.
+4. Frozen surge/deadline/capacity cases и equal-information baseline до promotion
+   teacher quality. Не заменять реальные service gates количеством API/tests.
+
+Bounded replay caching/throughput отдельно от correctness; C2 measured calibration,
+long rigid и Q7 hosted isolation не объявлять закрытыми за счёт нового catalogue.
+
+## Предыдущий пакет D2h-B2a — incident и phase-aware recovery
+
+Добавлен один committed operator incident исходного B1 proposal: отмена активных
+control windows, station outage и новый suffix по native остаткам данных/CPU.
+Final повторно не снимается, paused CPU не сбрасывает прогресс, потерянный capture
+при max_attempts=1 остаётся terminal. Обе границы prefix проверяются cold replay.
+[Контракт](validation/INCIDENT_RECOVERY_V1.md).
+
+Actor suffix данные отделены от operator_trace: только собственный catalogue,
+пересчитанная mask/binding, team reward, условный SFT action prediction. Инъекции
+fault не являются agent targets. Native audit регенерирует каждую derived строку.
+Экспертность, measured calibration, arbitrary incidents, новые demand и несколько
+incident epochs не заявлены. Следующий пакет — D2h-B2b: versioned demand/catalogue
+и bounded multi-epoch history с сохранением prefix/conservation.
+
+
+Приёмка: [B11_INCIDENT_ACCEPTANCE](acceptance/B11_INCIDENT_ACCEPTANCE.json), wheel
+`fa04a5c476f3…`;271 modules/311 source+data files совпали с wheel и installed payload.
+**1848 reference,110 fast,6 compatibility passed** (пересекаются);26 новых incident
+cases включены в финальный reference. Full regression/remote CI/dependency-clean
+окружение не запускались: installed venv с system-site-packages и Python -I.
+5 зафиксированных synthetic cases: partial TX2/24, paused CPU2/24, interrupted
+slew2/24; lost capture0/24 и blocked station0/24 сохранены с failed goals/RL-only.
+6 actor dataset native audits, включая CLI/new-process continuation104→180s,
+совпавшее с direct по physical report.564 actor RL+406 SFT-кандидатов;
+540 operator RL+360 operator SFT отдельно, не agent-training entry points.
+148-file archive (187616024 uncompressed bytes) восстановлен и consistency-аудирован;
+полные native audits выполнены на originals. Pre-hardening interrupted evidence
+и прежний wheel сохранены отдельно, не включены в финальную квалификацию.
+
+## Карта D2h-B2b: online/journal закрыты в bounded профиле, new demand/benchmark открыты
+
+1. Общая online actor projection/coordinator: те же catalogue/mask/binding, что
+   в actor dataset, action-ID decoder и equivalence tests на live TaskSession.
+2. Versioned new demand/catalogue на реальной decision boundary, typed budgets,
+   release/deadline/ownership bindings и native conservation без подмены прошлого.
+3. Bounded multi-epoch incident journal без рекурсивного копирования полного
+   record; checkpoint replay и независимый restore на каждом committed epoch.
+4. Frozen нагрузки/отказы/новые заявки, сохранённые failed cases и baseline с
+   равным information budget. Expert/teacher promotion только по отдельным gates.
+
+Закрытие B2b не заменяет C2 measured calibration, long rigid qualification и Q7
+hosted resource/auth isolation; они остаются отдельными критериями готовности.
+
+## Предыдущий пакет D2h-B1 — связанные цепочки и idle-boundary replan
+
+Прогнозный планировщик без preload формирует paid slew → acquisition → metadata
+transform → downlink. Новый явно разрешённый `forecast_pointing` даёт будущий
+геометрический quaternion без admission oracle/rollout. Поиск value-only,
+консервативно резервирует actor/time/terminal/energy/TX/memory; native bundle
+по-прежнему является проверкой declared goal, не optimality/expert certificate.
+[Контракт](validation/FORECAST_CHAINS_V1.md).
+
+Добавлен один idle-boundary suffix replan: source checkpoint проходит cold replay,
+каждая затронутая цепочка должна завершиться, прошлые steps/templates сохраняются,
+новый prefix исполняется заново и сравнивается по physical native report.
+Mid-operation interrupts, новые operator events/demand, recursive epochs,
+rigid tracking и equal-information teacher benchmark ещё не реализованы в этом
+профиле. Весь D2h-B не объявляется закрытым; следующий пакет — D2h-B2.
+
+
+Приёмка: [B11_CHAINS_ACCEPTANCE](acceptance/B11_CHAINS_ACCEPTANCE.json), wheel
+`6a75da954b59…`;268 modules/308 source+data files совпали с wheel и installed payload.
+**1822 reference,94 targeted,110 fast passed**;30 новых cases, наборы пересекаются.
+Полная/remote/dependency-clean CI не запускалась; venv с system-site-packages.
+Installed nominal2/24, shifted0/24, outage0/24; failed goals сохранены с RL-only.
+Fresh-process continuation110→600s совпало с direct replan по physical report.
+Отдельный синтетический pending-suffix case4/26 проверил2 completed+2 future chains
+и новые forecast bindings;90deg/s fixture не объявляется реальным hardware/holdout.
+5 export cold replays,3 дополнительных full native audits;570 RL и330 SFT-кандидатов.
+Архив восстановлен и прошёл exact inventory + consistency audits; native audits
+выполнялись на оригинальных bundles. Ни superiority, ни expert quality не заявлены.
+
+## Предыдущий пакет D2h-A — forecast-first ready-data delivery
 
 Добавлены value-only operator-authorized forecast, bounded deterministic scheduler,
 fixed MissionPlan до rollout, CLI proposal/paired benchmark и независимый audit.
@@ -30,7 +234,7 @@ noninferiority в этом наборе, не superiority или expert quality.
 и300 SFT-кандидатов;62-file archive восстановлен и проверен по inventory,
 после восстановления — consistency audit, не повторный native rollout.
 
-## Следующий пакет D2h-B — связанный план наблюдений и доставки
+## Дорожная карта D2h-B: B1 реализован в ограниченном профиле, B2 остаётся
 
 Порядок реализации:
 

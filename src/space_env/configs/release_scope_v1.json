@@ -1,0 +1,75 @@
+{
+  "schema": "space-env.release-scope/1",
+  "status": "release-candidate-development",
+  "library_version": "0.134.0",
+  "delivery": "local Python simulation and training library",
+  "reference_frames": [
+    "GCRS positions in metres and velocities in metres/second",
+    "Earth-fixed sites in geodetic degrees; explicit epoch/EOP context",
+    "elapsed simulation time in seconds; energy in Wh; storage/data in bits"
+  ],
+  "interfaces": [
+    "native mission runtime",
+    "TaskSession role authority",
+    "mission plans and replay",
+    "operator and Studio",
+    "Gymnasium and optional PettingZoo",
+    "verified RL and conditional SFT exports"
+  ],
+  "chain_planner": {
+    "status": "bounded synthetic qualification",
+    "max_actors": 4,
+    "max_stations": 16,
+    "max_requests": 64,
+    "max_horizon_sec": 21600,
+    "max_decisions": 10000,
+    "scope": "kinematic serial slew/acquisition/metadata processing/ideal geometric downlink",
+    "excludes": [
+      "rigid ADCS in chain compiler",
+      "RF link budget in chain compiler",
+      "image science or measured payload calibration",
+      "arbitrary request DAGs in chain compiler"
+    ]
+  },
+  "release_benchmark": {
+    "cases": 32,
+    "families": 8,
+    "policies": 3,
+    "max_horizon_sec": 1800,
+    "max_decisions": 361,
+    "scope": "shared forecast, deterministic grouped geometry splits, bounded ordering search; no global optimum or population sampling claim"
+  },
+  "additional_physics": {
+    "status": "separate profile-specific validation; not inherited from chain benchmark",
+    "contracts": [
+      "PHYSICS_QUALIFICATION_MATRIX.md",
+      "RIGID_MISSION_CONTRACT.md",
+      "FIXED_CLOCK_ACTUATORS_V1.md",
+      "FULL_ORBIT_MISSIONS_V1.md"
+    ]
+  },
+  "open_release_gates": [
+    "local tests for changes",
+    "usable installation and manually runnable examples"
+  ],
+  "external_qualification": [
+    "C2 measured calibration needs suitable public or owned measurements",
+    "long rigid mission qualification remains separate",
+    "Q7 hosted OS isolation/authentication/tenant boundaries is not a library claim"
+  ],
+  "prohibited_claims": [
+    "flight qualified",
+    "digital twin of a specific satellite without calibration",
+    "universal industrial mission coverage",
+    "expert teacher qualification from native replay alone",
+    "hosted tenant isolation from hashes or role masks"
+  ],
+  "release_owner": "user; agent does not commit, push or publish",
+  "development_policy": "Local tests and manually run examples; no CI workflows or mandatory remote qualification.",
+  "optional_research": [
+    "independent complete-suite service and uncertainty gates",
+    "measured stress envelope and repeated performance probes",
+    "dependency advisory and license review",
+    "local tests, usable installation and manually runnable examples"
+  ]
+}
