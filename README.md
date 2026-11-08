@@ -1,5 +1,77 @@
 # space-env
 
+[Физические цели миссий и управление аппаратом](docs/PHYSICAL_MISSION_GOALS.md):
+единый `TaskSpec.goal` для наведения, разгрузки маховиков, BODY-импульса,
+заданного орбитального состояния, последовательных waypoint и доставки.
+Kinematic/rigid attitude, химическая/электрическая и rotating off-center тяга
+исполняются тем же native runtime; учитываются сроки, энергия, топливо и
+заданные ограничения исправности. SDK, Gym/PettingZoo, LLM finish и SFT/RL
+используют общий критерий успеха. Запуск: `python -m space_env.tasks.modeling_suite --output artifacts/new-modeling-suite`.
+Это synthetic engineering profiles, не аппаратная или полётная квалификация.
+
+[Пакет развития AI-среды и критерии завершения](docs/AI_ADVANCEMENT_BUNDLE.md):
+[восстановление из фактического состояния](docs/SEQUENCE_RECOVERY.md),
+[локальный SFT/evaluation workflow](docs/LLM_LEARNING_EXPERIMENT.md),
+[аналитические физические эталоны](docs/AI_PHYSICS_REFERENCE.md),
+[операционные задачи, включая разгрузку маховиков](docs/LLM_OPERATIONS_SUITE.md),
+[измерение масштаба sequence-планировщика](docs/SEQUENCE_SCALE.md) и
+[парное сравнение агентов](docs/PAIRED_AGENT_EVALUATION.md).
+Реальное улучшение Qwen3.5 после SFT и превосходство над внешними симуляторами
+пока не подтверждены; команды и ограничения приведены в соответствующих документах.
+
+[Рабочий локальный Qwen-профиль и реальные train-данные](docs/JOINT_NETWORK_PLANNING.md#надёжный-llm-протокол-fixed-cadence-и-реальные-train-данные):
+`python examples/llm/run_local_qwen.py --protocol-profile json_fixed_v1 --output /tmp/new-qwen-fixed`.
+Модель выбирает действия; SDK обслуживает ревизии и объявленный физический такт.
+Фактические model JSON targets экспортируются отдельно от служебных аргументов.
+
+
+[LLM-агенты, SFT/RL данные и benchmark](docs/JOINT_NETWORK_PLANNING.md#llm-агенты-диалоги-sft-rl-и-benchmark):
+нативные actor-only tool conversations, cold replay перед экспортом, assistant-only
+SFT mask и episodic RL с rewards/discounts. Готовый пример: `python examples/llm/generate.py --output /tmp/new-llm-data`.
+Фиксированный benchmark: `python -m space_env.llm.benchmark --output /tmp/new-llm-benchmark`.
+Scripted demonstrations явно отделены от реальных LLM и внешних сравнений.
+
+
+[Последовательности наземных сеансов](docs/JOINT_NETWORK_PLANNING.md#последовательности-наземных-сеансов-безопасное-сокращение-резервов):
+`MissionWorkspace.network(configuration, planning_method="sequence_compact")`
+сокращает Ground-резервы фиксированного плана по направлению предыдущего сеанса.
+Для многотерминальных станций сохранён консервативный режим; глобальный оптимум
+последовательностей не заявляется.
+
+
+[Поиск и train-only селектор второго поколения](docs/JOINT_NETWORK_PLANNING.md#ограниченный-поиск-и-селектор-второго-поколения):
+ограниченные кэши и безопасные отсечения exact-small; нормализация только по train,
+диагностика loss/gradient/regret и отдельный фиксированный holdout. Локальное
+сравнение старого и нового методов: `python -m space_env.planning.network_selector_study --output /tmp/selector-study-new`.
+
+
+[Разнообразные заявки и оптимизационный эталон](docs/JOINT_NETWORK_PLANNING.md#разнообразные-заявки-и-глобальный-эталон-малых-задач):
+отдельный frozen-набор с разными release/deadline, объёмами, CPU, памятью и
+терминалами; `planning_method="exact_small"` выбирает цепочки глобально для
+малой дискретной модели. Незакрытые границы не выдаются за оптимум. Прогноз
+учитывает повторный захват спутника наземной антенной; результат подтверждает ACK.
+
+[Обучаемый сетевой диспетчер и benchmark](docs/JOINT_NETWORK_PLANNING.md#обучаемый-диспетчер-и-разделённые-геометрические-группы):
+12 фиксированных случаев, 6 геометрических групп, отдельные train/development/test.
+Три правила сравниваются с train-only диспетчером, выбирающим одно из этих правил.
+Все используют одинаковый прогноз и бюджет поиска, результат определяет native ACK.
+Запуск: `python -m space_env.planning.network_benchmark --output /tmp/new-network-learning`.
+Сохранённые модели можно подключать через SDK; это не command-level RL.
+
+[Численные проверки и измерения сетевого профиля](docs/JOINT_NETWORK_PLANNING.md#численные-проверки-и-измерение-масштаба):
+`python -m space_env.validation.network_evidence --output /tmp/new-network-evidence --external-forces`.
+Отдельный линейный RF-расчёт, аналитические решения, внешний force cross-check
+и измерения в свежих процессах. Ошибки и невыполненные заявки сохраняются;
+проверка артефактов доступна через `--audit`. Это не подтверждение аппаратной
+точности или превосходства над другими симуляторами.
+
+[Совместное планирование EO → ISL → Ground](docs/JOINT_NETWORK_PLANNING.md):
+`MissionWorkspace.network()` выбирает исполнителя, маршрут до трёх ISL-переходов,
+станцию и время операций с общими ограничениями ресурсов. В пульте — кнопка
+«EO / ISL / Ground». План исполняет native runtime; прогноз и фактический ACK
+показаны отдельно. `evolve()` продолжает миссию из фактического владения продуктами после native-событий;
+неполные ISL-фрагменты при отмене обрабатываются по правилам native-модели.
+
 ![Спутник на низкой орбите: Солнце, тень Земли, луч на наземную станцию и второй аппарат на соседней траектории](docs/space-env-hero.jpg)
 
 Среда, в которой агент учится управлять аппаратом или группировкой на низкой орбите: держать батарею, снимать точки на Земле, говорить со станцией и решать, нужен ли манёвр при сближении. Из того же шага симуляции собираются тексты для языковой модели и траектории для обучения с подкреплением.
@@ -13,6 +85,16 @@
 `python -m examples.workspace.run`. [Инструкция и ограничения](docs/MISSION_WORKSPACE.md).
 Для автоматического выбора спутника и станции укажите «Автоматически» в форме
 или `null` в конфигурации; явные назначения сохраняются.
+[Перепланирование](docs/WORKSPACE_REPLANNING.md) создаёт независимое продолжение
+на границе завершённых цепочек, проверяет физическое состояние и сохраняет
+исходную сессию. Доступно в пульте, API и `MissionWorkspace.replan()`.
+[Динамическое управление и группировка](docs/DYNAMIC_FLEET_PHYSICS.md): `evolve()`
+применяет native-события и восстанавливает оставшиеся CPU/TX-этапы; `fleet_round()`
+собирает решения аппаратов в один шаг, `relay()` запускает EO/CPU/ISL/Ground-ACK.
+Контракты физических профилей и аналитические проверки отделены от аппаратной калибровки.
+[Rolling-планировщик оператора](docs/ROLLING_OPERATOR_PLANNER.md) сохраняет историю
+передач и временно откладывает неудачные направления; состояние проверяется
+при восстановлении. Канал агента не может запрашивать операторский прогнозный план.
 Планировщик сравнивает исходную эвристику с ограниченным поиском порядка заявок
 и компактного резервирования ресурсов; прогноз не подменяет результат симуляции.
 
@@ -611,3 +693,134 @@ train/development/test geometry groups; старый hash-split исходных
 остаётся только provenance. Нельзя обучаться по raw benchmark JSONL метке
 `train`: она может относиться к тестовой группе. Approved-SFT закрыт до прохождения
 suite-level teacher gates; RL сохраняет успешные и неуспешные миссии.
+
+### Проверяемые LLM-корпуса миссий
+
+Несколько native-эпизодов и local-provider bundles можно собрать в immutable
+корпус для SFT/RL. Train-данные отделяются от privileged evaluation artifacts;
+геометрии проверяются через общий factory/LLM registry, повторы траекторий
+отклоняются, provider-wire targets проверяются против фактических native-действий.
+Полный аудит выполняет replay, без обращения к модели.
+
+```bash
+# Сквозной пример со scripted teacher, без LLM inference и обучения:
+python -m examples.llm.corpus_demo --output /tmp/new-corpus-demo
+
+# Сборка ранее записанных эпизодов и регистрация в общей локальной базе:
+python -m space_env.llm.corpus build /tmp/new-corpus /path/to/episode.json
+python -m space_env.llm.corpus verify /tmp/new-corpus
+python -m space_env.llm.corpus register /tmp/new-corpus /tmp/shared-corpus.sqlite
+```
+
+Для сохранения wire-SFT передавайте директорию `local-llm-data/1`, а не только
+`episode.json`. Повторение той же геометрии в train/test отклоняется. Сборка
+и регистрация — отдельные операции; без общего файла registry глобальная защита
+между корпусами не возникает. [Контракт и ограничения](docs/LLM_CORPUS_CONTRACT.md).
+
+### Семейства задач для LLM-агентов
+
+Замороженный набор `mission_suite` содержит 36 конфигураций EO/CPU/доставки:
+цепочки ретрансляции, CPU backlog, ограничение памяти, наземный и межспутниковый
+outage, жёсткие дедлайны. Геометрии и workload variants учитываются раздельно;
+публичные regression splits не называются blind holdout.
+
+```bash
+# Представительный прогон: 8 случаев, 3 scripted политики, все ML splits:
+python -m examples.llm.family_demo --output /tmp/new-family-demo
+python -m space_env.llm.mission_suite --audit /tmp/new-family-demo
+
+# Полный набор: 36 × 3, без LLM inference:
+python -m examples.llm.family_demo --full --output /tmp/new-family-full
+```
+
+Каждая политика получает одинаковый начальный checkpoint. Ошибки остаются в
+знаменателе сравнения; privileged reference отделён от public baseline.
+[Постановки, ограничения и работа с корпусами](docs/LLM_MISSION_FAMILIES.md).
+
+### Полнота каталога и геометрическая граница наведения
+
+Opt-in `planning_method="pointing_bounded"` использует конечный набор известных
+целей наведения вместо безусловного разворота на 180°. Для острого quaternion
+конуса граница учитывает и промежуточные состояния прерванных разворотов;
+в неоднозначном случае остаётся 180°. Прежний энергетический резерв сохраняется.
+На маленьких задачах применяется bounded exact-small, на больших — serial.
+Учитывается запас на native tracking во время экспозиции; оценка условна на
+успешном выполнении предыдущих наведения. Для последовательного состояния и
+раздельных ресурсов доступен новый `sequence_lanes` (см. ниже).
+
+```python
+from space_env.workspace import MissionWorkspace
+from space_env.llm.mission_suite import compile_suite
+
+config = compile_suite()["cases"][0]["configuration"]
+mission = MissionWorkspace.network(config, planning_method="pointing_bounded")
+try:
+    print(mission.state()["network"]["completeness"])
+    result = mission.run()
+finally:
+    mission.close()
+```
+
+Диагностика отделяет отсутствующую цепочку в каталоге, isolated witness,
+ограничение памяти и prefix capacity в forecast от физической невозможности.
+Она остаётся операторской и не раскрывает будущую геометрию LLM-политике.
+
+```bash
+python -m examples.network.pointing_comparison --output /tmp/new-pointing-comparison
+python -m examples.network.pointing_comparison --audit /tmp/new-pointing-comparison
+```
+
+[Обоснование границы, ограничения и абляция](docs/POINTING_COMPLETENESS.md).
+
+### Последовательное наведение и раздельные ресурсы
+
+`planning_method="sequence_lanes"` строит свежий план с предыдущей ориентацией,
+запасом на tracking экспозиции, native claims ресурсов, peak power и memory BW.
+CPU может работать параллельно с наведением; ISL сохраняет native эксклюзивность.
+Один старт на роль за такт обеспечивает совместимость с scalar LLM wire profile.
+На неизменной equatorial-relay-chain постановке выполнены все 3/3 заявки.
+
+```python
+from space_env.workspace import MissionWorkspace
+from space_env.llm.mission_suite import compile_suite
+
+config = compile_suite()["cases"][0]["configuration"]
+mission = MissionWorkspace.network(config, planning_method="sequence_lanes")
+try:
+    print(mission.run()["network"]["fulfilled"])
+finally:
+    mission.close()
+```
+
+Поиск ограничен бюджетами и портфелем порядков, `optimal=false`. Возврат к
+serial_recovery после динамических изменений остаётся консервативным.
+Локальные Qwen-примеры поддерживают явные `--planning-method sequence_lanes`
+и `--max-calls 64`; никакая модель автоматически не запускается.
+[Контракт, математика, проверка и SFT/RL](docs/SEQUENCE_LANES.md).
+
+### Полная регрессия sequence-lanes и возобновляемый прогон
+
+Установленная библиотека содержит `space_env.llm.qualification`: фиксированная
+матрица **36 конфигураций × 2 режима**, шесть геометрий, train/dev/test. Каждый
+case сохраняется отдельно, с native replay и перестроением плана. Partial
+report не выдаётся за полный; завершённые error cells не перезапускаются ради
+более высокого score. Падение между child report и commit journal восстанавливается.
+
+```bash
+python -m space_env.llm.qualification --output /tmp/new-sequence-study
+# При прерывании, на той же ревизии исходников:
+python -m space_env.llm.qualification --output /tmp/new-sequence-study --resume
+python -m space_env.llm.qualification --audit /tmp/new-sequence-study
+
+# Корпус из полной проверенной матрицы; evaluation остаётся только в audit:
+python -m examples.llm.qualified_corpus \
+  --study /tmp/new-sequence-study \
+  --output /tmp/new-qualified-corpus \
+  --registry /tmp/shared-corpus.sqlite
+```
+
+Незавершённые и ошибочные ячейки учитываются как неизвестные [0,1] с полным
+знаменателем; эти границы не являются statistical confidence intervals.
+Исполнитель — scripted privileged reference, не LLM. Публичные regression splits
+не называются blind holdout, а teacher data — автоматически экспертными.
+[Протокол, checkpoints и ограничения](docs/SEQUENCE_QUALIFICATION.md).

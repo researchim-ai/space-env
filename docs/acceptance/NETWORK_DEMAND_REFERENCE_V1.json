@@ -1,0 +1,2933 @@
+{
+  "schema": "space-env.demand-reference-receipt/1",
+  "recorded_utc": "2026-11-06T13:33:02.900762+00:00",
+  "command": "python -m space_env.planning.network_demand_benchmark --output /tmp/new-demand-reference",
+  "audit_command": "python -m space_env.planning.network_demand_benchmark --audit /tmp/new-demand-reference",
+  "report_sha256": "ce56c8c1d542637c68d50cc835c9faba54cb3fafde1314da20dfde605df567f5",
+  "before_report_sha256": "3e533ba34e8ec9b4fbe87f6806a7533777d1fe119e7b61c242cf43ff3e0a17d5",
+  "harness_sha256": "5b52995b9fd660e6e36abed21f3b23ecf1eb305eb8aa3f92efd02b6cd8243abe",
+  "model_sources": {
+    "api/network_dynamic.py": "b1048a31e46b2a69fd8addcbe9097a4176cfe1f6c8f80bf52f8b80c75e0863cc",
+    "api/network_workspace.py": "e43346fce0b11a37397e11ca3b9e35d2015b321de5bbd98dcbae11a21ea18c34",
+    "api/workspace.py": "424732b63b21013d181a09fcea5c18f5f3ebdce16a8d806c32bad126d0573e1c",
+    "planning/joint_network.py": "e10cf594314adfb724958f0a2f27f3005a4577bb94a637520807e588420fa882",
+    "planning/network_benchmark.py": "bff1ccadaf0361ae6017d1826b64ff230e21384bc548a7e4b4cf88f7aa872a63",
+    "planning/network_demand_benchmark.py": "5b52995b9fd660e6e36abed21f3b23ecf1eb305eb8aa3f92efd02b6cd8243abe",
+    "planning/network_optimal.py": "73109dffa53b510e09746f65d81c2e2425bd50e71ea53982c93c02704b46c63e",
+    "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+    "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+    "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+    "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+    "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+    "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+    "reference/spacecraft_bus.py": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+    "runtime/mission.py": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+    "validation/network_evidence.py": "9c8fa1d6df56eb9c78f9322e8e2f4f71c556a1cb7e7caf2cb608a6c2d59adcb5"
+  },
+  "before_model_sources": {
+    "api/network_dynamic.py": "b1048a31e46b2a69fd8addcbe9097a4176cfe1f6c8f80bf52f8b80c75e0863cc",
+    "api/network_workspace.py": "7c3368d0e8667e2d0947f2aee952093dd1c2458868f2331d4f4476a2bf0e0939",
+    "api/workspace.py": "424732b63b21013d181a09fcea5c18f5f3ebdce16a8d806c32bad126d0573e1c",
+    "planning/joint_network.py": "fd191bb5b3d3210fc840330a58011919c6dedcf5b0f11d471e4a9b0ece7b7805",
+    "planning/network_benchmark.py": "bff1ccadaf0361ae6017d1826b64ff230e21384bc548a7e4b4cf88f7aa872a63",
+    "planning/network_demand_benchmark.py": "5b52995b9fd660e6e36abed21f3b23ecf1eb305eb8aa3f92efd02b6cd8243abe",
+    "planning/network_optimal.py": "6d29f05f3687dd050f09e6f5e104722b41abddffacaad857d2f1c014747db3c6",
+    "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+    "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+    "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+    "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+    "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+    "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+    "reference/spacecraft_bus.py": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+    "runtime/mission.py": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+    "validation/network_evidence.py": "9c8fa1d6df56eb9c78f9322e8e2f4f71c556a1cb7e7caf2cb608a6c2d59adcb5"
+  },
+  "suite": {
+    "cases": [
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-equatorial / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 5.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -4.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -130.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 0.0,
+                "lon_deg": -130.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 0.0,
+                "lon_deg": -130.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 1.0,
+                "lon_deg": -113.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "8cc71e2e7a242dc4d2f83335ecff20622669d1abe3d81311b3c3216b1be1632e",
+        "group": "demand-equatorial",
+        "id": "demand-equatorial-bulk-burst",
+        "split": "train"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 4.0,
+            "name": "demand-equatorial / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 5.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -4.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -130.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 0.0,
+                "lon_deg": -130.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 4.0,
+                "lon_deg": -112.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 4.0,
+                "lon_deg": -112.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 4.0,
+                "lon_deg": -112.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 1.0,
+                "lon_deg": -113.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "b6cfab3a20f0941dcd53c0beb5ab06b631e164cd5f51eddb444725cf9bb4bb9e",
+        "group": "demand-equatorial",
+        "id": "demand-equatorial-staggered-cpu",
+        "split": "train"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-inclined / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 28.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 8.0,
+                "radius_m": 7020000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -118.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -118.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 1.0,
+                "lon_deg": -118.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 3.0,
+                "lon_deg": -101.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "9ab82f4f6104b4b236cb2877a7a34adb37e4e1a52e7e062e0cb1eee569940dfe",
+        "group": "demand-inclined",
+        "id": "demand-inclined-bulk-burst",
+        "split": "train"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-inclined / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 28.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 8.0,
+                "radius_m": 7020000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -118.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -118.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 5.0,
+                "lon_deg": -100.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 5.0,
+                "lon_deg": -100.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 5.0,
+                "lon_deg": -100.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 3.0,
+                "lon_deg": -101.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 2
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "08fce12d21f7798d36d064603b2ba01f69b4324b3efd0751489fc2ea9d1d6ac7",
+        "group": "demand-inclined",
+        "id": "demand-inclined-staggered-cpu",
+        "split": "train"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-mid / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 42.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -18.0,
+                "radius_m": 7080000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -144.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -144.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 1.0,
+                "lon_deg": -144.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 5.0,
+                "lon_deg": -127.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "178f6a567d8cfb1d5e2472d961cf9f0094c27cea07ca2c342ab16c68061b5528",
+        "group": "demand-mid",
+        "id": "demand-mid-bulk-burst",
+        "split": "development"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 4.0,
+            "name": "demand-mid / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 42.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -18.0,
+                "radius_m": 7080000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -144.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -144.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 5.0,
+                "lon_deg": -126.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 5.0,
+                "lon_deg": -126.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 5.0,
+                "lon_deg": -126.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 5.0,
+                "lon_deg": -127.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "9c9b15f8d5620d9cb2b13b85faf7dfbd131d884ba1628764ed02503fa1a855de",
+        "group": "demand-mid",
+        "id": "demand-mid-staggered-cpu",
+        "split": "development"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-high / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 68.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 22.0,
+                "radius_m": 7120000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -104.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -104.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 1.0,
+                "lon_deg": -104.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 8.0,
+                "lon_deg": -87.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "f7a7ed1f2a2bade48d5469b0c71a03ee8e33884f4de01e3e8b0efae0444639dc",
+        "group": "demand-high",
+        "id": "demand-high-bulk-burst",
+        "split": "development"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-high / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 68.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 22.0,
+                "radius_m": 7120000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -104.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -104.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 5.0,
+                "lon_deg": -86.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 5.0,
+                "lon_deg": -86.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 5.0,
+                "lon_deg": -86.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 8.0,
+                "lon_deg": -87.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 2
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "22f4e43d51a8b7f1c071b7578dc3e2eaa328c3e8dab12975ec19a6e48d49d818",
+        "group": "demand-high",
+        "id": "demand-high-staggered-cpu",
+        "split": "development"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-south / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 18.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -34.0,
+                "radius_m": 7040000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -160.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -160.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 1.0,
+                "lon_deg": -160.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 3.0,
+                "lon_deg": -143.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "bea2acae1ca1f639b7c8a96916aaaaf11b77f14e52c0d64686d30e6f763f6260",
+        "group": "demand-south",
+        "id": "demand-south-bulk-burst",
+        "split": "test"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 4.0,
+            "name": "demand-south / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 18.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": -34.0,
+                "radius_m": 7040000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -160.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -160.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 5.0,
+                "lon_deg": -142.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 5.0,
+                "lon_deg": -142.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 5.0,
+                "lon_deg": -142.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 3.0,
+                "lon_deg": -143.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "42306c3afc39d12ee549b99b589fbab72ed49db149078aa2806e6959e20e05cf",
+        "group": "demand-south",
+        "id": "demand-south-staggered-cpu",
+        "split": "test"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-retro / bulk-burst",
+            "outages": [
+              {
+                "end_sec": 100.0,
+                "start_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "end_sec": 240.0,
+                "start_sec": 121.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 104.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 35.0,
+                "radius_m": 7160000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -91.0,
+                "output_bits": 2800000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 3200000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -91.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 120.0,
+                "id": "request-2",
+                "lat_deg": 1.0,
+                "lon_deg": -91.0,
+                "output_bits": 150000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 9.0,
+                "lon_deg": -85.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "bfbc49f787e10491cb0c27c6ff5b18e95216233dce0f82b075f6963cf0176fc5",
+        "group": "demand-retro",
+        "id": "demand-retro-bulk-burst",
+        "split": "test"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [],
+          "max_hops": 0,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 240.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 8.0,
+            "name": "demand-retro / staggered-cpu",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 104.0,
+                "phases_deg": [
+                  0.0,
+                  1.2,
+                  2.4
+                ],
+                "raan_deg": 35.0,
+                "radius_m": 7160000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-0",
+                "lat_deg": 1.0,
+                "lon_deg": -91.0,
+                "output_bits": 2000000,
+                "priority": 9,
+                "processing_sec": 18.0,
+                "raw_bits": 2400000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 130.0,
+                "id": "request-1",
+                "lat_deg": 1.0,
+                "lon_deg": -91.0,
+                "output_bits": 150000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 300000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 185.0,
+                "id": "request-2",
+                "lat_deg": 5.0,
+                "lon_deg": -73.0,
+                "output_bits": 350000,
+                "priority": 7,
+                "processing_sec": 3.0,
+                "raw_bits": 600000,
+                "release_sec": 25.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 235.0,
+                "id": "request-3",
+                "lat_deg": 5.0,
+                "lon_deg": -73.0,
+                "output_bits": 600000,
+                "priority": 12,
+                "processing_sec": 25.0,
+                "raw_bits": 900000,
+                "release_sec": 80.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 240.0,
+                "id": "request-4",
+                "lat_deg": 5.0,
+                "lon_deg": -73.0,
+                "output_bits": 100000,
+                "priority": 4,
+                "processing_sec": 2.0,
+                "raw_bits": 250000,
+                "release_sec": 105.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 9.0,
+                "lon_deg": -85.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 2
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "959a8d9e3575c2a824e39375fce9b3147dd5028340fd0ec5949db624a26b3e88",
+        "group": "demand-retro",
+        "id": "demand-retro-staggered-cpu",
+        "split": "test"
+      }
+    ],
+    "schema": "space-env.network-benchmark-suite/1",
+    "sha256": "1eb0b23946f800aaa77aa3ba0c143c399d2b2591d099739f4205d13122af24d4"
+  },
+  "declared_problem_configurations_sha256": "356a9f7d20020c467430555ee012ce18e6d81969fae9857a4ccc0681aeffa3ca",
+  "problem_inputs_unchanged_by_fix": true,
+  "raw_files_sha256": {
+    "demand-equatorial-bulk-burst--earliest_deadline.json": "3c0d9afda930c2601764c7f43341f62fc5d853b9cc6e43b98e22dcc3d3983b8a",
+    "demand-equatorial-bulk-burst--exact_small.json": "9398dafe35b8b32cce6b6a6b4087424b457d7e3761ea3f0af0531bcc6071bcf7",
+    "demand-equatorial-bulk-burst--forecast.json": "cbc2407e767b04da048feb444b824ab8541f93f77201b7c412d03a39472a5d08",
+    "demand-equatorial-bulk-burst--priority.json": "d3d3449c4714242e2b0fd8fd5620de1b128404461da4c9e53968f39d7acb2bff",
+    "demand-equatorial-bulk-burst--value_per_bit.json": "1f4e047d6720388f8ca0cb35bdd69d5ecdaee2527ca1c44e98cadaaafe062416",
+    "demand-equatorial-staggered-cpu--earliest_deadline.json": "f1d18660575f90478adaa2ee6469ddd1b3f9f3e786fb853d8e8fb50de4203e26",
+    "demand-equatorial-staggered-cpu--exact_small.json": "fea7629aa3ab02e258fbf4d2aa3d787565999ff7a0d74bb9bbdec5f1475f58af",
+    "demand-equatorial-staggered-cpu--forecast.json": "21e86b90c140e5bf85cc589f536e3480b5fdcb78a0a5848bff3ff30cd0ca10d2",
+    "demand-equatorial-staggered-cpu--priority.json": "2b112c5c1f7f33e106f9e8955948a69fb14cf6b57cb8dcb7691163eaeba1eb36",
+    "demand-equatorial-staggered-cpu--value_per_bit.json": "886b51152fc75aa856b769f0cc28b04b748e2455cc0d5da14b9843b11595d500",
+    "demand-high-bulk-burst--earliest_deadline.json": "bcdd25b106afe885c7326395e666b1f3146ed852b0ffef8ee27b062d8251f4be",
+    "demand-high-bulk-burst--exact_small.json": "7039e6718661f60c2c3b734f154c09ac32551e3abcad4a5fadc3ec02061ada59",
+    "demand-high-bulk-burst--forecast.json": "dc26e79f48a50f3d90856b9ade6088af5e084307310a3d544754c8d1250d439f",
+    "demand-high-bulk-burst--priority.json": "533e6d17d0e9f765177b4841e707d6dce0bf510e67e8cbc27ead646c99398e36",
+    "demand-high-bulk-burst--value_per_bit.json": "a505bf14a007d8da81ffbe1b80a449ecbaa3868ef18452b4d4c74bafd01225cb",
+    "demand-high-staggered-cpu--earliest_deadline.json": "6a9e6f29482498caccf2bc627c1d62f2028a16f624e06b45d124dd7dba13c990",
+    "demand-high-staggered-cpu--exact_small.json": "5874ec595650e950ac00106698e346168ed3af58daed63b67d1b9b10a8cbcba7",
+    "demand-high-staggered-cpu--forecast.json": "23ddc4855c86894e0135e6b8696cecd4363779c2efaebe1963f46e700e4527b3",
+    "demand-high-staggered-cpu--priority.json": "17d8ad7246cb963857928d6e91782f2d9afef5c3dc42b124577deb1a376bf905",
+    "demand-high-staggered-cpu--value_per_bit.json": "f39c6fc96e4428fcc2d918504b40d691287fa8a0fe492483ad1e88724ed75e3d",
+    "demand-inclined-bulk-burst--earliest_deadline.json": "bcc09e78442a05f062b635e6240b92e84b46665e5a9305bf434fd592f2fca319",
+    "demand-inclined-bulk-burst--exact_small.json": "5eba48e7729daebfe726b1cd2483d6e0082c6d0e9b6115c8120668689e1b7492",
+    "demand-inclined-bulk-burst--forecast.json": "5025a1720ac252f01d4af22c27639467c2ce6289c5cbdf45deb6e6d2b4636a5e",
+    "demand-inclined-bulk-burst--priority.json": "15e497997c9a2fcbcf032035fee39d2b5298b55191beb027aa15dc1fcfc508e8",
+    "demand-inclined-bulk-burst--value_per_bit.json": "ea517e1083ebe8f62c232803f93945265780968459245cd1173514689a8012e3",
+    "demand-inclined-staggered-cpu--earliest_deadline.json": "58e300179ed7d5bd40d1008475bcfafbab809af33f7d43eadc632675d498ee95",
+    "demand-inclined-staggered-cpu--exact_small.json": "88da616e4dfc820e9e1a3cab942781468416f787267ee8861a4e10927950eebf",
+    "demand-inclined-staggered-cpu--forecast.json": "cc29d51a069783f1d2c3e56145a3b3c1d5e28dd3a3821c2cd6f276c138e901b3",
+    "demand-inclined-staggered-cpu--priority.json": "722cf39eb6deea3a45e335419e9b5dbf9300bcbe7b83ad5579c30e1e755b66f5",
+    "demand-inclined-staggered-cpu--value_per_bit.json": "c96a0cf6fdec2c2834df05a2752262ccc6653af509a8d155e19f04cdaa7d94b1",
+    "demand-mid-bulk-burst--earliest_deadline.json": "5d22b8f6ea8b93d764685e5b0fe7299e2f330e49ec781979d5f804a64830a0f9",
+    "demand-mid-bulk-burst--exact_small.json": "f22f3edff7577bdd14a4563a96b0a5f1a557444a3c0b5456040348cbbeb5c102",
+    "demand-mid-bulk-burst--forecast.json": "c8091b8631d55b4130d081e41521135e7dd1641c1134019d0e33825e0e13dc3c",
+    "demand-mid-bulk-burst--priority.json": "9928266ba2c630b589afba834d16aa7cbf3010ff289299fe8b394036f97aeced",
+    "demand-mid-bulk-burst--value_per_bit.json": "cb96ab1e03c24187fe48af008c28fb4b9cdd5518167b3533acf47f92fc6458b6",
+    "demand-mid-staggered-cpu--earliest_deadline.json": "84917e9c1084a9063d3c791438641beb911dff5daf84f6f77227824f4e95ba67",
+    "demand-mid-staggered-cpu--exact_small.json": "ce206dbb530d389570ce716ad3a449d9dc8e07ee2ecefaa9cc5e4386ece6805c",
+    "demand-mid-staggered-cpu--forecast.json": "d4f58dc62c5a6b4dd3d2ef065c58056fc265d20dd79236a5fcc5145118ca9829",
+    "demand-mid-staggered-cpu--priority.json": "0d91c77bb543bb535a1def47a06764637ab10e33263692a4feb81181353371cb",
+    "demand-mid-staggered-cpu--value_per_bit.json": "a62873983a241aa94bb994c7adcd438020f3a7eb1df6ed813e30f8ecbe99dd78",
+    "demand-retro-bulk-burst--earliest_deadline.json": "e2aaa5d755b494092e6bc3dc31fe61d07aff1c0ee791be9e3bfa75a46d4c191c",
+    "demand-retro-bulk-burst--exact_small.json": "bf396a5c90b13dc13f15ef1cf74c6c2e2b075ddb21179744c0257e9f509433b1",
+    "demand-retro-bulk-burst--forecast.json": "66b886e5424aeecfd916237b6073189e224a06b20968e53d4910e4dc9893e01c",
+    "demand-retro-bulk-burst--priority.json": "d5a45b3fb7f9f7ef04778cb87dea767d9ac861df9e65b457a22e297c8a4f201c",
+    "demand-retro-bulk-burst--value_per_bit.json": "8c7311aaf676fd8f07a07fab859cf8323a3464dcffa72c99d28b827d1def1914",
+    "demand-retro-staggered-cpu--earliest_deadline.json": "8b0b5bd3c77ae323bbe9e3c6136c05ad0bc4bd83d01a170898e534e4a9933d7f",
+    "demand-retro-staggered-cpu--exact_small.json": "40cfb9906ffa2f6e0ac6958d17e44ada92804dfe0a26db16a24bf77c987ed148",
+    "demand-retro-staggered-cpu--forecast.json": "ce300f9d811296594e60e404c6086cb05506658dce4184850f45db6841af8b2d",
+    "demand-retro-staggered-cpu--priority.json": "c18c9640e1f8fb7ccd290b053feddd4eb4abb4cd69e904118d3d78a920b5d544",
+    "demand-retro-staggered-cpu--value_per_bit.json": "10c4b819dff1692e062748b959e60356fc29e6599421b70fecbf76a66f31b43e",
+    "demand-south-bulk-burst--earliest_deadline.json": "f8f9aa546df0cbb2a569a18a8a0528ac86f5db7214e9c2279cc0602635711ae5",
+    "demand-south-bulk-burst--exact_small.json": "d0876a2a7a84bd2757398e7d5ef5eddeaa3f78bc1b16a603164f25f773f0561c",
+    "demand-south-bulk-burst--forecast.json": "a43448a5773bb021f7062f47d10512c77528e4a9c57000786493e775adb2ae3b",
+    "demand-south-bulk-burst--priority.json": "0a30c6db6522ad884a6e41ee694eb280f8108ec4513ca3be9a73e7862bcd23f4",
+    "demand-south-bulk-burst--value_per_bit.json": "e9eb54d36a8c97eaa84684ca6a0a774dac27754f59773f80bf28a2a8e63f62dd",
+    "demand-south-staggered-cpu--earliest_deadline.json": "8d81ebed5f4769dc399f4544c7d7adfd263cf265ce88f8d24ba1bf5bb936ac74",
+    "demand-south-staggered-cpu--exact_small.json": "23744d7fa07868a26ca3cbcf33b8b44a4f1402f5493a59dfd2c1f2e18ee2e0aa",
+    "demand-south-staggered-cpu--forecast.json": "34610a26825db54cb883a62e293eff661beaecc28f52ef5f2be331e1ef7ebf0a",
+    "demand-south-staggered-cpu--priority.json": "d96cfc20bd612dc3b7bf5422f932820de9e10ebac9d1ece2fca088eb325aedfd",
+    "demand-south-staggered-cpu--value_per_bit.json": "4bd62905cb3debbb96f4b9bbe86163fd7b94ee1fc2d261c54960361f97b7fca7",
+    "report.json": "ca5666c0a686c4801d80a7c0563bdd2f08f7e2d233861bdac03a43a095a0c2ed",
+    "suite.json": "5f9ecbea6c98124e362eed5c1a8cda398c9da9a3d60013fe2b7bc0c99f9b38d8"
+  },
+  "before_raw_files_sha256": {
+    "demand-equatorial-bulk-burst--earliest_deadline.json": "57d7cafaac98be78badb10d473c582929c04d2ba5302a8a5d49d629b989d72ee",
+    "demand-equatorial-bulk-burst--exact_small.json": "124dc3d008f51cacf35cf0fc936810f6220cc37bad80d89be05a86613f8adfe8",
+    "demand-equatorial-bulk-burst--forecast.json": "664b6bcd90c03604cef148c791388990dd166ca8536d375812facbc65730882e",
+    "demand-equatorial-bulk-burst--priority.json": "48f2b5b23e4f2bbcd2593c7aa4ba1a01717b7bf7ad8bd3270012ad97b946b5e0",
+    "demand-equatorial-bulk-burst--value_per_bit.json": "d1fc2a29f32074623fdb3fd2e5f92c4787881eef14aa7712174e7351a2e71b42",
+    "demand-equatorial-staggered-cpu--earliest_deadline.json": "72a365234a894a8895258f29bb288f9b04f9406ca4fce5f53c57535d61f94083",
+    "demand-equatorial-staggered-cpu--exact_small.json": "dd21f19c8f4769556fa344721074d627c745083ec0e9c6ada0b0be94f810a812",
+    "demand-equatorial-staggered-cpu--forecast.json": "40b6e119fc07542f3d371024fa49310a5ec096b10e5f157cebb3f2e12fd58e67",
+    "demand-equatorial-staggered-cpu--priority.json": "28d10337ba75db5220e46126fa7b4a14601e16165e2de68c998956c06419bc09",
+    "demand-equatorial-staggered-cpu--value_per_bit.json": "f955859212ee370630319e8ee13ccc69a8d7fa1e385668a1c698c3198abe6b7c",
+    "demand-high-bulk-burst--earliest_deadline.json": "c90eef5e85495403b61fac37020ae63163b4c7678f827431e4c28aaba707981f",
+    "demand-high-bulk-burst--exact_small.json": "9309b1fb003f847405f3392a062be0f92040fd080118e7b4178c3265c5238e25",
+    "demand-high-bulk-burst--forecast.json": "8ca2e3eb15c710b1e93ecbbfff4242803b5284779fd3edd795ba4b53f5b0bf7e",
+    "demand-high-bulk-burst--priority.json": "11a14ccc91b534ddf9534f6dd7c7cbe2b739136bbf2ad688e84a5edcfb55370d",
+    "demand-high-bulk-burst--value_per_bit.json": "bb0f511cba1758c1204fabdbeab3039aa91ae5a56b16d8d9c9875e243fdc8cf0",
+    "demand-high-staggered-cpu--earliest_deadline.json": "8039916599c5e18696e13ed3d22f61470283330bed582a9190bea248339d3fe3",
+    "demand-high-staggered-cpu--exact_small.json": "754e5b28851da1977f04cbdde2ac87c7b96edcfb2aa3bdf38c2a0bcc5689bfe0",
+    "demand-high-staggered-cpu--forecast.json": "d2dd17a14520d8075de3b24701cecd1064104a5547e4f4495e3c8a215911fc7c",
+    "demand-high-staggered-cpu--priority.json": "d88704362f8e5d656e606568433d0b89787bca911c0cdabfd59245bf0d2acc43",
+    "demand-high-staggered-cpu--value_per_bit.json": "deb6a674b4f22305d45e55c082d90552aa64ff5e44f0d8cf69b127745fd9e6b7",
+    "demand-inclined-bulk-burst--earliest_deadline.json": "3840bcaadb59bf0e1998e6fcfe8b0a420fe6400a1e88a325513e51fe568b317f",
+    "demand-inclined-bulk-burst--exact_small.json": "5d4d1c050c393ebdd9b678614dd98d34f0b8c061740cd9202943dede1976dff6",
+    "demand-inclined-bulk-burst--forecast.json": "e8fa81d5583c8e7408b98052ecb131c77ee03d133fab3bb8eff2bc65b05b2831",
+    "demand-inclined-bulk-burst--priority.json": "d04ad34d53c7b4f3b2183d6e87a719ad3f2354422cf0c73f8a79733296641db2",
+    "demand-inclined-bulk-burst--value_per_bit.json": "1039b38e1beed1b5da650bf64af90433af99ed09bb2c465b0bd4ba4b535ba587",
+    "demand-inclined-staggered-cpu--earliest_deadline.json": "edd5d4d12c9566d67cbb8211c540d92e103ef5388cbabcbf65cfb5daba67eba0",
+    "demand-inclined-staggered-cpu--exact_small.json": "61b2026ebb0fd86714aa9583dd033fbaaf19ca797a4be3d4ec10097babede508",
+    "demand-inclined-staggered-cpu--forecast.json": "065d479aadeca05162768aae37d52836d6730a01093c70fa4962594eb6d70ebf",
+    "demand-inclined-staggered-cpu--priority.json": "475a7dee4863ccebc77888a99c7d9c8ed0fd0a93b421ab29851e7420ad250c59",
+    "demand-inclined-staggered-cpu--value_per_bit.json": "c40bd8b64f1571fedb458ce85e5df7a5a99f9c943a3169f0d056f0dabf4cfb25",
+    "demand-mid-bulk-burst--earliest_deadline.json": "8084473c31b6b4a43d76655df393a4b7bf1ddbe34cccbc19cadcfda0b7d5b627",
+    "demand-mid-bulk-burst--exact_small.json": "15cc70a7489ac643cf4b8536f6fda9f3aa2e600b3adb92a5d154c4aa19bec18a",
+    "demand-mid-bulk-burst--forecast.json": "1f5b7817ce3a8448707fce9994788843c95a2bc1911af4776141fc2967317395",
+    "demand-mid-bulk-burst--priority.json": "31ea7f2c8bc83b6de07af2b52300d24f22eba5bdeb31cb23579cfdcf1527257f",
+    "demand-mid-bulk-burst--value_per_bit.json": "352102116aaffac39b1bf18eb71e0ead83c4e3f97ea04b246c487e90be33f24c",
+    "demand-mid-staggered-cpu--earliest_deadline.json": "9aa30d91de6a26208ffccb816a9049101cfdd42a6071dc333a439b5f86a56fd5",
+    "demand-mid-staggered-cpu--exact_small.json": "d7b1e535c8d0ac204d187357011bfc7106fa424a8fbacaa67430a68c2454f5ad",
+    "demand-mid-staggered-cpu--forecast.json": "c687d306f282f54b4e580fcfe1707ad40a674a072951a8356224061add947457",
+    "demand-mid-staggered-cpu--priority.json": "2f9a1b28fa5aae517bf7e48e435790d80af20dda478e988df662199b73c6e02e",
+    "demand-mid-staggered-cpu--value_per_bit.json": "8c554e13c930f9151cc42400048bd84ba7a52431416190978849fd80c768e153",
+    "demand-retro-bulk-burst--earliest_deadline.json": "22c892b31f11ec533c36822cd27a18d34271c0d469ac09b3bd90867a16dca90e",
+    "demand-retro-bulk-burst--exact_small.json": "cff45ac4ed3a0a141c94eb2ace66bb013c0f8f17775a7f787cc8d29e4998b6cd",
+    "demand-retro-bulk-burst--forecast.json": "9860028ee49e8f7d2562af50131c989ee6acbd71bae5a083e3d5b19538a4f297",
+    "demand-retro-bulk-burst--priority.json": "4384b559435b041d8eb02813ab605d0b2f83f9fb7842daa5366219281e811a30",
+    "demand-retro-bulk-burst--value_per_bit.json": "40f6b4dc37c10c96ef2c65a6af63d646cac657ace735a7e469ce1af89554b85f",
+    "demand-retro-staggered-cpu--earliest_deadline.json": "737aac07ddb4396c095f3771000cd4c2750f94847d2fce2d67be885a67984d81",
+    "demand-retro-staggered-cpu--exact_small.json": "99a031fa5790ebd93e70aa553840d00353f888ce68850457817985cdcec4e490",
+    "demand-retro-staggered-cpu--forecast.json": "4d4e6e00b3a0d88d378e2717198feb7c148bc385aeaa583fffa94ba895a91d5b",
+    "demand-retro-staggered-cpu--priority.json": "f72d1aa8906854c81c556ffb38f47024637cfcc8e4956528979eecce994cca02",
+    "demand-retro-staggered-cpu--value_per_bit.json": "44f302bd85e6ee5ad5c53950ff2fb31bbc1b5afa389aef91aebd924821629fd1",
+    "demand-south-bulk-burst--earliest_deadline.json": "720c78283af6eca90dcf71eb2ff93dd77a71a778b4e7737c640a139c8e227810",
+    "demand-south-bulk-burst--exact_small.json": "19119da2cf8ae58335754231d127b03df51d4ee1e3ec7d595a8e16b2c6d1a3fa",
+    "demand-south-bulk-burst--forecast.json": "d5933355b6ba8e651ae3f8dbad41466fd0e0d70346b37e54074b8e8a3ba2d8af",
+    "demand-south-bulk-burst--priority.json": "fae5eea9395d505740e33f559e0321732baa0ffe64e25fef854cdace191daf80",
+    "demand-south-bulk-burst--value_per_bit.json": "23a0561d4c5acf1364fd88c5a098e5ae8582fa30eb1b15e102c850725e44fc87",
+    "demand-south-staggered-cpu--earliest_deadline.json": "bdada71a3d95b14bd5694613fe06449ac1d7c8beebd40f45fa4c806408d9f139",
+    "demand-south-staggered-cpu--exact_small.json": "cf82d4fbe03a2c32907fea492e95371ba04d724d2bf5de79f83b13a6f77736ea",
+    "demand-south-staggered-cpu--forecast.json": "d4d16e0fc9cf7fdd5d7d95ecaf4f981d177050483934e06dbc9cd763ce6f4e4c",
+    "demand-south-staggered-cpu--priority.json": "ba2065ef472176e63e83ff8a2da9a6f267f18a6d1db19c043e771f10856b79d1",
+    "demand-south-staggered-cpu--value_per_bit.json": "928ca45824cb9b6420ebdc2049c4b5bbdf1038ac9c04c4ac050488002763b328",
+    "report.json": "ca6c481c02a9112bc640df83eb9c787c3bb32bc0c41ca9393397a827c8fd9486",
+    "suite.json": "5f9ecbea6c98124e362eed5c1a8cda398c9da9a3d60013fe2b7bc0c99f9b38d8"
+  },
+  "audit": {
+    "consistent": true,
+    "rows": 48,
+    "report_sha256": "ce56c8c1d542637c68d50cc835c9faba54cb3fafde1314da20dfde605df567f5",
+    "scope": "Artifact checks and forecast solver reproduction, not native replay or independent physical calibration",
+    "sha256": "17bab5caf17dd85b69e3d24077e2fe701a7a32b4dd661d6dbcd43e9d81b261fa"
+  },
+  "rows": [
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "method": "priority",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "f47b1c3ec17e140bc90aa339eb164f5f5726e64545cea5e366bbcc9a48e89d0c",
+      "before_row_sha256": "de92d5632ea5c4687330ffe8358ecb46495b19387aa8435cd2634fcc363a7093"
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "4d4ff77d31e8975be3e167a6ad658f28ec0c8e3c001b166f99cd6bacaa3882a2",
+      "before_row_sha256": "c2dcab9814b64c369813b91cbd7db3f6b61c5b5e3db79335e2ea96e63b73d442"
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "method": "value_per_bit",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "85b60fab37bce5d3b45bd1df7de5aa3ffb17c2dfe6c43bb05dc1b5787cfde1a9",
+      "before_row_sha256": "b452d7705370cd4d0d9d5adc0f5cc029d4a4c65d7d62618ce7d8d4ba8d694806"
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "method": "exact_small",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 33,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "6febc3e9118386fec9d694d12117193ad9ee730955ae7f4cc89353c3cacbe062",
+      "before_row_sha256": "ae9b82562a043fb9b2f4e76aab564cdcb63e49687ab08b0e3f1730d4a116b191"
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "method": "priority",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "914aadecfd17619b4ae150faabdb060790397f6fed0513be891d899a71b5f530",
+      "before_row_sha256": "839f4b1a34132962e9b9c3833ba8bd591542a3a967cc4d088feb7c6f15da75ab"
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "4977a01cbead10361a6e83f64165a138ed6b1f02f904d4a971f7deeec12807ce",
+      "before_row_sha256": "ed045578d1148eb379c31cc06d6d7aecc16ed28416522cfc9f2a3d0574e46c33"
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "36c22f4f76df789c6293596b307dc02f95c2de621e6dca539a54fff1f1dbb4a0",
+      "before_row_sha256": "3852b109bc370b4d53dc8cb68d17ade2b3c96ca9c63a0f1236aa6697cb3a1fe1"
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "method": "exact_small",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 257,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 172,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 172
+      },
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "277dccae2e84caad1c1e353c2120de6dfa967a30748e12f7f0b207c425f75a60",
+      "before_row_sha256": "dec247e4ed4f4118d77a92725468c29c9bcc10da701def9a98a188b38c1b6194"
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "method": "priority",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "ed43a45a2eaab15e09ee1db515b44bd199043c614ac787f87b9e13af52bdcab7",
+      "before_row_sha256": "3bbfa79b8f3b75835d638d5c02edb1ce5f939b3303dc9da69c103c7c400b24bd"
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "924b65ea1428b4201ac79cd4cec6ca583ef382253fa776dd224500c5cd462a03",
+      "before_row_sha256": "521a7b6e7ced4aed143c1c682c9a1b190bb1d0b45d13d80f6c9e40069905afe4"
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "method": "value_per_bit",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "34b94612e27910aef905c1aa8759692d492df521feec65df97e4b7a5f9ba235b",
+      "before_row_sha256": "f4273f579ea55fedb8911ec7717fa869a39db3f482d185875800bd5357a59b3d"
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "method": "exact_small",
+      "split": "train",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 39,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "be242f540dfdf56c22030ad5b447c7d506b34f0eb845197497b956577fc18f2b",
+      "before_row_sha256": "a359e73e91a19e6449b24e240708ebb041a296b5516c74a8f10ebc0a241344a8"
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "method": "priority",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 28,
+      "before_forecast_value": 28,
+      "row_sha256": "892afaa7f9d153c0ec82be699407a16a89dd73c1129db6501c08cb37f0b533c5",
+      "before_row_sha256": "d68b550f816cd21853e2e1ee13edc0c868e2b192e2c950030352c4078d336740"
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 25,
+      "forecast_value": 25,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 25,
+      "row_sha256": "1860e9f3bfd073aee68ca83b6463a4e3a76098c2743bca98d4d29d0fb4fee791",
+      "before_row_sha256": "28c5abbd2c1e8ec9c4220495c9b6bd2fd128bc58c96b73ef90c4fe13ed6f5671"
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "19de34e3d80f1e223af68ce4bff9061509c4fc119a1d72b5e7d1b051a1ffcf15",
+      "before_row_sha256": "112c2683ed8b7e4f4d4c03eeadb303cbaacffa60a624061ba5afdcfe8caab3e1"
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "method": "exact_small",
+      "split": "train",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 30,
+      "forecast_value": 30,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 287,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 184,
+        "optimal": false,
+        "search_complete": false,
+        "upper_bound_score": 227
+      },
+      "before_native_value": 18,
+      "before_forecast_value": 30,
+      "row_sha256": "8d6f52e09f70b0534f8a46f724cf79996eda009fdd6a101afd04117eee366ec2",
+      "before_row_sha256": "ce7819d7b3ff169547b08ee86ef9d35a6e4cbfed789ba61d64110a2e68772714"
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "method": "priority",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "874d57313de50ebf43a457fd29d37a2a4b28998f253a9175ee06896536fd8180",
+      "before_row_sha256": "5e4de2b6d2a97e0c307d6be40c4dac0ef9f501b128a06d8b63504c76fe2e6632"
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "0519b9c79e2fde1ef495d980cf1dd67b7d312a2f0efd6a1e68df2679e5f54cdd",
+      "before_row_sha256": "99872db1bb345deccc9049135ddc144b29ac4504c258e349c4c18b0db7490e2f"
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "method": "value_per_bit",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "e695e920e714b51b7605d38b6bafe7b1a8143950936fdba29c15ad45144b8bd9",
+      "before_row_sha256": "32f917ca05c3d414c6c98beae6ea0483aa992cba79570cb4f5461b84675bc815"
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "method": "exact_small",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 39,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "f536c6d1b84cfb5688c3646706c40bad7482741636c1c9677f26a1b9c2ffbed3",
+      "before_row_sha256": "ea3e1a08a220ea216a83f664ad68400d709c6035134d73105999148de94a0d89"
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "method": "priority",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "0a2cdbd269da7aa203239d317ca6e2532c6fd1208ef7124eb312a82351185e6d",
+      "before_row_sha256": "51b50b88f5cd7f87c86623a53c4c7340f7de850d033b07b538ce913aa6eace58"
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "fa5bca9ff191b32ad31b323803abcb3024ee0c1aba471d40be82bcb87c9c096e",
+      "before_row_sha256": "1768d27411f1fecd2a120664af1ef6c4b8c806be6842782fd21c704f70541c21"
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "6028c6420455b7cba5fbdfd7b5f77775c95659fc18694f04144936c519892eb0",
+      "before_row_sha256": "07fad5ed64b1e393df7e8b636c2d04b494ca6083edcfe68689859ccbf6fe5f73"
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "method": "exact_small",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 257,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 172,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 172
+      },
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "af2a5c3e51f574c403b9f73fb750b5ded6da322544eb1b2a30173a8923ca7ae8",
+      "before_row_sha256": "5ea3fad4e037321a73d17bb5ad46d2d3c9261d953e35f78d7f0314a7deeb72b3"
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "method": "priority",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "680e7be8a9eff684aeadac1bb0b7a287ada21f0782c4cd47373330ec7e0be61a",
+      "before_row_sha256": "fabdf914ec9160e717bb4d43d526a312967d57d0214267970dbd1a0f7153c1f3"
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "384403ec75eb5a3e42830aa44c4b268df63010f94fb12d3d640fe67afab6124c",
+      "before_row_sha256": "d81a8d99b7df11f464d60f726df2f873defea9e7e0437d24514ac45bc52b64cc"
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "method": "value_per_bit",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "de21046f9133d9e1afc8f80176251d9bd97f172852438221f96cdb1c1d4461a7",
+      "before_row_sha256": "14417cec53bc704218802fbc1b0bf97e05ab591d3dbcb49b6ad8e905e72ff010"
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "method": "exact_small",
+      "split": "development",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 39,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "f8767ee92487ab541036e9d06c79a52c0eed3c409d08f0800ee53d909cacdfc2",
+      "before_row_sha256": "43f8efb36d0ce06eb59feec9f8b39263365c51d8a6d1ad5265aff08f80a39c12"
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "method": "priority",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 28,
+      "before_forecast_value": 28,
+      "row_sha256": "39c176c2e4bc8c002e96df38a0c012ad2aa82a330a4810542b9ffd755464b31e",
+      "before_row_sha256": "f0a7421b667b8f26206ac48765066b6f11b72b40b44dbd3c914e87080dd95d99"
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 25,
+      "forecast_value": 25,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 25,
+      "before_forecast_value": 25,
+      "row_sha256": "3bf36b5817af9662965619a33c327db6d5d9fd8424295e0f96cfa4bc01a2aa04",
+      "before_row_sha256": "75b28fe7216ed80ae9c0247a4462487d8170c434110c7619ad6b4a0cbf907b91"
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "67187ec3b7eb88f78dadf53164130a318c5a495234c88ae806b6b9e347a7cbc8",
+      "before_row_sha256": "c4f66a3bddc180c384f8d17095b4df76e788e14cffb53053ce10192915b1d4e0"
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "method": "exact_small",
+      "split": "development",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 30,
+      "forecast_value": 30,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 296,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 184,
+        "optimal": false,
+        "search_complete": false,
+        "upper_bound_score": 227
+      },
+      "before_native_value": 18,
+      "before_forecast_value": 30,
+      "row_sha256": "3c3d3d5f2ebaa7f3b313d91e3b1f385b5332899efd3d8ec9319d18612fa1af00",
+      "before_row_sha256": "bd8999f5ee023514e8e001c92ad3c12ca25f28e2637b6b34ee9c67d66569a60f"
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "method": "priority",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "15e83fc294f90ba9eea0aa82d3cdffdfa776d72cf1635659b084d4e9ce823f41",
+      "before_row_sha256": "d7f697185a3bc5764e38dd6d84e0e780abd206a457543a6184c36dbf42ca4b68"
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "a96a7521c0a02fae4f9a7a469377f8d0546e4eddaefb23b74847a7ff440c131d",
+      "before_row_sha256": "c1171f9dbd881cffbccc469e9f664cf12c1d0250d4f6c9e5715f6d47adf5176b"
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "method": "value_per_bit",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "c36c87c65d7a1a0fc9053de2807166b7fdab4acd548ae50bd5af2d258c394c0a",
+      "before_row_sha256": "e249ad61377b4bab61e4652933a8b203e31bb91ad73e7bf549dc1d66db1c7379"
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "method": "exact_small",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 39,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "16e9bd51adc52397312ec5b3709f21e7debd1d1d1f39543a8233aeb24fcb9c0e",
+      "before_row_sha256": "120d294486918069c93577693676fe7379d8e624d9fbab30ac69c1b963cecf78"
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "method": "priority",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "cceb35dafdd645f873f34a5fa5ad51a920470594f61393278cb410e84d642680",
+      "before_row_sha256": "b9dad284a623625da728b9a8f32225a0b94851bb90ad75bee68e33cfd42bb85c"
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "85a9796ed1322560ad7d822d056f4a585c16bc81ec5579e44e4a2f425e99d19d",
+      "before_row_sha256": "1e81d19c0c1703f42c7ae2bc4253f47eb23170107bb2d62bb2e99b1b72afb88f"
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "d7e7f5e1cc87773b29ea962d5192e17df8ce619e8591f7cbfe073af695d0e3b1",
+      "before_row_sha256": "1a9a7f387615ecd123ffc954e9cac2630a9b5823720311c5af65c6e7acc85f12"
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "method": "exact_small",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 257,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 172,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 172
+      },
+      "before_native_value": 16,
+      "before_forecast_value": 28,
+      "row_sha256": "6495b078320f8b30c0baa5fcc08b0004beb3429f7c997322107534dfa511810b",
+      "before_row_sha256": "73ce2228b1d88e115446a8373cfb4946423d215efe98af8ebc99d76d173ac52a"
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "method": "priority",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "1eb20d2c9fbcc79cfa47616e7c571818dcf475c837d6f7a4b4559c589cca6b34",
+      "before_row_sha256": "1fda21c7be772a7289a996acf8eca2420569f72b6b3b4c3cf02f34b015af194a"
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "method": "earliest_deadline",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 1,
+      "native_value": 11,
+      "forecast_value": 11,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 11,
+      "before_forecast_value": 11,
+      "row_sha256": "c694bb503114803d8ed9131f11cec631496a04584c63ec2720ca4afe1725005e",
+      "before_row_sha256": "fa8fb723fe61adf8da1215abe2c2dbbf925c95689ceccc86899180d8a04c223d"
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "method": "value_per_bit",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": null,
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "d9d965a6dbe3267c6099f1c3df9046462f2a861f68d68f1b27e52dc2293e346d",
+      "before_row_sha256": "442dbda6680d844c05986aeafdf6ff393e01165f144efaa8b937738a4a1e9f16"
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "method": "exact_small",
+      "split": "test",
+      "total": 3,
+      "native_fulfilled": 2,
+      "native_value": 12,
+      "forecast_value": 12,
+      "priority_total": 23,
+      "optimizer": {
+        "candidates": 39,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 50,
+        "optimal": true,
+        "search_complete": true,
+        "upper_bound_score": 50
+      },
+      "before_native_value": 12,
+      "before_forecast_value": 12,
+      "row_sha256": "4b446b54f3e75045a9f9e666687be8209620b79f930621cc8edd67e7892f66e8",
+      "before_row_sha256": "bca9c50d8ee6462d1873785ae0ab488b60c4d342be9bc8d4011f78c29aa584ee"
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "method": "priority",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 28,
+      "forecast_value": 28,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 28,
+      "before_forecast_value": 28,
+      "row_sha256": "6b26acb1056fe9e9825f520af765b5a49773fc2dc11ba55ca7f72e5c9413ddb7",
+      "before_row_sha256": "bcd3fa0cf07b5e0b9996d25c52799a593e966eeaa293e41d5f8e57b0e48ac93c"
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "method": "earliest_deadline",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 25,
+      "forecast_value": 25,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 25,
+      "before_forecast_value": 25,
+      "row_sha256": "2dfef009b0572d7ddca5916763e322c637ad6c33a394033bfc85faa1a853f0bd",
+      "before_row_sha256": "fc48a617389546f2f82e971da6f47494b564f3f2f77dd708fdf19272d0bb2137"
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "method": "value_per_bit",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 3,
+      "native_value": 16,
+      "forecast_value": 16,
+      "priority_total": 37,
+      "optimizer": null,
+      "before_native_value": 16,
+      "before_forecast_value": 16,
+      "row_sha256": "63526509744fa7218b70e25e3a36d111a740237ffa4ea3ac8ba791603f22416b",
+      "before_row_sha256": "ca4108b7329ad5e788095a2dc9843337aa8dcf679bfbc8cd2110ce9afd04e2f7"
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "method": "exact_small",
+      "split": "test",
+      "total": 5,
+      "native_fulfilled": 4,
+      "native_value": 30,
+      "forecast_value": 30,
+      "priority_total": 37,
+      "optimizer": {
+        "candidates": 292,
+        "enumeration_complete": true,
+        "max_search_nodes": 50000,
+        "objective_score": 184,
+        "optimal": false,
+        "search_complete": false,
+        "upper_bound_score": 227
+      },
+      "before_native_value": 18,
+      "before_forecast_value": 30,
+      "row_sha256": "d90906a59abed8afe01a5a1eac97cca4f5efda61d44707853dcbd94ed5edc18d",
+      "before_row_sha256": "ae50c3d1f429aa53355f006696eb942114ea8d3c5ad6ce9a90366a776c26bdd6"
+    }
+  ],
+  "aggregates": [
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "method": "priority",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "method": "earliest_deadline",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "method": "value_per_bit",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6527614571092832,
+      "mean_value_upper_bound": 0.6527614571092832,
+      "method": "exact_small",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "method": "priority",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "method": "earliest_deadline",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "method": "value_per_bit",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6527614571092832,
+      "mean_value_upper_bound": 0.6527614571092832,
+      "method": "exact_small",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "method": "priority",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "method": "earliest_deadline",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "method": "value_per_bit",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6527614571092832,
+      "mean_value_upper_bound": 0.6527614571092832,
+      "method": "exact_small",
+      "rows": 4,
+      "split": "test"
+    }
+  ],
+  "paired": [
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-equatorial-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-equatorial-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-inclined-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 9,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 25
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 21,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-inclined-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 7,
+      "native_weighted_fulfilled": 30
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-mid-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-mid-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-high-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 9,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 25
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 21,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-high-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 7,
+      "native_weighted_fulfilled": 30
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-south-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-south-staggered-cpu",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 28,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 1,
+      "native_weighted_fulfilled": 11
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-retro-bulk-burst",
+      "forecast_optimum_proved": true,
+      "forecast_value_upper_bound": 12,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 0,
+      "native_weighted_fulfilled": 12
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "priority",
+      "native_gap_to_forecast_bound": 9,
+      "native_weighted_fulfilled": 28
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "earliest_deadline",
+      "native_gap_to_forecast_bound": 12,
+      "native_weighted_fulfilled": 25
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "value_per_bit",
+      "native_gap_to_forecast_bound": 21,
+      "native_weighted_fulfilled": 16
+    },
+    {
+      "case": "demand-retro-staggered-cpu",
+      "forecast_optimum_proved": false,
+      "forecast_value_upper_bound": 37,
+      "method": "exact_small",
+      "native_gap_to_forecast_bound": 7,
+      "native_weighted_fulfilled": 30
+    }
+  ],
+  "forecast_native_value_mismatch_before": 13,
+  "forecast_native_value_mismatch_after": 0,
+  "oracle_status_counts": {
+    "True": 9,
+    "False": 3
+  },
+  "solver_contract": {
+    "max_requests": 6,
+    "max_cells": 48,
+    "max_candidates": 8192,
+    "nominal_work_units": 50000,
+    "enumeration_budget_fraction": 0.5,
+    "objective": "priority*(N+1)+fulfilled_count",
+    "bound_scope": "only discrete contiguous-prefix conservative resource model; not native continuous optimum"
+  },
+  "ground_fix": {
+    "hardware_changed": false,
+    "mechanism": "retain native receiver pointing/reacquisition physics; add forecast setup envelope and longer resource reservations",
+    "sampling_sec": 0.5,
+    "relative_speed_bound_m_s": 12000.0,
+    "range_floor_m": 300000.0,
+    "acceleration_guard_m_s2": 12.0,
+    "scope": "conditional gravity-only low-orbit sampled geometry, not measured ground-station calibration"
+  },
+  "notes": [
+    "First observed 48-row run retained, including 13 forecast/native value mismatches. Current audit covers the final run only.",
+    "Final 48 rows are the same 12 case inputs and 4 methods, not 48 independent missions.",
+    "Nine oracle cases closed the model bound; three remain unresolved at the declared budget.",
+    "Nominal work units are algorithm-specific, not equal FLOPs or equal CPU time; all workers have the same timeout.",
+    "Full raw temporary outputs stay local; source/input hashes and recipes support reproduction with matching sources.",
+    "Two held-out geometry groups do not establish statistical or industrial superiority."
+  ],
+  "sha256": "086db026024ae6aab847a34deb6d773dd399f9901592ddeffb3b7d775b31e405"
+}

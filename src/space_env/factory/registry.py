@@ -18,11 +18,58 @@ def register_bundle(bundle, registry):
         raise ValueError("quarantined bundle cannot enter registry")
     report = json.loads((bundle / "report.json").read_text())
     catalogue = json.loads((bundle / "manifest.json").read_text())
+    groups = {(c["group_sha256"], c["split"]) for c in catalogue["cases"]}
+    trajectories = {
+        (e["trajectory_sha256"], a["split"])
+        for a in report["audit"]
+        for e in a["exports"]
+        if e["rows"] > 0
+    }
+    return _register_claims(
+        registry,
+        content=verified["content_sha256"],
+        manifest=catalogue["sha256"],
+        groups=groups,
+        trajectories=trajectories,
+    )
+
+
+def _register_claims(registry, *, content, manifest, groups, trajectories):
+    """Commit validated producers' claims together in the shared v1 database.
+
+    Callers must verify their artifacts before using this private primitive.
+    The transaction is local; it does not publish or move bundle files.
+    """
+    import re
+
+    groups, trajectories = set(groups), set(trajectories)
+    identities = [
+        content,
+        manifest,
+        *(i for i, _ in groups),
+        *(i for i, _ in trajectories),
+    ]
+    if any(
+        not isinstance(i, str) or not re.fullmatch(r"[0-9a-f]{64}", i)
+        for i in identities
+    ):
+        raise ValueError("registry identities must be SHA-256 strings")
+    for claims in (groups, trajectories):
+        seen = {}
+        for identity, split in claims:
+            if split not in {"train", "development", "test", "holdout", "ood"}:
+                raise ValueError("unknown registry split")
+            if identity in seen and seen[identity] != split:
+                raise ValueError("geometry or trajectory crosses splits inside bundle")
+            seen[identity] = split
+    registry = Path(registry).resolve()
     registry.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(registry, timeout=30)
     try:
         conn.execute("BEGIN IMMEDIATE")
-        tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        tables = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
         if not tables:
             conn.execute("CREATE TABLE meta (schema TEXT)")
             conn.execute("INSERT INTO meta VALUES ('space-env.corpus-registry/1')")
@@ -37,7 +84,6 @@ def register_bundle(bundle, registry):
             ("space-env.corpus-registry/1",)
         ]:
             raise ValueError("unknown registry schema")
-        content = verified["content_sha256"]
         if conn.execute("SELECT 1 FROM bundles WHERE content=?", (content,)).fetchone():
             conn.rollback()
             return {
@@ -45,13 +91,6 @@ def register_bundle(bundle, registry):
                 "status": "already_registered",
                 "content_sha256": content,
             }
-        groups = {(c["group_sha256"], c["split"]) for c in catalogue["cases"]}
-        trajectories = {
-            (e["trajectory_sha256"], a["split"])
-            for a in report["audit"]
-            for e in a["exports"]
-            if e["rows"] > 0
-        }
         for identity, split in groups:
             old = conn.execute(
                 "SELECT split FROM groups WHERE identity=?", (identity,)
@@ -68,7 +107,7 @@ def register_bundle(bundle, registry):
                     if old[0] == split
                     else "trajectory crosses registry splits"
                 )
-        conn.execute("INSERT INTO bundles VALUES (?,?)", (content, catalogue["sha256"]))
+        conn.execute("INSERT INTO bundles VALUES (?,?)", (content, manifest))
         conn.executemany("INSERT OR IGNORE INTO groups VALUES (?,?)", sorted(groups))
         conn.executemany(
             "INSERT INTO trajectories VALUES (?,?,?)",
@@ -82,6 +121,9 @@ def register_bundle(bundle, registry):
             "groups": len(groups),
             "trajectories": len(trajectories),
         }
+    except ValueError:
+        conn.rollback()
+        raise
     except sqlite3.DatabaseError as exc:
         conn.rollback()
         raise ValueError("invalid registry or registry IO failure") from exc

@@ -9,6 +9,12 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
+from space_env.tasks.goals import (
+    GOAL_FEATURES,
+    GOAL_RESOURCE_FEATURES,
+    goal_features,
+    goal_resource_features,
+)
 from space_env.tasks.observation import FEATURES, KINDS, RELATIONS
 from space_env.tasks.schema import TaskSpec
 from space_env.tasks.session import TaskSession
@@ -16,7 +22,7 @@ from space_env.tasks.session import TaskSession
 
 def observation_space(spec):
     n, e, a = spec.max_entities, spec.max_relations, spec.max_actions
-    return spaces.Dict(
+    result = spaces.Dict(
         {
             "clock": spaces.Box(0.0, 259200.0, (1,), dtype=np.float64),
             "entities": spaces.Box(-1e300, 1e300, (n, len(FEATURES)), dtype=np.float64),
@@ -28,6 +34,22 @@ def observation_space(spec):
             "action_mask": spaces.MultiBinary(a),
         }
     )
+    if spec.goal is not None:
+        result.spaces["goals"] = spaces.Box(
+            -1e300, 1e300, (16, len(GOAL_FEATURES)), dtype=np.float64
+        )
+        result.spaces["goal_mask"] = spaces.MultiBinary(16)
+        result.spaces["goal_feature_mask"] = spaces.MultiBinary(
+            (16, len(GOAL_FEATURES))
+        )
+        result.spaces["goal_resources"] = spaces.Box(
+            -1e300, 1e300, (64, len(GOAL_RESOURCE_FEATURES)), dtype=np.float64
+        )
+        result.spaces["goal_resource_mask"] = spaces.MultiBinary(64)
+        result.spaces["goal_resource_feature_mask"] = spaces.MultiBinary(
+            (64, len(GOAL_RESOURCE_FEATURES))
+        )
+    return result
 
 
 def encode(view, spec):
@@ -58,6 +80,35 @@ def encode(view, spec):
         ]
         out["relation_mask"][i] = 1
     out["action_mask"][: len(view["action_mask"])] = view["action_mask"]
+    if spec.goal is not None:
+        out["goals"] = np.zeros((16, len(GOAL_FEATURES)), dtype=np.float64)
+        out["goal_mask"] = np.zeros(16, dtype=np.int8)
+        out["goal_feature_mask"] = np.zeros((16, len(GOAL_FEATURES)), dtype=np.int8)
+        out["goal_resources"] = np.zeros(
+            (64, len(GOAL_RESOURCE_FEATURES)), dtype=np.float64
+        )
+        out["goal_resource_mask"] = np.zeros(64, dtype=np.int8)
+        out["goal_resource_feature_mask"] = np.zeros(
+            (64, len(GOAL_RESOURCE_FEATURES)), dtype=np.int8
+        )
+        actor_indices = {
+            r["id"]: r["index"] for r in view["entities"] if r["kind"] == "actor"
+        }
+        for row in view["goal"]["conditions"]:
+            i = row["index"]
+            out["goals"][i], out["goal_feature_mask"][i] = goal_features(
+                row,
+                view["goal"]["deadline_sec"],
+                view["time_sec"],
+                actor_indices.get(row["actor"]),
+            )
+            out["goal_mask"][i] = 1
+        for row in view["goal"]["resources"]:
+            i = row["index"]
+            out["goal_resources"][i], out["goal_resource_feature_mask"][i] = (
+                goal_resource_features(row, actor_indices.get(row["actor"]))
+            )
+            out["goal_resource_mask"][i] = 1
     return out
 
 
@@ -107,11 +158,16 @@ class MissionTaskEnv(gym.Env):
             self._task.model_dump(mode="json", by_alias=True),
             seed=episode_seed,
         )
-        return encode(self.session.observe(), self._task), {
+        info = {
             "schema": "space-env.task-info/1",
             "seed_policy": self._task.seed_policy,
             "ignored_options": sorted(map(str, options or {})),
         }
+        if self._task.goal is not None:
+            info["goal"] = self.session.goal_status()
+            info["goal_feature_names"] = list(GOAL_FEATURES)
+            info["goal_resource_feature_names"] = list(GOAL_RESOURCE_FEATURES)
+        return encode(self.session.observe(), self._task), info
 
     def step(self, action):
         if self.session is None:
@@ -129,17 +185,20 @@ class MissionTaskEnv(gym.Env):
             idempotency_key=f"gym/{self.session.revision}",
             advance_sec=duration,
         )
+        info = {
+            "elapsed_sec": r["elapsed_sec"],
+            "discount": r["discount"],
+            "feedback": r["feedback"],
+            "reward_components": r["reward_components"],
+        }
+        if "goal" in r:
+            info["goal"] = r["goal"]
         return (
             encode(r["next_observation"], self._task),
             r["reward"],
             r["terminated"],
             r["truncated"],
-            {
-                "elapsed_sec": r["elapsed_sec"],
-                "discount": r["discount"],
-                "feedback": r["feedback"],
-                "reward_components": r["reward_components"],
-            },
+            info,
         )
 
     def action_masks(self):

@@ -1,0 +1,395 @@
+{
+  "schema": "space-env.llm-mission-families-acceptance/1",
+  "date": "2026-11-08",
+  "sources": {
+    "src/space_env/llm/mission_suite.py": "0dd6a2ee76602c1207439be36fe145b1824a3a5aca74a4c4da85908d810f6bd4",
+    "examples/llm/family_demo.py": "aeca6873cc9f46ae264ee45240f6a387e72ea8fdea8b2238479bd14b51e4ca9f",
+    "tests/test_llm_mission_suite.py": "3c433df43c4a53787d69859a7e3b7bea2204ad99407b087afcd002578efb616b"
+  },
+  "full_native_source_manifest_sha256": "032693ff2f248cd275036f37488dcd17102183e5e16dbb5ea9d552fa8e63cf6d",
+  "suite_sha256": "1f190c37955c92a8469ec7cfbe455b776b36418169c32c6bff7f742b98bed525",
+  "declared": {
+    "cases": 36,
+    "families": 6,
+    "geometries": 6,
+    "full_policy_runs": 108
+  },
+  "measured": {
+    "selected": [
+      "equatorial-relay-chain",
+      "equatorial-cpu-backlog",
+      "equatorial-memory-pressure",
+      "equatorial-station-blackout",
+      "equatorial-link-blackout",
+      "equatorial-deadline-pressure",
+      "inclined-35-relay-chain",
+      "inclined-55-relay-chain"
+    ],
+    "policy_runs": 24,
+    "replayed": 24,
+    "runtime_errors": 0,
+    "complete_goals": 0,
+    "geometries": 3,
+    "aggregates": [
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "development",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "development",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "development",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "test",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "test",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "relay-chain",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "test",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "cpu-backlog",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "cpu-backlog",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "cpu-backlog",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "memory-pressure",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "memory-pressure",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.3333333333333333,
+        "value_upper": 0.3333333333333333
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "memory-pressure",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.3333333333333333,
+        "value_upper": 0.3333333333333333
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "station-blackout",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "station-blackout",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "station-blackout",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "link-blackout",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "link-blackout",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "link-blackout",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.5,
+        "value_upper": 0.5
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "deadline-pressure",
+        "geometries": 1,
+        "policy": "wait",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "deadline-pressure",
+        "geometries": 1,
+        "policy": "public_memory",
+        "privileged": false,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      },
+      {
+        "cases": 1,
+        "completed": 1,
+        "family": "deadline-pressure",
+        "geometries": 1,
+        "policy": "reference_schedule",
+        "privileged": true,
+        "split": "train",
+        "successful": 0,
+        "value_lower": 0.0,
+        "value_upper": 0.0
+      }
+    ]
+  },
+  "corpus_bridge": {
+    "audit": {
+      "ok": true,
+      "sha256": "66a4229fe253d484529da23f690b9ba7aee409fa1b82e443a7cca08838b71410",
+      "summary": {
+        "all_wait_decisions": 250,
+        "decisions": 288,
+        "episodes": 8,
+        "evaluation_episodes": 2,
+        "independent_geometries": 3,
+        "policy_origins": {
+          "scripted_privileged": 8
+        },
+        "rows": {
+          "rl": 6,
+          "sft": 0,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 0,
+        "train_episodes": 6
+      }
+    },
+    "build": {
+      "ok": true,
+      "registry_status": "not_registered",
+      "sha256": "66a4229fe253d484529da23f690b9ba7aee409fa1b82e443a7cca08838b71410",
+      "summary": {
+        "all_wait_decisions": 250,
+        "decisions": 288,
+        "episodes": 8,
+        "evaluation_episodes": 2,
+        "independent_geometries": 3,
+        "policy_origins": {
+          "scripted_privileged": 8
+        },
+        "rows": {
+          "rl": 6,
+          "sft": 0,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 0,
+        "train_episodes": 6
+      }
+    },
+    "registration": {
+      "content_sha256": "66a4229fe253d484529da23f690b9ba7aee409fa1b82e443a7cca08838b71410",
+      "groups": 3,
+      "ok": true,
+      "status": "registered",
+      "trajectories": 8
+    }
+  },
+  "tests": {
+    "command": "python -m pytest tests/test_llm_mission_suite.py tests/test_llm_corpus.py tests/test_llm_wire_data.py tests/test_llm_episode.py tests/test_llm_benchmark.py tests/test_llm_ollama.py -q",
+    "passed": 103,
+    "new": 27,
+    "seconds": 104.01
+  },
+  "ruff": "passed",
+  "diff_check": "passed",
+  "external_llm_measured": false,
+  "model_fine_tuned": false,
+  "blind_holdout_claim": false,
+  "full_108_run_matrix_measured": false,
+  "scope": "scripted catalogue-execution regression and corpus bridge; partial deliveries not positive SFT; no competitive or hardware qualification",
+  "raw_directory": "/tmp/space-env-family-suite-20261108-final",
+  "reproduce": [
+    "python -m examples.llm.family_demo --output /tmp/new-family-demo",
+    "python -m space_env.llm.mission_suite --audit /tmp/new-family-demo"
+  ],
+  "sha256": "8928f5d37a9d4ea9e2cd8d4436c03275c65456276fbaa95934e41ca016353814"
+}

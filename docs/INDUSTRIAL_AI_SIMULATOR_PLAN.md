@@ -1,6 +1,50 @@
 # План промышленного симулятора космических миссий для AI
 
-## Текущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
+## Актуально: физические цели миссии — 9 ноября 2026
+
+Реализован opt-in контракт пяти целей: доставка, ориентация, разгрузка маховиков,
+импульс двигателя и орбитальное состояние в заданные моменты. Общие native
+критерии работают в SDK, Gym/PettingZoo и LLM episodes; добавлены этапы миссии,
+бюджеты энергии/топлива, actor-only наблюдения, replay и SFT/RL gates.
+
+**390 различных локальных тестов прошли** (105 + 87 + 198). В 13 фиксированных
+синтетических сценариях выполнено 26 запусков: reference решил 9/13, wait 0/13;
+четыре отрицательных случая сохранены. Все 26 результатов проверены холодным
+replay; отдельно установленный wheel повторил матрицу и audit без runtime ошибок.
+Разгрузка маховиков дала 1 RL episode и 1 native SFT conversation при нуле
+доставленных заявок: теперь успешная физическая цель не подменяется доставкой.
+
+Это ограниченная инженерная проверка, не аппаратная калибровка, flight qualification,
+новая квалификация больших группировок или сравнение с внешним симулятором.
+[Контракт и рецепты](PHYSICAL_MISSION_GOALS.md),
+[приёмка с хешами исходников и артефактов](acceptance/PHYSICAL_MISSION_GOALS_V1.json).
+
+Следующие блоки моделера: относительное движение/строй и сближение с ограничениями
+безопасности; навигационные и сенсорные измерения с неопределённостью;
+длительные орбитальные миссии и удержание орбиты; расширение совместной проверки
+ориентации, тяги, энергии, тепла и связи. Для каждого блока нужны отдельные
+эталоны, отрицательные сценарии и измеренная область применимости. Общая очередь —
+[AI_NEXT_EXECUTION.md](AI_NEXT_EXECUTION.md); G01 реализован, остальные пакеты
+не объявляются закрытыми. Ниже — исторические статусы на указанные даты.
+
+## Текущий пакет — AI advancement, 8 ноября 2026
+
+Закрыта ограниченная инженерная реализация шести направлений: native-prefix
+sequence recovery, experimental local learning workflow, аналитические эталоны,
+операционные задачи, parallel scale qualification и paired native evaluation.
+357 distinct local tests прошли; полный repository suite не запускался.
+Пять scale cases прошли replay/resource gates, но полностью выполнен только
+reference (3/3): большие workloads дали 3/8 и 2/16, отрицательные сохранены.
+32 analytic checks и 10 installed-wheel operations runs повторены без ошибок.
+Собран свежий scripted corpus: 2 train RL + 2 native SFT, 72 semantic decisions.
+
+Это не реальный Qwen SFT gain, внешний competitor benchmark или flight
+qualification. Momentum-suite имеет отдельный evaluator, ещё не общий SFT goal.
+[Полный контракт/результаты](AI_ADVANCEMENT_BUNDLE.md),
+[receipt](acceptance/AI_ADVANCEMENT_BUNDLE_V1.json),
+[точные следующие пакеты G01–G05](AI_NEXT_EXECUTION.md).
+
+## Предыдущий пакет — B11-Q5-D2a: независимая геометрия и capacity audit
 
 Добавлен отдельный fixed-ephemeris delivery compiler: independently specified
 initial planes/phases/radii и synthetic fixed WGS84 sites. Станции не строятся
@@ -1947,3 +1991,62 @@ B05-A final full regression (2026-11-02): **1257 passed, 58 warnings, 1511.44 s*
 B05-B validation (2026-11-02): **44 новых cases; focused 45 с legacy regression; reference 871 passed (13 warnings), fast 110 passed (2 warnings), 1301 collected**. Counts overlap. Wheel 198/198 source Python modules byte-matched и 3 frozen boinor fixtures; extended isolated installed SDK и CLI mission-validate/run/resume/replay passed для nominal/reroute/loss/ttl. SDK/CLI final checkpoints совпали; source/installed demo results совпали; content hash сохранился при смене owner. Полная регрессия завершена успешно (итог ниже).
 
 B05-B final full regression (2026-11-02): **1301 passed, 58 warnings, 1554.35 s**, exit 0. Непрерывный полный прогон на финальных исходниках с loopback, включая 16-actor/72h tasking scenario. Source payload 198/198 modules и 3 boinor fixtures byte-matched; installed SDK/CLI и четыре миссии nominal/reroute/loss/ttl passed с identical checkpoints и сохраненным content hash. Финальный wheel обновил только README metadata/RECORD; идентичность исполняемого payload доказана, reinstall/replay всех четырех режимов passed. Это не отдельная B09 scale qualification и не B12 hardware/flight/protocol qualification. Следующий пакет — B06.
+
+## Журнал B08 / LLM corpus — 8 ноября 2026
+
+Закрыт bounded corpus workflow: native/provider-wire replay → train-only JSONL →
+semantic geometry/trajectory checks → transactional registration в общем factory
+registry. 168 локальных integration/regression tests passed, Ruff passed;
+scripted native mission → SFT/RL corpus → register → independent verify выполнены.
+Подробности и следующая очередь: [PRODUCT_EXECUTION_NEXT.md](PRODUCT_EXECUTION_NEXT.md).
+[Контракт](LLM_CORPUS_CONTRACT.md), [receipt](acceptance/LLM_CORPUS_V1.json).
+Это завершение конкретного пакета, а не объявление всего B08/проекта или
+аппаратной/конкурентной квалификации полностью завершёнными.
+
+## Журнал B06/B08 / Mission Families v1 — 8 ноября 2026
+
+Заморожены 36 workload-конфигураций на шести геометриях, шесть семейств,
+train/development/test. Добавлены честная матрица baseline и native replay audit.
+103 tests passed (27 новых), representative smoke 24/24 replayed без runtime
+ошибок; при этом 0/24 полных delivery goals — измеренный gap, не green goal.
+Следующий приоритет — диагностика полноты планов и политики выполнения
+многозаявочной миссии, прежде чем расширять positive SFT.
+[Контракт](LLM_MISSION_FAMILIES.md), [текущая очередь](PRODUCT_EXECUTION_NEXT.md).
+
+## Журнал B07 / Pointing completeness — 8 ноября 2026
+
+Закрыт bounded finite-goal pointing profile и operator-only диагностика
+полноты каталога. Сохраняется 180° fallback, прежний energy reserve и native
+admission. Recovery удаляет initial-only proofs и использует conservative model.
+Финально 115 targeted tests passed; matched serial/exact_small/pointing_bounded
+абляция — 18 replayed запусков с перестроением планов, шесть семейств одной
+геометрии. Три улучшения доставки 1→2, ноль ухудшений в подматрице; полной цели
+3/3 нет. Следом — sequence-dependent pointing, resource lanes и расширение
+qualification; не объявлять весь план/физическую квалификацию завершёнными.
+[Контракт](POINTING_COMPLETENESS.md), [приёмка](acceptance/POINTING_COMPLETENESS_V1.json).
+
+## Журнал B04/B07/B08 / Sequence-lanes — 8 ноября 2026
+
+Реализованы последовательная ориентация с tracking guard и native ресурсные
+lanes, power/BW, bounded portfolio и независимый admission расписания. Исправлено
+отсутствие tracking drift в предыдущем global-cone bound; старые receipts
+исторические. На неизменном relay-chain — 3/3, в 24 matched native запусках
+четыре улучшенных семейства, без регрессий на одной геометрии. 176 targeted tests
+passed, 19 final module tests passed (пересекаются); корпус 6 RL + 2 SFT,
+scripted_privileged, без обучения/вызова LLM. Negative cases сохранены.
+[Контракт](SEQUENCE_LANES.md), [приёмка](acceptance/SEQUENCE_LANES_V1.json),
+[следующая очередь](PRODUCT_EXECUTION_NEXT.md). Это закрытие конкретного пакета,
+а не универсальная промышленная/аппаратная qualification.
+
+## Журнал B07/B08 / Full frozen sequence qualification — 8 ноября 2026
+
+Все 36 frozen workload-конфигураций/шесть геометрий/all splits проверены:
+serial vs sequence-lanes, 72 native scored runs, replay и rebuild. Runtime errors
+и forecast/native count mismatches — 0. Delivered priority improved/tied/regressed:
+23/13/0; full goals sequence 16/36 против serial 0/36. Публичный regression,
+не blind/OOD, не внешний competitor benchmark и не LLM-score.
+Возобновление source-bound checkpoint и запрет score-driven retry error cells
+проверены. Corpus: 12 train RL + 5 train SFT, две train геометрии; evaluation
+24 episodes только audit. 81 local tests passed, без CI/commit/push.
+[Контракт](SEQUENCE_QUALIFICATION.md), [приёмка](acceptance/SEQUENCE_QUALIFICATION_V1.json),
+[актуальный остаток плана](PRODUCT_EXECUTION_NEXT.md).

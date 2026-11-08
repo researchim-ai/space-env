@@ -9,6 +9,7 @@ from threading import RLock
 
 from space_env.runtime import AccessPolicy, MissionRuntime, RuntimeContractError
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
+from space_env.tasks.goals import OrbitGoal, evaluate_goal, validate_goal
 from space_env.tasks.observation import Projection, _ProjectionReads, admissible
 from space_env.tasks.schema import TaskDecision, TaskSpec
 
@@ -156,11 +157,20 @@ class TaskSession:
             audit_mode=self._task.runtime_audit,
         )
         actor_ids = set(self._runtime.describe_capabilities()["actors"])
+        self._goal_failures = ()
+        self._goal_achievements = ()
+        if self._task.goal is not None:
+            controlled = {a for role in self._task.roles.values() for a in role.actors}
+            validate_goal(self._task.goal, self._runtime, controlled)
+            initial_goal = self._evaluate_goal(self._runtime)
+            self._goal_failures = tuple(initial_goal["failures"])
+            self._goal_achievements = tuple(initial_goal["achieved"])
         definition = self._scenario["definition"]
         operations = definition.get("operations", definition)
         station_ids = {g["name"] for g in operations["stations"]}
         if any(
-            (set(r.actors) | set(r.demand_actors)) - actor_ids or (set(r.stations) | set(r.demand_stations)) - station_ids
+            (set(r.actors) | set(r.demand_actors)) - actor_ids
+            or (set(r.stations) | set(r.demand_stations)) - station_ids
             for r in self._task.roles.values()
         ):
             raise ValueError("task role references unknown actor/station")
@@ -186,10 +196,54 @@ class TaskSession:
 
     def _refresh(self, runtime, projections, revision):
         reads = _ProjectionReads(runtime)
-        return {
+        views = {
             r: p.build(reads, r, revision, self._actions)
             for r, p in projections.items()
         }
+        if self._task.goal is not None:
+            status = self._evaluate_goal(runtime)
+            for role, view in views.items():
+                view["goal"] = self._project_goal(status, role)
+                view["binding"] = digest(
+                    {k: v for k, v in view.items() if k != "binding"}
+                )
+        return views
+
+    def _evaluate_goal(self, runtime):
+        return evaluate_goal(
+            self._task.goal,
+            runtime,
+            previous_failures=self._goal_failures,
+            previous_achievements=self._goal_achievements,
+        )
+
+    def _project_goal(self, status, role):
+        if role == "@central":
+            return copy.deepcopy(status)
+        actors = self._task.roles[role].actors
+        return {
+            "schema": status["schema"],
+            "time_sec": status["time_sec"],
+            "deadline_sec": status["deadline_sec"],
+            "conditions": [
+                copy.deepcopy(r) for r in status["conditions"] if r["actor"] in actors
+            ],
+            "resources": [
+                copy.deepcopy(r) for r in status["resources"] if r["actor"] in actors
+            ],
+            "scope": "current own-actor goal conditions only; global success and other actors are hidden",
+        }
+
+    def goal_status(self, role="@central"):
+        with self._lock:
+            self._assert_runtime()
+            if role not in self._views:
+                raise ValueError("unknown task role")
+            return (
+                None
+                if self._task.goal is None
+                else self._project_goal(self._evaluate_goal(self._runtime), role)
+            )
 
     def _assert_runtime(self):
         if self._runtime.revision != self._native_revision:
@@ -205,7 +259,7 @@ class TaskSession:
             return copy.deepcopy(self._views[role])
 
     def describe(self):
-        return {
+        result = {
             "schema": "space-env.task-capabilities/1",
             "task_id": self._task.id,
             "roles": {
@@ -227,6 +281,12 @@ class TaskSession:
             "observation": "ideal current local; no estimator; per-role independent entity slots",
             "mask": "observable conservative per-action checks; not a future-success oracle",
         }
+        if self._task.goal is not None:
+            result["goal"] = self._task.goal.model_dump(mode="json", by_alias=True)
+            result["goal_reward"] = (
+                "unit change in satisfied conditions, initial achievements excluded, failure clawback; objective resource/time/rejection costs retained, delivery bonuses replaced"
+            )
+        return result
 
     def step(self, choices, *, expected_revision, idempotency_key, advance_sec=None):
         with self._lock:
@@ -254,6 +314,15 @@ class TaskSession:
                 raise RuntimeContractError(
                     "episode_done", "reset/load a new task episode"
                 )
+            before_goal = (
+                self._evaluate_goal(self._runtime)
+                if self._task.goal is not None
+                else None
+            )
+            if before_goal is not None and before_goal["terminal"]:
+                raise RuntimeContractError(
+                    "episode_done", "native mission goal is already terminal"
+                )
             roles = set(req.choices)
             if roles - set(self._views) or ("@central" in roles and len(roles) > 1):
                 raise ValueError("unknown or mixed centralized/local choices")
@@ -270,6 +339,15 @@ class TaskSession:
             before = score(self._runtime)
             start = self._runtime.time_sec
             dt = min(duration, self._runtime.horizon_sec - start)
+            if self._task.goal is not None:
+                dt = min(dt, self._task.goal.deadline_sec - start)
+                for condition in self._task.goal.conditions:
+                    if (
+                        isinstance(condition, OrbitGoal)
+                        and condition.at_sec - start > 1e-9
+                        and condition.id not in self._goal_achievements
+                    ):
+                        dt = min(dt, condition.at_sec - start)
             selected = [a for a in self._actions if a.id in ids]
             reason = None
             rejected_role = None
@@ -380,6 +458,27 @@ class TaskSession:
                 for k, v in components.items()
             )
             terminal = candidate.time_sec >= candidate.horizon_sec - 1e-9
+            after_goal = None
+            if before_goal is not None:
+                after_goal = self._evaluate_goal(candidate)
+                goal_delta = (
+                    0 if after_goal["failures"] else after_goal["completed"]
+                ) - (0 if before_goal["failures"] else before_goal["completed"])
+                goal_failure = float(
+                    bool(after_goal["failures"]) and not before_goal["failures"]
+                )
+                reward = (
+                    goal_delta
+                    - goal_failure
+                    - sum(
+                        weights[k] * components[k]
+                        for k in components
+                        if k not in {"completion", "mbits", "priority"}
+                    )
+                )
+                components["goal_completion"] = goal_delta
+                components["goal_failure"] = goal_failure
+                terminal = terminal or after_goal["terminal"]
             truncated = self.revision + 1 >= self._task.max_decisions and not terminal
             projections = copy.deepcopy(self._projections)
             views = self._refresh(candidate, projections, self.revision + 1)
@@ -403,11 +502,16 @@ class TaskSession:
                 "role_observations": self._views,
                 "next_role_observations": views,
             }
+            if after_goal is not None:
+                response["goal"] = after_goal
             if not math.isfinite(reward):
                 raise ValueError("nonfinite task reward")
             record = {"request": req.model_dump(mode="json"), "transition": response}
             canonical_json(record)
             self._runtime = candidate
+            if after_goal is not None:
+                self._goal_failures = tuple(after_goal["failures"])
+                self._goal_achievements = tuple(after_goal["achieved"])
             self._native_revision = candidate.revision
             self._projections = projections
             self._views = views
@@ -475,6 +579,13 @@ class TaskSession:
         if digest(body) != value["sha256"]:
             raise ValueError("task episode digest mismatch")
         result = cls(value["scenario"], value["task"], seed=value["episode_seed"])
+        if not isinstance(value["runtime"], dict) or result._runtime._runtime != value[
+            "runtime"
+        ].get("runtime"):
+            raise ValueError(
+                "task runtime replay mismatch: source/data/dependency identity changed; "
+                "restore the recorded revision and environment"
+            )
         compact = value["schema"] == "space-env.task-episode/2"
         if len(value["transitions"]) > result._task.max_decisions:
             raise ValueError("task replay decision budget exceeded")

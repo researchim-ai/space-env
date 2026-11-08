@@ -1,0 +1,602 @@
+{
+  "schema": "space-env.demand-learning-receipt/1",
+  "recorded_utc": "2026-11-06T13:39:24.191437+00:00",
+  "command": "python -m space_env.planning.network_benchmark --suite /tmp/new-demand-reference/suite.json --output /tmp/new-demand-learning --seeds 0 1 2",
+  "audit_command": "python -m space_env.planning.network_benchmark --audit /tmp/new-demand-learning",
+  "report_sha256": "46b13acc1fd2bfc0db730169753024d94e642bbe6178aa8371fa548207ef4b03",
+  "suite_sha256": "1eb0b23946f800aaa77aa3ba0c143c399d2b2591d099739f4205d13122af24d4",
+  "suite_reference": "NETWORK_DEMAND_REFERENCE_V1.json",
+  "model_sources": {
+    "api/network_dynamic.py": "b1048a31e46b2a69fd8addcbe9097a4176cfe1f6c8f80bf52f8b80c75e0863cc",
+    "api/network_workspace.py": "e43346fce0b11a37397e11ca3b9e35d2015b321de5bbd98dcbae11a21ea18c34",
+    "api/workspace.py": "424732b63b21013d181a09fcea5c18f5f3ebdce16a8d806c32bad126d0573e1c",
+    "planning/joint_network.py": "e10cf594314adfb724958f0a2f27f3005a4577bb94a637520807e588420fa882",
+    "planning/network_benchmark.py": "bff1ccadaf0361ae6017d1826b64ff230e21384bc548a7e4b4cf88f7aa872a63",
+    "planning/network_demand_benchmark.py": "5b52995b9fd660e6e36abed21f3b23ecf1eb305eb8aa3f92efd02b6cd8243abe",
+    "planning/network_optimal.py": "73109dffa53b510e09746f65d81c2e2425bd50e71ea53982c93c02704b46c63e",
+    "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+    "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+    "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+    "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+    "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+    "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+    "reference/spacecraft_bus.py": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+    "runtime/mission.py": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+    "validation/network_evidence.py": "9c8fa1d6df56eb9c78f9322e8e2f4f71c556a1cb7e7caf2cb608a6c2d59adcb5"
+  },
+  "harness_sha256": "bff1ccadaf0361ae6017d1826b64ff230e21384bc548a7e4b4cf88f7aa872a63",
+  "models": {
+    "0": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 0,
+      "sha256": "8806af5f0010acae13341cb350d2e6bf4eaa84f45ae2dfa15a1356256ce40b9f",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "demand-equatorial-bulk-burst",
+        "demand-equatorial-staggered-cpu",
+        "demand-inclined-bulk-burst",
+        "demand-inclined-staggered-cpu"
+      ],
+      "training_input_sha256": "639e323da777c6e5b74e4b428ac3fb718f1b7349f7caf2368167c8edd9f43f02",
+      "training_rows_sha256": "691ded922679e1e04371c7916497b060f0a5ab82b95525d9de2808b3a423a713",
+      "weights": [
+        [
+          0.637439249756157,
+          -0.11687631224771873,
+          -0.5142224574259852
+        ],
+        [
+          0.451403730608142,
+          -0.07151068271852888,
+          -0.38058478990059863
+        ],
+        [
+          0.4134484732203272,
+          -0.05526728035527784,
+          -0.34270773514052505
+        ],
+        [
+          0.34585795524287755,
+          -0.10036803297169594,
+          -0.2639636218135434
+        ],
+        [
+          0.697213459522461,
+          -0.06696775555836555,
+          -0.6681430378223402
+        ],
+        [
+          0.5599141335170633,
+          -0.09772640206132213,
+          -0.47811599639504127
+        ]
+      ]
+    },
+    "1": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 1,
+      "sha256": "37eba06fa05a16a5c039a84a97da135e0c9be776c282edc742e010ff4f2aae50",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "demand-equatorial-bulk-burst",
+        "demand-equatorial-staggered-cpu",
+        "demand-inclined-bulk-burst",
+        "demand-inclined-staggered-cpu"
+      ],
+      "training_input_sha256": "639e323da777c6e5b74e4b428ac3fb718f1b7349f7caf2368167c8edd9f43f02",
+      "training_rows_sha256": "691ded922679e1e04371c7916497b060f0a5ab82b95525d9de2808b3a423a713",
+      "weights": [
+        [
+          0.6399399562319275,
+          -0.10810433115389466,
+          -0.5168592309605381
+        ],
+        [
+          0.4373308265858147,
+          -0.0575549245107156,
+          -0.37929017000077164
+        ],
+        [
+          0.39512379484751026,
+          -0.059364003024260995,
+          -0.33167241917302775
+        ],
+        [
+          0.3620061959487469,
+          -0.09444405668556265,
+          -0.2588694620173464
+        ],
+        [
+          0.7125704493427792,
+          -0.06690718809100024,
+          -0.659478094728525
+        ],
+        [
+          0.5733229175808425,
+          -0.0925080402645016,
+          -0.4773537616248283
+        ]
+      ]
+    },
+    "2": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 2,
+      "sha256": "9ccd82c6c2691119a616bec7d7e9f8a4ac816658fe6cc2bfa845207a5d0eef92",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "demand-equatorial-bulk-burst",
+        "demand-equatorial-staggered-cpu",
+        "demand-inclined-bulk-burst",
+        "demand-inclined-staggered-cpu"
+      ],
+      "training_input_sha256": "639e323da777c6e5b74e4b428ac3fb718f1b7349f7caf2368167c8edd9f43f02",
+      "training_rows_sha256": "691ded922679e1e04371c7916497b060f0a5ab82b95525d9de2808b3a423a713",
+      "weights": [
+        [
+          0.6406531523503728,
+          -0.121400140544822,
+          -0.5267205978363423
+        ],
+        [
+          0.4270892257393482,
+          -0.048411593345937066,
+          -0.3736535736722286
+        ],
+        [
+          0.3984323931593024,
+          -0.057295464902405516,
+          -0.3338409840603223
+        ],
+        [
+          0.355684882163752,
+          -0.08504571366970458,
+          -0.2695072878136192
+        ],
+        [
+          0.7172360452438076,
+          -0.0726302809272952,
+          -0.6512658901982729
+        ],
+        [
+          0.5679464020610897,
+          -0.08727191876376525,
+          -0.4822854336735575
+        ]
+      ]
+    }
+  },
+  "raw_files_sha256": {
+    "demand-equatorial-bulk-burst--earliest_deadline.json": "326d1ae022793c6766a518278314a2dae171e79864117e21aa5bf3b84121c2db",
+    "demand-equatorial-bulk-burst--forecast.json": "cbc2407e767b04da048feb444b824ab8541f93f77201b7c412d03a39472a5d08",
+    "demand-equatorial-bulk-burst--learned-0.json": "aadf59663869f843e1ef5424f28ca2308350f82b891e484350a2cf009fbd963c",
+    "demand-equatorial-bulk-burst--learned-1.json": "cc5bd346b8aae239d3914617697edaec07635fdecf2dc6ca45c90b50a394d1a0",
+    "demand-equatorial-bulk-burst--learned-2.json": "876f88930a3b37f23194d6651ed923288b95e19c910a0779d84580d13968a53b",
+    "demand-equatorial-bulk-burst--priority.json": "1c1d5ca317fef2ca753d183c78aa7410a5ee8d1aa4f96788a61d83a86e675470",
+    "demand-equatorial-bulk-burst--value_per_bit.json": "07633902c797fff9f25ec9598de2d11b1370b3cf42dd5416601f42a849c285ad",
+    "demand-equatorial-staggered-cpu--earliest_deadline.json": "b9e1fc4331436078ff525ba9891c1aecfd2c0bb676638433c8b9c7ca0de6cf7d",
+    "demand-equatorial-staggered-cpu--forecast.json": "21e86b90c140e5bf85cc589f536e3480b5fdcb78a0a5848bff3ff30cd0ca10d2",
+    "demand-equatorial-staggered-cpu--learned-0.json": "b02749e58507061ef10bcdc0b8aee5d66798136255dd11787664da51d0f2cf85",
+    "demand-equatorial-staggered-cpu--learned-1.json": "944205243d60a3e86c0a7ddc5d78bb761818b1a642639531a2053d3d1fcf40cb",
+    "demand-equatorial-staggered-cpu--learned-2.json": "53748fb2f24f069de55d8381b206160d4ddc835513f845a5bd4a7bb6984da599",
+    "demand-equatorial-staggered-cpu--priority.json": "e6cbc0127ca59e3db5b3fbcda419cf7931ca501fb9fc933921dbb0a7667eaa01",
+    "demand-equatorial-staggered-cpu--value_per_bit.json": "91a8c88e01e8757c9e288d15e1ddd71edc378aae5f94daee853c88cd735b5c0f",
+    "demand-high-bulk-burst--earliest_deadline.json": "62efd20ea322ef48201838a1fc5f69f02be92c8513856df740657e873f0b643f",
+    "demand-high-bulk-burst--forecast.json": "dc26e79f48a50f3d90856b9ade6088af5e084307310a3d544754c8d1250d439f",
+    "demand-high-bulk-burst--learned-0.json": "a0fcd9984c10d9e572582ad750508ab082145bf479efb7b12d21fff5af9a7654",
+    "demand-high-bulk-burst--learned-1.json": "ca13ca27aa774e1ceb2976d3ab5fb116f0c26da6fcae1619678e5c9655100e3d",
+    "demand-high-bulk-burst--learned-2.json": "4d9fc01cfcb94a60f25e07025dc58634be3b761aaae6776ae22a2c045794e826",
+    "demand-high-bulk-burst--priority.json": "37556935ca73a56b704dfffc195baa973f680f54c442c54cfceaf450481a69f9",
+    "demand-high-bulk-burst--value_per_bit.json": "4f4f6541259c2aa32c78a23236bbf73b49c47fd2b6dbf8472a299e6c712957e2",
+    "demand-high-staggered-cpu--earliest_deadline.json": "90f44be6ee36b3fb8ceb04a0bdc27b58c7b3eb04af63735399f2e55f838088e0",
+    "demand-high-staggered-cpu--forecast.json": "23ddc4855c86894e0135e6b8696cecd4363779c2efaebe1963f46e700e4527b3",
+    "demand-high-staggered-cpu--learned-0.json": "2476c3b06a37c0143e1bb19992473e2ef6aa2dd189254d99bc526e0ea69d2cb1",
+    "demand-high-staggered-cpu--learned-1.json": "24cba7abc49bf8040e3085133b91ae0eabc44e53f6f0a2b40feba301b38e7e5f",
+    "demand-high-staggered-cpu--learned-2.json": "6e5fd7bd593ea01c8cd0c5c9732fbae38a1b026d50b8c381caf83dd6d9f14897",
+    "demand-high-staggered-cpu--priority.json": "43137a4ef04f801b8d3642609ff4d1251832ebebd4382c8e8ef0b1c97362af06",
+    "demand-high-staggered-cpu--value_per_bit.json": "4ad01039bd6a0e45d163232d967ca0da36cff7691ce17417b447c9e4aa7e1faf",
+    "demand-inclined-bulk-burst--earliest_deadline.json": "b3bf8a0b3e6f5007f7fa788ab43475457b4fcf95b063836a382676a0a13fd7e4",
+    "demand-inclined-bulk-burst--forecast.json": "5025a1720ac252f01d4af22c27639467c2ce6289c5cbdf45deb6e6d2b4636a5e",
+    "demand-inclined-bulk-burst--learned-0.json": "6d1f3282880b6182cde3b69bea111144e97b0864673ab93792c5054ed68b3860",
+    "demand-inclined-bulk-burst--learned-1.json": "8192bafeb2dff3c456448398f5d099f447494565fda9179250285b25439d682f",
+    "demand-inclined-bulk-burst--learned-2.json": "c241a9f82fdcc97c56c310fd82b6d191f556caa4ad3703d4b1e8fd4e735f9365",
+    "demand-inclined-bulk-burst--priority.json": "c070e0c827d03fe1fcf4f98d713c2db39e4b9e70fbfca28a9ef45ab712c14724",
+    "demand-inclined-bulk-burst--value_per_bit.json": "fa5ee8c3b2145dd08e59512622f26e636f51a63400a9828afbf4e30594d0c4fc",
+    "demand-inclined-staggered-cpu--earliest_deadline.json": "1782ec1e0d9c8431d9050bb0533cd6780798c4bdba3c6bd187f0e8964fc388aa",
+    "demand-inclined-staggered-cpu--forecast.json": "cc29d51a069783f1d2c3e56145a3b3c1d5e28dd3a3821c2cd6f276c138e901b3",
+    "demand-inclined-staggered-cpu--learned-0.json": "035ed1686cf579e5f282f05306022d780d1726f294c3d70541cef9527c1c806f",
+    "demand-inclined-staggered-cpu--learned-1.json": "10c1c118ece8d58ca6f34a457084ad65c2296816b1174b0f8b0472bcb95080af",
+    "demand-inclined-staggered-cpu--learned-2.json": "73bc84649965a4828026d0ff100df46f454dc445d5907ac16a4376de154b6ac7",
+    "demand-inclined-staggered-cpu--priority.json": "c186f460a3c017fc32847c33d22add86f8d061755cbbe02e1eb5fe531c1609c2",
+    "demand-inclined-staggered-cpu--value_per_bit.json": "202cd3e93e6d189c0e5e4e20e07772f1821c9a1db3020c6652d7a2488bed4150",
+    "demand-mid-bulk-burst--earliest_deadline.json": "181ccda730db36b67e7ba765b5a60950b29d47fa7ca82e953e498565fcad60b9",
+    "demand-mid-bulk-burst--forecast.json": "c8091b8631d55b4130d081e41521135e7dd1641c1134019d0e33825e0e13dc3c",
+    "demand-mid-bulk-burst--learned-0.json": "342cb5a102821b23913a74d6e67710a90c822706e80a72f3d4edb1194d34e934",
+    "demand-mid-bulk-burst--learned-1.json": "dbfa6865ab02c5b9a627f7416cc655275537589651007cb066f8825937f9d7ce",
+    "demand-mid-bulk-burst--learned-2.json": "530c884eeadff5f0a598e3faca52ed49c161c7b433d40ae265994d993a59cdd6",
+    "demand-mid-bulk-burst--priority.json": "a46f3fae6c64015998341fff51a59a2e0a8a5513532d204ba47c1dd424031d9f",
+    "demand-mid-bulk-burst--value_per_bit.json": "879dfd2bc1a7ffe30f63ee055a2e53a6aad4f3e99a75f0169f445dff46ab38e3",
+    "demand-mid-staggered-cpu--earliest_deadline.json": "2cc50b81f2dd50dc36b4307a82c7cf4b98a2e671d8cef2a19473296c222908aa",
+    "demand-mid-staggered-cpu--forecast.json": "d4f58dc62c5a6b4dd3d2ef065c58056fc265d20dd79236a5fcc5145118ca9829",
+    "demand-mid-staggered-cpu--learned-0.json": "5ea23b819667f69c31bc5993f082fb5ead5204383d1e59893443c99c0a33153b",
+    "demand-mid-staggered-cpu--learned-1.json": "13b65f0de3cd75f236dc8857b75eacecab07184d99672deeedc894aa93197e61",
+    "demand-mid-staggered-cpu--learned-2.json": "0c6096dfe42cec87dd837a769e1512d47b4979d2240f94118f3fcc107e3cb0da",
+    "demand-mid-staggered-cpu--priority.json": "b65759836174f693b8c2f28c879b492892879b7132f7c0573c46694e9cd4b1d3",
+    "demand-mid-staggered-cpu--value_per_bit.json": "c2b4d91458a32ec2f67af78f7e0115e1986090d3527b56c1709714723197f50d",
+    "demand-retro-bulk-burst--earliest_deadline.json": "6ab9da6cc61b328aa63800a1a55139a890b3d8d69902b5d2f6b68cfb941d4b1b",
+    "demand-retro-bulk-burst--forecast.json": "66b886e5424aeecfd916237b6073189e224a06b20968e53d4910e4dc9893e01c",
+    "demand-retro-bulk-burst--learned-0.json": "1b2fcb521787fa8f424f317e38f7340a4fc5f74519e8f8ca54fad2a3b2bdb8e3",
+    "demand-retro-bulk-burst--learned-1.json": "c6dbb89e1da36953311bb859adb1caebec92280522a76c4d3921e32a2e1fa613",
+    "demand-retro-bulk-burst--learned-2.json": "1eaab203b5bfa8d86f29acf196be187a430b79c7bcbe9f660fb86b8b697179f2",
+    "demand-retro-bulk-burst--priority.json": "c7851bb483d5396ca27837c42ed6681da0ff3ba6338a45bff758b61cce20c9ba",
+    "demand-retro-bulk-burst--value_per_bit.json": "8350b3cc754c35ef3137992eff27557fc9f7778bb0d12e7702e228a03bb61ec1",
+    "demand-retro-staggered-cpu--earliest_deadline.json": "f52bb985392b6c655675c7899d62af805e13e9acfe6a19935afde68123ddcd6f",
+    "demand-retro-staggered-cpu--forecast.json": "ce300f9d811296594e60e404c6086cb05506658dce4184850f45db6841af8b2d",
+    "demand-retro-staggered-cpu--learned-0.json": "5f081da47ca9eb1743f82e898231fafe560f75102a388ef7c79d57d9c46d7de5",
+    "demand-retro-staggered-cpu--learned-1.json": "c7042349a2e1c551039c0c1ed72d6b91316d5cb024ec00a5042c6960dbda20f2",
+    "demand-retro-staggered-cpu--learned-2.json": "95e0c05bdf0aaf6754daf66669edd6e0009c73539f2d427029de9b1fe0adbfcb",
+    "demand-retro-staggered-cpu--priority.json": "5b2ef1294bec9ebbf7fea65fde8ad4a1f169d9ef43888cf8e0ffd3119cf079c5",
+    "demand-retro-staggered-cpu--value_per_bit.json": "a0c1473748c302f81b438f7b7ea7690b2f3f48556b5e08926883c0e089fd5a40",
+    "demand-south-bulk-burst--earliest_deadline.json": "68395fa7e32e2427d194096f1d6f9ea80055359e70f6dd32ef542bd57069bc39",
+    "demand-south-bulk-burst--forecast.json": "a43448a5773bb021f7062f47d10512c77528e4a9c57000786493e775adb2ae3b",
+    "demand-south-bulk-burst--learned-0.json": "1e91ec0950de410fe3b15e24cbc56f09b34c9aca472fdedfcf995ba93d7030cb",
+    "demand-south-bulk-burst--learned-1.json": "f52f4d75d7d7e98c24b933589d9a345bd06654f35163227256c5b36509be8ff2",
+    "demand-south-bulk-burst--learned-2.json": "1ab96a44a6e9e9a522ed0673b894ee885df6589fbb41a94f3f8fcef87acfcd28",
+    "demand-south-bulk-burst--priority.json": "240609f716a2f9543cdc8f3a2ee38406408b420617f5ed6d8ef45c021aa8c185",
+    "demand-south-bulk-burst--value_per_bit.json": "5db97ca5e13304e53565b1eadc820069559ec62979c20fcac6aab2cfa486758c",
+    "demand-south-staggered-cpu--earliest_deadline.json": "de5b7200721fe0f5c381787be09de0b900a534fd66387ab58f1c0d6382bf0797",
+    "demand-south-staggered-cpu--forecast.json": "34610a26825db54cb883a62e293eff661beaecc28f52ef5f2be331e1ef7ebf0a",
+    "demand-south-staggered-cpu--learned-0.json": "4ce18cc3b9cf516d96d654013ae53170c5f310f441f1dacedc868379d65847fe",
+    "demand-south-staggered-cpu--learned-1.json": "64699effe5d0c89b3a21c66a8056d59ba8964c77ddb0f5eb165d1680844e4a4f",
+    "demand-south-staggered-cpu--learned-2.json": "3750204627920d4d0629e51560bc08914a332102cd4a84c265c27725f221cee1",
+    "demand-south-staggered-cpu--priority.json": "3c0b849a89bd6be3eee15927dcbc343382314e77ba8c1bb56ae18d40c3d543f3",
+    "demand-south-staggered-cpu--value_per_bit.json": "006401ddefe51ba269c92115d64528489838e129d8276c5abb148986a5711172",
+    "report.json": "f6415ddaa16e57c31e5a1e41b308f2d765cc758c60ac7aad2e738248403ac543",
+    "selector-0.json": "b1118ee914313ff3b58d8c10535a059653336eb46e9a8383930f164e5ecff37b",
+    "selector-1.json": "28e3f6b9718c989777db7be60a836c9cb1746e5aacd553b1e1149a500955fb10",
+    "selector-2.json": "1be696c3f308f2c5e103a7bcb76d46aa02d29192f0b0fa3c736106b9bff55ee8",
+    "suite.json": "5f9ecbea6c98124e362eed5c1a8cda398c9da9a3d60013fe2b7bc0c99f9b38d8"
+  },
+  "audit": {
+    "schema": "space-env.network-learning-audit/1",
+    "consistent": true,
+    "rows": 72,
+    "reproduced_models": 3,
+    "report_sha256": "46b13acc1fd2bfc0db730169753024d94e642bbe6178aa8371fa548207ef4b03",
+    "scope": "artifact/information pairing and train-only optimizer reproducibility; no native replay, hardware truth or superiority claim",
+    "sha256": "cfc0acca8f4335a059152481b42f9f60afca7e9a8954f7e463cf29924e230545"
+  },
+  "rows": 72,
+  "row_status_counts": {
+    "completed": 72
+  },
+  "aggregates": [
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "priority",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "priority",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "priority",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5972385428907168,
+      "mean_value_upper_bound": 0.5972385428907168,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.4770857814336075,
+      "mean_value_upper_bound": 0.4770857814336075,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.6175088131609872,
+      "mean_value_upper_bound": 0.6175088131609872,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "test"
+    }
+  ],
+  "paired": [
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0015202702702702717,
+        0.039020270270270295
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.020270270270270285,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.14042303172737958,
+        0.14042303172737958
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.14042303172737958,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0015202702702702717,
+        0.039020270270270295
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.020270270270270285,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.14042303172737958,
+        0.14042303172737958
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.14042303172737958,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0015202702702702717,
+        0.039020270270270295
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.020270270270270285,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.14042303172737958,
+        0.14042303172737958
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.14042303172737958,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    }
+  ],
+  "learned_choices": {
+    "learned-0": {
+      "priority": 12
+    },
+    "learned-1": {
+      "priority": 12
+    },
+    "learned-2": {
+      "priority": 12
+    }
+  },
+  "expert_teacher_qualified": false,
+  "notes": [
+    "Training features, 600 iterations, learning rate 0.2 and seeds 0/1/2 unchanged from the original selector.",
+    "All learned models selected priority in every case; no learned improvement observed.",
+    "Test value priority/learned 0.6175088131609872 versus separate optimization reference 0.6527614571092832.",
+    "Models were frozen before development/test outcomes in this learning run; the same frozen suite had already been evaluated by the separate reference study. This is not an externally blinded benchmark.",
+    "Only two held-out geometry groups; no statistical/industrial superiority or command-level RL claim."
+  ],
+  "sha256": "f32ad3caecafa301a53b6285ebf718a997b3bc2c7687109bab9c81bcc000fbe6"
+}

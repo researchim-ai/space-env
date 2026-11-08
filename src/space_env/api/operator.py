@@ -19,7 +19,6 @@ from pydantic import Field, model_validator
 from space_env.api.operator_events import CursorConflict, EventPageRequest, page_history
 from space_env.api.operator_storage import OperatorRepository, StorageConflict
 from space_env.core.frames import ecef_to_geodetic, geodetic_to_ecef
-from space_env.planning import BaselinePolicy, make_input
 from space_env.runtime.schema import StrictModel
 from space_env.scaling.workloads import fleet_workload
 from space_env.simulation.snapshot import canonical_json, digest
@@ -99,6 +98,7 @@ class OperatorSession:
         self.control_events = []
         self.handover_cache = {}
         self.source_import = None
+        self.planner_state = None
         self.identities = {}
         self.tokens = {}
         self.credentials = {}
@@ -181,6 +181,7 @@ class OperatorSession:
             "control_events": copy.deepcopy(self.control_events),
             "handover_cache": copy.deepcopy(self.handover_cache),
             "source_import": copy.deepcopy(self.source_import),
+            "planner_state": copy.deepcopy(self.planner_state),
             "tokens": copy.deepcopy(self.tokens),
             "identities": copy.deepcopy(self.identities),
             "closed": self.closed,
@@ -200,6 +201,7 @@ class OperatorSession:
         ]:
             setattr(self, key, copy.deepcopy(body[key]))
         self.tokens = {k: tuple(v) for k, v in self.tokens.items()}
+        self.planner_state = copy.deepcopy(body.get("planner_state"))
         self.owned_revision = self.session.revision
 
     def _persist(self, kind):
@@ -400,6 +402,14 @@ class OperatorSession:
                 and self.identities[token_digest(token)] == "operator"
                 else None
             )
+            from space_env.api.network_workspace import describe as describe_network
+
+            network = (
+                describe_network(self)
+                if role == "@central"
+                and self.identities[token_digest(token)] == "operator"
+                else None
+            )
             allowed = (
                 set(self.session._scenario["actor_order"])
                 if role == "@central"
@@ -418,6 +428,24 @@ class OperatorSession:
             return copy.deepcopy(
                 {
                     **({"workspace": workspace} if workspace is not None else {}),
+                    **({"network": network} if network is not None else {}),
+                    **(
+                        {
+                            "rolling_planner": {
+                                "active": self.planner_state is not None,
+                                "revision": self.planner_state["policy"]["revision"]
+                                if self.planner_state
+                                else None,
+                                "last_choice_executed": self.planner_state["executed"]
+                                if self.planner_state
+                                else False,
+                                "scope": "current public observations only; durable history, no forecast",
+                            }
+                        }
+                        if role == "@central"
+                        and self.identities[token_digest(token)] == "operator"
+                        else {}
+                    ),
                     "schema": "space-env.operator-state/1",
                     "physics_profile": self.session._scenario["physics_profile"],
                     "task_id": self.session._task.id,
@@ -495,11 +523,28 @@ class OperatorSession:
                     raise ValueError("unknown task action")
                 if (
                     id != "wait"
+                    and (identity != "operator" or role != "@central")
+                    and self.session._by_id[id].kind == "inject"
+                ):
+                    raise OperatorError(
+                        "forbidden", "operator events are not agent actions", 403
+                    )
+                if (
+                    id != "wait"
                     and role != "@central"
                     and self.session._by_id[id].role != role
                 ):
                     raise OperatorError("forbidden", "action is outside this role", 403)
             previous = self.session.revision
+            # Stage policy state separately: a rejected/stale API call must not
+            # mutate its history. Actual native rejection is recorded normally.
+            from space_env.api import rolling_planner
+
+            policy = (
+                rolling_planner.stage(self)[0]
+                if self.planner_state is not None
+                else None
+            )
             arguments = request.model_dump(exclude={"control_epoch"})
             if self.control["epoch"] or role != "@central":
                 arguments["idempotency_key"] = "control/" + digest(
@@ -512,6 +557,13 @@ class OperatorSession:
                 )
             result = TaskTools(self.session, role).step(**arguments)
             if self.session.revision != previous:
+                if policy is not None:
+                    rolling_planner.save(
+                        self,
+                        policy,
+                        executed=True,
+                        request=self.session._transitions[-1]["request"],
+                    )
                 self.events.append(
                     {
                         "controller": identity,
@@ -530,21 +582,37 @@ class OperatorSession:
     def suggest(self, token):
         with self.lock, self.session._lock:
             self._guard()
-            role, _, _ = self.permission(token)
-            if role != "@central":
+            role, write, _ = self.permission(token)
+            if (
+                role != "@central"
+                or not write
+                or self.identities[token_digest(token)] != "operator"
+            ):
                 raise OperatorError(
-                    "forbidden", "joint suggestions require central visibility", 403
+                    "forbidden",
+                    "suggestions require central operator capability; agent channel cannot query operator plans",
+                    403,
                 )
             if self.session._done:
                 raise OperatorError("episode_done", "mission has ended", 409)
+            from space_env.api.network_workspace import suggest as suggest_network
             from space_env.api.workspace import suggest
+
+            network = suggest_network(self)
+            if network is not None:
+                return network
 
             planned = suggest(self)
             if planned is not None:
                 return planned
-            return BaselinePolicy(
-                {"name": "route_aware_rolling", "max_candidates": 64, "max_nodes": 256}
-            ).decide(make_input(self.session))
+            from space_env.api import rolling_planner
+
+            def propose():
+                policy, decision = rolling_planner.stage(self)
+                rolling_planner.save(self, policy)
+                return decision
+
+            return self._apply("rolling_suggest", propose)
 
     def checkpoint(self, token):
         with self.lock, self.session._lock:
@@ -666,6 +734,7 @@ def operator_snapshot_keys():
         "control_events",
         "handover_cache",
         "source_import",
+        "planner_state",
         "tokens",
         "identities",
         "closed",
@@ -676,12 +745,15 @@ def validate_snapshot(body):
     required = operator_snapshot_keys()
     if (
         not isinstance(body, dict)
-        or set(body) != required
+        or set(body) not in (required, required - {"planner_state"})
         or body["schema"] != "space-env.operator-snapshot/1"
         or type(body["closed"]) is not bool
     ):
         raise ValueError("invalid durable operator snapshot")
     cp = body["checkpoint"]
+    from space_env.api import rolling_planner
+
+    rolling_planner.validate_shape(body.get("planner_state"), cp)
     _interactive_bounds(cp["scenario"], cp["task"])
     if cp["task"]["policy_origin"] != "external":
         raise ValueError("operator snapshot must retain external provenance")
@@ -816,6 +888,9 @@ def validate_snapshot(body):
 
 
 def validate_history(operator, body):
+    from space_env.api import rolling_planner
+
+    rolling_planner.validate_history(operator, body.get("planner_state"))
     session = operator.session
     times = {0: 0.0}
     for row, event in zip(session._transitions, body["events"], strict=True):
@@ -1000,7 +1075,10 @@ class OperatorStore:
                     "identities",
                     "closed",
                 } | {"sha256"}
-                if set(archive) != allowed_archive:
+                if set(archive) not in (
+                    allowed_archive,
+                    allowed_archive - {"planner_state"},
+                ):
                     raise ValueError("invalid portable archive fields")
                 archive.pop("sha256")
                 archive["schema"] = "space-env.operator-snapshot/1"
@@ -1152,6 +1230,18 @@ STORE = OperatorStore()
 
 
 def dispatch(method, path, payload=None, token=None):
+    if method == "GET" and path == "/api/operator/network/preset":
+        from space_env.api.network_workspace import default_network_configuration
+
+        return default_network_configuration()
+    if method == "POST" and path == "/api/operator/network":
+        from space_env.api.network_workspace import create_network
+
+        return create_network(payload, STORE)
+    if method == "GET" and path.split("?")[0] == "/api/operator/workspace/physics":
+        from space_env.validation.profile_evidence import profile_contracts
+
+        return profile_contracts()
     parts = path.strip("/").split("/")
     if method == "GET" and parts == ["api", "operator", "workspace", "presets"]:
         from space_env.api.workspace import default_configuration
@@ -1213,6 +1303,23 @@ def dispatch(method, path, payload=None, token=None):
     session = STORE.get(parts[3])
     session.permission(token)
     suffix = "" if len(parts) == 4 else parts[4]
+    if method == "POST" and suffix == "replan":
+        from space_env.api.workspace_replan import replan_workspace
+
+        return replan_workspace(STORE, session.id, token, payload)
+    if method == "POST" and suffix == "evolve":
+        from space_env.api.workspace_dynamic import evolve_workspace
+
+        if session.session._scenario.get("metadata", {}).get("network_workspace"):
+            from space_env.api.network_dynamic import evolve_network
+
+            evolve_workspace = evolve_network
+
+        return evolve_workspace(STORE, session.id, token, payload)
+    if method == "POST" and suffix == "round":
+        from space_env.api.fleet_round import dispatch_round
+
+        return dispatch_round(session, token, payload)
     if method == "POST" and suffix in {"verify", "export", "close"} and payload != {}:
         raise ValueError("this operation requires an empty JSON object")
     if method == "GET" and suffix == "":

@@ -1,5 +1,440 @@
 # Следующие крупные пакеты реализации
 
+## Актуально: физические цели миссии — 9 ноября 2026
+
+Реализован opt-in контракт пяти целей: доставка, ориентация, разгрузка маховиков,
+импульс двигателя и орбитальное состояние в заданные моменты. Общие native
+критерии работают в SDK, Gym/PettingZoo и LLM episodes; добавлены этапы миссии,
+бюджеты энергии/топлива, actor-only наблюдения, replay и SFT/RL gates.
+
+**390 различных локальных тестов прошли** (105 + 87 + 198). В 13 фиксированных
+синтетических сценариях выполнено 26 запусков: reference решил 9/13, wait 0/13;
+четыре отрицательных случая сохранены. Все 26 результатов проверены холодным
+replay; отдельно установленный wheel повторил матрицу и audit без runtime ошибок.
+Разгрузка маховиков дала 1 RL episode и 1 native SFT conversation при нуле
+доставленных заявок: теперь успешная физическая цель не подменяется доставкой.
+
+Это ограниченная инженерная проверка, не аппаратная калибровка, flight qualification,
+новая квалификация больших группировок или сравнение с внешним симулятором.
+[Контракт и рецепты](PHYSICAL_MISSION_GOALS.md),
+[приёмка с хешами исходников и артефактов](acceptance/PHYSICAL_MISSION_GOALS_V1.json).
+
+Следующие блоки моделера: относительное движение/строй и сближение с ограничениями
+безопасности; навигационные и сенсорные измерения с неопределённостью;
+длительные орбитальные миссии и удержание орбиты; расширение совместной проверки
+ориентации, тяги, энергии, тепла и связи. Для каждого блока нужны отдельные
+эталоны, отрицательные сценарии и измеренная область применимости. Общая очередь —
+[AI_NEXT_EXECUTION.md](AI_NEXT_EXECUTION.md); G01 реализован, остальные пакеты
+не объявляются закрытыми. Ниже — исторические статусы на указанные даты.
+
+## Актуально: AI advancement — 8 ноября 2026
+
+Реализованы bounded sequence recovery из committed pose, локальный semantic SFT /
+LoRA evaluation workflow и его offline audit, 32 аналитических эталона, три
+операционных семейства, parallel scale runner и matched native paired evaluation.
+Исправлены потеря sparse-role активных SFT targets и ложное начисление Linux
+parent ru_maxrss дочернему worker; source identity drift теперь диагностируется
+до исторического replay. **357 distinct local tests passed** (66+126+165).
+
+Весь scale ladder повторён: deliveries 0/1, 0/3, 3/3, 3/8, 2/16; forecast/native
+counts совпали, 5/5 replay/resource gates прошли. Это не полный успех миссий.
+Installed wheel operations: 10 native runs + audit, positive goals 4/5 у teacher,
+0/5 у wait; limited unload оставлен отрицательным. Четыре selected delivery cases
+создали 2 train RL + 2 native SFT и 72 semantic targets (29 active, 43 wait).
+Teacher scripted_privileged, train geometry одна; модель не обучалась.
+
+Все raw outputs/журналы — в игнорируемом `artifacts/ai-advancement-20261108/`,
+receipt и recipes версионируются. CI, commit/push не выполнялись.
+[Результат и ограничения](AI_ADVANCEMENT_BUNDLE.md),
+[приёмка](acceptance/AI_ADVANCEMENT_BUNDLE_V1.json).
+
+**Дальше выполнять [AI_NEXT_EXECUTION.md](AI_NEXT_EXECUTION.md):**
+G01 — общий native goal/reward для delivery/attitude/unloading/burn;
+G02 — настоящий Qwen3.5 HF SFT после устранения environment blockers;
+G03 — streaming history/worker throughput и длинные миссии;
+G04 — совместный residual/fresh ledger;
+G05 — новые агентные постановки и настоящий внешний matched benchmark.
+Ниже сохранены исторические записи; их «следующие шаги» не заменяют эту очередь.
+
+## Закрытый пакет: рабочие Qwen-решения и реальные SFT/RL-данные
+
+Добавлены текущая краткая actor projection, публичные статусы и available actions,
+JSON-schema transport, понятная обратная связь по ошибочным аргументам и native
+finish verifier. `json_fixed_v1` оставляет модели выбор действий, а revision,
+idempotency и фиксированный такт 5 с обслуживает SDK. Никакого scripted fallback.
+
+Измерено: исходный control **0/1**, новый development **1/1**, две ранее
+зафиксированные regression-геометрии **2/2**. Во всех трёх успешных evaluation
+прогонах — по 30 собственных решений Qwen без failed calls. Это одна семья
+операторских command catalogues; не pristine holdout, не fine-tuning gain и не
+превосходство над public-memory (он тоже решает задачи).
+
+На отдельной train-геометрии модель получила **1/1**. Сгенерированы **1 native SFT
+conversation, 1 RL episode, 30 wire-SFT decisions** с реальными входами/JSON-
+ответами модели. Nonces/revisions не попадают в wire target. 6 non-wait и 24
+all-wait решения принадлежат одной миссии, а не 30 независимым примерам миссий.
+
+**95 тестов passed**. Аудит подтвердил causal prompts, сгенерированные calls,
+native outcomes и dataset files; train-аудит также прошёл из source snapshot.
+Предыдущие неудачные prompt/parser/codec studies сохранены.
+[Контракт и команды](JOINT_NETWORK_PLANNING.md#надёжный-llm-протокол-fixed-cadence-и-реальные-train-данные),
+[результаты и dataset receipts](acceptance/QWEN35_FIXED_WORKFLOW_V1.json).
+
+Следующий большой пакет: factory registry для всех LLM bundles, десятки
+заранее заданных train-сценариев из разных семейств и балансировка wait/non-wait;
+затем SFT trainer с token masks и **новый нетронутый** holdout. Open-ended миссии
+и safety objectives требуют своего completion contract. Внешний backend
+head-to-head остаётся отдельной незакрытой задачей.
+
+## Реальная локальная LLM уже подключена: Qwen3.5-4B
+
+Найдены и проверены локальные GGUF Q4_K_M weights `qwen3.5:4b` (3,39 GB),
+запуск через существующий Ollama 0.34.4, без скачивания или облака.
+Добавлены local-only adapter, контекстное окно, request/token/time budgets,
+raw inference trace и связывающий его с native actions audit.
+
+Первый development case: **Qwen 0/1**, wait 0/1, public-memory 1/1. Модель
+выдала observe и корректный slew joint-step, затем завершила диалог текстом
+вместо продолжения tool calls. **3 inference requests, 19934 input / 202 output
+tokens**, ~6,11 с inference; 29 профильных тестов passed. Это исходный zero-shot,
+не fine-tuning, не blind holdout и не доказательство превосходства.
+[Контракт и команды](JOINT_NETWORK_PLANNING.md#локальная-qwen35-4b-первый-реальный-zero-shot),
+[raw/model/native receipt](acceptance/QWEN35_4B_LOCAL_V1.json).
+
+Следующий LLM-блок: исправить/проверить условия продолжения на development,
+зафиксировать prompt/context/budgets, затем новые heldout/OOD случаи с разными
+семействами. Не превращать раннее завершение в неявный scripted fallback.
+После этого — измеряемое SFT → RL улучшение и сопоставимый внешний backend.
+
+## Приоритет продукта: среды и данные для LLM-агентов
+
+Целевой цикл: **native mission → JSON tool-agent → replay-verified rollout →
+SFT/RL dataset → независимый holdout → внешний backend**. Улучшение численного
+планировщика — вспомогательная часть, не замена обучению LLM и генерации данных.
+
+### Реализованный сквозной слой
+
+- `space_env.llm.LLMEpisode`: общая native-сессия, actor-only projections,
+  совместные actor tool calls, strict JSON, revisions/idempotency, tool/context
+  budgets и запись ошибочных попыток. Operator injection не является действием LLM.
+- Cold replay всего диалога и финального checkpoint перед training export.
+  SFT только для завершённой положительной цели без failed/rejected calls;
+  assistant-only message mask. RL сохраняет также failures, per-call reward,
+  physical-time discounts, applied flags и grouping начальной задачи.
+- Явное происхождение: public script, privileged demonstration, внешний LLM
+  или человек; replay не означает expert qualification. Test/dev не экспортируются
+  в training. Нативная цель reward задаётся TaskSpec, не текстом запроса.
+- Пример генерирует audit record, SFT/RL JSONL и manifest без обращения к API.
+  Frozen benchmark сравнивает **scripted** политики на 12 случаях/6 группах;
+  не выдаёт их за LLM и сохраняет неизвестные/error outcomes.
+
+[Контракт, ограничения, SDK и команды](JOINT_NETWORK_PLANNING.md#llm-агенты-диалоги-sft-rl-и-benchmark).
+
+### Измеренный результат первого прохода
+
+Успешный native demonstrator: **1 SFT + 1 RL** conversation, полный goal 1/1,
+30 tool calls, аудит. Frozen benchmark: **36/36 scripted rollouts**, **1728 calls**,
+**12 train RL файлов**, **0 SFT** из сложных demand-missions: они не прошли
+строгую full-goal gate. Частичные результаты не переобозначены как хороший SFT.
+Test weighted value: wait 0; public-memory/reference ≈0,6175. Это не LLM scores.
+Локальные тесты: **89 + 7 passed**. В этом историческом scripted-проходе внешняя модель не вызывалась; последующий локальный Qwen run описан выше.
+[Receipt с конфигурациями, результатами и аудитом](acceptance/LLM_AGENT_DATA_V1.json).
+
+### Следующие крупные пакеты — критерии закрытия
+
+1. **Широкие LLM baselines.** Локальный Qwen endpoint и первый рабочий профиль
+   уже измерены. Расширить task families и зафиксировать version,
+   prompts/chat template/tool schemas, sampling, latency, input/output tokens,
+   стоимость и timeout. Измерить zero-shot на новых test/OOD группах. Сохранить
+   raw tool calls и native replay. Scripted/reference score не заменяет LLM score.
+2. **Масштабируемая фабрика LLM-данных.** Объединить новый conversation adapter
+   с существующим factory registry: cross-bundle split/semantic deduplication,
+   больше EO/relay/recovery/resource/shared-terminal families, разная длина
+   горизонтов и число аппаратов. Процессная изоляция и timeout для каждой задачи,
+   resume генерации, train quality gates, accounting всех исключённых примеров.
+   Для длинных миссий заранее объявлять отдельные положительные subgoals;
+   benchmark с невыполненными полными целями не использовать как positive SFT.
+   Не переименовывать одинаковую геометрию ради «нового» holdout.
+3. **Измеренное SFT → RL улучшение.** Воспроизводимый trainer adapter с правильной
+   token-level assistant/tool-call mask; heldout после SFT, затем RL с native
+   reward, logprobs и проверкой reward hacking. Модель/данные/бюджеты одинаковы
+   при ablation; измерять delivery/priority/constraints и sample/token cost.
+   Проверять reward contract: delivery и SLA/priority — разные задачи.
+4. **Более свободные действия и командная работа.** Текущий benchmark исполняет
+   каталог операторских команд. Следующий должен строить/менять план по текущим
+   наблюдениям, выбирать исполнителей, согласовывать межспутниковые передачи,
+   исправлять ошибки инструментов и продолжать прерванные продукты. Отдельно
+   распределённые LLM роли с ограниченными коммуникациями; не путать их с одним
+   централизованным агентом, который видит actor team projections.
+5. **Измеряемый внешний head-to-head.** Первый кандидат BSK-RL/Basilisk: общий
+   поддерживаемый task/observation/action/physics contract и реальные adapter runs.
+   Материалы конкурентов проверены по первичным источникам; отсутствие запуска
+   остаётся N/A. Сравнивать accuracy при заданном runtime/RSS и agent performance
+   при одинаковых tools/tokens/privileges. Предусмотреть external-backend transfer.
+6. **Физическая достоверность и публикация результата.** Сохранять applicability,
+   uncertainty/error envelopes и независимые comparisons. Затем публикуемый
+   benchmark protocol, frozen splits, исходные outcomes/unknowns, reproduction
+   commands и конкретные границы заявлений. Никаких общих «лучше всех» до измерений.
+
+Ни фактическое обучение внешней LLM, ни её положительный gain, ни численное
+превосходство над конкурентами пока не закрыты. Проект не становится более
+достоверным симулятором только от наличия conversational JSONL.
+
+## Новый пакет: последовательности наземных сеансов
+
+Реализован opt-in `planning_method="sequence_compact"`: ресурсно допустимый
+exact-small план сохраняет выбранные цепочки и все времена старта, затем
+сокращает Ground-резерв по фактическому порядку сеансов. Для одного терминала
+учитывается весь возможный интервал освобождения предшественника и межсэмпловый
+угловой guard. Для нескольких терминалов оставлен conservative fallback:
+native-контроллер сам назначает физический терминал, и гарантированного pinning
+в этом профиле пока нет. Режим свежих миссий не переносится на dynamic recovery.
+
+Сохраняются base plan, terminal geometry, effective forecast, resource witness
+и predecessor trace; `verify_terminal_schedule()` воспроизводит проход.
+Старая верхняя граница не переносится на расширенную модель. Глобальная
+оптимальность последовательностей явно **не заявляется**.
+
+Парное локальное сравнение: **24/24 native runs**, одинаковые forecasts,
+одинаковая ценность доставок во всех **12/12 парах**, forecast/native match
+**12/12**. В трёх single-terminal staggered случаях освобождено по **10 секунд
+резерва**, всего **30 секунд по набору**. Это не ускорение wall time и не
+увеличение числа заявок. Аудит receipt воспроизвёл два плана (single/multi),
+проверил 24 строки и их native schedule bindings без повторного native replay.
+
+[Контракт, ограничения и SDK](JOINT_NETWORK_PLANNING.md#последовательности-наземных-сеансов-безопасное-сокращение-резервов),
+[входы, планы, geometry и результаты](acceptance/NETWORK_TERMINAL_SEQUENCE_V1.json).
+
+Команды:
+
+```bash
+python examples/network/compare_terminal_sequence.py --output /tmp/new-terminal-study
+python examples/network/compare_terminal_sequence.py --audit docs/acceptance/NETWORK_TERMINAL_SEQUENCE_V1.json
+```
+
+**Следующий этап этого блока остаётся открытым:** глобальный поиск со сдвигом
+стартов, добавлением заявок в освободившиеся интервалы и зависимыми от
+предшественника setup; отдельно — согласованное назначение конкретных
+терминалов в планировщике и native executor. После этого — command-level
+RL/MARL и независимая физическая калибровка из списка ниже. Fixed-start compaction
+не считать закрытием этих задач.
+
+## Следующий закрытый блок: ограниченный поиск и обучение v2
+
+Добавлены безопасные resource-bound отсечения, ограниченные кэши и проверяемые
+классы симметрии exact-small. На прежних 12 forecast при одном лимите 50000:
+закрытые модельные границы **9/12 → 12/12**, native replay **12/12**, расхождений
+по ценности **0**. Для трёх сложных случаев поиск сократился с 50000 до
+2482/2704/2492 work units. Достигнутые значения планов не изменились: улучшено
+доказательство границы и расход поиска. Это консервативная дискретная модель,
+не глобальный оптимум непрерывной миссии.
+
+[Входы, абляция и native результаты](acceptance/NETWORK_OPTIMIZER_PRUNING_V1.json).
+Воспроизведение: `python examples/network/compare_optimizer.py --output /tmp/new-optimizer-study`.
+
+Отдельный trainer v2 нормализует признаки только по train и сохраняет loss,
+норму градиента, convergence flag и regret относительно класса из трёх правил.
+Исторические trainer/suite/receipts сохранены. Новый локальный runner фиксирует
+две новые test-геометрии до исполнения и сравнивает legacy0 с v2 seed0/1/2.
+[Контракт и команды](JOINT_NETWORK_PLANNING.md#ограниченный-поиск-и-селектор-второго-поколения).
+
+Новый holdout завершён: **84/84 native runs**, аудит воспроизвёл четыре модели.
+Test value legacy/priority **0,6175**, v2 во всех трёх seed **0,6284**.
+Train regret к классу трёх правил — 0, но gradient tolerance не достигнут за
+2000 итераций (`numerically_converged=false`). Две новые геометрические группы
+дают только описательный результат. [Модели, входы, forecasts и audit](acceptance/NETWORK_SELECTOR_STUDY_V2.json).
+Итого локальные тесты текущего блока: **121 + 73 passed**.
+
+### Следующие крупные блоки в порядке реализации
+
+1. **Sequence-aware ground scheduling.** Включить предшественника/реальное
+   pointing каждого терминала в состояние поиска; сохранить conservative mode.
+   Закрытие: допустимость относительно native slew/ACK, конкуренция нескольких
+   терминалов, проверяемые lower/upper bounds и парное сравнение без изменения
+   hardware параметров. Динамическое восстановление не выдавать за exact-small.
+2. **Command-level RL/MARL.** Отдельная постановка действий и наблюдений:
+   выдача/ожидание команд, custody, CPU/память/энергия, terminal contention;
+   маски допустимости и отсутствие будущих событий в observation. Разделить
+   delivered reward, constraints и failures; обязательны episode replay и
+   сравнение с фиксированными правилами. Выбор из трёх правил этим блоком не считать.
+3. **Внешняя область достоверности.** Добавлять public reference trajectories,
+   uncertainty/validity envelopes и независимые comparisons по каждой физической
+   подсистеме; вынести неизвестную точность в явные profile ограничения.
+   Расширить заранее фиксируемые внешние mission families/геометрии, отличающиеся
+   не только seed. Новую настройку learner оценивать на новом holdout, не
+   переиспользовать нынешний как слепой тест.
+
+## Разные распределения заявок, глобальный эталон и наземный захват
+
+Добавлен отдельный frozen demand-suite: 12 случаев, 6 новых групп орбит/станций,
+bulk-burst и staggered-cpu, разные release/deadline, объёмы, CPU, память 4/8 Мбит,
+один/два терминала. Предыдущий v1 suite не заменён. Новый набор совместим с
+существующим train-only learning runner через `--suite`.
+
+`planning_method="exact_small"`: перечисление допустимых цепочек + глобальный
+branch-and-bound для свежих задач <=6 заявок/48 ячеек. Incumbent, верхняя граница,
+незакрытый gap, node/candidate budgets сохраняются. Допустимость плана проверяется
+отдельно; оптимум относится только к дискретному conservative forecast model,
+не к произвольному native/непрерывному управлению. Поддержка ISL проверена
+отдельно; основной demand experiment — direct EO/CPU/Ground.
+
+Нагрузка нашла реальный пропуск прогнозного бюджета: native-антенна повторно
+захватывает аппарат, а forecast не выделял это время. Исправлен только прогноз
+и резервирование ресурсов, не аппаратура, входы или критерий Ground ACK.
+Учитываются возможные предыдущие pointing и фактическое направление при recovery,
+с явным межсэмпловым range/speed envelope и отказом вне области применимости.
+48 одинаковых problem inputs до/после: расхождений forecast/native value 13→0.
+Оба результата сохранены. Финальный solver закрыл модельную границу в 9/12
+случаях; в трёх остаётся gap при 50000 work units.
+
+Test value: priority ≈0,618; EDF ≈0,597; value_per_bit ≈0,477; reference ≈0,653.
+Это четыре test-случая/две геометрические группы, не общий рейтинг симуляторов.
+Номинальный node-cap одинаков, но work units разных алгоритмов не равны CPU/FLOPs.
+Отдельное обучение прежнего селектора: 72/72 прогона, 3 воспроизведённые модели,
+все снова выбрали priority. Learning improvement не установлен; гиперпараметры
+не подбирались по test. Локальные проверки: 88 целевых + 46 регрессионных passed.
+
+[Методика](JOINT_NETWORK_PLANNING.md#разнообразные-заявки-и-глобальный-эталон-малых-задач),
+[reference receipt](acceptance/NETWORK_DEMAND_REFERENCE_V1.json),
+[learning receipt](acceptance/NETWORK_DEMAND_LEARNING_V1.json).
+
+Дальше: train-only сходимость и более выразительный класс политики; отдельные
+новые holdout до исполнения; sequence-aware terminal scheduling; online-отказы
+без будущей информации; command-level RL/MARL и независимая физическая калибровка.
+
+## Сетевой learning benchmark с train-only диспетчером
+
+Реализованы 12 замороженных сценариев/6 геометрических групп с раздельными
+train/development/test. Координаты и орбиты заданы заранее; варианты обычной
+работы и объявленного отказа станции одной геометрии не пересекают split.
+Защита распознаёт переименование, seed, перестановки аппаратов, угол RAAN
+с полным оборотом и эквивалентные RAAN/фазы экваториальных орбит.
+
+Три baseline порядка заявок и три инициализации train-only softmax-селектора
+исполнены в 72 свежих native-процессах. Общий sealed forecast и max_search_nodes
+одинаковы; оценка по фактическим completed-заявкам. Unknown/error rows не
+удаляются; модель замораживается до исполнения development/test.
+Audit воспроизвёл все три модели только из train-строк и проверил полную матрицу.
+Целевые тесты: **67 passed**; регрессия dynamic/workspace/assignment/profile:
+**47 passed** (перед финальным уточнением чистого geometry-key guard).
+
+Результат test: priority и learned — нормированная ценность **0,50**, EDF —
+**0,25**, value_per_bit — **0,375**. Все learned выбрали priority во всех случаях:
+улучшения над лучшим правилом нет. Value_per_bit доставил 5/12 заявок против
+4/12 у priority/learned, поэтому превосходства по всем метрикам также нет.
+Это contextual strategy selection из трёх правил, не command-level RL.
+Две test-группы и общий фиксированный состав заявок не доказывают промышленную
+или статистическую универсальность. Старый и финальный прогоны используют
+одинаковые native-конфигурации; повтор не добавляет новых независимых случаев.
+
+[Методика и SDK](JOINT_NETWORK_PLANNING.md#обучаемый-диспетчер-и-разделённые-геометрические-группы),
+[receipt с моделями и входами](acceptance/NETWORK_LEARNING_BENCHMARK_V1.json).
+
+Следующие большие блоки:
+
+1. Новый заранее фиксируемый набор распределений заявок: неоднородные цены,
+   размеры, release/deadline, CPU и наземная ёмкость. Не менять текущий test
+   ради положительного результата; новый набор/version получает отдельный holdout.
+2. Оптимизационный baseline и верхние границы на малых задачах при том же
+   forecast/бюджете; отдельно сравнивать utility, SLA и расход ресурсов.
+3. Command-level agent interface и online-отказы с событиями, неизвестными
+   до момента наблюдения. Отдельные PPO/MARL-политики и реальные learning curves.
+4. Больше независимых внешних групп, model/sampling uncertainty и проверка
+   переноса в более подробную физику. Hardware calibration остаётся открытой.
+
+## Численные доказательства и измерения network-профиля
+
+Добавлен локальный `space_env.validation.network_evidence`: 16 RF-случаев с
+отдельным линейным oracle, существующие 9 аналитических случаев и optional
+внешний force/J2 cross-check. Четыре фиксированные сетевые нагрузки запускаются
+в отдельных процессах; результат, ошибки и таймауты сохраняют полный знаменатель.
+Артефакты связаны input/source/checksum, доступен `--audit` без симуляции.
+Linux RSS исправлен на post-exec VmHWM вместо наследуемого ru_maxrss.
+
+Сохранённый запуск: 8 процессов, 4 нагрузки × 2 повтора; native 1/1, 2/4,
+4/16, 1/1. Это не восемь независимых миссий и не заявка на большой масштаб.
+Целевые локальные тесты: 41 passed.
+[Область проверки](JOINT_NETWORK_PLANNING.md#численные-проверки-и-измерение-масштаба),
+[receipt](acceptance/NETWORK_PROFILE_EVIDENCE_V1.json).
+
+Следующие существенные блоки: независимые распределения геометрий и отказов;
+ошибки временной сетки контактов/наведения; полноценное сравнение обучаемых
+политик со сильными baseline при одинаковой информации и бюджете. Текущий пакет
+не является измерительной калибровкой или доказательством превосходства.
+
+## Динамическое продолжение совместной сетевой миссии
+
+Реализован единый network evolve: native события, независимая ветка, replay
+исполненного префикса, восстановление fresh/raw/final по фактическому владельцу,
+остатки CPU/ground TX, текущая энергия и занятая память. В пульте — отдельный
+редактор изменений сетевой миссии. Прогноз не подменяет custody или ground ACK.
+[Контракт и ограничения](JOINT_NETWORK_PLANNING.md). Локальный объединённый
+набор: **102 passed**, один loopback HTTP-тест исключён. После уточнения
+TTL/нормализации состояния: **35 passed** в целевом наборе (пересекается с общим).
+В пульте воспроизведён отказ fleet-02 на 110 с: продолжение через fleet-03
+завершило Ground ACK 1/1. CLI recovery подтвердил тот же результат и неизменность
+checkpoint источника. Это синтетические mechanism cases, не независимый benchmark.
+
+Следующие большие пакеты: независимые численные ошибки выбранного профиля;
+измеренный масштаб; воспроизводимое обучение на неизвестных геометриях и отказах.
+Преимущество над другими инструментами пока не установлено.
+
+
+## Совместный начальный план EO / CPU / ISL / Ground
+
+Добавлен `MissionWorkspace.network()`, API и редактор конфигурации в пульте.
+Ограниченный поиск совместно выбирает владельца съёмки, направленный маршрут
+до трёх переходов, станцию и слоты; учитывает память, энергию, общие терминалы,
+окна и отказы. Прогноз не вызывает native исполнение для подбора исхода.
+Сквозной native пример: съёмка, обработка, два custody-перехода и Ground ACK 1/1.
+Локальный объединённый набор: 159 passed, один loopback HTTP-тест исключён.
+[Контракт](JOINT_NETWORK_PLANNING.md). Продолжение сетевого плана добавлено
+следующим пакетом выше, с явными native-правилами отмены фрагментов.
+Глобальный оптимум и аппаратная калибровка
+не заявляются; первоначальный EO/ISL-план больше не является открытой задачей.
+
+## Сохраняемый causal rolling-планировщик
+
+Исправлен сброс route-aware памяти на каждой подсказке. Состояние политики
+сохраняется в operator snapshot/SQLite/архиве и пересчитывается по native-префиксу
+при восстановлении. Реальные ручные действия не подменяются подсказками.
+Короткая неудачная ISL-передача временно откладывает направление по наблюдаемому
+исходу, с однократной реакцией на старый отказ и ограниченным cooldown.
+Канал агента не имеет доступа к GET suggest и операторскому прогнозному плану.
+[Контракт](ROLLING_OPERATOR_PLANNER.md); общий EO/ISL/dynamic оптимизатор
+по-прежнему отдельная открытая задача.
+Локальный объединённый набор: 189 passed; в браузере relay 2/2 с памятью политики.
+Синтетический отказ ISL вызывает выбор запасного c; отсутствие ACK не скрывается.
+
+## Динамический цикл, совместные решения и физические подтверждения
+
+Реализованы native-события новых заявок/отмен/приоритетов/дедлайнов, отказов
+и восстановления, фазовое продолжение raw/final/CPU/TX в отдельной ветке,
+SDK/API/pульт. Совместные раунды изолируют наблюдения и исполняют один общий
+шаг; relay-профиль доступен через тот же SDK. Добавлены контракты четырёх
+физических профилей и 9 аналитических проверок.
+[Область поддержки и оставшиеся задачи](DYNAMIC_FLEET_PHYSICS.md): произвольный
+совместный EO/ISL/dynamic оптимизатор и измерительная калибровка не закрыты.
+Целевые локальные проверки: 155 passed; аналитика 9/9; внешний force cross-check
+passed в ограниченной области. В браузере native доставка после отказа станции 2/2.
+Финальный новый блок после проверки malformed событий: 29 passed (пересекается).
+Расширенный прогон остановлен после 190 прошедших тестов; полный проход не заявляется.
+
+## Перепланирование рабочей миссии
+
+Добавлен пересчёт ещё не начатых заявок из текущего физического состояния,
+с сохранением доставок и проверкой replay-префикса. Результат — отдельная
+ветка operator-сессии; исходная история и capabilities не меняются.
+SDK, API и пульт используют один механизм; действуют revision/epoch,
+проверки центрального оператора и идемпотентность создания активной ветки.
+[Контракт и ограничения](WORKSPACE_REPLANNING.md): только сетка решений и
+граница завершённых цепочек, фиксированные назначения и физика. Новые заявки,
+изменение отказов и прерывание частичной операции в этот профиль не входят.
+Локальный набор workspace/replan/assignment/operator/durable/chains:
+**131 passed**, один существующий loopback HTTP-тест исключён из sandbox-запуска.
+Новый маршрут проверен через обработчик приложения. Исторические полные
+проверки ниже относятся к своим сборкам, а не автоматически к этому изменению.
+
 ## Рабочая страница миссии и улучшенный fleet scheduler
 
 Реализован единый путь: редактирование орбит/станций/заявок → план → native
@@ -1642,3 +2077,216 @@ B05-A final full regression (2026-11-02): **1257 passed, 58 warnings, 1511.44 s*
 B05-B validation (2026-11-02): **44 новых cases; focused 45 с legacy regression; reference 871 passed (13 warnings), fast 110 passed (2 warnings), 1301 collected**. Counts overlap. Wheel 198/198 source Python modules byte-matched и 3 frozen boinor fixtures; extended isolated installed SDK и CLI mission-validate/run/resume/replay passed для nominal/reroute/loss/ttl. SDK/CLI final checkpoints совпали; source/installed demo results совпали; content hash сохранился при смене owner. Полная регрессия завершена успешно (итог ниже).
 
 B05-B final full regression (2026-11-02): **1301 passed, 58 warnings, 1554.35 s**, exit 0. Непрерывный полный прогон на финальных исходниках с loopback, включая 16-actor/72h tasking scenario. Source payload 198/198 modules и 3 boinor fixtures byte-matched; installed SDK/CLI и четыре миссии nominal/reroute/loss/ttl passed с identical checkpoints и сохраненным content hash. Финальный wheel обновил только README metadata/RECORD; идентичность исполняемого payload доказана, reinstall/replay всех четырех режимов passed. Это не отдельная B09 scale qualification и не B12 hardware/flight/protocol qualification. Следующий пакет — B06.
+
+## B08 / LLM corpus — закрытый локальный пакет, 8 ноября 2026
+
+Реализован следующий слой для обучения LLM-агентов: объединение проверенных
+native-эпизодов и реальных provider-bound bundles в immutable корпус.
+
+Закрыты: общий geometry registry с factory, транзакционное обнаружение split
+конфликтов, семантическая дедупликация LLM-траекторий, независимый cold replay,
+проверка фактических wire targets, исключение evaluation из training JSONL,
+сохранение ошибок для RL, атомарная публикация после проверки, лимиты ресурсов,
+статистика независимых геометрий/ожиданий/provenance, CLI build/verify/register
+и воспроизводимый scripted end-to-end пример.
+
+**Приёмка: 168 passed / 118.19 s** в LLM/corpus/wire/episode/benchmark/Ollama,
+factory и scaling наборах; Ruff и diff-check passed. Сквозной пример: успешная
+train-миссия, один native SFT, один RL, 30 решений, 24 all-wait; отдельная test
+геометрия предварительно зарегистрирована. Это scripted teacher, не новый
+LLM-score. Модель не вызывалась и не обучалась. Полная физическая регрессия не
+перезапускалась. [Протокол](acceptance/LLM_CORPUS_V1.json),
+[контракт](LLM_CORPUS_CONTRACT.md), [пример](../examples/llm/corpus_demo.py).
+
+### Следующие крупные блоки после этого пакета
+
+1. Разнообразные семейства LLM-миссий: разные классы нарушений, нагрузки,
+   дедлайны и геометрии; заранее фиксируемые независимые splits и качественные
+   baseline. Отдельно отделить исполнение каталога от синтеза плана.
+2. Масштабирование корпусов: spool/chunked exports, измеренная параллельная
+   сборка и квоты. Текущий локальный контракт ограничен 256 эпизодами,
+   64 MB/файл и 512 MB/корпус, а не объявлен неограниченным data lake.
+3. Реальное обучение и оценка: отдельный SFT эксперимент Qwen с контролем
+   утечек, неизменными evaluation задачами и сравнением до/после, стоимостью
+   inference и абляциями протокола. Генерация данных не равна доказанному
+   улучшению модели.
+
+B12 аппаратная калибровка, независимое сравнение с конкурентами и универсальная
+физическая квалификация этим пакетом не закрываются. Регистрация требуется явно
+в одной общей базе; она не обещает cross-format дедупликацию всех factory/LLM
+траекторий. Исторические source-bound receipts воспроизводятся на своей ревизии.
+
+## B06/B08 — семейства LLM-миссий v1, 8 ноября 2026
+
+Закрыт frozen multi-family catalogue-execution workflow: 36 конфигураций,
+шесть workload families EO/CPU/ISL/Ground, шесть geometry groups, фиксированные
+train/development/test. Компиляция не использует результаты исполнения для
+фильтрации. Сравниваются wait/public_memory и отдельно privileged reference;
+ошибки остаются в знаменателях и имеют неизвестные bounds, а известная неудача —
+свой измеренный ноль. Аудит связывает native episode, config, split, budgets,
+origin, checkpoint, метрики и полную выбранную case/policy матрицу.
+
+Локально **103 tests passed**, включая **27 новых**, Ruff/diff-check passed.
+Представительный native smoke: восемь случаев × три политики = **24 replayed**,
+без runtime ошибок. Задействованы все шесть семейств и все три splits, но только
+три из шести геометрий; все 108 полных запусков не выполнялись.
+
+**Выявленное ограничение:** полная доставка всех трёх заявок — 0/24. Reference
+даёт частичную доставку 1/3 в семи случаях, 0/3 в tight-deadline. Это не новый
+положительный SFT и не LLM-score. Набор честно сохраняет эти результаты.
+
+[Контракт](LLM_MISSION_FAMILIES.md),
+[приёмка](acceptance/LLM_MISSION_FAMILIES_V1.json),
+[пример](../examples/llm/family_demo.py).
+
+### Следующий приоритет по измеренному результату
+
+1. Диагностика планировщика/каталога многозаявочной миссии: какие заявки не имеют
+   допустимых цепочек и почему; отделить физическую недостижимость от ограничений
+   поиска и консервативного резервирования.
+2. Baseline с retry/прогрессом операций и повторным планированием, использующий
+   только текущие разрешённые наблюдения. Никакой подстановки reference-команд
+   вместо LLM. Сравнить на неизменном наборе, включая отрицательные случаи.
+3. Только после появления полных execution-verified teachers — расширение
+   положительного SFT и реальный Qwen до/после эксперимент. Пока частичные
+   миссии пригодны для RL, а не для positive SFT по текущему quality gate.
+
+Публичные regression геометрии не стали pristine holdout/OOD. Outages этого
+пакета заданы заранее; новые неожиданные события во время диалога и свободный
+синтез плана не объявлены реализованными этим блоком.
+
+## B07 — pointing-bounded и диагностика полноты, 8 ноября 2026
+
+Реализован opt-in `planning_method="pointing_bounded"` на том же физическом
+network runtime. Доказана причина неполного каталога: blanket 180° slew reserve
+занимает 95 с на каждую съёмку. У единственного capture-owner это даёт 64 prefix
+ячейки против 36 доступных. Такой сертификат относится к консервативной
+дискретной модели, не к физической невозможности всей миссии.
+
+Добавлены finite-goal quaternion cone bound, fallback к 180°, неизменный запас
+энергии, повторное связывание с геометрией, bounded exact-small для малых задач,
+serial fallback для больших/явного request_order и operator-only completeness
+report. Диагностика содержит isolated route witnesses, неизвестные search failures,
+memory-prefix bounds и обязательную actor prefix capacity. В LLM observation
+future geometry/эти отчёты не добавляются.
+
+Dynamic fork сознательно возвращается к conservative serial_recovery и удаляет
+initial-only cone/completeness proofs из current metadata. Source branch и её
+реальные продукты/состояние не меняются. Native admission, ACK, память, CPU,
+дедлайны и SFT quality gate не ослаблены.
+
+Первый matched frozen случай после исправления: serial 1/3, исходный exact_small
+1/3, pointing_bounded **2/3 native deliveries**. У последнего поиска bound не
+закрыт: optimal=false. Резерв slew уменьшен с 19 до 10 ячеек, но даже новые
+conservative prefixes требуют 37 ячеек, поэтому 3/3 не обещаются.
+
+[Контракт и обоснование](POINTING_COMPLETENESS.md),
+[воспроизводимая абляция](../examples/network/pointing_comparison.py).
+
+### Остаток плана после этого пакета
+
+1. Sequence-dependent pointing и отдельные resource lanes ADCS/payload/CPU:
+   нынешний forecast сохраняет единый actor occupancy для префикса и общий
+   worst-case cone. Не объявлять native concurrency недостижимой из-за этого.
+2. Более широкая qualification на всех шести geometry groups и длинных/крупных
+   задачах; отдельно сравнить search budgets и native последствия, не только
+   резервирование. Начать с неизменного замороженного набора.
+3. Actor-only retry/progress policy и реальный LLM-эксперимент с новым каталогом.
+   Доставленные 2/3 не являются положительным complete-goal SFT; правила finish
+   не переопределяются ради удобных показателей.
+4. Независимая физическая валидация, аппаратная калибровка и сравнение с внешними
+   системами остаются отдельными незакрытыми этапами. Публичные данные/эталонные
+   тесты не заменяют реальные измерения и matched benchmark.
+
+Pointing-bounded final acceptance: **115 passed / 188.85 s**, Ruff/diff-check
+passed; 18 native replayed comparisons с повторным построением планировщиков.
+На шести семействах одной frozen геометрии — три улучшения 1→2 против serial
+и прежнего exact_small, три неизменных результата, без регрессий. Во всех
+18 ячейках planned/native completion совпали. Полных 3/3 нет, positive SFT gate
+не обходится. Dynamic fork cleanup проверен на финальных исходниках.
+[Receipt](acceptance/POINTING_COMPLETENESS_V1.json). Наборы тестов пересекаются
+с прежними прогонами; их counts не суммируются. Внешняя qualification не закрыта.
+
+## B04/B07/B08 — sequence-lanes, 8 ноября 2026
+
+Закрыт пакет свежего sequence-aware planning: предыдущая ориентация с запасом на
+tracking экспозиции, native lane claims, общая peak power/memory BW, conservative
+lifetime memory/energy, bounded order portfolio, один старт/роль/такт и отдельная
+проверка предложенного расписания. Новые наведения append-only, не меняют
+предшественника уже выбранной команды. Recovery удаляет initial-only proof и
+остаётся serial_recovery. Scalar LLM protocol и complete-goal SFT gate сохранены.
+
+**Исправлена прежняя граница:** native imaging сопровождает цель. В старом
+pointing_bounded midpoint cone не учитывал это движение. Добавлен rate-time guard;
+в equatorial режиме он теперь резервирует 11, а не 10 ячеек и выполняет 1/3.
+Исторические 2/3 были реально исполнены, но не доказывали корректность общей
+границы. Старый receipt сохранён как исторический с собственными source hashes.
+
+Новый sequence_lanes с запасом на предыдущую экспозицию выполняет **3/3** на том
+же frozen relay-chain. В абляции serial/exact_small/исправленный pointing/
+sequence: **24 replayed**, шесть workload-семейств одной геометрии. Четыре
+улучшения против serial/pointing, без регрессий; полная цель достигнута в relay
+и station-blackout. CPU-backlog и link-blackout — 2/3, memory — 1/3, deadline — 0/3.
+Негативные/частичные случаи не исключены и не стали positive SFT.
+
+**176 tests passed**, финальный новый модуль **19 passed** (counts пересекаются),
+Ruff/compile/diff-check passed. Из шести train-эпизодов собран, зарегистрирован
+и нативно проверен корпус: **6 RL + 2 SFT**, одна геометрия, scripted privileged
+teacher, 0 wire-SFT. Это не новый LLM-score, не fine-tuning и не экспертная
+оптимальность. Выбор планировщика доступен локальным Qwen evaluation/data CLI
+через `--planning-method sequence_lanes`; budget явно `--max-calls 64`.
+
+[Контракт и ограничения](SEQUENCE_LANES.md),
+[приёмка](acceptance/SEQUENCE_LANES_V1.json).
+
+### Что осталось следующим
+
+1. Qualification этого режима на остальных геометриях и более длинных миссиях;
+   нынешняя приёмка — одна геометрия, а не доказательство универсальности.
+2. Sequence-aware dynamic recovery из настоящего префикса с новыми заявками и
+   отказами; пока ветка обоснованно возвращается к conservative serial_recovery.
+3. Измеренный actor-only Qwen benchmark на новом каталоге, затем train/dev/test
+   SFT до/после с проверкой утечек и неизменными оценочными задачами. Текущие
+   6 эпизодов/одна геометрия для заявления об обучении недостаточны.
+4. Большие corpora/spool, независимые физические эталоны и аппаратная/отраслевая
+   квалификация остаются отдельными незакрытыми разделами.
+
+## B07/B08 — полная frozen sequence qualification, 8 ноября 2026
+
+Закрыт следующий bounded пакет: qualification всех 36 workload cases/шести
+геометрий/all splits, source-bound per-case checkpoints, возобновление после
+прерывания, writer lease, фиксация error cells без повторов ради score и
+агрегаты с полным знаменателем. Comparison API теперь внутри установленной
+библиотеки (`space_env.llm.comparison`); прежний example entry point сохранён.
+
+Выполнены **72 scored native runs**, все нативно проверены с rebuild планов;
+**0 runtime errors, 0 forecast/native count mismatches**. По delivered priority:
+23 улучшения, 13 ties, 0 regressions против serial на этом frozen наборе.
+Полные цели sequence **16/36** против serial **0/36**. Sequence train/dev/test
+full goals: **5/12, 5/12, 6/12**. Это публичный regression, не blind/OOD и не
+сравнение с внешними симуляторами.
+
+Корпус связан с квалификацией hashes, включает все 36 verified sequence episodes:
+**12 train RL + 5 train SFT**; 24 evaluation episodes не попали в training JSONL.
+В train две геометрии, в полном audit шесть; provenance scripted_privileged,
+0 real LLM calls, 0 wire-SFT, fine-tuning не проводился. Прерванная/неполная study
+не может быть источником «полного» корпуса. Повторная регистрация идемпотентна,
+посторонний валидный corpus нельзя подставить под эту study.
+
+**81 distinct local tests passed** (77 integration + 4 bridge contracts),
+Ruff/compile/diff-check passed. Unit/fault-injection tests не выдаются за ещё
+81 benchmark mission. [Контракт](SEQUENCE_QUALIFICATION.md),
+[приёмка](acceptance/SEQUENCE_QUALIFICATION_V1.json).
+
+### Дальше после закрытия этого пакета
+
+1. Sequence-aware recovery из реального partial prefix с новыми заявками,
+   неисправностями, остатками CPU и custody; текущий conservative fallback честно
+   остаётся serial_recovery. Свежий план не переносится на изменённый мир.
+2. Настоящий actor-only Qwen3.5:4b benchmark нового каталога, с runtime/tokens,
+   ошибками инструментов и теми же frozen задачами. Успех privileged teacher
+   не заменяет успех LLM. Затем отдельный SFT до/после эксперимент.
+3. Длительные/большие нагрузки и spool/worker scaling; 36 cases по 180 секунд
+   не являются приёмкой тысяч спутников или многосуточной sequence миссии.
+4. Независимые физические эталоны, отраслевые pilot inputs и аппаратная
+   калибровка остаются незакрытой внешней qualification.

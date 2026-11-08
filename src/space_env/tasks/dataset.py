@@ -166,6 +166,20 @@ class VerifiedEpisode:
 
     def iter_rows(self, *, format="rl", role="@central", include_rejected=False):
         _options(format, role, include_rejected)
+        if (
+            format == "sft"
+            and self._session._task.goal is not None
+            and (
+                not self._session.goal_status()["success"]
+                or any(
+                    not r["transition"]["feedback"]["accepted"]
+                    for r in self._session._transitions
+                )
+            )
+        ):
+            raise ValueError(
+                "SFT requires successful native goal and error-free execution"
+            )
         if role not in self._session._views:
             raise ValueError("unknown export role")
         return _rows(self._session, self._sha, format, role, include_rejected)

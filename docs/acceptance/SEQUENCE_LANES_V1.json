@@ -1,0 +1,211 @@
+{
+  "schema": "space-env.sequence-lanes-acceptance/1",
+  "date": "2026-11-08",
+  "sources": {
+    "src/space_env/planning/sequence_lanes.py": "6ef5e5d4d51b7aefbf4bf88e597cf6cf7a4247c19754a0745fa7e1a5e8cf383d",
+    "src/space_env/planning/pointing_envelope.py": "6f6f3b7ad58d6e5b5d21cccced113a5e7357e91425be4f16002d21d3c8cadca8",
+    "src/space_env/api/network_workspace.py": "44c200511fc9452bdadd0984adc8776091679dd388acb6018dc5c453be07fbbb",
+    "src/space_env/api/network_dynamic.py": "4fb6b058de85d83c58d807cb90f1ae2bd698252caf3e6a3039c62e45f7088ae7",
+    "examples/network/pointing_comparison.py": "5479edbefd59b89e5c69c85fcf3922474491c138f6f782971ed9d461f5fe0e7f",
+    "examples/llm/run_local_qwen.py": "f7357845af19f9b682d64ef7e1be9faba07876189e7752d7e5d28590e43ec7bd",
+    "examples/llm/generate_local.py": "dfaa353506562b2ed8ca2c1b9a6f9b0f47ce44c48327f3915ae5188c016f6b05",
+    "tests/test_sequence_lanes.py": "eb7af80e86442fed39552be57bfa8a5e3b713dbe2bea0752036fcaef609d9ddb",
+    "tests/test_pointing_envelope.py": "13817c679dab55e4f5e93e7ba7c9723563fac2f4df13713b9b01380fbd33cab3",
+    "tests/test_pointing_comparison.py": "26c27f9101d0db79e38c87f9c26c8ed5c9ad128a76e763711579f49a2ece58fb"
+  },
+  "full_native_source_manifest_sha256": "6c74bd5c9eee4a6f10b49fb64b3eb43e13d7be0bafa5988a2f045ab535be3426",
+  "tests": {
+    "broad": {
+      "command": "python -m pytest tests/test_sequence_lanes.py tests/test_pointing_envelope.py tests/test_pointing_comparison.py tests/test_joint_network.py tests/test_network_dynamic.py tests/test_network_optimal.py tests/test_terminal_sequence.py tests/test_llm_episode.py tests/test_llm_corpus.py -q",
+      "passed": 176,
+      "seconds": 253.32
+    },
+    "new_module_final": {
+      "command": "python -m pytest tests/test_sequence_lanes.py -q",
+      "passed": 19,
+      "seconds": 15.52,
+      "includes": "actual granted CPU work throughout a tick with changed native attitude"
+    },
+    "counts_overlap": true,
+    "scope": "local targeted regressions, not full project/hardware qualification"
+  },
+  "summary": {
+    "paired_cases": 6,
+    "geometry_groups": 1,
+    "native_runs": 24,
+    "improved_vs_serial": 4,
+    "improved_vs_pointing_bounded": 4,
+    "regressed_vs_serial": 0,
+    "sequence_complete_goals": 2,
+    "forecast_native_count_mismatches": 0,
+    "external_llm_measured": false,
+    "model_fine_tuned": false,
+    "blind_holdout_claim": false
+  },
+  "audit": {
+    "cases": 6,
+    "external_llm_measured": false,
+    "paired": [
+      {
+        "case": "equatorial-relay-chain",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "sequence_lanes": 3,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 9,
+          "sequence_lanes": 18,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-cpu-backlog",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "sequence_lanes": 2,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 9,
+          "sequence_lanes": 15,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-memory-pressure",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "sequence_lanes": 1,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 6,
+          "pointing_bounded": 6,
+          "sequence_lanes": 6,
+          "serial": 6
+        }
+      },
+      {
+        "case": "equatorial-station-blackout",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 2,
+          "sequence_lanes": 3,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 15,
+          "sequence_lanes": 18,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-link-blackout",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "sequence_lanes": 2,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 9,
+          "sequence_lanes": 15,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-deadline-pressure",
+        "fulfilled": {
+          "exact_small": 0,
+          "pointing_bounded": 0,
+          "sequence_lanes": 0,
+          "serial": 0
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 0,
+          "pointing_bounded": 0,
+          "sequence_lanes": 0,
+          "serial": 0
+        }
+      }
+    ],
+    "replayed": 24,
+    "valid": true
+  },
+  "corpus_bridge": {
+    "audit": {
+      "ok": true,
+      "sha256": "7e1a3cce5ef34a69474e8b32aed1d056c45cc7ae827f75951b0bd9f0d5e89eff",
+      "summary": {
+        "all_wait_decisions": 162,
+        "decisions": 216,
+        "episodes": 6,
+        "evaluation_episodes": 0,
+        "independent_geometries": 1,
+        "policy_origins": {
+          "scripted_privileged": 6
+        },
+        "rows": {
+          "rl": 6,
+          "sft": 2,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 2,
+        "train_episodes": 6
+      }
+    },
+    "build": {
+      "ok": true,
+      "registry_status": "not_registered",
+      "sha256": "7e1a3cce5ef34a69474e8b32aed1d056c45cc7ae827f75951b0bd9f0d5e89eff",
+      "summary": {
+        "all_wait_decisions": 162,
+        "decisions": 216,
+        "episodes": 6,
+        "evaluation_episodes": 0,
+        "independent_geometries": 1,
+        "policy_origins": {
+          "scripted_privileged": 6
+        },
+        "rows": {
+          "rl": 6,
+          "sft": 2,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 2,
+        "train_episodes": 6
+      }
+    },
+    "registration": {
+      "content_sha256": "7e1a3cce5ef34a69474e8b32aed1d056c45cc7ae827f75951b0bd9f0d5e89eff",
+      "groups": 1,
+      "ok": true,
+      "status": "registered",
+      "trajectories": 6
+    }
+  },
+  "ruff": "passed",
+  "diff_check": "passed",
+  "corrects": "POINTING_COMPLETENESS_V1 finite-goal bound omitted capture tracking drift; historical receipt retains its source identity",
+  "raw_directory": "/tmp/space-env-sequence-lanes-20261108-final",
+  "scope": "fresh kinematic profiles, conservative capture-tracking uncertainty, native lanes and one start/role/tick; bounded nonoptimal order portfolio; same frozen physical inputs; privileged reference teacher, no real LLM inference or training",
+  "reproduce": [
+    "python -m examples.network.pointing_comparison --output /tmp/new-sequence-comparison --method serial --method exact_small --method pointing_bounded --method sequence_lanes",
+    "python -m examples.network.pointing_comparison --audit /tmp/new-sequence-comparison"
+  ],
+  "sha256": "1f60096eacfc71f7311ecbe7a19043e5322d90ef3df4e14a47e7ce0d2343100e"
+}

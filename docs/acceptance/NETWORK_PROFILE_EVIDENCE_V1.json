@@ -1,0 +1,1162 @@
+{
+  "schema": "space-env.network-evidence-receipt/1",
+  "recorded_utc": "2026-11-06T11:47:27.268197+00:00",
+  "command": "python -m space_env.validation.network_evidence --output /tmp/new-network-evidence --repeats 2 --external-forces",
+  "audit_command": "python -m space_env.validation.network_evidence --audit /tmp/new-network-evidence",
+  "report_sha256": "650ff65e92610548fbafc689239bc4909c42809df3bcb1614a53c0edbdc8aa04",
+  "model_sources": {
+    "api/network_dynamic.py": "e57321450a338c4e27382da65fb6935fc2ee813922ed7a633b87a9380910dc79",
+    "api/network_workspace.py": "965d194eeda4419d0e871f7724c1f4fe9325e6486106c77a82c5089047c22be4",
+    "api/workspace.py": "9ad98ed57998b0ddfc95720013359abeb5b4e2486e582c9874016633c997b007",
+    "planning/joint_network.py": "4d9fb51c8e715ad4252d6704111ac5f1650039fbac0fff74802268fee3638e3f",
+    "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+    "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+    "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+    "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+    "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+    "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+    "reference/spacecraft_bus.py": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+    "runtime/mission.py": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+    "validation/network_evidence.py": "c35887e174f1c527afda2df91182f72e1f2e37451ad32495174b49c974d210d8"
+  },
+  "raw_artifacts": {
+    "actors-1-requests-1-0.json": "1f3a2c5c7fa0d2f3faeac87ac7eaf4fb777b1f282c7bf4a09ad1cce5626f424a",
+    "actors-1-requests-1-1.json": "fa3fd4cfc7e43fb8cc942e3b4fb19bd13358d489d06438d42dadbe180c3bc805",
+    "actors-2-requests-4-0.json": "3bd9a5576f69d457b8e5454fba59be068aea58b788cb7a2b28a9bbae7cb4f255",
+    "actors-2-requests-4-1.json": "a613d43d169e05525d656cdc80437a9615df2c2bc8b0f63927c2b2e587fa1919",
+    "actors-4-requests-16-0.json": "354082126994c3552bb9b6ce58ddd7c79ce79ce1c84cb0edf6dc2bd2d34a4062",
+    "actors-4-requests-16-1.json": "c4d2fbb609e532d5cd684b6b91519b0f29cebea16c2a5e3f1debaa14e3eac26a",
+    "analytical.json": "b4d9900f5a6b2ec5c761d868065cc83dbc2e8f99a04a95273f8d86af45d476c0",
+    "custody-reroute-4-0.json": "22c55d1e0117111349593e926728314077902b809f1f978f834186fcedb37cae",
+    "custody-reroute-4-1.json": "f8d55d8d480d026d0166c4ec5bdb1eb012c1239a23640a31aaf1489a10cd6a50",
+    "external-forces.json": "bfe94477d0c684b9832eb8e712366e101679c0dc3839b7675172881918ab88b9",
+    "inputs.json": "26eb025ba7043accf760c4361a2c71d9848e0f5e431e5dbdbed543df46f5bd70",
+    "report.json": "e44869ee78f033b6d2a68c9697f30a1c0e0d91b9770a49b469e01b72762de9cf",
+    "rf.json": "9602c28ad2376c4b6e61abb78951d8034f24f304fd265c750a097bf296ae9e42"
+  },
+  "inputs": {
+    "cases": [
+      {
+        "configuration": {
+          "links": [],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 150.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "EO → два ISL-перехода → Ground ACK",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-00",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 1,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -110.97179778214284,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "id": "actors-1-requests-1",
+        "recover_after": null
+      },
+      {
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 150.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "EO → два ISL-перехода → Ground ACK",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0,
+                  0.5
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-00",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 1,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-01",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 2,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-02",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-03",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 4,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -110.97179778214284,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "id": "actors-2-requests-4",
+        "recover_after": null
+      },
+      {
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-03",
+              "source": "fleet-02"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 150.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "EO → два ISL-перехода → Ground ACK",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0,
+                  0.5,
+                  1.0,
+                  1.5
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-00",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 1,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-01",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 2,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-02",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-03",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 4,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-04",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-05",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 6,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-06",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 7,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-07",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 8,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-08",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 9,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-09",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 10,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-10",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 11,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-11",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 12,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-12",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 13,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-13",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 14,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-14",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 15,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "request-15",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 16,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -110.97179778214284,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "id": "actors-4-requests-16",
+        "recover_after": null
+      },
+      {
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-03",
+              "max_range_m": 5000000.0,
+              "source": "fleet-01"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 150.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "EO → два ISL-перехода → Ground ACK",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0,
+                  40.0
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 150.0,
+                "id": "survey",
+                "lat_deg": 0.0,
+                "lon_deg": -127.97179778214284,
+                "output_bits": 500000,
+                "priority": 5,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": "Ground"
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -65.97179778214284,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "id": "custody-reroute-4",
+        "recover_after": 22
+      }
+    ],
+    "repeats": 2,
+    "sha256": "3c2e5a90b75ca63f9f9d64164027b99edd8a20d72865b6abe7656d392cc9e63b"
+  },
+  "rf": {
+    "cases": 16,
+    "passed": true,
+    "maximum_absolute_error_db": 3.019806626980426e-14,
+    "tolerance_db": 1e-10,
+    "oracle": "separate linear Friis power/noise computation; shared SI constants and physical equations",
+    "sources": [
+      "https://www.itu.int/rec/R-REC-P.525-5-202411-I/en",
+      "https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-RA.2510-2022-PDF-E.pdf"
+    ],
+    "scope": "isolated constant-gain free-space budget and declared modem gates; not antenna, atmosphere, waveform, pointing, sampled-contact or hardware validation"
+  },
+  "analytical": {
+    "cases": 9,
+    "passed": true,
+    "scope": "analytical numerical verification; not a physical error bound for a real mission or full-profile qualification"
+  },
+  "external_force_comparison": {
+    "passed": true,
+    "forces": [
+      {
+        "actual_m_s2": [
+          -0.012315470836053777,
+          -1.8107914343928163e-09,
+          -6.393229068033265e-05
+        ],
+        "error_m_s2": 5.741939732569412e-16,
+        "expected_m_s2": [
+          -0.012315470836054351,
+          -1.8107914351525009e-09,
+          -6.393229068033264e-05
+        ],
+        "name": "j2_0",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          0.0,
+          -1.0731758266070543e-06,
+          -2.2526999849646642e-12
+        ],
+        "error_m_s2": 3.06730824577936e-19,
+        "expected_m_s2": [
+          -3.067308245779088e-19,
+          -1.0731758266070543e-06,
+          -2.2526999849647935e-12
+        ],
+        "name": "drag_0",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          1.026328552811151e-06,
+          -5.68570130805727e-07,
+          -1.8608762133018175e-07
+        ],
+        "error_m_s2": 1.5590420850374106e-15,
+        "expected_m_s2": [
+          1.02632855125211e-06,
+          -5.685701308074769e-07,
+          -1.8608762133072668e-07
+        ],
+        "name": "third_body_0",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          -0.00552039185036346,
+          0.0027518207796881633,
+          -0.008150237652582604
+        ],
+        "error_m_s2": 3.6061418308597904e-16,
+        "expected_m_s2": [
+          -0.005520391850363713,
+          0.0027518207796883476,
+          -0.008150237652582782
+        ],
+        "name": "j2_1",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          -5.640424127761889e-09,
+          -3.485112065604312e-08,
+          1.149326589455768e-08
+        ],
+        "error_m_s2": 4.289092751611251e-16,
+        "expected_m_s2": [
+          -5.640424519283194e-09,
+          -3.48511208154205e-08,
+          1.1493265967173703e-08
+        ],
+        "name": "drag_1",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          1.1057509743395144e-06,
+          -3.1684568435608185e-07,
+          -4.872691214963254e-07
+        ],
+        "error_m_s2": 4.6901658894593175e-16,
+        "expected_m_s2": [
+          1.1057509746681365e-06,
+          -3.168456841094378e-07,
+          -4.8726912127016e-07
+        ],
+        "name": "third_body_1",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          -5.7251803436927486e-05,
+          -0.006229638681056082,
+          0.020922722282721296
+        ],
+        "error_m_s2": 1.1407375287473273e-16,
+        "expected_m_s2": [
+          -5.725180343692742e-05,
+          -0.006229638681055979,
+          0.020922722282721247
+        ],
+        "name": "j2_2",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          -5.3931366304599526e-08,
+          -9.616973883908031e-12,
+          -6.625906934232262e-09
+        ],
+        "error_m_s2": 2.776958406094553e-16,
+        "expected_m_s2": [
+          -5.3931366304599526e-08,
+          -9.61698905445069e-12,
+          -6.625906656951115e-09
+        ],
+        "name": "drag_2",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      },
+      {
+        "actual_m_s2": [
+          -8.902933599812526e-08,
+          2.8387853245881445e-07,
+          -8.144040695157173e-07
+        ],
+        "error_m_s2": 2.3171327309340476e-16,
+        "expected_m_s2": [
+          -8.902933599768868e-08,
+          2.838785326045079e-07,
+          -8.144040696958957e-07
+        ],
+        "name": "third_body_2",
+        "passed": true,
+        "tolerance_m_s2": 1e-12
+      }
+    ],
+    "j2_arcs": [
+      {
+        "duration_sec": 600.0,
+        "passed": true,
+        "position_error_m": 5.156374670332144e-06,
+        "position_tolerance_m": 10.0,
+        "velocity_error_m_s": 3.591666807589379e-09,
+        "velocity_tolerance_m_s": 0.01
+      }
+    ],
+    "oracle": {
+      "functions": [
+        "J2_perturbation",
+        "atmospheric_drag",
+        "third_body"
+      ],
+      "integrator": "SciPy LSODA",
+      "library": "boinor",
+      "source_sha256": "4730e22a4a1b52144dbe33e35575a1629dee39ec4a1d60a66e94c81ad06444c0",
+      "version": "0.19.0"
+    },
+    "shared_inputs": [
+      "ERFA/EOP frames",
+      "density",
+      "Sun/Moon positions",
+      "physical constants"
+    ],
+    "not_qualified": [
+      "SRP/eclipse comparison",
+      "independent ephemerides and atmosphere",
+      "independent EOP/frame truth",
+      "full perturbed mission operational accuracy"
+    ]
+  },
+  "rows": [
+    {
+      "repeat": 0,
+      "result": {
+        "case_id": "actors-1-requests-1",
+        "checkpoint_bytes": 288105,
+        "checkpoint_sec": 0.016203631001189933,
+        "checkpoint_sha256": "6e7a745b5f9c206ac724acff10965ebd376c2009f9b96d980f1fd7fe7578d5d5",
+        "elapsed_sec": 1.1753005539994774,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "b3231e1e993e12a4ae5cd383d5a89cb119ba3811558bfd54978fae30b692be06",
+        "native_fulfilled": 1,
+        "peak_rss_bytes": 257069056,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.31697601999985636,
+        "predicted_fulfilled": 1,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 39,
+        "sha256": "5b97902737a68d3ea6cac03e0b3d856f9ca4fa7568a84e256cfd3be32e362602",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.09037076400090882,
+          "p50": 0.021716973499678716,
+          "p95": 0.07693003419944938
+        },
+        "total": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "result": {
+        "case_id": "actors-1-requests-1",
+        "checkpoint_bytes": 288105,
+        "checkpoint_sec": 0.01458374600042589,
+        "checkpoint_sha256": "6e7a745b5f9c206ac724acff10965ebd376c2009f9b96d980f1fd7fe7578d5d5",
+        "elapsed_sec": 1.1030873039999278,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "b3231e1e993e12a4ae5cd383d5a89cb119ba3811558bfd54978fae30b692be06",
+        "native_fulfilled": 1,
+        "peak_rss_bytes": 257056768,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.2999893060004979,
+        "predicted_fulfilled": 1,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 39,
+        "sha256": "8d4142eb5c9cd9d37802d822e493ffd51759415220db2d959640c72deb2190d7",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.0826754110003094,
+          "p50": 0.020440637999854516,
+          "p95": 0.06559244419931924
+        },
+        "total": 1
+      }
+    },
+    {
+      "repeat": 0,
+      "result": {
+        "case_id": "actors-2-requests-4",
+        "checkpoint_bytes": 450418,
+        "checkpoint_sec": 0.025391954999577138,
+        "checkpoint_sha256": "3a01470242a8e743313b3cbeda88884d1e137983eb8b0272a7be9a057cd82ee0",
+        "elapsed_sec": 1.694408208999448,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "1906ad0488f94952cb423ae9d077bf9625a5822d921f19392061af1bc96113cc",
+        "native_fulfilled": 2,
+        "peak_rss_bytes": 260407296,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.4397880910000822,
+        "predicted_fulfilled": 2,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 408,
+        "sha256": "1b0348e94b1905496e0b2bc478de50feda0eb83237724f64d94bfc4a3310c9e3",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.10748178699941491,
+          "p50": 0.030682021500069823,
+          "p95": 0.09407628095032122
+        },
+        "total": 4
+      }
+    },
+    {
+      "repeat": 1,
+      "result": {
+        "case_id": "actors-2-requests-4",
+        "checkpoint_bytes": 450418,
+        "checkpoint_sec": 0.025198515000738553,
+        "checkpoint_sha256": "3a01470242a8e743313b3cbeda88884d1e137983eb8b0272a7be9a057cd82ee0",
+        "elapsed_sec": 1.6470688520003023,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "1906ad0488f94952cb423ae9d077bf9625a5822d921f19392061af1bc96113cc",
+        "native_fulfilled": 2,
+        "peak_rss_bytes": 260849664,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.43725520499901904,
+        "predicted_fulfilled": 2,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 408,
+        "sha256": "cd23a69461175e6792412c5d88a8d7ea87ac8b524a03e55ddfe2187de6ecacf0",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.10251836099996581,
+          "p50": 0.03039076999993995,
+          "p95": 0.0837926429496292
+        },
+        "total": 4
+      }
+    },
+    {
+      "repeat": 0,
+      "result": {
+        "case_id": "actors-4-requests-16",
+        "checkpoint_bytes": 833316,
+        "checkpoint_sec": 0.11052767299952393,
+        "checkpoint_sha256": "d2795d95dc41139181f59cd3dad42f1605a1d2701bbf3da9cf0b647f0e5496fb",
+        "elapsed_sec": 3.0177477750003163,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "58c982bdcffbd456f0c1cdc775b24dec506db09748825568a36c4125933ae116",
+        "native_fulfilled": 4,
+        "peak_rss_bytes": 269533184,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.9375342920011462,
+        "predicted_fulfilled": 4,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 5165,
+        "sha256": "64c1e5f23affc84f636e9e45272c9362ab7380a31dc7657619ef20c6ec9e1430",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.15893839599993953,
+          "p50": 0.04920444100025634,
+          "p95": 0.1363987226000972
+        },
+        "total": 16
+      }
+    },
+    {
+      "repeat": 1,
+      "result": {
+        "case_id": "actors-4-requests-16",
+        "checkpoint_bytes": 833316,
+        "checkpoint_sec": 0.10531290899962187,
+        "checkpoint_sha256": "d2795d95dc41139181f59cd3dad42f1605a1d2701bbf3da9cf0b647f0e5496fb",
+        "elapsed_sec": 2.9687830429993483,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "58c982bdcffbd456f0c1cdc775b24dec506db09748825568a36c4125933ae116",
+        "native_fulfilled": 4,
+        "peak_rss_bytes": 268599296,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.9450050449995615,
+        "predicted_fulfilled": 4,
+        "recovery_sec": null,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 30,
+        "search_budget_exhausted": false,
+        "search_nodes": 5165,
+        "sha256": "62490df331d1119fc792bf2a662641801fe88a703a0cd8111fe396d8f5a89a83",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": null,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.14736578799966082,
+          "p50": 0.048709796499679214,
+          "p95": 0.1285097315510938
+        },
+        "total": 16
+      }
+    },
+    {
+      "repeat": 0,
+      "result": {
+        "case_id": "custody-reroute-4",
+        "checkpoint_bytes": 637842,
+        "checkpoint_sec": 0.0897698209992086,
+        "checkpoint_sha256": "f6990c5c3f4bf59181c08f434da5b8c4fea62ceb38f009bda14f007d5a045dea",
+        "elapsed_sec": 6.693497105999995,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "1c77f016bc2021cb5e265a35f7d89c46f6ad0c619b409d899d944bf6efe3fc37",
+        "native_fulfilled": 1,
+        "peak_rss_bytes": 278188032,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.624796325000716,
+        "predicted_fulfilled": 1,
+        "recovery_sec": 4.328278641998622,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 28,
+        "search_budget_exhausted": false,
+        "search_nodes": 66,
+        "sha256": "b86acd7f409a4c33165734f18e5d17443b4e725f595856ec793cd466d01fd82c",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": true,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.14670615899922268,
+          "p50": 0.04054254999937257,
+          "p95": 0.0965135917507723
+        },
+        "total": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "result": {
+        "case_id": "custody-reroute-4",
+        "checkpoint_bytes": 637842,
+        "checkpoint_sec": 0.09011805299996922,
+        "checkpoint_sha256": "602ca940ce9788577a3f017807adf93c0b2b40b6d5244aa6d9d617de4c5e2efa",
+        "elapsed_sec": 6.734366760998455,
+        "environment": {
+          "numpy": "2.2.6",
+          "platform": "Linux-6.17.0-22-generic-x86_64-with-glibc2.39",
+          "python": "3.12.9",
+          "space_env": "0.134.0",
+          "threads": {
+            "MKL_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1"
+          }
+        },
+        "input_sha256": "1c77f016bc2021cb5e265a35f7d89c46f6ad0c619b409d899d944bf6efe3fc37",
+        "native_fulfilled": 1,
+        "peak_rss_bytes": 277745664,
+        "peak_rss_method": "linux-proc-VmHWM-after-exec",
+        "planning_sec": 0.6251782689996617,
+        "predicted_fulfilled": 1,
+        "recovery_sec": 4.360533913999461,
+        "schema": "space-env.network-scale-row/1",
+        "scope": "RSS method explicit; no OS memory isolation; measured SDK/operator overhead, not bare integrator throughput",
+        "sdk_steps": 28,
+        "search_budget_exhausted": false,
+        "search_nodes": 66,
+        "sha256": "7ef4c375d785ba29d15d86e5a33e87aeffd56b5fdd213a0cf528972751083545",
+        "source_sha256": "b3e3adbdd161fc42c2693df9536f82c4fb04e64aac473bce5f6dde5a8956d281",
+        "source_unchanged": true,
+        "status": "completed",
+        "step_sec": {
+          "max": 0.14410299100018165,
+          "p50": 0.04077813049934775,
+          "p95": 0.12204348934965305
+        },
+        "total": 1
+      }
+    }
+  ],
+  "scope": "numerical verification plus four frozen synthetic workloads; repeats are not independent missions; pass means checks completed, not all requests delivered or performance superiority",
+  "hardware_calibrated": false,
+  "competitor_comparison": false,
+  "unqualified": [
+    "operational orbit accuracy",
+    "independent EOP/atmosphere truth",
+    "calibrated sensors/ADCS/RF",
+    "large constellations",
+    "training or sim-to-real performance"
+  ],
+  "notes": [
+    "Eight runs are two repeats of four fixed workloads, not eight independent missions.",
+    "Native completion denominators include every request; evidence passed does not mean every request delivered.",
+    "Linux RSS uses /proc/self/status VmHWM, excluding inherited pre-exec ru_maxrss.",
+    "Wall timings are host-dependent; elapsed_sec starts after module/SDK imports and excludes interpreter startup/teardown.",
+    "Receipt source and byte hashes identify this exact run; re-running produces new timing/report hashes.",
+    "Raw artifacts are local generated outputs; this compact receipt and executable inputs/recipe are versioned."
+  ],
+  "sha256": "b6f2f192831d6faf26f3be4d2c34172a4a8abf8597286691211df7b6bd6afc25"
+}

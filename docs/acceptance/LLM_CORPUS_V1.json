@@ -1,0 +1,84 @@
+{
+  "schema": "space-env.llm-corpus-acceptance/1",
+  "date": "2026-11-08",
+  "sources": {
+    "src/space_env/factory/registry.py": "44f17f63b1664615ea10c860086a97ac9ae4926c259cd34d6a9a5a57ae135769",
+    "src/space_env/llm/corpus.py": "6a3583bb2696967b7b0d8d3deedc1c6cdc691e7fb82df8dbf0539caef1c0cd54",
+    "src/space_env/llm/local_data.py": "cc8983757560ceea9eb5c15a08cfa2a2c270e2c92f913955719212a8c98c2903",
+    "examples/llm/generate_local.py": "5f1701b666e4aec710772dd8bdb90608fa7fe8b2fcb81d2828d9fe39c3abc577",
+    "examples/llm/corpus_demo.py": "8d071eec266af4cb82bc3466b9df46bfd09131cf8ffc852d151ffe4583f43aa0",
+    "tests/test_llm_corpus.py": "ca24d686d95572b9c147a9e8d545d5837c3ff163926b47d356e39a1bed9a0e52"
+  },
+  "full_native_source_manifest_sha256": "757ac7ce411f5cb653996664e527945e7ced9585aee500708befbdf7f57b9bf7",
+  "tests": {
+    "command": "python -m pytest tests/test_llm_corpus.py tests/test_llm_wire_data.py tests/test_llm_episode.py tests/test_llm_benchmark.py tests/test_llm_ollama.py tests/test_factory.py tests/test_scaling.py -q",
+    "passed": 168,
+    "seconds": 118.19,
+    "scope": "targeted LLM/factory/scaling integration, not full project physics regression"
+  },
+  "lint": {
+    "ruff_check": "passed",
+    "diff_check": "passed"
+  },
+  "demo": {
+    "build": {
+      "ok": true,
+      "registry_status": "not_registered",
+      "sha256": "c29d17294ae5fc2290681504c42a8bbcc7e57cd0d02dca755df8ddbfa3bc7508",
+      "summary": {
+        "all_wait_decisions": 24,
+        "decisions": 30,
+        "episodes": 1,
+        "evaluation_episodes": 0,
+        "independent_geometries": 1,
+        "policy_origins": {
+          "scripted_privileged": 1
+        },
+        "rows": {
+          "rl": 1,
+          "sft": 1,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 1,
+        "train_episodes": 1
+      }
+    },
+    "model_called": false,
+    "model_fine_tuned": false,
+    "registration": {
+      "content_sha256": "c29d17294ae5fc2290681504c42a8bbcc7e57cd0d02dca755df8ddbfa3bc7508",
+      "groups": 1,
+      "ok": true,
+      "status": "registered",
+      "trajectories": 1
+    },
+    "verification": {
+      "ok": true,
+      "sha256": "c29d17294ae5fc2290681504c42a8bbcc7e57cd0d02dca755df8ddbfa3bc7508",
+      "summary": {
+        "all_wait_decisions": 24,
+        "decisions": 30,
+        "episodes": 1,
+        "evaluation_episodes": 0,
+        "independent_geometries": 1,
+        "policy_origins": {
+          "scripted_privileged": 1
+        },
+        "rows": {
+          "rl": 1,
+          "sft": 1,
+          "wire-sft": 0
+        },
+        "successful_train_episodes": 1,
+        "train_episodes": 1
+      }
+    }
+  },
+  "raw_directory": "/tmp/space-env-corpus-demo-20261108-v1",
+  "scope": "local native replay and synthetic provider transport tests; scripted teacher demonstration, no new real LLM inference, no training, no competitive or hardware qualification",
+  "reproduce": [
+    "python -m examples.llm.corpus_demo --output /tmp/new-corpus-demo",
+    "python -m space_env.llm.corpus verify /tmp/new-corpus-demo/train"
+  ],
+  "sha256": "be22f34f4f89e02a6b663af41f1e432746a6bfe5a6489d315921755d9cffd2f4"
+}

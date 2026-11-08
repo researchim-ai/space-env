@@ -128,6 +128,11 @@ class _ProjectionReads:
     def station_observation(self, station):
         return self._read("station_observation", station)
 
+    def request_authority(self, request_id):
+        # Cheap declaration lookup; let the runtime validate input before any
+        # cache-key hashing (malformed JSON can contain unhashable IDs).
+        return self._runtime.request_authority(request_id)
+
     def pointing_observation(self, actor, *, target_id=None, station_id=None):
         key = ("pointing_observation", actor, target_id, station_id)
         if key not in self._reads:
@@ -394,7 +399,7 @@ class Projection:
             }
             if action is not None and (role == "@central" or action.role == role):
                 if action.request_ref is not None:
-                    item['request_ref'] = action.request_ref
+                    item["request_ref"] = action.request_ref
                 item["actors"] = sorted(
                     {c.actor_id for c in action.commands}
                     | ({action.actor} if action.actor else set())
@@ -404,9 +409,16 @@ class Projection:
                 visible = True
                 for c in action.commands:
                     life = views.get(c.actor_id, {}).get("lifecycle", {})
-                    if self.spec.pointing_masks and c.kind == "slew" and c.slew.target_id is not None:
-                        if not any(r["target_id"] == c.slew.target_id for r in life.get("requests", [])):
-                            visible = False
+                    if (
+                        self.spec.pointing_masks
+                        and c.kind == "slew"
+                        and c.slew.target_id is not None
+                        and not any(
+                            r["target_id"] == c.slew.target_id
+                            for r in life.get("requests", [])
+                        )
+                    ):
+                        visible = False
                     if c.product_id and c.product_id not in inventory.get(
                         c.actor_id, {}
                     ):
@@ -432,7 +444,9 @@ class Projection:
                     ]
                 if visible and enabled and self.spec.pointing_masks:
                     item["pointing"] = [
-                        runtime.pointing_observation(c.actor_id, target_id=c.slew.target_id)
+                        runtime.pointing_observation(
+                            c.actor_id, target_id=c.slew.target_id
+                        )
                         for c in action.commands
                         if c.kind == "slew" and c.slew.target_id is not None
                     ]
@@ -495,6 +509,18 @@ def admissible(runtime, spec, action, role, views=None, inventory=None, commands
     if action.kind == "inject":
         event = action.event
         payload = event["payload"]
+        if event["type"] in {
+            "request_cancelled",
+            "request_priority_changed",
+            "request_deadline_changed",
+        }:
+            row = runtime.request_authority(payload.get("request_id"))
+            if (
+                row is None
+                or row.get("destination_id") not in owner.demand_stations
+                or not set(row.get("eligible_actors", [])) <= set(owner.demand_actors)
+            ):
+                return False, "request_outside_demand_authority"
         if (
             event["type"] == "station_recovered"
             and not runtime.station_observation(payload["station"])["outage"]
@@ -547,23 +573,39 @@ def admissible(runtime, spec, action, role, views=None, inventory=None, commands
             if r is None or r["status"] != "released":
                 return False, "request_not_available"
             if spec.pointing_masks:
-                pointing = runtime.pointing_observation(c.actor_id, target_id=r["target_id"])
-                if pointing["geometry"] is None or not pointing["geometry"]["feasible_geometry"]:
+                pointing = runtime.pointing_observation(
+                    c.actor_id, target_id=r["target_id"]
+                )
+                if (
+                    pointing["geometry"] is None
+                    or not pointing["geometry"]["feasible_geometry"]
+                ):
                     return False, "current_geometry_unavailable"
-                if (pointing["body_rate_rad_s"] is not None
-                    and pointing["body_rate_rad_s"] > pointing["payload_max_body_rate_rad_s"]):
+                if (
+                    pointing["body_rate_rad_s"] is not None
+                    and pointing["body_rate_rad_s"]
+                    > pointing["payload_max_body_rate_rad_s"]
+                ):
                     return False, "current_body_rate"
                 if pointing["settle_remaining_sec"] > 1e-9:
                     return False, "current_settling"
                 if pointing["boresight_error_deg"] > pointing["payload_tolerance_deg"]:
                     return False, "current_pointing_error"
         if c.kind == "slew" and spec.pointing_masks and c.slew.target_id is not None:
-            requests = [r for r in life.get("requests", [])
-                        if r["target_id"] == c.slew.target_id and r["status"] == "released"]
+            requests = [
+                r
+                for r in life.get("requests", [])
+                if r["target_id"] == c.slew.target_id and r["status"] == "released"
+            ]
             if not requests:
                 return False, "request_not_available"
-            pointing = runtime.pointing_observation(c.actor_id, target_id=c.slew.target_id)
-            if pointing["geometry"] is None or not pointing["geometry"]["feasible_geometry"]:
+            pointing = runtime.pointing_observation(
+                c.actor_id, target_id=c.slew.target_id
+            )
+            if (
+                pointing["geometry"] is None
+                or not pointing["geometry"]["feasible_geometry"]
+            ):
                 return False, "current_geometry_unavailable"
         if c.kind == "transform":
             j = next((j for j in life.get("jobs", []) if j["id"] == c.job_id), None)

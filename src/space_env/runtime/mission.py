@@ -149,6 +149,29 @@ class MissionRuntime:
         return {"actor_id": c.actor_id, "resources": list(claims(c))}
 
     @_synchronized
+    def request_authority(self, request_id):
+        """Operator-only ownership of currently declared demand, even pre-release.
+
+        This is not a future-event query and is never part of actor observations.
+        """
+        if not self.access.truth:
+            raise RuntimeContractError(
+                "permission_denied", "operator demand authority required"
+            )
+        if not isinstance(request_id, str) or not request_id.strip():
+            raise RuntimeContractError(
+                "invalid_request", "request_id must be a nonblank string"
+            )
+        lifecycle = getattr(self._backend, "lifecycle", None)
+        request = lifecycle.requests.get(request_id) if lifecycle is not None else None
+        if request is None:
+            return None
+        return {
+            "eligible_actors": list(request.eligible_actors),
+            "destination_id": request.destination_id,
+        }
+
+    @_synchronized
     def inventory(self, actor):
         """Current locally owned reference inventory; no future state query."""
         if actor not in self._spec.actor_order:
@@ -199,12 +222,19 @@ class MissionRuntime:
         from space_env.reference.spacecraft_bus import angle_deg
 
         try:
-            command = RuntimeCommand.model_validate({
-                "command_id": "pointing-read", "actor_id": actor,
-                "kind": "slew", "duration_sec": 1.0,
-                "slew": {"frame": "GCRS", "target_id": target_id,
-                         "station_id": station_id},
-            })
+            command = RuntimeCommand.model_validate(
+                {
+                    "command_id": "pointing-read",
+                    "actor_id": actor,
+                    "kind": "slew",
+                    "duration_sec": 1.0,
+                    "slew": {
+                        "frame": "GCRS",
+                        "target_id": target_id,
+                        "station_id": station_id,
+                    },
+                }
+            )
             goal = resolve_slew_goal(self._backend, command)
             state = self._backend.bus.states[actor]
         except (ValueError, AttributeError, KeyError) as exc:
@@ -216,21 +246,30 @@ class MissionRuntime:
             geometry = acquisition_geometry(
                 self._backend.mission.ephemerides[actor],
                 self._backend.acquisition_targets[target_id],
-                self._backend.config.acquisition_sensors[actor], self.time_sec,
+                self._backend.config.acquisition_sensors[actor],
+                self.time_sec,
             )
         rigid = self._backend.bus.rigid
-        body_rate = (math.hypot(*rigid.states[actor].omega_body_rad_s)
-                     if actor in rigid.models else None)
+        body_rate = (
+            math.hypot(*rigid.states[actor].omega_body_rad_s)
+            if actor in rigid.models
+            else None
+        )
         return {
             "body_rate_rad_s": body_rate,
             "payload_max_body_rate_rad_s": (
                 rigid.models[actor].payload_max_body_rate_rad_s
-                if actor in rigid.models else None
+                if actor in rigid.models
+                else None
             ),
             "geometry": geometry,
-            "payload_tolerance_deg": self._backend.bus.models[actor].attitude.payload_tolerance_deg,
-            "actor_id": actor, "time_sec": self.time_sec,
-            "target_id": target_id, "station_id": station_id,
+            "payload_tolerance_deg": self._backend.bus.models[
+                actor
+            ].attitude.payload_tolerance_deg,
+            "actor_id": actor,
+            "time_sec": self.time_sec,
+            "target_id": target_id,
+            "station_id": station_id,
             "goal_quaternion_wxyz": goal,
             "boresight_error_deg": angle_deg(
                 boresight(state["quaternion_wxyz"]), boresight(goal)
@@ -442,23 +481,41 @@ class MissionRuntime:
     def forecast_pointing(self, actor, target_id, at_sec):
         """Privileged future geometric goal, not attitude/admission prediction."""
         if not self.access.forecast:
-            raise RuntimeContractError("permission_denied", "privileged forecast access is disabled")
+            raise RuntimeContractError(
+                "permission_denied", "privileged forecast access is disabled"
+            )
         if "forecast.pointing.geometry" not in self._backend.capabilities:
-            raise RuntimeContractError("unsupported_capability", "backend has no pointing geometry forecast")
-        if (actor not in self._spec.actor_order or type(at_sec) not in (int, float)
-                or not math.isfinite(at_sec) or not self.time_sec <= at_sec <= self.horizon_sec):
-            raise RuntimeContractError("invalid_request", "pointing forecast requires known actor and future coverage")
+            raise RuntimeContractError(
+                "unsupported_capability", "backend has no pointing geometry forecast"
+            )
+        if (
+            actor not in self._spec.actor_order
+            or type(at_sec) not in (int, float)
+            or not math.isfinite(at_sec)
+            or not self.time_sec <= at_sec <= self.horizon_sec
+        ):
+            raise RuntimeContractError(
+                "invalid_request",
+                "pointing forecast requires known actor and future coverage",
+            )
         from space_env.reference.spacecraft_bus import pointing_quaternion
+
         try:
             target = self._backend.acquisition_targets[target_id]
             provider = self._backend.mission.ephemerides[actor]
             goal = pointing_quaternion(provider, target, at_sec).tolist()
         except (KeyError, AttributeError, ValueError) as exc:
-            raise RuntimeContractError("invalid_request", "unknown or unsupported pointing target") from exc
-        return {"binding": self._forecast_binding(actor), "actor_id": actor,
-                "target_id": target_id, "at_sec": float(at_sec),
-                "goal_quaternion_wxyz": goal,
-                "scope": "future geometric GCRS snapshot; no attitude tracking, dwell, power or feasibility guarantee"}
+            raise RuntimeContractError(
+                "invalid_request", "unknown or unsupported pointing target"
+            ) from exc
+        return {
+            "binding": self._forecast_binding(actor),
+            "actor_id": actor,
+            "target_id": target_id,
+            "at_sec": float(at_sec),
+            "goal_quaternion_wxyz": goal,
+            "scope": "future geometric GCRS snapshot; no attitude tracking, dwell, power or feasibility guarantee",
+        }
 
     @_synchronized
     def forecast_eclipses(self, actor, *, start_sec=None, end_sec=None, settings=None):

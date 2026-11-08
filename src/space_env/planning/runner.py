@@ -17,6 +17,23 @@ from space_env.tasks import TaskSession, TaskSpec
 
 
 def process_peak_rss_bytes():
+    """Peak of this executable, excluding Linux's inherited rusage watermark.
+
+    On Linux ru_maxrss can survive fork/exec and retain the parent's peak. The
+    current process's /proc VmHWM resets on exec and measures its own residency.
+    Missing Linux proc evidence is unknown, not a substitute parent measurement.
+    """
+    if sys.platform.startswith("linux"):
+        try:
+            for line in Path("/proc/self/status").read_text().splitlines():
+                fields = line.split()
+                if fields and fields[0] == "VmHWM:":
+                    if len(fields) != 3 or fields[2] != "kB":
+                        return None
+                    return int(fields[1]) * 1024 if int(fields[1]) > 0 else None
+        except (OSError, ValueError):
+            return None
+        return None
     try:
         import resource
 

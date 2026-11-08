@@ -1,0 +1,2197 @@
+{
+  "schema": "space-env.network-learning-receipt/1",
+  "recorded_utc": "2026-11-06T12:13:50.243034+00:00",
+  "command": "python -m space_env.planning.network_benchmark --output /tmp/new-network-learning --seeds 0 1 2",
+  "audit_command": "python -m space_env.planning.network_benchmark --audit /tmp/new-network-learning",
+  "report_sha256": "da6ada369b89b95f4464323e09bc216215d45b0308c1bcaa7d6a7d5724e8705f",
+  "harness_sha256": "b823bcf0374f29314df07da3892fb280cf62401b39288d4178cf03acf97a9dc3",
+  "model_sources": {
+    "api/network_dynamic.py": "e57321450a338c4e27382da65fb6935fc2ee813922ed7a633b87a9380910dc79",
+    "api/network_workspace.py": "53261b00defb0d48cf20bca2a33e6629eb59bab63b9719df8776076e4d995bbb",
+    "api/workspace.py": "5576a6c748e66b91cddd5e4e813972bd67108df7ceca8d3cdf324bb9c81657b6",
+    "planning/joint_network.py": "fd191bb5b3d3210fc840330a58011919c6dedcf5b0f11d471e4a9b0ece7b7805",
+    "planning/network_benchmark.py": "b823bcf0374f29314df07da3892fb280cf62401b39288d4178cf03acf97a9dc3",
+    "reference/dtn.py": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+    "reference/frames.py": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+    "reference/lifecycle.py": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+    "reference/operations.py": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+    "reference/orbit.py": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+    "reference/radio.py": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+    "reference/spacecraft_bus.py": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+    "runtime/mission.py": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+    "validation/network_evidence.py": "c63348c6adb912f4a07d462ee02789794170cbec7593d6745b9fe60e5467938a"
+  },
+  "suite": {
+    "cases": [
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "equatorial / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -128.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -126.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -129.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -66.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "0131c6f6f9f94cc159f061c8ff01551a607644ed3a11c62de90ee395d094e84a",
+        "group": "equatorial",
+        "id": "equatorial-nominal",
+        "split": "train"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "equatorial / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 0.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": 0.0,
+                "radius_m": 7000000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -128.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -126.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -129.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 0.0,
+                "lon_deg": -66.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "0131c6f6f9f94cc159f061c8ff01551a607644ed3a11c62de90ee395d094e84a",
+        "group": "equatorial",
+        "id": "equatorial-station-outage",
+        "split": "train"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-20 / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 20.0,
+                "phases_deg": [
+                  2.0,
+                  16.0,
+                  31.0
+                ],
+                "raan_deg": 5.0,
+                "radius_m": 7050000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 2.0,
+                "lon_deg": -121.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 2.6,
+                "lon_deg": -119.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 1.4,
+                "lon_deg": -122.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 10.0,
+                "lon_deg": -60.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "a6a9c954cc25332d632164af87650dc1cbcfb06dcc8739abb1a2cd6187ca69de",
+        "group": "inclined-20",
+        "id": "inclined-20-nominal",
+        "split": "train"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-20 / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 20.0,
+                "phases_deg": [
+                  2.0,
+                  16.0,
+                  31.0
+                ],
+                "raan_deg": 5.0,
+                "radius_m": 7050000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 2.0,
+                "lon_deg": -121.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 2.6,
+                "lon_deg": -119.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 1.4,
+                "lon_deg": -122.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 10.0,
+                "lon_deg": -60.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "a6a9c954cc25332d632164af87650dc1cbcfb06dcc8739abb1a2cd6187ca69de",
+        "group": "inclined-20",
+        "id": "inclined-20-station-outage",
+        "split": "train"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-35 / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 35.0,
+                "phases_deg": [
+                  5.0,
+                  20.0,
+                  35.0
+                ],
+                "raan_deg": -10.0,
+                "radius_m": 7100000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 3.0,
+                "lon_deg": -133.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 3.6,
+                "lon_deg": -131.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 2.4,
+                "lon_deg": -134.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 15.0,
+                "lon_deg": -70.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "f5d4ea9bab71bad1941155708eef16f7e74b03cbe623fa9f90ddae6a85e9f359",
+        "group": "inclined-35",
+        "id": "inclined-35-nominal",
+        "split": "development"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-35 / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 35.0,
+                "phases_deg": [
+                  5.0,
+                  20.0,
+                  35.0
+                ],
+                "raan_deg": -10.0,
+                "radius_m": 7100000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 3.0,
+                "lon_deg": -133.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 3.6,
+                "lon_deg": -131.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 2.4,
+                "lon_deg": -134.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 15.0,
+                "lon_deg": -70.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "f5d4ea9bab71bad1941155708eef16f7e74b03cbe623fa9f90ddae6a85e9f359",
+        "group": "inclined-35",
+        "id": "inclined-35-station-outage",
+        "split": "development"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-75 / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 75.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": -30.0,
+                "radius_m": 7020000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -154.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -152.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -155.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 29.0,
+                "lon_deg": -139.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "e4ab9a0366e9c26a37ebbcb58079342736c6a8ca0d518761844965cf19792439",
+        "group": "inclined-75",
+        "id": "inclined-75-nominal",
+        "split": "development"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-75 / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 75.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": -30.0,
+                "radius_m": 7020000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -154.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -152.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -155.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 29.0,
+                "lon_deg": -139.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "e4ab9a0366e9c26a37ebbcb58079342736c6a8ca0d518761844965cf19792439",
+        "group": "inclined-75",
+        "id": "inclined-75-station-outage",
+        "split": "development"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-55 / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 55.0,
+                "phases_deg": [
+                  0.0,
+                  12.0,
+                  24.0
+                ],
+                "raan_deg": 15.0,
+                "radius_m": 7080000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 2.0,
+                "lon_deg": -111.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 2.6,
+                "lon_deg": -109.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 1.4,
+                "lon_deg": -112.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 18.0,
+                "lon_deg": -74.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "e1e74666f8a41e05344416110862362991ae65f7f45832f82add9efec7b62d71",
+        "group": "inclined-55",
+        "id": "inclined-55-nominal",
+        "split": "test"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "inclined-55 / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 55.0,
+                "phases_deg": [
+                  0.0,
+                  12.0,
+                  24.0
+                ],
+                "raan_deg": 15.0,
+                "radius_m": 7080000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 2.0,
+                "lon_deg": -111.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 2.6,
+                "lon_deg": -109.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": 1.4,
+                "lon_deg": -112.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 18.0,
+                "lon_deg": -74.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "e1e74666f8a41e05344416110862362991ae65f7f45832f82add9efec7b62d71",
+        "group": "inclined-55",
+        "id": "inclined-55-station-outage",
+        "split": "test"
+      },
+      {
+        "condition": "nominal",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "retrograde-98 / nominal",
+            "outages": [],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 98.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": -15.0,
+                "radius_m": 7150000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -141.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -139.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -142.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 30.0,
+                "lon_deg": -126.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "6c4d8d0d57f76680e6e2cafc5c72fcdcce2e39dff84b285c1e20214fc8270940",
+        "group": "retrograde-98",
+        "id": "retrograde-98-nominal",
+        "split": "test"
+      },
+      {
+        "condition": "station_outage",
+        "configuration": {
+          "links": [
+            {
+              "destination": "fleet-01",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 3000000.0,
+              "outages": [],
+              "source": "fleet-01"
+            },
+            {
+              "destination": "fleet-02",
+              "max_range_m": 5000000.0,
+              "outages": [],
+              "source": "fleet-00"
+            }
+          ],
+          "max_hops": 3,
+          "max_search_nodes": 50000,
+          "mission": {
+            "battery_wh": 100.0,
+            "decision_sec": 5.0,
+            "epoch_utc": "2026-07-18T12:00:00Z",
+            "horizon_sec": 180.0,
+            "max_assignment_trials": 12,
+            "memory_mbit": 128.0,
+            "name": "retrograde-98 / station_outage",
+            "outages": [
+              {
+                "end_sec": 140.0,
+                "start_sec": 100.0,
+                "station": "Ground"
+              }
+            ],
+            "planes": [
+              {
+                "id": "fleet",
+                "inclination_deg": 98.0,
+                "phases_deg": [
+                  0.0,
+                  15.0,
+                  30.0
+                ],
+                "raan_deg": -15.0,
+                "radius_m": 7150000.0
+              }
+            ],
+            "planner": {
+              "edge_guard_sec": 0.01,
+              "max_orders": 12,
+              "max_search_nodes": 500000
+            },
+            "rate_bps": 2000000.0,
+            "requests": [
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 145.0,
+                "id": "request-0",
+                "lat_deg": 0.0,
+                "lon_deg": -141.0,
+                "output_bits": 500000,
+                "priority": 3,
+                "processing_sec": 1.0,
+                "raw_bits": 1000000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 175.0,
+                "id": "request-1",
+                "lat_deg": 0.6,
+                "lon_deg": -139.5,
+                "output_bits": 900000,
+                "priority": 9,
+                "processing_sec": 6.0,
+                "raw_bits": 1800000,
+                "release_sec": 0.0,
+                "station": null
+              },
+              {
+                "acquisition_sec": 2.0,
+                "actor_id": null,
+                "deadline_sec": 165.0,
+                "id": "request-2",
+                "lat_deg": -0.6,
+                "lon_deg": -142.5,
+                "output_bits": 350000,
+                "priority": 6,
+                "processing_sec": 2.0,
+                "raw_bits": 700000,
+                "release_sec": 0.0,
+                "station": null
+              }
+            ],
+            "schema": "space-env.mission-configuration/1",
+            "seed": 0,
+            "stations": [
+              {
+                "alt_m": 0.0,
+                "lat_deg": 30.0,
+                "lon_deg": -126.0,
+                "min_elevation_deg": 5.0,
+                "name": "Ground",
+                "terminals": 1
+              }
+            ]
+          },
+          "radio_rate_bps": 250000.0
+        },
+        "geometry_sha256": "6c4d8d0d57f76680e6e2cafc5c72fcdcce2e39dff84b285c1e20214fc8270940",
+        "group": "retrograde-98",
+        "id": "retrograde-98-station-outage",
+        "split": "test"
+      }
+    ],
+    "schema": "space-env.network-benchmark-suite/1",
+    "sha256": "f65dc0faa9d4f9871dad8c3c2c358ca962a2846d59da3e070c6afbd6e1fd5129"
+  },
+  "canonical_native_configurations_sha256": "f62503e4bc5cca4e96ffaa1baade7e32947eca97fbfbf7c4fec6abaeabbcea55",
+  "native_inputs_unchanged_by_geometry_alias_fix": true,
+  "raw_files_sha256": {
+    "equatorial-nominal--earliest_deadline.json": "7b9bfbdf687b5f81022e7d54a18f37d010384df17931a76a917411098343520c",
+    "equatorial-nominal--forecast.json": "898268bdee8ebb3e2f925d2558f4f0eef22dbc00b6fdb1306fc1289cbf7bfdbf",
+    "equatorial-nominal--learned-0.json": "ef9a362da3a591af8aad9d8b32ccb81f2015d64438dfc3b1d750aae86421b525",
+    "equatorial-nominal--learned-1.json": "074893e7fca31e6dcc7b4fcf31b6760d61f9c9829588d52fd10945393350a0df",
+    "equatorial-nominal--learned-2.json": "a4026773fcbfe7635136c769db89e2bcdb5de0c7281932cd6236affa69a7e408",
+    "equatorial-nominal--priority.json": "2fe160ee60e738cf206d96fe39b1e158dccd6f206a86e0937945e764a1b50bee",
+    "equatorial-nominal--value_per_bit.json": "a1bc0b44c1d210af8a3f5bd564c0cd6e25a67ad68dd7e8696375641ea5b6abd7",
+    "equatorial-station-outage--earliest_deadline.json": "6105aa88dbb8a742a9b2be0403bba8ab46a306458494a3e2d81c99361126ccd2",
+    "equatorial-station-outage--forecast.json": "9149110b0d37026bae0527643522b5970983d4f56f76e096e1a6c4eac210c084",
+    "equatorial-station-outage--learned-0.json": "a07b5fc67cdc505efdf1da31d7aabff19ea03e7938e31deb417ba08915f2233e",
+    "equatorial-station-outage--learned-1.json": "46dabbc94f257acfb2f574cdafd72b7e0013e9d4ef07c4f08ab3a63795679dc3",
+    "equatorial-station-outage--learned-2.json": "ae891957256f91d4eb168513e3197500b24e1ced360e960b58d496c8994b0e61",
+    "equatorial-station-outage--priority.json": "8e77e1a7d7a46c76096ec015cc054addbb06c21bdae78d0f05ecb7aa5831c24c",
+    "equatorial-station-outage--value_per_bit.json": "f2afd583474b68996155ee3bcd1be2728332b526fff5f570368a7776d125000f",
+    "inclined-20-nominal--earliest_deadline.json": "354069cf4434ef94a22745d9d64d88ce49d6b944478013ce251ad88e97588af1",
+    "inclined-20-nominal--forecast.json": "8f4eec288d437f54716fb699c21b3c2c7eeb9f89ac937fc6e8c184ee3ebe26b2",
+    "inclined-20-nominal--learned-0.json": "7669d4144abab76f02142a231d42ce82534576cf60332ab9685a1f59dda4c520",
+    "inclined-20-nominal--learned-1.json": "7bc26bb3d2c2c0fba36985c004664f59b600eab6f3a93cf9db4622d237d8f38f",
+    "inclined-20-nominal--learned-2.json": "ea2d6f8ee36c0f151b845f4310b40a26c1bd66747df36b70c12760f217fa975d",
+    "inclined-20-nominal--priority.json": "1e6d85f7486c0bd349c02a190b3b1828168a8cd7d58beea3134efba6d29ba569",
+    "inclined-20-nominal--value_per_bit.json": "9d51b42b0dc8eaae8bf5df7c5680790d57b171179155449c350f880916e55297",
+    "inclined-20-station-outage--earliest_deadline.json": "1f82782f7c0fc1592749104cbbc4fda4d277e354cac8401e76575841f76ad79d",
+    "inclined-20-station-outage--forecast.json": "fcbaf340ba353219765dd985471ea78026285f11a9ca68256002fa9508efa70b",
+    "inclined-20-station-outage--learned-0.json": "c6a68f00c3a0bb601e4ccccffb5a947238f245439f04f3f1a49a3906d9a89a1b",
+    "inclined-20-station-outage--learned-1.json": "dd0511f602327eee63189f50d0dc6003b4f9dadc4d5ae14e9f4c771cf0ea21a0",
+    "inclined-20-station-outage--learned-2.json": "f80594c59aef9ff4df6e6d7bf799dc48210102cbceb7210e0e55479a89df3646",
+    "inclined-20-station-outage--priority.json": "ce6966f2463bbef260fcb0cd882a8099745ec5cb3bfe6a50a519072f0ebac32c",
+    "inclined-20-station-outage--value_per_bit.json": "b77c5e3c04028fe769b8b04147d72cf45238dcac7ed353add825d071eb40f804",
+    "inclined-35-nominal--earliest_deadline.json": "f54c3cb357ceb9611e496a4ba94cc45f5ec31deb237ed85bbf83e96a6c10c8f2",
+    "inclined-35-nominal--forecast.json": "c8828297b7a4f5a53e1912d8ebf3fdce2d324c9ab448ee63d6b1179fd369797d",
+    "inclined-35-nominal--learned-0.json": "69843442869b64b8bde18b207e5cda1ebb8e514c216f2b141bfd995229076c9a",
+    "inclined-35-nominal--learned-1.json": "9f4d4989adc92ff0f2921cf4868bd0999a901eea3f3e00f0772d6b6838a417ca",
+    "inclined-35-nominal--learned-2.json": "254127d593c1134a66f0b48b1fc1041f6d90ee7082de3b56165c0281937fe0c0",
+    "inclined-35-nominal--priority.json": "85c570ae35cf6926d9df1bf63cad8d97059c70e48a216a8501b0d1aaae27d46d",
+    "inclined-35-nominal--value_per_bit.json": "faaea3076b42f8e5010fa24d1dd7f049f81923184ab65b6da4595b9f79968ed0",
+    "inclined-35-station-outage--earliest_deadline.json": "5c362532eeb9386ebb5c568c092034dce1779635e0bf589c17ca402efcff5747",
+    "inclined-35-station-outage--forecast.json": "fdc20c859cdd88dea6b50ad6f0f5a7780166b4dba4978432439529f8fc9b144b",
+    "inclined-35-station-outage--learned-0.json": "fbf8e4ac84c8b2e9ebd7999b0b7bd6f8867a63c504c654832a43f740b8a3483e",
+    "inclined-35-station-outage--learned-1.json": "e3ec5b97443ee037b2ce9544837de25c83683ea6e872b6e50031b143f5fd4a8b",
+    "inclined-35-station-outage--learned-2.json": "4bee976b09ce91f65cacb97d3cc1090902fdc1440124b52b021cab531d88190d",
+    "inclined-35-station-outage--priority.json": "822cc1ec3c96873e60216b607afe21851a79ece8e62b618e0ef47f0def4b3009",
+    "inclined-35-station-outage--value_per_bit.json": "c5ce6b259c20ad0f903ce3d920182a4d1d55cf19710c54c48fd0bc03f8b5197d",
+    "inclined-55-nominal--earliest_deadline.json": "55d85a84295f226f207996f18644206737eeb2eb2df223a4bc2c8a734eaa73a6",
+    "inclined-55-nominal--forecast.json": "1fdaab136fa5318113a487ec152968d570ee042f2c9e11d27f63f0dd860120c2",
+    "inclined-55-nominal--learned-0.json": "14a6814dd9fc76cb684d3ddce854d76d9217c140244463a1a28a0f2fce371f64",
+    "inclined-55-nominal--learned-1.json": "099529eb36aabe072bd91717a244642c5b0a5a9692adaee117553a72dee838ad",
+    "inclined-55-nominal--learned-2.json": "a71e42e1c85689874f5246a90c7f22b977594053a82c2c1ee185bea4c6cade94",
+    "inclined-55-nominal--priority.json": "71aaa89b0a9f6d2650f7b35800e97dafe8d30fcb3e0f25021bc5ec105f3d0913",
+    "inclined-55-nominal--value_per_bit.json": "d2cab5903c7c4f1f0011c99031fdc289c01b10cae7fc90f1a9f9a2a61240a3a6",
+    "inclined-55-station-outage--earliest_deadline.json": "09a1d916ab4abc75ee3c796bb977c900693e6128728185f6302b007c9c733e7e",
+    "inclined-55-station-outage--forecast.json": "cff2245244f7304d8cd6151465807f7cf1d8bac83d3fc7a6d99ed77316e3a5c6",
+    "inclined-55-station-outage--learned-0.json": "d44bb2bbbc299f35bf099354e2acd584bf956aeba11f9c5675f121af7f3445b5",
+    "inclined-55-station-outage--learned-1.json": "f7987f0bd00c90ba325eb5b8eceab02d65c6b5a1e8e63e723efb0f72e94e58a6",
+    "inclined-55-station-outage--learned-2.json": "8626634a0afd231087b7566dd975a3b0ef00bd73e298398a47ab8ad33dda3e6c",
+    "inclined-55-station-outage--priority.json": "15eeed48a06f5728d9b1606202634106425be6dac4c073966ca35c1bb88e7107",
+    "inclined-55-station-outage--value_per_bit.json": "343ad765621181ab3f31c970b72accac5325777a3f127c2e7ad1648cbe03abbe",
+    "inclined-75-nominal--earliest_deadline.json": "46f16a8f7a4e0adcccf7c66ab36cdd172bd52f78174cba83ffe03680e540aea6",
+    "inclined-75-nominal--forecast.json": "8247fdafb68165fa8d019d181651baa040d4408e4788db373b1d03332379fbe5",
+    "inclined-75-nominal--learned-0.json": "5f4919a98de19b331db2b2b6f7a70a1d5f033c60f755d459f6e1c72570ec6122",
+    "inclined-75-nominal--learned-1.json": "06d069483f15a975fa3db110bacebc1c895b79e52140e11fe79d204b12a63018",
+    "inclined-75-nominal--learned-2.json": "8f647b3636487e087ee33fc8714d2868cfe11d2e35da7ac5316949748034d3b3",
+    "inclined-75-nominal--priority.json": "d64db58990de2907abe2a784912feab8f36381dbb453ef54f3ff049db83a8cfa",
+    "inclined-75-nominal--value_per_bit.json": "76f22502e2c1731b7755fb1cb260849bd6338bbf5d19973ec448d7bca68dd8f6",
+    "inclined-75-station-outage--earliest_deadline.json": "3571f9a8d5b8a6f895ca230e7a2e1465f9d191a64d7be845b4b9177600dcea07",
+    "inclined-75-station-outage--forecast.json": "50f5355e2a9c9771e1fe1f7d952f632f8d09c0a4fec50f90584ad2a335326b4d",
+    "inclined-75-station-outage--learned-0.json": "d383dcdd0eca1492c4453ff3f1cf16ee0703385ddd3e722a969093bdfcfd4721",
+    "inclined-75-station-outage--learned-1.json": "7e60ba651ed3ab6dd23ff5fd320cd8a4342a6bc6472159918dc9aa3edb513d68",
+    "inclined-75-station-outage--learned-2.json": "8a87b1bcd409bea6297c9d60503465793a03c385f1101b204a656997ed0def78",
+    "inclined-75-station-outage--priority.json": "6fe1179824dab203024dce1b531e8857aa3fbe40b4e0d7dae6da22527872ccc4",
+    "inclined-75-station-outage--value_per_bit.json": "237474bf3b9a33b92b706cb05cefa8f8fc14077547e97bc339317709b119c64f",
+    "report.json": "714c5e679aa80eee1bad22c5a19a53e8a2ca43878b48f1002fcce0996c00bb51",
+    "retrograde-98-nominal--earliest_deadline.json": "9c11aac34a1746afddefaaa777ba4c1c2cd63fe9e382bf5fef0ace2cb0c1f79b",
+    "retrograde-98-nominal--forecast.json": "9503035c780761ee2d840b62283a149b22f0894fab216619678bd8dfa6a0d4c6",
+    "retrograde-98-nominal--learned-0.json": "7d0741a7a7016fb2cda42f55f3e32d992c306611ec8d6a2d73bb849a4d53d2c6",
+    "retrograde-98-nominal--learned-1.json": "67b003aa4fd48548e2ef5aeef9ebb1ceecc214ba6b6074e1a8a8a6afa6c8c3a0",
+    "retrograde-98-nominal--learned-2.json": "355d1f8fb06efce6159f041aaf26d8b65c1efa858a8f456b6c3fb3e11c7ca1cf",
+    "retrograde-98-nominal--priority.json": "2943dbbe5b741528bc09c947c892945c28d83fd9534e5bcfb0713fdf427440a4",
+    "retrograde-98-nominal--value_per_bit.json": "504be833fb30608c62f65c4a7f65065fc013bc55cf281592a13f37a092846225",
+    "retrograde-98-station-outage--earliest_deadline.json": "a8142468c6de64c63e9232c26582f47184b3473942302da19eb95a2e27c0bf60",
+    "retrograde-98-station-outage--forecast.json": "149c3abdbcebde0432c377eaa4c1ace71266aa795787cf37dbba64988bc43519",
+    "retrograde-98-station-outage--learned-0.json": "7f8c394988fc0fc2b1623425e039fd41c697ad1668bd0597873658d456b9c6c5",
+    "retrograde-98-station-outage--learned-1.json": "4bbd07c3f38df1ee86b3bb242a441ee5ecda5ed05e8c5a4c15a22943ba127bc2",
+    "retrograde-98-station-outage--learned-2.json": "3de119f8ab6777e7dbe432301d81f4353943eec3aaff14713a047af1e1f799f6",
+    "retrograde-98-station-outage--priority.json": "5afa0b927f13f46487703cec75923d7dce85d80b5d95fa582c4da4ef04ffb0cf",
+    "retrograde-98-station-outage--value_per_bit.json": "c9a435fd718dbda61858514c6b7edb3ff35b6d8f997dd755d0ddfd3ad15d413b",
+    "selector-0.json": "2e5b93089ee72845b0c44e9658982820d2a18a88b76e0f8741a71794ef161f02",
+    "selector-1.json": "2c20eb261ba6d794952b13bc31ecbf0c83d86c34c3f561f58ff73cf18241cec8",
+    "selector-2.json": "c6792894b650ba5158cefb3d318f6d6859f1dd5c72f579af118abadf95dc07ec",
+    "suite.json": "925ac0348e308cdd0837dd16e491a60d63da6c56014e10459cc28eefc75b1bee"
+  },
+  "audit": {
+    "schema": "space-env.network-learning-audit/1",
+    "consistent": true,
+    "rows": 72,
+    "reproduced_models": 3,
+    "report_sha256": "da6ada369b89b95f4464323e09bc216215d45b0308c1bcaa7d6a7d5724e8705f",
+    "scope": "artifact/information pairing and train-only optimizer reproducibility; no native replay, hardware truth or superiority claim",
+    "sha256": "3fe4873f489b9798cc303458857fd7453d890675f375f74a97e331444eba5b87"
+  },
+  "models": {
+    "0": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 0,
+      "sha256": "16698781d085e5b3f0dee8b37102fd905613f5d552d5eae1ac597d5245197dc0",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "equatorial-nominal",
+        "equatorial-station-outage",
+        "inclined-20-nominal",
+        "inclined-20-station-outage"
+      ],
+      "training_input_sha256": "0e056767b6dc96025749d2332beeb776fc7e04e2ffedcd66b0615ec5c0ec3f28",
+      "training_rows_sha256": "62dcb654ad706a0f0ac5acc7e52b4722ed769427f2645415918cfbda4c480207",
+      "weights": [
+        [
+          1.1563143334044519,
+          -0.6443646850555168,
+          -0.5056091682664828
+        ],
+        [
+          0.7710870219672098,
+          -0.4340524513466803,
+          -0.3377263126315153
+        ],
+        [
+          1.0504523340232585,
+          -0.5680776416001199,
+          -0.46690123469861433
+        ],
+        [
+          0.661129053485758,
+          -0.3813415325385589,
+          -0.2982612204895618
+        ],
+        [
+          0.7110538558175957,
+          -0.41408521995170294,
+          -0.33486596972413873
+        ],
+        [
+          0.29739830158221153,
+          -0.17508573500250238,
+          -0.1382408315190081
+        ]
+      ]
+    },
+    "1": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 1,
+      "sha256": "fb75e7e492818334e93c9f5720eb393431116176fbc2cdb893460b098b5ce1d7",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "equatorial-nominal",
+        "equatorial-station-outage",
+        "inclined-20-nominal",
+        "inclined-20-station-outage"
+      ],
+      "training_input_sha256": "0e056767b6dc96025749d2332beeb776fc7e04e2ffedcd66b0615ec5c0ec3f28",
+      "training_rows_sha256": "62dcb654ad706a0f0ac5acc7e52b4722ed769427f2645415918cfbda4c480207",
+      "weights": [
+        [
+          1.1625143703064613,
+          -0.6379269092253212,
+          -0.5096110669636463
+        ],
+        [
+          0.759674113274498,
+          -0.42170850177349095,
+          -0.3374798794266802
+        ],
+        [
+          1.0356367385114325,
+          -0.5745210392733354,
+          -0.4570283265878759
+        ],
+        [
+          0.6790587998582795,
+          -0.3766325804720361,
+          -0.29373354214040637
+        ],
+        [
+          0.7294806542315457,
+          -0.41551854417229245,
+          -0.3277769435359999
+        ],
+        [
+          0.31176185993004113,
+          -0.17006272149126195,
+          -0.13823802274726738
+        ]
+      ]
+    },
+    "2": {
+      "features": [
+        "bias",
+        "priority_spread",
+        "mean_slack",
+        "mean_output_mbit",
+        "contact_fraction",
+        "capture_fraction"
+      ],
+      "iterations": 600,
+      "learning_rate": 0.2,
+      "schema": "space-env.network-selector/1",
+      "scope": "full-information train-only contextual strategy selector; no command-level RL or expert teacher qualification",
+      "seed": 2,
+      "sha256": "f26c8d98d692a68389f30bd129fc8f26e9d1cc85b9f8a2fe7af0cd0a547b3417",
+      "strategies": [
+        "priority",
+        "earliest_deadline",
+        "value_per_bit"
+      ],
+      "training_cases": [
+        "equatorial-nominal",
+        "equatorial-station-outage",
+        "inclined-20-nominal",
+        "inclined-20-station-outage"
+      ],
+      "training_input_sha256": "0e056767b6dc96025749d2332beeb776fc7e04e2ffedcd66b0615ec5c0ec3f28",
+      "training_rows_sha256": "62dcb654ad706a0f0ac5acc7e52b4722ed769427f2645415918cfbda4c480207",
+      "weights": [
+        [
+          1.1626650554115823,
+          -0.6523912399210373,
+          -0.5177414015213359
+        ],
+        [
+          0.7494350072360321,
+          -0.41344542984361093,
+          -0.33096551867123847
+        ],
+        [
+          1.0392932586182084,
+          -0.5735108626892444,
+          -0.4584864517323883
+        ],
+        [
+          0.6715802425653858,
+          -0.3677365162007071,
+          -0.30271184568425125
+        ],
+        [
+          0.7346444560597835,
+          -0.4224663247628976,
+          -0.31883825717864533
+        ],
+        [
+          0.30523726697082115,
+          -0.16527964108863533,
+          -0.14156857625841898
+        ]
+      ]
+    }
+  },
+  "training_errors": {},
+  "native_rows": 72,
+  "row_status_counts": {
+    "completed": 72
+  },
+  "aggregates": [
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "priority",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.25,
+      "mean_value_upper_bound": 0.25,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.3333333333333333,
+      "mean_value_upper_bound": 0.3333333333333333,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "train"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "priority",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.25,
+      "mean_value_upper_bound": 0.25,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.3333333333333333,
+      "mean_value_upper_bound": 0.3333333333333333,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "development"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "priority",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.25,
+      "mean_value_upper_bound": 0.25,
+      "policy": "earliest_deadline",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.375,
+      "mean_value_upper_bound": 0.375,
+      "policy": "value_per_bit",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-0",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-1",
+      "rows": 4,
+      "split": "test"
+    },
+    {
+      "completed_rows": 4,
+      "mean_value_lower_bound": 0.5,
+      "mean_value_upper_bound": 0.5,
+      "policy": "learned-2",
+      "rows": 4,
+      "split": "test"
+    }
+  ],
+  "paired": [
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.25,
+        0.25
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.25,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.08645833333333335,
+        0.16354166666666667
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.125,
+      "policy": "learned-0",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.25,
+        0.25
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.25,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.08645833333333335,
+        0.16354166666666667
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.125,
+      "policy": "learned-1",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "priority",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.0,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "earliest_deadline",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.25,
+        0.25
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.25,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    },
+    {
+      "baseline": "value_per_bit",
+      "complete_test_groups": 2,
+      "descriptive_group_bootstrap_95": [
+        0.08645833333333335,
+        0.16354166666666667
+      ],
+      "expected_test_groups": 2,
+      "mean_group_advantage": 0.125,
+      "policy": "learned-2",
+      "scope": "few hand-authored geometry groups; descriptive paired results, not statistical or operational superiority",
+      "superiority_established": false
+    }
+  ],
+  "native_service": [
+    {
+      "split": "train",
+      "policy": "priority",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "train",
+      "policy": "earliest_deadline",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 18,
+      "priority_total": 72
+    },
+    {
+      "split": "train",
+      "policy": "value_per_bit",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 24,
+      "priority_total": 72
+    },
+    {
+      "split": "train",
+      "policy": "learned-0",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "train",
+      "policy": "learned-1",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "train",
+      "policy": "learned-2",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "priority",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "earliest_deadline",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 18,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "value_per_bit",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 24,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "learned-0",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "learned-1",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "development",
+      "policy": "learned-2",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "priority",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "earliest_deadline",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 18,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "value_per_bit",
+      "native_fulfilled": 5,
+      "total": 12,
+      "weighted_fulfilled": 27,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "learned-0",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "learned-1",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    },
+    {
+      "split": "test",
+      "policy": "learned-2",
+      "native_fulfilled": 4,
+      "total": 12,
+      "weighted_fulfilled": 36,
+      "priority_total": 72
+    }
+  ],
+  "learned_choices": {
+    "learned-0": {
+      "priority": 12
+    },
+    "learned-1": {
+      "priority": 12
+    },
+    "learned-2": {
+      "priority": 12
+    }
+  },
+  "expert_teacher_qualified": false,
+  "scope": "fixed known-forecast initial scheduling; train-only full-information contextual selector; no unexpected online fault learning, command-level RL, industrial calibration or competitor comparison",
+  "interpretation": [
+    "All three learned models select priority in all 12 cases. No improvement over the best value baseline was observed.",
+    "On test: priority and each learned selector give value 0.50; EDF 0.25; value_per_bit 0.375.",
+    "Value-per-bit delivers 5/12 test requests; priority/learned 4/12. Higher value does not mean more requests delivered.",
+    "Only two test geometry groups; bootstrap is descriptive and superiority_established=false.",
+    "Three optimizer initializations share one 12-rollout train payoff table; 72 rows are not 72 independent missions.",
+    "Business request mix is fixed across geometry groups; this does not establish demand-distribution generalization.",
+    "Canonical geometry guards were strengthened after the first run; every native mission configuration remained identical. This receipt records the final-source rerun.",
+    "Artifact audit reproduces train-only optimization, not native replay or hardware truth."
+  ],
+  "sha256": "0f83787ac05035c79f2805a49c2d7e8d5ac946e375b90888f5c8ef2723b287ff"
+}

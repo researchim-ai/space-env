@@ -297,6 +297,45 @@ def test_observable_stall_triggers_cancel_not_free_retry():
     assert policy.decide(PlanningInput(canonical_json(v)))["action_ids"] == ["cancel"]
 
 
+def test_failed_transfer_transition_cools_route_once_and_survives_restart():
+    v = public([]).view()
+    v["observation"]["entities"] = [
+        {"key": "actor:a", "id": "a", "kind": "actor", "index": 0, "values": {}},
+        {"key": "actor:b", "id": "b", "kind": "actor", "index": 1, "values": {}},
+        {
+            "key": "transfer:t",
+            "id": "t",
+            "kind": "transfer",
+            "index": 2,
+            "values": {
+                "progress": 0.0,
+                "remaining_bits": 100.0,
+                "status_code": STATES["ready"],
+            },
+        },
+    ]
+    v["observation"]["relations"] = [
+        {"kind": "source", "source": 0, "destination": 2},
+        {"kind": "destination", "source": 2, "destination": 1},
+    ]
+    p = BaselinePolicy({"cooldown_steps": 2})
+    p.decide(PlanningInput(canonical_json(v)))
+    v["observation"]["revision"] = 1
+    v["observation"]["time_sec"] = 1.0
+    v["observation"]["entities"][-1]["values"]["status_code"] = STATES["cancelled"]
+    p.decide(PlanningInput(canonical_json(v)))
+    route = digest(["a", "b"])
+    assert p.checkpoint()["route_cooldown"][route] == 3
+    restored = BaselinePolicy.from_checkpoint(p.checkpoint())
+    for revision in (2, 3):
+        v["observation"]["revision"] = revision
+        v["observation"]["time_sec"] = float(revision)
+        assert p.decide(PlanningInput(canonical_json(v))) == restored.decide(
+            PlanningInput(canonical_json(v))
+        )
+    assert route not in p.checkpoint()["route_cooldown"]
+
+
 @pytest.mark.parametrize("name", ["priority", "random_masked", "route_aware_rolling"])
 def test_runner_cold_resume_preserves_policy_and_runtime(scenario, name):
     r = PlanningRun(scenario, task(), {"name": name, "seed": 17})

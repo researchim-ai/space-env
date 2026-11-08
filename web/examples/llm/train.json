@@ -1,0 +1,76 @@
+{
+  "links": [
+    {
+      "destination": "fleet-01",
+      "max_range_m": 3000000.0,
+      "outages": [],
+      "source": "fleet-00"
+    },
+    {
+      "destination": "fleet-02",
+      "max_range_m": 3000000.0,
+      "outages": [],
+      "source": "fleet-01"
+    }
+  ],
+  "max_hops": 3,
+  "max_search_nodes": 50000,
+  "mission": {
+    "battery_wh": 100.0,
+    "decision_sec": 5.0,
+    "epoch_utc": "2026-07-18T12:00:00Z",
+    "horizon_sec": 150.0,
+    "max_assignment_trials": 12,
+    "memory_mbit": 128.0,
+    "name": "Local LLM training / inclined-2",
+    "outages": [],
+    "planes": [
+      {
+        "id": "fleet",
+        "inclination_deg": 2.0,
+        "phases_deg": [
+          0.0,
+          15.2,
+          30.0
+        ],
+        "raan_deg": 1.0,
+        "radius_m": 7030000.0
+      }
+    ],
+    "planner": {
+      "edge_guard_sec": 0.01,
+      "max_orders": 12,
+      "max_search_nodes": 500000
+    },
+    "rate_bps": 2000000.0,
+    "requests": [
+      {
+        "acquisition_sec": 2.0,
+        "actor_id": null,
+        "deadline_sec": 150.0,
+        "id": "survey",
+        "lat_deg": 0.0,
+        "lon_deg": -127.97179778214284,
+        "output_bits": 500000,
+        "priority": 5,
+        "processing_sec": 1.0,
+        "raw_bits": 1000000,
+        "release_sec": 0.0,
+        "station": "Ground"
+      }
+    ],
+    "schema": "space-env.mission-configuration/1",
+    "seed": 0,
+    "stations": [
+      {
+        "alt_m": 0.0,
+        "lat_deg": 0.0,
+        "lon_deg": -65.97179778214284,
+        "min_elevation_deg": 5.0,
+        "name": "Ground",
+        "terminals": 1
+      }
+    ]
+  },
+  "radio_rate_bps": 250000.0
+}

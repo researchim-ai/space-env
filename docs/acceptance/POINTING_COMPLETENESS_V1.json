@@ -1,0 +1,131 @@
+{
+  "schema": "space-env.pointing-completeness-acceptance/1",
+  "date": "2026-11-08",
+  "sources": {
+    "src/space_env/planning/pointing_envelope.py": "8f6afe3d493ecef81306d1e480fb9ce13378f6b2442b489a735de63150fbcd1f",
+    "src/space_env/api/network_workspace.py": "de26f7e683d88e15b41ca82ae20c3e593eee393f8c194dc9bef52ac9c90e6003",
+    "src/space_env/api/network_dynamic.py": "8fbb8718e6d38b969c425fabd91f4227f9812bb47277b23fc67affc33a588bc2",
+    "examples/network/pointing_comparison.py": "ebe8c4d617bc2ad106a36887b7161b78bf38a51ad74bbadb34d278d4093a30f3",
+    "tests/test_pointing_envelope.py": "b24cfcda2848dc2e46317d68b532fac8fbbd0d2025b5af2336d7693d3198e677",
+    "tests/test_pointing_comparison.py": "59dc08ed1afb75784796caaeb8e1312690eac139990dc0ca3569b20985892d90"
+  },
+  "full_native_source_manifest_sha256": "ba1e357da9070bda4e0a56b7f70175be13cf87df2de66e738e4a4a45e8190aef",
+  "tests": {
+    "command": "python -m pytest tests/test_pointing_envelope.py tests/test_pointing_comparison.py tests/test_network_dynamic.py tests/test_joint_network.py tests/test_network_optimal.py tests/test_terminal_sequence.py -q",
+    "passed": 115,
+    "seconds": 188.85,
+    "scope": "final source targeted planning/native/dynamic/attitude/replay regression; not full project physics qualification"
+  },
+  "audit": {
+    "cases": 6,
+    "external_llm_measured": false,
+    "paired": [
+      {
+        "case": "equatorial-relay-chain",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 2,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 15,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-cpu-backlog",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 9,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-memory-pressure",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 1,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 6,
+          "pointing_bounded": 6,
+          "serial": 6
+        }
+      },
+      {
+        "case": "equatorial-station-blackout",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 2,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 15,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-link-blackout",
+        "fulfilled": {
+          "exact_small": 1,
+          "pointing_bounded": 2,
+          "serial": 1
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 9,
+          "pointing_bounded": 9,
+          "serial": 9
+        }
+      },
+      {
+        "case": "equatorial-deadline-pressure",
+        "fulfilled": {
+          "exact_small": 0,
+          "pointing_bounded": 0,
+          "serial": 0
+        },
+        "measured": true,
+        "priority": {
+          "exact_small": 0,
+          "pointing_bounded": 0,
+          "serial": 0
+        }
+      }
+    ],
+    "replayed": 18,
+    "valid": true
+  },
+  "summary": {
+    "cases": 6,
+    "geometry_groups": 1,
+    "native_policy_runs": 18,
+    "improved_vs_old_exact": 3,
+    "regressed_vs_old_exact": 0,
+    "forecast_native_count_mismatches": 0,
+    "full_goal_successes": 0,
+    "model_called": false,
+    "model_fine_tuned": false
+  },
+  "ruff": "passed",
+  "diff_check": "passed",
+  "raw_directory": "/tmp/space-env-pointing-comparison-20261108-final",
+  "scope": "unchanged frozen workload inputs; respective planner catalogues and same privileged reference executor; three improved partial deliveries, no complete-goal SFT or universal optimality; recovery drops initial-only proofs; no external simulator or flight calibration",
+  "reproduce": [
+    "python -m examples.network.pointing_comparison --output /tmp/new-pointing-comparison",
+    "python -m examples.network.pointing_comparison --audit /tmp/new-pointing-comparison"
+  ],
+  "sha256": "44af9ac9e83f6e761594bf5165472686722a48f695ffbb7f3ec357892c4bfad3"
+}

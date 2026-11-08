@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import Field, model_serializer, model_validator
 
 from space_env.runtime.schema import FiniteScalar, RuntimeCommand, StrictModel
+from space_env.tasks.goals import MissionGoal
 
 
 class TaskRole(StrictModel):
@@ -87,12 +88,15 @@ class TaskSpec(StrictModel):
     policy_origin: Literal["scripted", "random", "external"] = "external"
     runtime_audit: Literal["full", "compact"] = "full"
     pointing_masks: bool = Field(default=False, strict=True)
+    goal: MissionGoal | None = None
 
     @model_serializer(mode="wrap")
     def serialize_optional_pointing(self, handler):
         value = handler(self)
         if not self.pointing_masks:
             value.pop("pointing_masks", None)
+        if self.goal is None:
+            value.pop("goal", None)
         return value
 
     @model_validator(mode="after")
@@ -161,8 +165,22 @@ class TaskSpec(StrictModel):
                         set(request.eligible_actors) <= set(role.demand_actors)
                         and request.destination_id in role.demand_stations
                     )
-                elif kind in {"spacecraft_recover", "spacecraft_fault_cleared"}:
+                elif kind in {
+                    "spacecraft_recover",
+                    "spacecraft_fault_cleared",
+                    "spacecraft_fault",
+                    "spacecraft_safe_mode",
+                }:
                     allowed = payload.get("actor") in role.actors
+                elif kind in {
+                    "request_cancelled",
+                    "request_priority_changed",
+                    "request_deadline_changed",
+                }:
+                    # Mission demand authority is explicit and distinct from
+                    # ordinary spacecraft command authority. Native lifecycle
+                    # still validates ownership, terminal state and payload.
+                    allowed = bool(role.demand_actors and role.demand_stations)
                 elif kind in {
                     "station_recovered",
                     "station_outage_added",

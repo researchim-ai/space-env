@@ -8,7 +8,8 @@ const COLORS = ['#8edfc5','#91c9ff','#f0bf80','#d6adff','#f297b1','#9bd77d'];
 const actorColor=(name)=>{let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length];};
 const reason = {observable_checks_passed:'Доступно сейчас',product_not_local:'Продукт отсутствует или уже доставлен',no_current_contact:'Нет текущего контакта',actor_busy:'Аппарат занят',role_scope:'Другая роль',control_exceeds_horizon:'Выходит за горизонт',product_not_ready:'Продукт ещё не готов',safe_mode:'Безопасный режим',accepted:'Принято',runtime_rejected:'Отклонено нативным runtime',wait:'Ожидание'};
 let credentials=null, state=null, busy=false, selected=new Set(), pending=null, autorun=false;
-let workspaceUI=null;
+let workspaceUI=null, pendingReplan=null, pendingEvolution=null;
+const replanSources=[];
 const mapImage=new Image();mapImage.src='/viz/textures/earth_day.jpg';mapImage.onload=()=>drawMap();
 const fmt=(value,digits=1)=>Number(value).toLocaleString('ru-RU',{maximumFractionDigits:digits});
 const say=(message,error=false)=>{$('notice').textContent=message;$('notice').classList.toggle('error',error);};
@@ -25,16 +26,22 @@ function buttons(){
   workspaceUI?.setBusy(busy);
   for(const id of ['new','import','role','preset','refresh','close'])$(id).disabled=busy;
   for(const id of ['execute','wait'])$(id).disabled=busy||!state||state.done||!state.permissions.step;
-  $('run').disabled=busy&&!autorun||!state||state.done||!state.permissions.step||state.role!=='@central';$('run').textContent=autorun?'Остановить прогон':'Прогон планировщика';
-  $('suggest').disabled=busy||!state||state.done||!state.permissions.step||state.role!=='@central';
+  $('run').disabled=busy&&!autorun||!state||state.done||!state.permissions.step||state.role!=='@central'||$('role').value!=='operator';$('run').textContent=autorun?'Остановить прогон':'Прогон планировщика';
+  $('suggest').disabled=busy||!state||state.done||!state.permissions.step||state.role!=='@central'||$('role').value!=='operator';
   for(const id of ['close','refresh','role'])$(id).disabled=busy||!credentials;
   document.querySelectorAll('#actions input').forEach(c=>{c.disabled=busy||!state||state.done||!state.permissions.step||!state.observation.catalogue.find(a=>a.id===c.dataset.action)?.enabled;});
   for(const id of ['checkpoint','verify','export','archive','to-agent','to-operator'])$(id).disabled=busy||!credentials?.tokens.admin;
   $('connection-save').disabled=busy||!credentials;
   if(state){$('to-agent').disabled||=state.control.controller==='agent';$('to-operator').disabled||=state.control.controller==='operator';}
   $('close').disabled=busy||!credentials?.tokens.admin;
-  $('workspace-result').disabled=busy||!state?.workspace;
-  if(state?.workspace&&!state.workspace.plan_aligned){$('suggest').disabled=true;$('run').disabled=true;}
+  $('workspace-result').disabled=busy||!(state?.workspace||state?.network);
+  document.querySelectorAll('[data-event-preset]').forEach(b=>b.disabled=busy||!state?.workspace||state.done);
+  $('network-evolve').disabled=busy||!state?.network||state.done||!state.permissions.step||$('role').value!=='operator';
+  $('network-source').hidden=!replanSources.length;$('network-source').disabled=busy;
+  $('workspace-evolve').disabled=busy||!state?.workspace||state.done||!state.permissions.step||$('role').value!=='operator';
+  $('workspace-replan').disabled=busy||!state?.workspace?.replan_available||!state?.permissions.step||$('role').value!=='operator';
+  $('workspace-source').hidden=!replanSources.length;$('workspace-source').disabled=busy;
+  if((state?.workspace&&!state.workspace.plan_aligned)||(state?.network&&!state.network.plan_aligned)){$('suggest').disabled=true;$('run').disabled=true;}
 }
 async function task(fn){if(busy)return;busy=true;buttons();try{await fn();}catch(error){say(error.message,true);if(error.status===409&&credentials)try{await refresh();}catch{} }finally{busy=false;buttons();}}
 async function refresh(){if(!credentials)return;state=await api(endpoint());render();}
@@ -66,6 +73,7 @@ function render(){
   $('connection').textContent='● Native session';$('revision').textContent=`rev ${state.revision}`;$('time').textContent=`${fmt(state.time_sec)} с`;$('horizon').textContent=`из ${fmt(state.horizon_sec)} с`;
   const actors=state.observation.entities.filter(e=>e.kind==='actor');$('actor-count').textContent=actors.length;$('enabled-count').textContent=state.observation.catalogue.filter(a=>a.enabled&&a.id!=='wait').length;
   $('scope-note').textContent=state.physics_profile==='reference-spacecraft-bus/1'?'Синтетическая EO/CPU/ISL/ACK-миссия со связанными ресурсами. Не калиброванный цифровой двойник. Идеальная текущая навигация; без прогноза и оценивания орбиты.':'Отдельные J2-траектории, готовые бортовые продукты и наземная доставка. Не калиброванный цифровой двойник. Идеальная текущая навигация; без прогноза.';
+  const rolling=state.rolling_planner;$('rolling-planner-status').textContent=$('role').value==='agent'?'Канал агента принимает его собственные решения. Операторские подсказки недоступны.':rolling?.active?`Rolling policy: память предыдущих шагов сохранена · revision ${rolling.revision}. Используются текущие публичные наблюдения.`:(state.workspace||state.network)?'Исполняется операторский прогнозный план. Канал агента не имеет доступа к подсказкам оператора.':'Rolling policy активируется при запросе подсказки и сохраняет историю для последующих шагов.';
   $('mission-status').textContent=state.done?'Эпизод закрыт':'Ожидает шага';$('mission-name').textContent='Управление спутниковой миссией';$('session-label').textContent=`Session ${credentials.session_id} · ${state.role}`;
   const latest=state.events.at(-1);$('feedback').textContent=latest?(reason[latest.feedback.code]||latest.feedback.code):'Физика не идёт по часам браузера';
   selected=new Set([...selected].filter(id=>state.observation.catalogue.some(a=>a.id===id&&a.enabled)));$('selection-count').textContent=`${selected.size} / ${state.action_slots}`;actionNodes();
@@ -90,6 +98,12 @@ function download(blob,name){const a=document.createElement('a');a.href=URL.crea
 $('new').onclick=()=>task(()=>open({preset:$('preset').value}));$('refresh').onclick=()=>task(refresh);$('filter').oninput=()=>state&&actionNodes();$('role').onchange=()=>task(async()=>{pending=null;selected.clear();await refresh();say('Роль изменена; права и видимость проверяются сервером.');});
 $('execute').onclick=()=>task(()=>step([...selected].length?[...selected]:['wait']));$('wait').onclick=()=>task(()=>step(['wait']));$('suggest').onclick=()=>task(async()=>{const suggestion=await api(endpoint('suggest'));if(suggestion.advance_sec!==undefined)$('duration').value=suggestion.advance_sec;await step(suggestion.action_ids);});
 $('run').onclick=()=>{if(autorun){autorun=false;buttons();return;}task(async()=>{autorun=true;buttons();try{for(let i=0;i<256&&autorun&&state&&!state.done;i++){const suggestion=await api(endpoint('suggest'));if(suggestion.advance_sec!==undefined)$('duration').value=suggestion.advance_sec;await step(suggestion.action_ids);await new Promise(resolve=>setTimeout(resolve,120));}}finally{autorun=false;}say(state?.done?'Эпизод завершён нативной средой; итог виден в продуктах и заданиях.':'Прогон остановлен. Уже принятый шаг завершён.');});};
+$('workspace-replan').onclick=()=>task(async()=>{const reason=$('workspace-replan-reason').value.trim();if(!reason)throw new Error('Укажите причину пересчёта.');const request={reason,expected_revision:state.revision,control_epoch:state.control.epoch};if(!pendingReplan||JSON.stringify(pendingReplan.request)!==JSON.stringify(request))pendingReplan={request,key:crypto.randomUUID()};say('Пересчитываем оставшуюся работу и проверяем физический префикс…');const result=await api(endpoint('replan'),{method:'POST',body:{...request,idempotency_key:pendingReplan.key}});pendingReplan=null;replanSources.push(credentials);adopt(result);say('Новая ветка открыта в том же физическом состоянии. Исходная миссия сохранена. Для продолжения нажмите «Прогон планировщика».');});
+document.querySelectorAll('[data-event-preset]').forEach(button=>button.onclick=()=>{if(!state?.workspace)return;const request=state.workspace.requests.find(r=>!['completed','failed','cancelled','expired'].includes(r.status));if(!request&&button.dataset.eventPreset!=='recover'){say('Нет живой заявки для шаблона.',true);return;}const at=state.time_sec+state.decision_sec,change={additions:[],events:[]};switch(button.dataset.eventPreset){case 'outage':change.events=[{type:'station_outage_added',payload:{station:request.station,start_sec:at,end_sec:Math.min(state.horizon_sec,at+30)}}];break;case 'priority':change.events=[{type:'request_priority_changed',payload:{request_id:request.id,priority:Math.min(10000,request.priority+1)}}];break;case 'cancel':change.events=[{type:'request_cancelled',payload:{request_id:request.id}}];break;case 'fault':change.events=[{type:'spacecraft_fault',payload:{actor:request.actor,subsystem:'radio'}}];break;case 'add':{const original=state.workspace.resolved_configuration.requests.find(r=>r.id===request.id);change.additions=[{...original,id:'new-'+crypto.randomUUID().slice(0,8),release_sec:at,deadline_sec:state.horizon_sec}];break;}}$('workspace-change-json').value=JSON.stringify(change,null,2);say('Шаблон подготовлен. Проверьте поля JSON перед применением: применение создаст отдельную ветку.');});
+$('workspace-evolve').onclick=()=>task(async()=>{const change=JSON.parse($('workspace-change-json').value);const request={...change,reason:$('workspace-replan-reason').value.trim(),expected_revision:state.revision,control_epoch:state.control.epoch};if(!pendingEvolution||JSON.stringify(pendingEvolution.request)!==JSON.stringify(request))pendingEvolution={request,key:crypto.randomUUID()};say('Прерываем текущие команды в новой ветке, применяем события и пересчитываем остатки…');const result=await api(endpoint('evolve'),{method:'POST',body:{...request,idempotency_key:pendingEvolution.key}});pendingEvolution=null;replanSources.push(credentials);adopt(result);say('События исполнены в новой ветке. Исходная история сохранена; запустите восстановленный план.');});
+$('network-evolve').onclick=()=>task(async()=>{const change=JSON.parse($('network-change-json').value);const reason=$('network-change-reason').value.trim();if(!reason)throw new Error('Укажите причину изменения.');const request={...change,reason,expected_revision:state.revision,control_epoch:state.control.epoch};if(!pendingEvolution||JSON.stringify(pendingEvolution.request)!==JSON.stringify(request))pendingEvolution={request,key:crypto.randomUUID()};say('Проверяем префикс и фактическое владение продуктами, применяем события…');const result=await api(endpoint('evolve'),{method:'POST',body:{...request,idempotency_key:pendingEvolution.key}});pendingEvolution=null;replanSources.push(credentials);adopt(result);say('Продолжение сетевой миссии открыто. Источник сохранён; запустите новый план.');});
+$('workspace-source').onclick=()=>task(async()=>{const previous=replanSources.pop();replanSources.push(credentials);adopt(previous);await refresh();say('Ветка переключена. Истории и состояния веток независимы.');});
+$('network-source').onclick=$('workspace-source').onclick;
 async function artifactDigest(blob){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function artifactDownload(format,filename){
  const job=await api(endpoint('artifacts'),{method:'POST',body:{direction:'download',format},admin:true});
@@ -141,5 +155,5 @@ $('focus').onchange=()=>globe?.focus($('focus').value);
 new ResizeObserver(drawMap).observe($('ground-map'));
 // Browser/tab closure never closes a durable mission or stores secrets in localStorage.
 workspaceUI=mountWorkspace({api,task,adopt,say,download});
-$('workspace-result').onclick=()=>{if(state?.workspace)download(new Blob([JSON.stringify({schema:'space-env.mission-result/1',time_sec:state.time_sec,...state.workspace},null,2)],{type:'application/json'}),'mission-result.json');};
+$('workspace-result').onclick=()=>{if(state?.workspace||state?.network)download(new Blob([JSON.stringify({schema:'space-env.mission-result/1',time_sec:state.time_sec,...(state.workspace||state.network)},null,2)],{type:'application/json'}),'mission-result.json');};
 task(async()=>{await workspaceUI.initialize();const catalogue=await api('/api/operator/catalogue',{anonymous:true});$('connection').textContent='Готово к запуску';say(catalogue.active_sessions?'Есть сохранённые сессии: импортируйте файл доступа или создайте новую миссию.':'Настройте миссию выше или оставьте пример и нажмите «Составить план и открыть миссию».');});

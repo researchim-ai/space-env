@@ -431,7 +431,7 @@ def suggest(operator):
     if not _aligned(operator, meta):
         raise OperatorError(
             "plan_diverged",
-            "Ручные действия изменили ход миссии. Продолжите управление вручную или создайте новый план из конфигурации.",
+            "Ручные действия изменили ход миссии. Продолжите вручную или перепланируйте оставшуюся работу на допустимой границе.",
             409,
         )
     i = operator.session.revision
@@ -448,6 +448,8 @@ def suggest(operator):
 
 
 def describe(operator):
+    from space_env.api.workspace_replan import replan_status
+
     meta = _metadata(operator)
     if meta is None:
         return None
@@ -474,12 +476,14 @@ def describe(operator):
                 "reason": actual.get("reason"),
                 "actual_stages": {
                     "slew": any(
-                        command_states.get(f"@task/{i}/slew/{r['id']}/0") == "completed"
+                        command_states.get(f"@task/{i}/{aid}/0") == "completed"
                         for i, h in enumerate(history)
-                        if any(
-                            "slew/" + r["id"] in ids
-                            for ids in h["request"]["choices"].values()
-                        )
+                        for ids in h["request"]["choices"].values()
+                        for aid in ids
+                        if aid != "wait"
+                        and operator.session._by_id[aid].request_ref == r["id"]
+                        and operator.session._by_id[aid].commands
+                        and operator.session._by_id[aid].commands[0].kind == "slew"
                     ),
                     "imaging": life["artifacts"]
                     .get(actual["raw_product_id"], {})
@@ -494,6 +498,11 @@ def describe(operator):
                 "plan": copy.deepcopy(allocation),
                 "plan_reason": meta["unserved_reasons"].get(r["id"]),
                 "stages": [
+                    {"kind": k, "at_sec": at}
+                    for k, at in allocation["stage_times"].items()
+                ]
+                if allocation and "stage_times" in allocation
+                else [
                     {"kind": k, "at_sec": allocation[t]}
                     for k, t in [
                         ("slew", "start_sec"),
@@ -507,6 +516,7 @@ def describe(operator):
             }
         )
     fulfilled = sum(r["status"] == "completed" for r in rows)
+    replan_available, replan_note = replan_status(operator)
     return {
         "name": meta["configuration"]["name"],
         "configuration": copy.deepcopy(meta["configuration"]),
@@ -514,10 +524,18 @@ def describe(operator):
             meta.get("resolved_configuration", meta["configuration"])
         ),
         "assignment": copy.deepcopy(meta.get("assignment")),
+        "replan": copy.deepcopy(meta.get("replan")),
+        "dynamic": copy.deepcopy(meta.get("dynamic")),
+        "replan_available": replan_available,
+        "replan_note": replan_note,
         "requests": rows,
         "fulfilled": fulfilled,
         "total": len(rows),
-        "planned": len(allocations),
+        "planned": len(
+            set(allocations)
+            | set(meta.get("replan", {}).get("completed", []))
+            | set(meta["schedule"].get("completed", []))
+        ),
         "done": operator.session._done,
         "all_fulfilled": fulfilled == len(rows),
         "plan_aligned": _aligned(operator, meta),
@@ -543,13 +561,16 @@ class MissionWorkspace:
 
     def step(self):
         token = self.connection["tokens"]["operator"]
+        revision = self.operator.session.revision
         choice = self.operator.suggest(token)
         return self.operator.step(
             token,
             {
                 "action_ids": choice["action_ids"],
-                "advance_sec": choice["advance_sec"],
-                "expected_revision": choice["expected_revision"],
+                "advance_sec": choice.get(
+                    "advance_sec", self.operator.session._task.decision_sec
+                ),
+                "expected_revision": choice.get("expected_revision", revision),
                 "control_epoch": self.operator.control["epoch"],
                 "idempotency_key": f"workspace/{self.operator.session.revision}",
             },
@@ -568,6 +589,107 @@ class MissionWorkspace:
 
     def export(self, output):
         return self.operator.export_to(self.connection["tokens"]["admin"], output)
+
+    def replan(self, reason, *, idempotency_key, planner=None):
+        """Return an independent continuation; keep this mission unchanged."""
+        from space_env.api.workspace_replan import replan_workspace
+
+        state = self.state()
+        payload = {
+            "reason": reason,
+            "expected_revision": state["revision"],
+            "control_epoch": state["control"]["epoch"],
+            "idempotency_key": idempotency_key,
+        }
+        if planner is not None:
+            payload["planner"] = planner
+        connection = replan_workspace(
+            self.store,
+            self.connection["session_id"],
+            self.connection["tokens"]["operator"],
+            payload,
+        )
+        result = object.__new__(MissionWorkspace)
+        result.store = self.store
+        result.connection = connection
+        result.operator = self.store.get(connection["session_id"])
+        return result
+
+    def evolve(self, reason, *, idempotency_key, additions=(), events=(), planner=None):
+        """Causally apply changes and recover remaining native stages in a branch."""
+        from space_env.api.workspace_dynamic import evolve_workspace
+
+        if self.operator.session._scenario.get("metadata", {}).get("network_workspace"):
+            from space_env.api.network_dynamic import evolve_network
+
+            evolve_workspace = evolve_network
+
+        state = self.state()
+        payload = {
+            "reason": reason,
+            "expected_revision": state["revision"],
+            "control_epoch": state["control"]["epoch"],
+            "idempotency_key": idempotency_key,
+            "additions": list(additions),
+            "events": list(events),
+        }
+        if planner is not None:
+            payload["planner"] = planner
+        connection = evolve_workspace(
+            self.store,
+            self.connection["session_id"],
+            self.connection["tokens"]["operator"],
+            payload,
+        )
+        result = object.__new__(MissionWorkspace)
+        result.store, result.connection = self.store, connection
+        result.operator = self.store.get(connection["session_id"])
+        return result
+
+    def fleet_round(self):
+        from space_env.api.fleet_round import FleetRound
+
+        return FleetRound(self.operator)
+
+    @classmethod
+    def network(
+        cls,
+        configuration=None,
+        *,
+        store=None,
+        request_order=None,
+        planning_method="serial",
+    ):
+        """Joint EO owner/path/time proposal executed by the existing runtime."""
+        from space_env.api.network_workspace import (
+            create_network,
+            default_network_configuration,
+        )
+        from space_env.api.operator import OperatorStore
+
+        result = object.__new__(cls)
+        result.store = store if store is not None else OperatorStore()
+        result.connection = create_network(
+            configuration
+            if configuration is not None
+            else default_network_configuration(),
+            result.store,
+            request_order=request_order,
+            planning_method=planning_method,
+        )
+        result.operator = result.store.get(result.connection["session_id"])
+        return result
+
+    @classmethod
+    def relay(cls, *, store=None):
+        """Existing EO/CPU/ISL/Ground-ACK profile on the same operator runtime."""
+        from space_env.api.operator import OperatorStore
+
+        result = object.__new__(cls)
+        result.store = store if store is not None else OperatorStore()
+        result.connection = result.store.create({"preset": "relay-demo"})
+        result.operator = result.store.get(result.connection["session_id"])
+        return result
 
     def close(self):
         return self.store.close(

@@ -166,14 +166,44 @@ class BaselinePolicy:
         by_index = {e["index"]: e for e in obs["entities"]}
         stalled_actors = set()
         seen = set()
+        transfer_sources = {
+            r["destination"]: by_index[r["source"]]["id"]
+            for r in obs["relations"]
+            if r["kind"] == "source"
+            and by_index.get(r["source"], {}).get("kind") == "actor"
+        }
+        transfer_destinations = {
+            r["source"]: by_index[r["destination"]]["id"]
+            for r in obs["relations"]
+            if r["kind"] == "destination"
+            and by_index.get(r["destination"], {}).get("kind") == "actor"
+        }
         for e in obs["entities"]:
             if e["kind"] != "transfer":
                 continue
             key, progress = e["key"], e["values"].get("progress", 0.0)
             seen.add(key)
             old = self._stalls.get(key, [None, 0])
+            previous_status = old[2] if len(old) > 2 else None
+            # Short-lived relay controls may finish before a stall counter
+            # reaches its threshold. React once to a newly observed failed
+            # residual transfer as well, not to unseen future link conditions.
+            if (
+                self.config.name == "route_aware_rolling"
+                and previous_status
+                not in {STATES[k] for k in ("failed", "cancelled", "expired")}
+                and e["values"].get("remaining_bits", 0) > 0
+                and e["values"].get("status_code")
+                in {STATES[k] for k in ("failed", "cancelled", "expired")}
+                and e["index"] in transfer_sources
+                and e["index"] in transfer_destinations
+            ):
+                route = digest(
+                    [transfer_sources[e["index"]], transfer_destinations[e["index"]]]
+                )
+                self._route_cooldown[route] = revision + self.config.cooldown_steps
             count = old[1] + 1 if old[0] == progress else 0
-            self._stalls[key] = [progress, count]
+            self._stalls[key] = [progress, count, e["values"].get("status_code")]
             if count >= self.config.stall_steps and e["values"].get("status_code") in {
                 STATES["capacity_blocked"],
                 STATES["link_unavailable"],
@@ -291,15 +321,24 @@ class BaselinePolicy:
                 }.get(kind, 1.0)
                 if kind == "slew":
                     # Causal tie-break only; no forecast or promised capture.
-                    pointing = next((p for p in a.get("pointing", [])
-                                     if p["actor_id"] == actor
-                                     and p["target_id"] == c.get("slew", {}).get("target_id")), None)
+                    pointing = next(
+                        (
+                            p
+                            for p in a.get("pointing", [])
+                            if p["actor_id"] == actor
+                            and p["target_id"] == c.get("slew", {}).get("target_id")
+                        ),
+                        None,
+                    )
                     if pointing is not None:
                         rate = pointing["body_rate_rad_s"]
                         limit = pointing["payload_max_body_rate_rad_s"]
-                        if (pointing["boresight_error_deg"] <= pointing["payload_tolerance_deg"]
-                            and (rate is None or rate <= limit)):
-                            possible = False  # Allow paid settling/coast before acquisition.
+                        if pointing["boresight_error_deg"] <= pointing[
+                            "payload_tolerance_deg"
+                        ] and (rate is None or rate <= limit):
+                            possible = (
+                                False  # Allow paid settling/coast before acquisition.
+                            )
                         utility += 2.0 / (1.0 + pointing["boresight_error_deg"])
                 if kind == "relay":
                     dest = c["destination_id"]

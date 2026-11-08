@@ -38,7 +38,7 @@ class IncidentSpec(StrictModel):
 
 class RecoveryState(StrictModel):
     rate_bps: float = Field(gt=0, strict=True)
-    phase: Literal["fresh", "raw", "final", "completed", "terminal"]
+    phase: Literal["fresh", "raw", "final", "completed", "terminal", "blocked"]
     remaining_bits: float = Field(ge=0, strict=True)
     remaining_cpu_sec: float = Field(ge=0, strict=True)
     reason: str | None
@@ -158,6 +158,9 @@ def schedule_recovery(forecast, states, settings=None):
             continue
         if st.phase == "terminal":
             unserved[c["id"]] = "terminal_native_state"
+            continue
+        if st.phase == "blocked":
+            unserved[c["id"]] = "currently_unavailable_subsystem"
             continue
         a, s = c["actor"], c["station"]
         sl, im, cp, tx = c["durations_sec"]
