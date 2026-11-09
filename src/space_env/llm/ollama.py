@@ -116,6 +116,9 @@ def inference_context(messages, tools, pairs, profile="baseline_v1"):
                 if not a["enabled"]
             ],
         }
+        if "navigation" in view:
+            roles[role]["navigation"] = copy.deepcopy(view["navigation"])
+            roles[role]["belief"] = copy.deepcopy(view["belief"])
         if "goal" in view:
             roles[role]["goal"] = copy.deepcopy(view["goal"])
     narrowed = copy.deepcopy(tools)

@@ -1,5 +1,27 @@
 # space-env
 
+[Конечная тяга и возмущения в навигации](docs/NAVIGATION_FINITE_FORCES.md):
+matched-force EKF, номинальный расход массы, отмена и mid-burn replay.
+
+[Управляемая навигация и питание сенсоров](docs/NAVIGATION_CONTROL_POWER.md):
+known-impulse EKF, причинные delayed packets и общий native энергетический баланс.
+
+[Sensor-aware задачи для агентов](docs/SENSOR_AWARE_TASKS.md):
+EKF вместо истинной орбиты, ковариация, защищённая projection и native SFT/RL.
+
+[Измерительная навигация M02-A](docs/NAVIGATION_MEASUREMENTS.md):
+отдельный native passive sensor/EKF интерфейс, задержки и статистическая проверка.
+
+[Требования к физическим моделям](docs/MODELING_REQUIREMENTS.md):
+actor-level compatibility preflight, реестр моделей и явные unsupported cases.
+
+[Аудит покрытия и план моделера M01–M10](docs/MODELING_COVERAGE_AND_ROADMAP.md):
+что реализовано, где reduced models и какие доказательства ещё нужны.
+
+[Относительное движение и групповой полёт](docs/RELATIVE_MISSION_GOALS.md):
+native цели двух аппаратов, контрольные точки, sampled keepout, RTN-кинематика
+и общие SFT/RL-критерии.
+
 [Физические цели миссий и управление аппаратом](docs/PHYSICAL_MISSION_GOALS.md):
 единый `TaskSpec.goal` для наведения, разгрузки маховиков, BODY-импульса,
 заданного орбитального состояния, последовательных waypoint и доставки.

@@ -7,8 +7,10 @@ from typing import Literal
 
 from pydantic import Field, model_serializer, model_validator
 
+from space_env.navigation.models import SensorSpec
 from space_env.runtime.schema import FiniteScalar, RuntimeCommand, StrictModel
 from space_env.tasks.goals import MissionGoal
+from space_env.tasks.modeling import ModelRequirement
 
 
 class TaskRole(StrictModel):
@@ -89,6 +91,10 @@ class TaskSpec(StrictModel):
     runtime_audit: Literal["full", "compact"] = "full"
     pointing_masks: bool = Field(default=False, strict=True)
     goal: MissionGoal | None = None
+    navigation_sensors: dict[str, SensorSpec] = Field(
+        default_factory=dict, max_length=8
+    )
+    model_requirements: tuple[ModelRequirement, ...] = Field(default=(), max_length=64)
 
     @model_serializer(mode="wrap")
     def serialize_optional_pointing(self, handler):
@@ -97,10 +103,20 @@ class TaskSpec(StrictModel):
             value.pop("pointing_masks", None)
         if self.goal is None:
             value.pop("goal", None)
+        if not self.navigation_sensors:
+            value.pop("navigation_sensors", None)
+        if not self.model_requirements:
+            value.pop("model_requirements", None)
         return value
 
     @model_validator(mode="after")
     def contract(self):
+        pairs = [(r.feature, a) for r in self.model_requirements for a in r.actors]
+        if len(set(pairs)) != len(pairs):
+            raise ValueError("duplicate actor modeling requirement")
+        controlled = {a for role in self.roles.values() for a in role.actors}
+        if any(actor not in controlled for _, actor in pairs):
+            raise ValueError("model requirements must name controlled task actors")
         if any(not key.strip() or len(key) > 128 for key in self.roles):
             raise ValueError("invalid role ID")
         if "@central" in self.roles or len({a.id for a in self.actions}) != len(
@@ -123,6 +139,44 @@ class TaskSpec(StrictModel):
             ]
             if len(names) != len(set(names)):
                 raise ValueError("roles must have disjoint " + key)
+        if self.navigation_sensors:
+            if set(self.navigation_sensors) != controlled:
+                raise ValueError(
+                    "navigation sensors must cover exactly all controlled actors"
+                )
+            if self.pointing_masks or self.max_decisions > 512:
+                raise ValueError(
+                    "sensor task forbids pointing masks and exceeds 512-decision bound"
+                )
+            if self.goal is not None and any(
+                c.kind != "product_delivery" for c in self.goal.conditions
+            ):
+                raise ValueError(
+                    "sensor task does not yet support native goal-error projection"
+                )
+            if any(
+                a.kind == "inject"
+                or any(
+                    c.kind
+                    not in {"wait", "downlink", "processing", "impulse", "finite_burn"}
+                    for c in a.commands
+                )
+                for a in self.actions
+            ):
+                raise ValueError(
+                    "sensor task supports inertial impulse/opt-in finite burn, coast, downlink, processing and cancellation only"
+                )
+        if self.navigation_sensors and any(
+            c.kind == "finite_burn"
+            and self.navigation_sensors[c.actor_id].control_profile
+            != "inertial_finite_burn"
+            for a in self.actions
+            for c in a.commands
+            if c.actor_id in self.navigation_sensors
+        ):
+            raise ValueError(
+                "finite burn requires explicit inertial_finite_burn estimator profile"
+            )
         for action in self.actions:
             if action.role not in self.roles:
                 raise ValueError("unknown action role")

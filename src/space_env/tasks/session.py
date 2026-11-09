@@ -7,9 +7,18 @@ import hashlib
 import math
 from threading import RLock
 
+from space_env.navigation.controls import sensor_power_scenario
+from space_env.navigation.projection import project_navigation
+from space_env.navigation.session import NavigationSession
 from space_env.runtime import AccessPolicy, MissionRuntime, RuntimeContractError
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
-from space_env.tasks.goals import OrbitGoal, evaluate_goal, validate_goal
+from space_env.tasks.goals import (
+    OrbitGoal,
+    RelativeOrbitGoal,
+    evaluate_goal,
+    validate_goal,
+)
+from space_env.tasks.modeling import model_profile, validate_requirements
 from space_env.tasks.observation import Projection, _ProjectionReads, admissible
 from space_env.tasks.schema import TaskDecision, TaskSpec
 
@@ -149,6 +158,10 @@ class TaskSession:
         self._task = TaskSpec.model_validate(copy.deepcopy(task))
         self._seed = scenario.get("seed", 0) if seed is None else seed
         self._scenario = seeded_scenario(scenario, self._seed, self._task.seed_policy)
+        if self._task.navigation_sensors:
+            self._scenario = sensor_power_scenario(
+                self._scenario, self._task.navigation_sensors
+            )
         if not self._scenario["backend"].startswith("reference-"):
             raise ValueError("task/1 requires a reference MissionRuntime backend")
         self._runtime = MissionRuntime(
@@ -156,12 +169,29 @@ class TaskSession:
             access=AccessPolicy(truth=True),
             audit_mode=self._task.runtime_audit,
         )
+        self._navigation = None
+        if self._task.navigation_sensors:
+            self._navigation = NavigationSession._attach(
+                self._scenario, self._task.navigation_sensors, self._runtime
+            )
+        validate_requirements(
+            self._task.model_requirements, self._runtime, navigation=self._navigation
+        )
         actor_ids = set(self._runtime.describe_capabilities()["actors"])
         self._goal_failures = ()
         self._goal_achievements = ()
         if self._task.goal is not None:
             controlled = {a for role in self._task.roles.values() for a in role.actors}
             validate_goal(self._task.goal, self._runtime, controlled)
+            for condition in self._task.goal.conditions:
+                if isinstance(condition, RelativeOrbitGoal) and any(
+                    condition.actor in role.actors
+                    and condition.reference_actor not in role.actors
+                    for role in self._task.roles.values()
+                ):
+                    raise ValueError(
+                        "relative goal requires reference visibility in every actor role"
+                    )
             initial_goal = self._evaluate_goal(self._runtime)
             self._goal_failures = tuple(initial_goal["failures"])
             self._goal_achievements = tuple(initial_goal["achieved"])
@@ -194,12 +224,25 @@ class TaskSession:
         self._views = self._refresh(self._runtime, self._projections, 0)
         self._done = False
 
-    def _refresh(self, runtime, projections, revision):
+    def _refresh(self, runtime, projections, revision, navigation_filters=None):
         reads = _ProjectionReads(runtime)
         views = {
             r: p.build(reads, r, revision, self._actions)
             for r, p in projections.items()
         }
+        if self._navigation is not None:
+            filters = (
+                self._navigation._filters
+                if navigation_filters is None
+                else navigation_filters
+            )
+            navigation = {
+                a: self._navigation._view(runtime, filters, a) for a in filters
+            }
+            views = {
+                role: project_navigation(view, self._task, role, navigation)
+                for role, view in views.items()
+            }
         if self._task.goal is not None:
             status = self._evaluate_goal(runtime)
             for role, view in views.items():
@@ -233,6 +276,12 @@ class TaskSession:
             ],
             "scope": "current own-actor goal conditions only; global success and other actors are hidden",
         }
+
+    def modeling_profile(self):
+        """Trusted setup metadata for all actors; never added to actor views."""
+        with self._lock:
+            self._assert_runtime()
+            return model_profile(self._runtime, navigation=self._navigation)
 
     def goal_status(self, role="@central"):
         with self._lock:
@@ -281,6 +330,11 @@ class TaskSession:
             "observation": "ideal current local; no estimator; per-role independent entity slots",
             "mask": "observable conservative per-action checks; not a future-success oracle",
         }
+        if self._navigation is not None:
+            result["observation"] = (
+                "sensor-estimated orbit; ideal operational counters; no geometry features"
+            )
+            result["mask"] = "declarative role/action mask; native admission can reject"
         if self._task.goal is not None:
             result["goal"] = self._task.goal.model_dump(mode="json", by_alias=True)
             result["goal_reward"] = (
@@ -343,7 +397,7 @@ class TaskSession:
                 dt = min(dt, self._task.goal.deadline_sec - start)
                 for condition in self._task.goal.conditions:
                     if (
-                        isinstance(condition, OrbitGoal)
+                        isinstance(condition, (OrbitGoal, RelativeOrbitGoal))
                         and condition.at_sec - start > 1e-9
                         and condition.id not in self._goal_achievements
                     ):
@@ -431,7 +485,17 @@ class TaskSession:
             if reason is not None:
                 # Discard all zero-time mutations; rejection costs one real decision interval.
                 candidate = self._runtime.fork()
-            native("advance", dt_sec=dt)
+            navigation_filters = None
+            if self._navigation is None:
+                native("advance", dt_sec=dt)
+            else:
+                navigation_filters = copy.deepcopy(self._navigation._filters)
+                self._navigation._advance_native(
+                    candidate,
+                    navigation_filters,
+                    dt,
+                    lambda duration: native("advance", dt_sec=duration),
+                )
             after = score(candidate)
             elapsed = candidate.time_sec - start
             components = {
@@ -481,7 +545,9 @@ class TaskSession:
                 terminal = terminal or after_goal["terminal"]
             truncated = self.revision + 1 >= self._task.max_decisions and not terminal
             projections = copy.deepcopy(self._projections)
-            views = self._refresh(candidate, projections, self.revision + 1)
+            views = self._refresh(
+                candidate, projections, self.revision + 1, navigation_filters
+            )
             response = {
                 "schema": "space-env.task-transition/1",
                 "index": self.revision,
@@ -509,6 +575,9 @@ class TaskSession:
             record = {"request": req.model_dump(mode="json"), "transition": response}
             canonical_json(record)
             self._runtime = candidate
+            if self._navigation is not None:
+                self._navigation._runtime = candidate
+                self._navigation._filters = navigation_filters
             if after_goal is not None:
                 self._goal_failures = tuple(after_goal["failures"])
                 self._goal_achievements = tuple(after_goal["achieved"])

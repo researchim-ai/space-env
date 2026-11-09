@@ -129,6 +129,10 @@ class LLMEpisode:
                 ),
             },
         ]
+        if self._spec.navigation_sensors:
+            self._messages[0]["content"] += (
+                " Orbit coordinates are EKF estimates from received synthetic measurements, not truth. Covariance and delayed packets are provided. Action masks are declarative: native admission can reject. Other resource counters remain ideal."
+            )
         if self._spec.goal is not None:
             self._messages[0]["content"] += (
                 " Completion is defined by the declared native mission goals in local observations, not necessarily product delivery. Finish verifies those goals and physical budgets."
@@ -435,7 +439,11 @@ class LLMEpisode:
                 "dialogue_budget_exceeded": len(canonical_json(self._messages).encode())
                 > self.max_dialogue_bytes,
             },
-            "scope": "catalogue-constrained actor-only tool agent; native ideal local telemetry; successful replay is not expert qualification; no external LLM automatically called",
+            "scope": (
+                "catalogue-constrained sensor-aware actor agent; estimated orbit and ideal operational counters; native replay is not flight qualification; no external LLM automatically called"
+                if self._spec.navigation_sensors
+                else "catalogue-constrained actor-only tool agent; native ideal local telemetry; successful replay is not expert qualification; no external LLM automatically called"
+            ),
         }
         if goal is not None:
             record["metrics"]["goal"] = goal

@@ -1,5 +1,96 @@
 # Следующие крупные пакеты реализации
 
+## Текущий пакет: M02-B2b — finite thrust и matched forces
+
+Estimator теперь интегрирует known inertial finite burn с номинальной массой,
+правильным порядком impulse/burn и known cancellation. Explicit matched_native
+profile поддерживает declared J2/drag/SRP/Sun/Moon на estimated state. Добавлены
+actor-level finite_burn_estimation и matched_force_estimation requirements.
+577 distinct local tests passed (287+87+203), 64-seed finite-J2 consistency gates
+пройдены. [Контракт и ограничения](NAVIGATION_FINITE_FORCES.md).
+
+Это matched shared-model numerical evidence, не independent calibration.
+Следующее: duty-cycle/native CPU, sensor-safe geometric goals, неизвестные
+engine/mass/clock/bias states и длинные независимые миссии; M03 и external
+comparative benchmark не объявляются закрытыми.
+
+## Текущий пакет: M02-B2a — управляемая навигация и native питание
+
+Подключены известные собственные GCRS impulses к EKF; delayed packets теперь
+фиксируются при acquisition и не переписываются поздним манёвром. Continuous
+sensor power включён в native energy balance, а фиксы теряются при низком SOC.
+554 distinct local tests passed (264+87+203). Двенадцать source и installed-wheel
+missions проверены cold replay; 64-seed impulse/latency consistency gates пройдены.
+Три delivery success, но только два SFT-eligible reference: rejected control
+не становится положительным SFT. [Контракт](NAVIGATION_CONTROL_POWER.md).
+
+Следующее: matched finite-burn/perturbed-force estimator, sensor duty cycle/CPU,
+sensor-safe orbit goals; затем M03 continuous encounters. Не объявляются
+готовыми detailed engine errors, произвольные OOS, calibration и external benchmark.
+
+## Текущий пакет: M02-B1 — sensor-aware agent tasks
+
+NavigationSession/EKF подключены к TaskSession, Gym/PettingZoo, LLM wire и native
+SFT/RL. Добавлены allowlisted views, declarative masks, transactional filter
+updates и product_delivery goal для готовых бортовых данных. 331 distinct local
+tests passed (244+87), 6 source и 6 installed-wheel episodes с cold replay;
+2 positive SFT и 6 RL exports. [Контракт](SENSOR_AWARE_TASKS.md).
+
+Область — passive central-gravity downlink/processing, ресурсы sensor бесплатны;
+манёвры, geometric native goals и полноценное scheduling измерений не объявляются
+готовыми. Далее M02-B2: estimator controls/forces, native sensor costs, безопасные
+геометрические цели и независимые policy experiments. M03 остаётся открытым.
+
+## Текущий пакет: M02-A — измерения и EKF, 9 ноября 2026
+
+Добавлен отдельный NavigationSession: synthetic position fixes или range/range-rate
+от известного маяка, cadence/latency/dropout/bias, central-gravity EKF с Joseph
+update, NIS gate, trainer-only error/NEES и cold replay. 220 local tests passed;
+64-seed short-arc consistency gates пройдены, bias-negative сохранён. Source и
+installed wheel дали одинаковый study report. [Контракт](NAVIGATION_MEASUREMENTS.md).
+
+Это passive central-gravity baseline, не полная M02 и не sensor-aware TaskSession:
+обычные Gym/LLM tasks ещё сохраняют ideal telemetry. M01 nav features остаются
+unsupported для общего task contract. Далее M02-B: безопасная actor projection,
+controls/force prediction и ресурсная цена измерений; затем M03 continuous safety.
+
+## Текущая реализация: M01-A — требования моделей на уровне аппарата
+
+Добавлены versioned registry/profile, `model_requirements` в task recipe,
+проверка instantiated native моделей до первого шага, SDK preflight и CLI
+`space-env-models`. Восемь implemented признаков и четыре explicit unsupported;
+profile не отдаётся actor/LLM observations. [Контракт](MODELING_REQUIREMENTS.md).
+Это начальный блок M01, не вся compatibility matrix и не superior benchmark.
+Полная очередь: [M01–M10](MODELING_COVERAGE_AND_ROADMAP.md).
+
+## Основная очередь моделера: аудит покрытия от 9 ноября 2026
+
+[MODELING_COVERAGE_AND_ROADMAP.md](MODELING_COVERAGE_AND_ROADMAP.md) — текущая
+программа M01–M10 по глубине/широте симуляций и доказательству результатов.
+Разобраны native профили, legacy kernels и интеграции; проверены официальные
+источники Basilisk/BSK-RL, Orekit, Tudat, GMAT, STK и FreeFlyer. Это документальное
+сравнение возможностей, не выполненный external benchmark или доказательство
+превосходства. AST snapshot охватывает 321 Python-модуль и 17 групп файлов.
+
+Следующий engineering блок: M01 (capability/compatibility registry) вместе со
+спецификацией M09, затем M02 (измерения/оценка состояния) и M03 (continuous safety).
+Covariance prediction и legacy Pc уже есть — их расширять/интегрировать, а не
+объявлять отсутствующими. Последние 19 cases не исчерпывают весь моделёр.
+Ниже — исторические результаты; более старые очереди не закрываются автоматически.
+
+## Актуально: относительное движение — 9 ноября 2026
+
+Добавлены native цели `relative_orbit`: два аппарата, относительные GCRS
+положение/скорость, последовательные epochs, sampled keepout, общий reward,
+replay и SFT/RL gates. RTN-преобразования учитывают вращение системы координат;
+поиск ближайшего подхода не выходит за заданный горизонт. Совместная роль
+обязательна: скрытая телеметрия другого аппарата не раскрывается.
+Матрица теперь 19 synthetic cases / 38 native runs. Это ещё не сенсорная
+навигация, непрерывная collision safety или квалификация стыковки.
+[Описание, область применимости и следующие блоки](RELATIVE_MISSION_GOALS.md),
+[приёмка](acceptance/RELATIVE_MISSION_GOALS_V1.json).
+Ниже сохранены результаты предыдущих пакетов с их датами и областями проверки.
+
 ## Актуально: физические цели миссии — 9 ноября 2026
 
 Реализован opt-in контракт пяти целей: доставка, ориентация, разгрузка маховиков,

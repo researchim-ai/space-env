@@ -37,6 +37,22 @@ class DeliveryGoal(_Condition):
         return self
 
 
+class ProductDeliveryGoal(_Condition):
+    """Delivery of ready native onboard products, not lifecycle customer requests."""
+
+    kind: Literal["product_delivery"]
+    actor: str = Field(min_length=1, max_length=128)
+    product_ids: tuple[str, ...] = Field(min_length=1, max_length=256)
+
+    @model_validator(mode="after")
+    def unique(self):
+        if len(set(self.product_ids)) != len(self.product_ids) or any(
+            not p.strip() for p in self.product_ids
+        ):
+            raise ValueError("product goal IDs must be unique and nonblank")
+        return self
+
+
 class _ActorGoal(_Condition):
     actor: str = Field(min_length=1, max_length=128)
     command_after_sec: float = Field(default=0.0, ge=0, strict=True)
@@ -107,8 +123,42 @@ class OrbitGoal(_ActorGoal):
         return self
 
 
+class RelativeOrbitGoal(_ActorGoal):
+    """Timed actor-minus-reference GCRS state; truth available only to joint roles."""
+
+    kind: Literal["relative_orbit"]
+    completion: Literal["maintain", "achieve"] = "achieve"
+    reference_actor: str = Field(min_length=1, max_length=128)
+    frame: Literal["GCRS"] = "GCRS"
+    at_sec: float = Field(gt=1e-9, le=259200, strict=True)
+    time_tolerance_sec: float = Field(default=1e-6, gt=0, le=1, strict=True)
+    position_m: Vec3
+    velocity_m_s: Vec3
+    position_tolerance_m: float = Field(gt=0, strict=True)
+    velocity_tolerance_m_s: float = Field(gt=0, strict=True)
+    min_range_m: float = Field(default=0.0, ge=0, le=1e10, strict=True)
+
+    @model_validator(mode="after")
+    def applicability(self):
+        if self.actor == self.reference_actor:
+            raise ValueError("relative goal requires two distinct actors")
+        if math.hypot(*self.position_m) > 1e10 or math.hypot(*self.velocity_m_s) > 1e7:
+            raise ValueError("relative target outside bounded applicability")
+        if self.not_before_sec > self.at_sec + self.time_tolerance_sec:
+            raise ValueError("relative target release misses its epoch window")
+        if math.hypot(*self.position_m) + self.position_tolerance_m < self.min_range_m:
+            raise ValueError("relative target lies wholly inside forbidden range")
+        return self
+
+
 Condition = Annotated[
-    DeliveryGoal | AttitudeGoal | MomentumGoal | ImpulseGoal | OrbitGoal,
+    DeliveryGoal
+    | ProductDeliveryGoal
+    | AttitudeGoal
+    | MomentumGoal
+    | ImpulseGoal
+    | OrbitGoal
+    | RelativeOrbitGoal,
     Field(discriminator="kind"),
 ]
 
@@ -134,7 +184,8 @@ class MissionGoal(StrictModel):
         if any(c.not_before_sec >= self.deadline_sec for c in self.conditions):
             raise ValueError("goal release must precede deadline")
         if any(
-            isinstance(c, OrbitGoal) and c.at_sec > self.deadline_sec
+            isinstance(c, (OrbitGoal, RelativeOrbitGoal))
+            and c.at_sec > self.deadline_sec
             for c in self.conditions
         ):
             raise ValueError("orbit target epoch exceeds goal deadline")
@@ -164,6 +215,13 @@ def validate_goal(goal, runtime, controlled_actors):
             continue
         if condition.actor not in actors:
             raise ValueError("goal actor must be controlled by a task role")
+        if isinstance(condition, ProductDeliveryGoal):
+            products = {p["id"] for p in runtime.inventory(condition.actor)["products"]}
+            if any(pid not in products for pid in condition.product_ids):
+                raise ValueError(
+                    "product goal must reference existing own native products"
+                )
+            continue
         obs = _local(runtime, condition.actor)
         bus = obs.get("spacecraft_bus", {})
         if isinstance(condition, AttitudeGoal) and "quaternion_wxyz" not in bus:
@@ -174,6 +232,13 @@ def validate_goal(goal, runtime, controlled_actors):
             (report.get("lifecycle") or {}).get("actuation") or {}
         ).get("states", {}):
             raise ValueError("impulse goal requires native body engine")
+        if isinstance(condition, RelativeOrbitGoal):
+            if condition.reference_actor not in actors:
+                raise ValueError("relative reference must be a controlled task actor")
+            if "orbit" not in obs or "orbit" not in _local(
+                runtime, condition.reference_actor
+            ):
+                raise ValueError("relative goal requires two native dynamic orbits")
         if isinstance(condition, OrbitGoal) and "orbit" not in obs:
             raise ValueError("orbit goal requires current dynamic GCRS telemetry")
     for actor, limits in goal.limits.items():
@@ -226,6 +291,11 @@ def evaluate_goal(goal, runtime, *, previous_failures=(), previous_achievements=
             row["met"] = all(
                 requests[r]["status"] == "completed" for r in c.request_ids
             )
+        elif isinstance(c, ProductDeliveryGoal):
+            products = {p["id"]: p for p in report["products"]}
+            row["met"] = all(
+                products[pid]["status"] == "delivered_on_time" for pid in c.product_ids
+            )
         else:
             local = local_actor(c.actor)
             bus = local.get("spacecraft_bus", {})
@@ -234,6 +304,7 @@ def evaluate_goal(goal, runtime, *, previous_failures=(), previous_achievements=
                 "momentum": {"momentum_unload"},
                 "body_impulse": {"body_burn"},
                 "orbit_state": {"finite_burn", "body_burn", "impulse"},
+                "relative_orbit": {"finite_burn", "body_burn", "impulse"},
             }[c.kind]
             completed = [
                 r
@@ -319,8 +390,16 @@ def evaluate_goal(goal, runtime, *, previous_failures=(), previous_achievements=
                 row["met"] = (
                     proof and not busy and math.hypot(*errors) <= c.tolerance_ns
                 )
-            elif isinstance(c, OrbitGoal):
+            elif isinstance(c, (OrbitGoal, RelativeOrbitGoal)):
                 state = local["orbit"]["state_si"]
+                if isinstance(c, RelativeOrbitGoal):
+                    reference = local_actor(c.reference_actor)["orbit"]["state_si"]
+                    state = [x - y for x, y in zip(state, reference)]
+                    separation = math.hypot(*state[:3])
+                    row["range_m"] = separation
+                    row["reference_actor"] = c.reference_actor
+                    if separation < c.min_range_m:
+                        failures.add("relative_keepout:" + c.id)
                 r = [state[i] - c.position_m[i] for i in range(3)]
                 v = [state[i + 3] - c.velocity_m_s[i] for i in range(3)]
                 row["errors"] = {"position_m": r, "velocity_m_s": v}
@@ -434,12 +513,25 @@ GOAL_FEATURES = (
     "actor_index",
 )
 
+RELATIVE_GOAL_FEATURES = ("reference_index", "range_m", "min_range_m")
+
+
+def goal_columns(goal):
+    return (
+        GOAL_FEATURES + RELATIVE_GOAL_FEATURES
+        if any(isinstance(c, RelativeOrbitGoal) for c in goal.conditions)
+        else GOAL_FEATURES
+    )
+
+
 GOAL_KINDS = {
     "delivery": 1,
     "attitude": 2,
     "momentum": 3,
     "body_impulse": 4,
     "orbit_state": 5,
+    "relative_orbit": 6,
+    "product_delivery": 7,
 }
 GOAL_RESOURCE_FEATURES = (
     "actor_index",
@@ -454,7 +546,9 @@ GOAL_RESOURCE_FEATURES = (
 )
 
 
-def goal_features(row, deadline, now, actor_index=None):
+def goal_features(
+    row, deadline, now, actor_index=None, reference_index=None, *, relative=False
+):
     e, recipe = row["errors"], row["recipe"]
     values = {
         "met": float(row["met"]),
@@ -501,9 +595,14 @@ def goal_features(row, deadline, now, actor_index=None):
         values["target_at_sec"] = recipe["at_sec"]
     if actor_index is not None:
         values["actor_index"] = actor_index
-    return [values.get(k, 0.0) for k in GOAL_FEATURES], [
-        int(k in values) for k in GOAL_FEATURES
-    ]
+    if relative:
+        if "range_m" in row:
+            values["range_m"] = row["range_m"]
+            values["min_range_m"] = recipe["min_range_m"]
+        if reference_index is not None:
+            values["reference_index"] = reference_index
+    columns = GOAL_FEATURES + RELATIVE_GOAL_FEATURES if relative else GOAL_FEATURES
+    return [values.get(k, 0.0) for k in columns], [int(k in values) for k in columns]
 
 
 def goal_resource_features(row, actor_index):

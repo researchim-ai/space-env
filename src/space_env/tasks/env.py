@@ -9,9 +9,11 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
+from space_env.navigation.projection import NAVIGATION_FEATURES, numerical_navigation
 from space_env.tasks.goals import (
     GOAL_FEATURES,
     GOAL_RESOURCE_FEATURES,
+    goal_columns,
     goal_features,
     goal_resource_features,
 )
@@ -34,13 +36,21 @@ def observation_space(spec):
             "action_mask": spaces.MultiBinary(a),
         }
     )
+    if spec.navigation_sensors:
+        result.spaces["navigation"] = spaces.Box(
+            -1e300, 1e300, (n, len(NAVIGATION_FEATURES)), dtype=np.float64
+        )
+        result.spaces["navigation_mask"] = spaces.MultiBinary(n)
+        result.spaces["navigation_feature_mask"] = spaces.MultiBinary(
+            (n, len(NAVIGATION_FEATURES))
+        )
     if spec.goal is not None:
         result.spaces["goals"] = spaces.Box(
-            -1e300, 1e300, (16, len(GOAL_FEATURES)), dtype=np.float64
+            -1e300, 1e300, (16, len(goal_columns(spec.goal))), dtype=np.float64
         )
         result.spaces["goal_mask"] = spaces.MultiBinary(16)
         result.spaces["goal_feature_mask"] = spaces.MultiBinary(
-            (16, len(GOAL_FEATURES))
+            (16, len(goal_columns(spec.goal)))
         )
         result.spaces["goal_resources"] = spaces.Box(
             -1e300, 1e300, (64, len(GOAL_RESOURCE_FEATURES)), dtype=np.float64
@@ -80,10 +90,25 @@ def encode(view, spec):
         ]
         out["relation_mask"][i] = 1
     out["action_mask"][: len(view["action_mask"])] = view["action_mask"]
+    if spec.navigation_sensors:
+        out["navigation"] = np.zeros((n, len(NAVIGATION_FEATURES)), dtype=np.float64)
+        out["navigation_mask"] = np.zeros(n, dtype=np.int8)
+        out["navigation_feature_mask"] = np.zeros(
+            (n, len(NAVIGATION_FEATURES)), dtype=np.int8
+        )
+        for entity in view["entities"]:
+            if entity["kind"] == "actor" and entity["id"] in view["navigation"]:
+                i = entity["index"]
+                out["navigation"][i], out["navigation_feature_mask"][i] = (
+                    numerical_navigation(view["navigation"][entity["id"]])
+                )
+                out["navigation_mask"][i] = 1
     if spec.goal is not None:
-        out["goals"] = np.zeros((16, len(GOAL_FEATURES)), dtype=np.float64)
+        out["goals"] = np.zeros((16, len(goal_columns(spec.goal))), dtype=np.float64)
         out["goal_mask"] = np.zeros(16, dtype=np.int8)
-        out["goal_feature_mask"] = np.zeros((16, len(GOAL_FEATURES)), dtype=np.int8)
+        out["goal_feature_mask"] = np.zeros(
+            (16, len(goal_columns(spec.goal))), dtype=np.int8
+        )
         out["goal_resources"] = np.zeros(
             (64, len(GOAL_RESOURCE_FEATURES)), dtype=np.float64
         )
@@ -101,6 +126,8 @@ def encode(view, spec):
                 view["goal"]["deadline_sec"],
                 view["time_sec"],
                 actor_indices.get(row["actor"]),
+                actor_indices.get(row.get("reference_actor")),
+                relative=len(goal_columns(spec.goal)) > len(GOAL_FEATURES),
             )
             out["goal_mask"][i] = 1
         for row in view["goal"]["resources"]:
@@ -163,9 +190,11 @@ class MissionTaskEnv(gym.Env):
             "seed_policy": self._task.seed_policy,
             "ignored_options": sorted(map(str, options or {})),
         }
+        if self._task.navigation_sensors:
+            info["navigation_feature_names"] = list(NAVIGATION_FEATURES)
         if self._task.goal is not None:
             info["goal"] = self.session.goal_status()
-            info["goal_feature_names"] = list(GOAL_FEATURES)
+            info["goal_feature_names"] = list(goal_columns(self._task.goal))
             info["goal_resource_feature_names"] = list(GOAL_RESOURCE_FEATURES)
         return encode(self.session.observe(), self._task), info
 

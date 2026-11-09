@@ -300,6 +300,83 @@ def compile_suite():
             )
             staged["task"]["goal"]["conditions"].insert(0, first)
             cases.append(staged)
+    # Fixed relative-state tasks: independent two-body integrations for both actors.
+    nominal = next(c for c in cases if c["id"] == "orbit-nominal")
+    for mode in (
+        "nominal",
+        "wrong-direction",
+        "waypoints",
+        "keepout",
+        "target-mismatch",
+        "passive",
+    ):
+        relative = copy.deepcopy(nominal)
+        name = "relative-" + mode
+        relative.update(id=name, family="relative_orbit")
+        task = relative["task"]
+        task["id"] = name
+        # Truth-relative goals are shared-control tasks; no cross-role oracle.
+        task["roles"] = {"a": {"actors": ["a", "b"], "action_slots": 1, "stations": []}}
+        definition = relative["scenario"]["definition"]
+        chief = definition["orbits"]["b"]
+        chief["initial"] = copy.deepcopy(definition["orbits"]["a"]["initial"])
+        chief["initial"]["r_m"][0] += 100.0
+        follower = definition["orbits"]["a"]
+        direction = task["actions"][0]["commands"][0]["burn"]["direction_gcrs"]
+        target = _orbit_target(
+            follower, direction, thrust=0.0 if mode == "passive" else 0.5
+        )
+        baseline = _orbit_target(chief, [0.0, 0.0, 0.0], thrust=0.0)
+        delta = [x - y for x, y in zip(target, baseline)]
+        condition = {
+            "id": "relative-state",
+            "kind": "relative_orbit",
+            "actor": "a",
+            "reference_actor": "b",
+            "at_sec": 5.0,
+            "position_m": delta[:3],
+            "velocity_m_s": delta[3:],
+            "position_tolerance_m": 1e-3,
+            "velocity_tolerance_m_s": 1e-6,
+            "min_range_m": 50.0,
+            "require_command": mode != "passive",
+        }
+        if mode == "wrong-direction":
+            task["actions"][0]["commands"][0]["burn"]["direction_gcrs"] = [
+                -x for x in direction
+            ]
+        if mode == "target-mismatch":
+            condition["position_m"][1] += 1.0
+        if mode == "keepout":
+            condition["min_range_m"] = 101.0
+            condition["position_m"] = [300.0, 0.0, 0.0]
+        task["goal"]["conditions"] = [condition]
+        if mode == "waypoints":
+            early = _orbit_target(follower, direction, end=2.0)
+            reference = _orbit_target(chief, [0.0, 0.0, 0.0], thrust=0.0, end=2.0)
+            state = [x - y for x, y in zip(early, reference)]
+            first = copy.deepcopy(condition)
+            first.update(
+                id="relative-cutoff",
+                at_sec=2.0,
+                position_m=state[:3],
+                velocity_m_s=state[3:],
+            )
+            task["goal"]["conditions"].insert(0, first)
+        if mode == "passive":
+            relative["reference_steps"] = [
+                {"action_ids": ["wait"], "advance_sec": 1.0} for _ in range(5)
+            ]
+        relative["task"] = TaskSpec.model_validate(task).model_dump(
+            mode="json", by_alias=True
+        )
+        relative["task_text"] = (
+            "Meet the declared actor-minus-reference GCRS state at its epoch; respect sampled keepout and native resource budgets."
+        )
+        relative["oracle"] = (
+            "Separate RK4 for each actor, h=0.005s; short synthetic central-gravity two-body truth-relative goal, not a navigation sensor."
+        )
+        cases.append(relative)
     base = copy.deepcopy(operations["lanes-wide"])
     task = base["task"]
     ids = [r["id"] for r in base["scenario"]["definition"]["lifecycle"]["requests"]]
@@ -324,7 +401,7 @@ def compile_suite():
         {
             "schema": "space-env.modeling-tasks/1",
             "cases": cases,
-            "scope": "thirteen public synthetic regression cases, five goal types, rigid pointing with matched/unmatched controller precision, rotating off-center thrust and staged orbit waypoints; scripted control, no model inference, blind/OOD or hardware qualification",
+            "scope": "nineteen public synthetic regression cases, six goal types, joint-role relative motion and sampled keepout, rigid pointing with matched/unmatched controller precision, rotating off-center thrust and staged orbit waypoints; scripted control, no model inference, blind/OOD or hardware qualification",
         }
     )
 

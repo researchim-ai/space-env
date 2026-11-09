@@ -52,6 +52,7 @@ space_env = "space_env.envs"
 
 [project.scripts]
 space-env = "space_env.cli:main"
+space-env-models = "space_env.tasks.modeling:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/space_env"]

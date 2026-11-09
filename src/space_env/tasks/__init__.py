@@ -3,6 +3,7 @@
 from space_env.tasks.dataset import VerifiedEpisode, export_dataset, iter_dataset
 from space_env.tasks.env import MissionTaskEnv
 from space_env.tasks.goals import MissionGoal
+from space_env.tasks.modeling import ModelRequirement, inspect_task, model_registry
 from space_env.tasks.schema import TaskAction, TaskDecision, TaskRole, TaskSpec
 from space_env.tasks.session import TaskSession, objective_registry
 from space_env.tasks.tools import TaskTools
@@ -10,6 +11,7 @@ from space_env.tasks.tools import TaskTools
 __all__ = [
     "MissionGoal",
     "MissionTaskEnv",
+    "ModelRequirement",
     "TaskAction",
     "TaskDecision",
     "TaskRole",
@@ -18,6 +20,8 @@ __all__ = [
     "TaskTools",
     "VerifiedEpisode",
     "export_dataset",
+    "inspect_task",
     "iter_dataset",
+    "model_registry",
     "objective_registry",
 ]

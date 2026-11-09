@@ -1,0 +1,3587 @@
+{
+  "schema": "space-env.modeling-inventory/1",
+  "as_of": "2026-11-09",
+  "scope": "Structural checkout inventory plus manually reviewed family paths. Availability is not integration, installed optional dependency availability, correctness, accuracy or superiority.",
+  "module_count": 321,
+  "family_count": 17,
+  "families": {
+    "orbit_dynamics": [
+      "reference/orbit.py",
+      "reference/dynamic.py",
+      "reference/frames.py"
+    ],
+    "maneuvers": [
+      "reference/thrust.py",
+      "reference/actuation.py",
+      "reference/unloading.py"
+    ],
+    "attitude": [
+      "reference/rigid_attitude.py",
+      "reference/rigid_bus.py",
+      "reference/spacecraft_bus.py"
+    ],
+    "relative_motion": [
+      "core/relative.py",
+      "tasks/goals.py"
+    ],
+    "navigation_prediction": [
+      "reference/covariance.py"
+    ],
+    "conjunction_legacy": [
+      "core/encounter.py",
+      "core/probability.py",
+      "envs/conjunction_env.py"
+    ],
+    "power": [
+      "core/power.py",
+      "reference/operations.py"
+    ],
+    "thermal": [
+      "reference/thermal_network.py",
+      "reference/materials.py"
+    ],
+    "earth_observation": [
+      "reference/acquisition.py",
+      "reference/area_coverage.py",
+      "reference/observations.py"
+    ],
+    "payload_quality": [
+      "reference/payload_quality.py"
+    ],
+    "radio_ground": [
+      "reference/radio.py",
+      "reference/radio_network.py",
+      "reference/booking.py"
+    ],
+    "inter_satellite_custody": [
+      "reference/dtn.py"
+    ],
+    "onboard_products": [
+      "reference/lifecycle.py",
+      "reference/dependencies.py"
+    ],
+    "dynamic_planning": [
+      "planning/sequence_lanes.py",
+      "planning/sequence_recovery.py",
+      "api/workspace_dynamic.py"
+    ],
+    "agent_data": [
+      "tasks/session.py",
+      "tasks/dataset.py",
+      "llm/episode.py",
+      "llm/corpus.py"
+    ],
+    "scaling": [
+      "scaling/sequence.py",
+      "scaling/full_orbit.py",
+      "scaling/ensemble.py"
+    ],
+    "external_adapters": [
+      "integrations/orekit_prop.py",
+      "integrations/spice_ephem.py",
+      "integrations/sgp4_prop.py"
+    ]
+  },
+  "modules": {
+    "__init__.py": {
+      "sha256": "e4773f2221dd8b605e4c890f00df79489e737c80ebd179ce1180ce67f1f0a73d",
+      "classes": [],
+      "functions": []
+    },
+    "api/__init__.py": {
+      "sha256": "fbe7a1cf5de770373048f44d40e2c66d2230cfe5adbfe4bdb4e6b22c5f83de6e",
+      "classes": [],
+      "functions": [
+        "__getattr__"
+      ]
+    },
+    "api/console.py": {
+      "sha256": "3a08ba3a71b9f0b7b5b00c6c6fc2d0fceb13101dde9d21e9d9d98e83a64004f1",
+      "classes": [],
+      "functions": [
+        "_close",
+        "_action_label",
+        "_remember",
+        "_actions",
+        "_window",
+        "_job",
+        "_queue",
+        "_ledger",
+        "_burn_note",
+        "_job_status",
+        "_journal",
+        "_plan",
+        "_notes",
+        "_burn_decision",
+        "_screening",
+        "_flight",
+        "_focus_sec",
+        "_view",
+        "open_shift",
+        "step_shift",
+        "shift_is_open"
+      ]
+    },
+    "api/fleet_round.py": {
+      "sha256": "e94e45919b83f2b958025827d1b14c9701c746c6c87e3116e80f398a63a1b083",
+      "classes": [
+        "RoundRequest",
+        "FleetRound"
+      ],
+      "functions": [
+        "dispatch_round"
+      ]
+    },
+    "api/network_dynamic.py": {
+      "sha256": "0f605369bf8c2b8c6965ed0aa854d6db31ef5c2d147d18ce18b14a9921e30f9b",
+      "classes": [],
+      "functions": [
+        "evolve_network",
+        "_controls",
+        "recovery_view",
+        "_build"
+      ]
+    },
+    "api/network_workspace.py": {
+      "sha256": "44c200511fc9452bdadd0984adc8776091679dd388acb6018dc5c453be07fbbb",
+      "classes": [
+        "NetworkLink",
+        "NetworkConfiguration"
+      ],
+      "functions": [
+        "default_network_configuration",
+        "_hardware",
+        "_geometry_configuration",
+        "_ground_setup_envelopes",
+        "collect_network_forecast",
+        "create_network",
+        "metadata",
+        "suggest",
+        "aligned",
+        "describe"
+      ]
+    },
+    "api/operator.py": {
+      "sha256": "e053792fec7f174089262ebc296b141c7879aec47f7567995f60844e465488b8",
+      "classes": [
+        "OperatorError",
+        "OpenRequest",
+        "StepRequest",
+        "HandoverRequest",
+        "OperatorSession",
+        "OperatorStore"
+      ],
+      "functions": [
+        "_interactive_bounds",
+        "token_digest",
+        "navigation_frame",
+        "operator_snapshot_keys",
+        "validate_snapshot",
+        "validate_history",
+        "dispatch"
+      ]
+    },
+    "api/operator_artifacts.py": {
+      "sha256": "b9477a6518509374c8956064b975023ce56ae155a309ac3a5fb1ee6e117fdec2",
+      "classes": [
+        "TransferSpec",
+        "ArtifactChunk",
+        "BoundedWriter",
+        "FileBody",
+        "ArtifactStore"
+      ],
+      "functions": [
+        "failure"
+      ]
+    },
+    "api/operator_events.py": {
+      "sha256": "122ba43d29133e2f779c0e83e05febff525d0dfec835a314ca22abe809108aac",
+      "classes": [
+        "EventPageRequest",
+        "CursorConflict"
+      ],
+      "functions": [
+        "_encode",
+        "_decode",
+        "_sign",
+        "page_history"
+      ]
+    },
+    "api/operator_maintenance.py": {
+      "sha256": "40e4a4ce8614c00b4123a241e52f0c341b68b638dce651e506df35d8ce906f6e",
+      "classes": [],
+      "functions": [
+        "_verify_snapshot",
+        "_file_sha256",
+        "backup_operator_store",
+        "verify_operator_store",
+        "main"
+      ]
+    },
+    "api/operator_recovery.py": {
+      "sha256": "216afddec1228563cffad8bd3d16c614ee2dfff55ca8233eceddbd279e954d15",
+      "classes": [],
+      "functions": [
+        "main"
+      ]
+    },
+    "api/operator_storage.py": {
+      "sha256": "62817cf1d70e251484f0c607eb461f630fc82c35e5861ec6f02c6752a3ce683c",
+      "classes": [
+        "StorageConflict",
+        "OperatorRepository"
+      ],
+      "functions": []
+    },
+    "api/rolling_planner.py": {
+      "sha256": "7bee1fbdf824d3950164dbbbbddf129f2292058655efdf84a9adea7390560572",
+      "classes": [],
+      "functions": [
+        "_feedback",
+        "_actual_choice",
+        "rebuild",
+        "stage",
+        "save",
+        "validate_shape",
+        "validate_history"
+      ]
+    },
+    "api/server.py": {
+      "sha256": "f2172f90f71748a2b7ea2dd31b510d66d2eac715387e5ba4482af78bf8212fa7",
+      "classes": [
+        "_Handler"
+      ],
+      "functions": [
+        "studio_root",
+        "_mission_file",
+        "_mission_outcome",
+        "_json_bytes",
+        "handle_get",
+        "handle_post",
+        "_file",
+        "_operator_response",
+        "serve"
+      ]
+    },
+    "api/workspace.py": {
+      "sha256": "424732b63b21013d181a09fcea5c18f5f3ebdce16a8d806c32bad126d0573e1c",
+      "classes": [
+        "MissionOrder",
+        "MissionConfiguration",
+        "MissionWorkspace"
+      ],
+      "functions": [
+        "parse_configuration",
+        "default_configuration",
+        "compile_configuration",
+        "create_mission",
+        "_metadata",
+        "_aligned",
+        "suggest",
+        "describe"
+      ]
+    },
+    "api/workspace_dynamic.py": {
+      "sha256": "f7341567e6f68a5b79873439560872a82cc5576eb3e94ccbe6d982b40fd7fc07",
+      "classes": [
+        "MissionEvent",
+        "MissionChange"
+      ],
+      "functions": [
+        "evolve_workspace",
+        "_replay",
+        "_build"
+      ]
+    },
+    "api/workspace_replan.py": {
+      "sha256": "4e977098ab21b15648e5390a6d1f8909dbab0a4162591c1ac8fb256f03b09ded",
+      "classes": [
+        "ReplanRequest"
+      ],
+      "functions": [
+        "replan_status",
+        "replan_workspace",
+        "_build"
+      ]
+    },
+    "calibration/__init__.py": {
+      "sha256": "d4adc6a347ee37dc01708e6de1241c532860004f0d6d5eb605a865f6eda82d22",
+      "classes": [],
+      "functions": []
+    },
+    "calibration/ensemble.py": {
+      "sha256": "0c8d90bc08ab37239dc9c56712d267ed86b0c32366dbf6ab5516da4104cf1b45",
+      "classes": [],
+      "functions": [
+        "_uniform",
+        "_draw",
+        "_patch",
+        "_structural",
+        "sample_parameters",
+        "compile_ensemble"
+      ]
+    },
+    "calibration/fit.py": {
+      "sha256": "2dd938c05b2a26ff48c7e2f05ddf22d55ff9234b9c330a656860670f8792b155",
+      "classes": [],
+      "functions": [
+        "measurement_payload",
+        "calibrate"
+      ]
+    },
+    "calibration/hardware.py": {
+      "sha256": "cdeaa519909fdce4ed34c8baa6256a543de363461d317129e2915e62555255fe",
+      "classes": [
+        "WheelAssumptions"
+      ],
+      "functions": [
+        "hardware_catalog",
+        "hardware_profile",
+        "verify_source_bytes",
+        "wheel_model",
+        "solar_resources"
+      ]
+    },
+    "calibration/schema.py": {
+      "sha256": "02a89ad309d9df791ad44281e495e16c031222f0e879bf6c38a82e60c51cd0c3",
+      "classes": [
+        "EvidenceSource",
+        "Observation",
+        "CalibrationGates",
+        "CalibrationSpec",
+        "SensitivityParameter",
+        "EnsembleSpec"
+      ],
+      "functions": []
+    },
+    "catalog/__init__.py": {
+      "sha256": "29177e0534783768c863eb82f61e99c3523087f5c1ec4f5e07fe23b2f0ea1ffd",
+      "classes": [],
+      "functions": []
+    },
+    "catalog/build.py": {
+      "sha256": "2e4f1b558c681bd39845db63f33917d877cf78f527e0e9967ed3ff36cacf992f",
+      "classes": [],
+      "functions": [
+        "read_tle",
+        "spacecraft_config",
+        "mean_orbit",
+        "tle_orbit",
+        "_stations",
+        "_scenario",
+        "make_engine",
+        "sentinel2_design_fleet",
+        "iridium_next_fleet"
+      ]
+    },
+    "catalog/drag.py": {
+      "sha256": "9dee679ed639e4091a7f885e5e9804cda4b93438ed49cff46abfad2df7b028ab",
+      "classes": [
+        "DragComparison"
+      ],
+      "functions": [
+        "bstar_per_er",
+        "cd_area_per_kg_from_bstar",
+        "drag_comparison"
+      ]
+    },
+    "catalog/geometry.py": {
+      "sha256": "1c92adc9b9cd253ccd310353f0a5584c6470b37e4030a6daa9ee5474ae0b21d2",
+      "classes": [],
+      "functions": [
+        "j2_nodal_rate_rad_s",
+        "sun_sync_inclination_rad",
+        "geosynchronous_semimajor_axis_m",
+        "geosynchronous_altitude_m",
+        "mean_semimajor_axis_m",
+        "half_swath_deg",
+        "slant_range_m",
+        "dish_gain_dbi",
+        "rocket_delta_v_m_s",
+        "radiating_area_m2",
+        "raan_rad_for_ltdn",
+        "closure_required_dbw"
+      ]
+    },
+    "catalog/live.py": {
+      "sha256": "987a8924453315a25da186d05d61ac627018e60539fe77d199ffe748c45fe5f2",
+      "classes": [],
+      "functions": [
+        "celestrak_url",
+        "parse_tle_text",
+        "fetch_tle",
+        "save_live_tle"
+      ]
+    },
+    "catalog/mesh.py": {
+      "sha256": "3d7f08f67cbaf5098e183818817ee6fc9354424da156965b0701e0845ef9d627",
+      "classes": [
+        "ShellSlot"
+      ],
+      "functions": [
+        "shell_slots",
+        "_slot",
+        "designed_neighbors",
+        "circular_position_m",
+        "link_open",
+        "route",
+        "slots_above",
+        "route_to_gateway",
+        "iridium_shell"
+      ]
+    },
+    "catalog/phasing.py": {
+      "sha256": "68b3b20944d41daf44e48f20416975602f0e6b0bb0f753737e4a47f683590203",
+      "classes": [],
+      "functions": [
+        "phase_error_m",
+        "add_prograde_dv"
+      ]
+    },
+    "catalog/references.py": {
+      "sha256": "d40efe550ba1bf90e9ffacab723d2eab16e06b034c41c66231479a065a61455f",
+      "classes": [
+        "ReferenceVehicle"
+      ],
+      "functions": [
+        "_xband_closure",
+        "reference"
+      ]
+    },
+    "catalog/traffic.py": {
+      "sha256": "cc6d6263d088325afd2739b8e99c6e7065f3a0024b0c5fbe75b0d16beff8f61c",
+      "classes": [],
+      "functions": [
+        "store_bits",
+        "dump_bits"
+      ]
+    },
+    "cli.py": {
+      "sha256": "84e238dbcf64cc70baa39cf518ea4250abbca0b383819effc0340e4ca34c1642",
+      "classes": [],
+      "functions": [
+        "main"
+      ]
+    },
+    "core/__init__.py": {
+      "sha256": "a6471fdf17e8d4e24cf9f62936259d58ae32377b8ffdb8de31687f9f9797a9d1",
+      "classes": [],
+      "functions": []
+    },
+    "core/access.py": {
+      "sha256": "fc95ef3296bc5ad80f003aed1b9c5d4f65ae92aef34a7bcebf79fff5d30a6ac8",
+      "classes": [
+        "TargetAccess"
+      ],
+      "functions": [
+        "subsatellite_latlon",
+        "footprint_diameter_m",
+        "off_nadir_deg",
+        "target_access",
+        "ground_track_latlon"
+      ]
+    },
+    "core/attitude.py": {
+      "sha256": "a984810aae2db1446ea1bf4c9dccb282e496cc87c80ffc0c39a5152fa48895e9",
+      "classes": [],
+      "functions": [
+        "_normalize",
+        "align_z",
+        "boresight",
+        "_slerp",
+        "slew_step",
+        "slew_limited"
+      ]
+    },
+    "core/bodies.py": {
+      "sha256": "10023822c6fb9ce4877d024d03e5884c959abc4330b4df45ff0985fc4d0493fa",
+      "classes": [],
+      "functions": [
+        "moon_meeus_m",
+        "moon_iau2000_m",
+        "moon_position_m",
+        "tidal_acceleration_m_s2",
+        "third_body_acceleration_m_s2"
+      ]
+    },
+    "core/cdm.py": {
+      "sha256": "82f12d7c1d59b1636ad17b5cf60d7aef2b45acfce54b63a5a3bc4ccd33131edb",
+      "classes": [
+        "CdmObject",
+        "ConjunctionMessage"
+      ],
+      "functions": [
+        "_strip_units",
+        "_number_and_unit",
+        "_scale",
+        "_write_symmetric",
+        "_psd",
+        "parse_cdm_kvn"
+      ]
+    },
+    "core/constants.py": {
+      "sha256": "09bc08b930e9890a505b91dcbd61337e5474b68baa015f1c35121590000ab535",
+      "classes": [],
+      "functions": []
+    },
+    "core/dut1.py": {
+      "sha256": "ee055bfc4bae745a68690d4ee53dfcfc558262cddfe1715e82c953e554fb2e1d",
+      "classes": [
+        "EarthOrientation"
+      ],
+      "functions": [
+        "_series",
+        "bulletin_bounds",
+        "_interpolate",
+        "dut1_seconds",
+        "pole_arcsec"
+      ]
+    },
+    "core/encounter.py": {
+      "sha256": "c7a7ead7f3fe0c19752c947490c78aa6152ecebf444e90972980960eae8d5e73",
+      "classes": [
+        "PropagationContext",
+        "NumericalEncounter"
+      ],
+      "functions": [
+        "_advanced",
+        "_step_state",
+        "process_noise",
+        "secondary_from_geometry",
+        "miss_of_relative_state"
+      ]
+    },
+    "core/environment.py": {
+      "sha256": "2d8ccc12c0488a2c184dc3cec2d1b2ce0095f8b286072102974462c2b157476f",
+      "classes": [
+        "ShadowState"
+      ],
+      "functions": [
+        "_shadow_radii",
+        "shadow_state",
+        "in_eclipse",
+        "solar_flux_at_satellite_W_m2",
+        "altitude_from_position_m"
+      ]
+    },
+    "core/frames.py": {
+      "sha256": "864b63562717ad9ad0199b7e3847d3e9fcbef0121330f9994304c1d687a47fab",
+      "classes": [
+        "FrameError"
+      ],
+      "functions": [
+        "gmst_rad",
+        "_delaunay_rad",
+        "nutation_rad",
+        "gast_iau2000a_rad",
+        "gast_iau1980_rad",
+        "gast_rad",
+        "_rotate_z",
+        "_polar_motion",
+        "_undo_polar_motion",
+        "require_orbit_frame",
+        "require_numerical_frame",
+        "require_same_frame",
+        "copy_state",
+        "geocentric_latitude_deg",
+        "eci_to_ecef",
+        "ecef_to_eci",
+        "_teme_to_itrs",
+        "teme_to_numerical",
+        "_gcrs_from_itrs",
+        "teme_to_gcrs",
+        "geodetic_to_ecef",
+        "ecef_to_geodetic",
+        "elevation_deg"
+      ]
+    },
+    "core/gravity.py": {
+      "sha256": "0b13eb2095b558a0ccd81e44ca3d75b174e049b6185e19ccf63da7879ff307f3",
+      "classes": [],
+      "functions": [
+        "atmospheric_density_kg_m3",
+        "density_nrlmsise_kg_m3",
+        "ambient_density_kg_m3",
+        "acceleration_m_s2",
+        "_srp_acceleration_m_s2"
+      ]
+    },
+    "core/ground.py": {
+      "sha256": "7953a0776b3ebdc968486f7f6a6d303ce38ab93d28ee568d327599819a30e70f",
+      "classes": [
+        "GroundStation"
+      ],
+      "functions": [
+        "_dms",
+        "station_by_name"
+      ]
+    },
+    "core/lifetime.py": {
+      "sha256": "75a5ebd3095a6ead1461796dd4c6cdc75a617c0aae47b60140dd0e64af26710d",
+      "classes": [],
+      "functions": [
+        "_density",
+        "_scale_height_m",
+        "circular_lifetime_years",
+        "drag_makeup_m_s",
+        "drag_ode_lifetime_years"
+      ]
+    },
+    "core/link.py": {
+      "sha256": "71c87b378fd3713c7ee42da6eebe8fbe65b174d1e8b0ec7afe0e6f7e616cc093",
+      "classes": [],
+      "functions": [
+        "free_space_path_loss_db",
+        "link_margin_db",
+        "earth_occults",
+        "isl_closure_range_m",
+        "isl_rate_bps",
+        "isl_margin_db",
+        "stepped_rate_bps",
+        "pass_capacity_bits"
+      ]
+    },
+    "core/orbit.py": {
+      "sha256": "e65c7144604c459906bde0bbd8039e4f0ad58c34564f862166faeb38e9722092",
+      "classes": [
+        "KeplerianElements",
+        "Orbit"
+      ],
+      "functions": [
+        "_to_astropy_time",
+        "_from_astropy_time"
+      ]
+    },
+    "core/packets.py": {
+      "sha256": "1b6bd936716b6ab52dde0c71c8a15fdd0a52b769b47ced608aa4905983d1df2b",
+      "classes": [],
+      "functions": [
+        "encode_space_packet",
+        "decode_space_packet_header"
+      ]
+    },
+    "core/passes.py": {
+      "sha256": "b2d98c0559e2dd16796699133e2ae20c1d0fb90c276a2b33692b5c1a61ef8022",
+      "classes": [
+        "PassWindow"
+      ],
+      "functions": [
+        "find_passes"
+      ]
+    },
+    "core/power.py": {
+      "sha256": "806aecd4d3b96c53d03517fc82fbc9eeadd82501872174d29f2ca4c221417466",
+      "classes": [],
+      "functions": [
+        "solar_generation_w",
+        "step_battery_soc"
+      ]
+    },
+    "core/probability.py": {
+      "sha256": "4750a4c6f293eef8c01fec9652cc73a92c90cf8561ba3fc9886c8beb920bdde1",
+      "classes": [],
+      "functions": [
+        "collision_probability",
+        "collision_probability_integral",
+        "bplane_probability"
+      ]
+    },
+    "core/propagate.py": {
+      "sha256": "cb8746b07b383ddb3ea2ae40e3f28805f1b107caec489a5f17103f1fc379fa84",
+      "classes": [],
+      "functions": [
+        "_rk4",
+        "propagate_state"
+      ]
+    },
+    "core/propulsion.py": {
+      "sha256": "27463f42a7c0a2496098bc91af1afeac923d13f7a7844925028631270af1b45f",
+      "classes": [],
+      "functions": [
+        "exhaust_speed_m_s",
+        "mass_after_thrust",
+        "burn_seconds"
+      ]
+    },
+    "core/relative.py": {
+      "sha256": "614482564cdccd04882f5e326bf5ec697839920333a14b7d71f242dc627c96b8",
+      "classes": [],
+      "functions": [
+        "mean_motion_rad_s",
+        "_vector3",
+        "rtn_basis",
+        "_frame_rate",
+        "relative_state_rtn",
+        "rtn_state_to_eci",
+        "eci_to_rtn",
+        "inertial_delta_v_m_s",
+        "cw_stm",
+        "cw_propagate",
+        "closest_approach"
+      ]
+    },
+    "core/space_weather.py": {
+      "sha256": "5cca284385dbbf0138ef0279c8d30d7636b7453e16dd697ff7f612d16c9b8e5c",
+      "classes": [
+        "SolarIndices"
+      ],
+      "functions": [
+        "_rows",
+        "_flux",
+        "trailing_f107a",
+        "centered_f107a",
+        "indices_for"
+      ]
+    },
+    "core/spacecraft.py": {
+      "sha256": "382ceff44eeb9a4fb742d4eaf28201ab4f226ca3b347f70bfac02d823243a584",
+      "classes": [
+        "SubsystemHealth",
+        "PowerConfig",
+        "ThermalConfig",
+        "PropulsionConfig",
+        "CommsConfig",
+        "PayloadConfig",
+        "SpacecraftConfig",
+        "PowerState",
+        "ThermalState",
+        "PropulsionState",
+        "CommsState",
+        "SpacecraftState",
+        "Spacecraft"
+      ],
+      "functions": []
+    },
+    "core/sun.py": {
+      "sha256": "3075fecb9bd843657022f8e8e79d25bea1110d01d16e841d93e05ac93175b9cf",
+      "classes": [],
+      "functions": [
+        "sun_meeus_m",
+        "sun_position_m",
+        "sun_iau2000_m"
+      ]
+    },
+    "core/thermal.py": {
+      "sha256": "bf70f9098cac12bdc606b95e001bf2ccf66702f5a943be0a3337878827ba5262",
+      "classes": [],
+      "functions": [
+        "environmental_heat_w",
+        "step_temperature_c"
+      ]
+    },
+    "core/time.py": {
+      "sha256": "eb0b373352e4a2a94d562efcac6befda3298f3e5d958d1383ed35a18e4bfa761",
+      "classes": [
+        "Time"
+      ],
+      "functions": [
+        "datetime_to_jd",
+        "jd_to_datetime"
+      ]
+    },
+    "data_generators/__init__.py": {
+      "sha256": "6da41dfedddedf3073adeb892f155ccd34d06fadb957b57f28005cda50bd85b1",
+      "classes": [],
+      "functions": []
+    },
+    "data_generators/agent_run.py": {
+      "sha256": "6d560e274e89172e0682b86d14890f7fc582122ed623e1328a47e3d39e386175",
+      "classes": [
+        "AgentRunRecorder"
+      ],
+      "functions": [
+        "_state",
+        "_content",
+        "read_agent_run",
+        "_verify",
+        "replay_agent_run",
+        "export_tool_dialogue",
+        "record_baseline"
+      ]
+    },
+    "data_generators/mission_dataset.py": {
+      "sha256": "7846a59a713f27035c706523bc687efd985b1e7a987d9c96e18bc608cace0b5b",
+      "classes": [],
+      "functions": [
+        "seal_run",
+        "replay"
+      ]
+    },
+    "data_generators/portable_run.py": {
+      "sha256": "ae2d7c5099f556bbe03325632f0ca5446a990877b533869769af97e188d4b15e",
+      "classes": [
+        "RunRecorder"
+      ],
+      "functions": [
+        "_version",
+        "runtime_manifest",
+        "_observe",
+        "_outcome",
+        "_advance",
+        "_differences",
+        "read_run",
+        "replay_run",
+        "_verify_record",
+        "export_transitions"
+      ]
+    },
+    "data_generators/pretraining.py": {
+      "sha256": "f65075e3f4960b633764933df931a9548782651a596823a23b0b7a2c1ed9fbe1",
+      "classes": [],
+      "functions": [
+        "_load_yaml",
+        "_get_data_dir",
+        "generate_from_templates",
+        "generate_from_simulation",
+        "generate_glossary_entries",
+        "generate_pretraining_chunks"
+      ]
+    },
+    "data_generators/reference_operations.py": {
+      "sha256": "3c7d08230ac82b3164a2568dc9612254c53cb24f742067439a922804f1021f21",
+      "classes": [
+        "ReferenceOperationsRecorder"
+      ],
+      "functions": [
+        "_runtime",
+        "_reconstruct",
+        "replay_reference_operations"
+      ]
+    },
+    "data_generators/sft.py": {
+      "sha256": "b8efc9e48d911b4fcf2a49394871d9e1f7018ff42353f0e161a103441d21ac0c",
+      "classes": [],
+      "functions": [
+        "generate_sft_from_yaml",
+        "generate_sft_scenario_pairs",
+        "generate_sft_from_simulation",
+        "_sft_from_snapshot",
+        "generate_sft_from_constellation",
+        "generate_sft_from_operations",
+        "generate_sft_from_workplan",
+        "generate_sft_from_fleet_plan",
+        "generate_sft_from_horizon",
+        "generate_sft_records"
+      ]
+    },
+    "data_generators/verified_dataset.py": {
+      "sha256": "2cac55468da8a028a04e9b39f7d4863e988d560ba68c427ab6e0aaec8509a8a6",
+      "classes": [],
+      "functions": [
+        "collect_verified",
+        "sft_example"
+      ]
+    },
+    "envs/__init__.py": {
+      "sha256": "acf8ba15e004c17acdb4fcdc9ecd5219a3ab60e55ed348a08f9a767837fc38cf",
+      "classes": [],
+      "functions": [
+        "registered_env_ids"
+      ]
+    },
+    "envs/anomaly_response_env.py": {
+      "sha256": "bef0bfb0efb07c1c99ea2d8528034a7770f6f5471c8a44ecea1442825b770217",
+      "classes": [
+        "AnomalyResponseEnv"
+      ],
+      "functions": []
+    },
+    "envs/base.py": {
+      "sha256": "2f39d88fd5f699dbb22ade982f223dd8d3bdb5b9c0384adbdb5b824ba661cbc6",
+      "classes": [],
+      "functions": [
+        "make_box_obs",
+        "normalize_altitude_km",
+        "normalize_temp",
+        "make_leo_engine",
+        "format_ansi"
+      ]
+    },
+    "envs/campaign_env.py": {
+      "sha256": "be4ebde93a272ce8cd0b72ee9ffa858a4b79de8f50e48010510e312da58318f0",
+      "classes": [
+        "_Job",
+        "DayMissionEnv",
+        "DayShiftEnv",
+        "DishAwardEnv",
+        "OperatorShiftEnv"
+      ],
+      "functions": [
+        "_shift_jobs"
+      ]
+    },
+    "envs/cards.py": {
+      "sha256": "8422ba36317e4df0eda0fdfd1f47d5e16a7dd2c13e1788cdf3f18613cdcdaba0",
+      "classes": [
+        "EnvCard"
+      ],
+      "functions": [
+        "observation_index",
+        "_per_vehicle"
+      ]
+    },
+    "envs/conjunction_env.py": {
+      "sha256": "1440d4c299e698460d0ad4a0aad20f86992313d39ecbe74bd12480eb05c77fb4",
+      "classes": [
+        "ConjunctionAssessmentEnv"
+      ],
+      "functions": []
+    },
+    "envs/constellation_env.py": {
+      "sha256": "09282de6cd0861e72a8e845191da13895ed500473abec540c7c6361f5e9bf182",
+      "classes": [
+        "ConstellationEnv"
+      ],
+      "functions": []
+    },
+    "envs/constellation_ops_env.py": {
+      "sha256": "fd71dc49957b8ccc1099d96484e662c994648c5c05109753e476a3b60b16643d",
+      "classes": [
+        "ConstellationOpsEnv"
+      ],
+      "functions": []
+    },
+    "envs/demand_env.py": {
+      "sha256": "28469444594b61d99b6d6ccca3337793a76b45cffa9cca2321c4909b9956736b",
+      "classes": [
+        "DemandShiftEnv"
+      ],
+      "functions": [
+        "packaged_demand"
+      ]
+    },
+    "envs/dict_env.py": {
+      "sha256": "028fb024e69fd246688605c815a92b2f28afa48ba563557c5305de87b6b6568f",
+      "classes": [
+        "MissionDictEnv"
+      ],
+      "functions": []
+    },
+    "envs/fleet_tasking_env.py": {
+      "sha256": "8059d99b6ea13eb363d2e72f098a2585ae5155f76950278daaaae38f7970fbcd",
+      "classes": [
+        "FleetTaskingEnv"
+      ],
+      "functions": []
+    },
+    "envs/horizon_envs.py": {
+      "sha256": "1bb2899861faeb16c3b4f0ac960c1575c64f0b7e13ebcf2f902b0575c5116315",
+      "classes": [
+        "ConjunctionQueueEnv",
+        "DecayWatchEnv",
+        "PhaseBurnEnv",
+        "RerouteEnv",
+        "DecayWatchHighEnv"
+      ],
+      "functions": []
+    },
+    "envs/industry_envs.py": {
+      "sha256": "d54f62970111102dc6fafe3ddd684e90da5968b8b0da63a4fdf495ea9977cb3d",
+      "classes": [
+        "RendezvousHoldEnv",
+        "PriorityCoverageEnv",
+        "PassFaultEnv",
+        "DebrisAvoidEnv",
+        "DisposalEnv"
+      ],
+      "functions": [
+        "_along_m",
+        "_sma_m",
+        "_coast_sma_m"
+      ]
+    },
+    "envs/market_envs.py": {
+      "sha256": "68e0a5336018817f60c73338c22b40aa456ceb10270d23143945ee0ac491d0ce",
+      "classes": [
+        "StationContentionEnv",
+        "OrderBookEnv"
+      ],
+      "functions": [
+        "_visible"
+      ]
+    },
+    "envs/mission_fleet_env.py": {
+      "sha256": "b45a4038148f746f27dbadf2dceee5528d2beac745467675e0f8a864b3ec5499",
+      "classes": [
+        "MissionFleetEnv",
+        "FleetWatchEnv"
+      ],
+      "functions": [
+        "packaged_mission",
+        "observation_names",
+        "watch_observation_names"
+      ]
+    },
+    "envs/mission_planner_env.py": {
+      "sha256": "894c19a5851f40631cfea1357564d0b002823347de99624512f3db1bdc4bbc69",
+      "classes": [
+        "MissionPlannerEnv"
+      ],
+      "functions": []
+    },
+    "envs/phasing_env.py": {
+      "sha256": "53a586922eb29f363f5d4423f32c03b81380d9f22bfca57cf88b3c977a69452c",
+      "classes": [
+        "SentinelPhasingEnv"
+      ],
+      "functions": []
+    },
+    "envs/regime_envs.py": {
+      "sha256": "3835460c46668cfbba9918bcefe72e2a69af27def16e612387ca8b9b52a052b6",
+      "classes": [
+        "RadarPassEnv",
+        "LongitudeKeepEnv"
+      ],
+      "functions": [
+        "_semimajor_m"
+      ]
+    },
+    "envs/resource_manager_env.py": {
+      "sha256": "09153e83d1752ffa879a9508f8f5e4234207a17485e0083e379051f576beef5a",
+      "classes": [
+        "ResourceManagerEnv"
+      ],
+      "functions": []
+    },
+    "envs/sentinel_env.py": {
+      "sha256": "a885e62e0cea88f986e553dfa9afeb1b3fa6bae4d81fa611fa8002106eb4b02a",
+      "classes": [
+        "CatalogAcquisitionEnv",
+        "SentinelAcquisitionEnv",
+        "CubesatAcquisitionEnv",
+        "SentinelPassFaultEnv",
+        "LandsatAcquisitionEnv"
+      ],
+      "functions": []
+    },
+    "envs/shift_env.py": {
+      "sha256": "cbced487bbdb8725c148720652a23782bf40be83e8c963410b6c4f6789583c04",
+      "classes": [
+        "FleetShiftEnv"
+      ],
+      "functions": []
+    },
+    "envs/tasking_env.py": {
+      "sha256": "6f0da316c878b1c632f284524ed5965823022324210f5b80a9f09b0ac06d7ce1",
+      "classes": [
+        "TaskingShiftEnv"
+      ],
+      "functions": [
+        "packaged_tasking"
+      ]
+    },
+    "envs/workplan_env.py": {
+      "sha256": "868ad57058c095f95acdfcf51f60855c80cebbda571f34f744e78e551f2d6585",
+      "classes": [
+        "WorkPlanEnv"
+      ],
+      "functions": []
+    },
+    "estimation/__init__.py": {
+      "sha256": "e4922f5879ff9033b4c04eb2731d9f3f438d7821f4dea59b5511fdb73d965c18",
+      "classes": [],
+      "functions": []
+    },
+    "estimation/knowledge.py": {
+      "sha256": "244530e91d4a712c93dab4a95f945fcdd0084b9c67d333f3fc174310de625f43",
+      "classes": [],
+      "functions": [
+        "knowledge_claim",
+        "range_shift_m",
+        "look_shift_rad"
+      ]
+    },
+    "estimation/range_arc.py": {
+      "sha256": "c921dfe62e9a71a26f0418ccc14171997876082083e5002bd36c3bb7c6837ac1",
+      "classes": [
+        "RangeFix",
+        "ArcStateFix"
+      ],
+      "functions": [
+        "geometric_range_m",
+        "_shifted",
+        "_range_at",
+        "fit_along_track_m",
+        "_apply_rtn",
+        "_range_rtn",
+        "fit_rtn_arc",
+        "_apply_cross",
+        "fit_two_station_arc"
+      ]
+    },
+    "eval/__init__.py": {
+      "sha256": "a98991f1eff176510d07fb897da3673962ee664a408da11f9dee3e0489999897",
+      "classes": [],
+      "functions": []
+    },
+    "eval/benchmarks.py": {
+      "sha256": "71bc92151d75a0eb8f540c288f7bd181882614967d40cffa7fd8e7a198adbbff",
+      "classes": [],
+      "functions": [
+        "run_benchmark",
+        "run_registered_benchmarks"
+      ]
+    },
+    "eval/ci_profiles.py": {
+      "sha256": "a24b78a7830ad7a080bc5501c1d0ef17b4bb9400a4353d2943c87f6682b2a118",
+      "classes": [],
+      "functions": [
+        "command",
+        "main"
+      ]
+    },
+    "eval/demand_report.py": {
+      "sha256": "da1a54c7d93b6f458e47e485917750b8a778b250ec50a51cecf4b3220196b19f",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "demand_shift_report"
+      ]
+    },
+    "eval/holdout.py": {
+      "sha256": "a5600aeb03ba1b3597c5362592a90a6cadb13502bb15fd1100927c3ddeb11384",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "compare_policies"
+      ]
+    },
+    "eval/load_report.py": {
+      "sha256": "bfa1ee70d2d0dce09c12629c6aa6b4e28fd2f7d8480170f6c4451def569a30c8",
+      "classes": [],
+      "functions": [
+        "load_report",
+        "simulate_load",
+        "ladder_report"
+      ]
+    },
+    "eval/mission_benchmark.py": {
+      "sha256": "409d0813f4805e2b560b9cd42661fd0fd57efd8349e6836526468c23fde132dc",
+      "classes": [],
+      "functions": [
+        "suite_path",
+        "_scenario_path",
+        "_case_passed",
+        "run_mission_suite",
+        "seal_suite"
+      ]
+    },
+    "eval/operator_report.py": {
+      "sha256": "3a0b761b9d17a771bcb13c2ed79161d53fa4b2be0106ff5e01081baa48ab1ee9",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "operator_shift_report"
+      ]
+    },
+    "eval/run_record.py": {
+      "sha256": "876a5892cf0f76548850f12f248ed110975d49eb5989e7eee216feed3769d5a9",
+      "classes": [],
+      "functions": [
+        "freeze_run",
+        "same_outcome"
+      ]
+    },
+    "eval/scale.py": {
+      "sha256": "248272c3957b25ad914ae4e18b120b94d90fcd49d9ee3122527625ce02d33e5b",
+      "classes": [],
+      "functions": [
+        "_success",
+        "scale_report"
+      ]
+    },
+    "eval/sft_rubric.py": {
+      "sha256": "8342740dda4e0aa46d27f0f73b13e14b2500bae8f92ba9571a9368ca0934638d",
+      "classes": [],
+      "functions": [
+        "term_recall",
+        "score_prediction"
+      ]
+    },
+    "eval/statistics.py": {
+      "sha256": "03912916a721ba440fa42bb3bd9b42835d13115df6ad4c9c9f5cf2e5cfc68adb",
+      "classes": [],
+      "functions": [
+        "assign_split",
+        "summarize_seeds",
+        "run_seeded"
+      ]
+    },
+    "eval/tasking_report.py": {
+      "sha256": "2d5bad8b6ee56c9c132bce2f095323297f8346eb1bd5f493de8f65920f1047fa",
+      "classes": [],
+      "functions": [
+        "_episode",
+        "tasking_shift_report"
+      ]
+    },
+    "eval/tracks.py": {
+      "sha256": "cd382c224ee97b49a2633fd4acf6821297cdc2bdebc723b9a3723c4b424e2cbf",
+      "classes": [],
+      "functions": [
+        "run_benchmark_tracks"
+      ]
+    },
+    "eval/transfer.py": {
+      "sha256": "9758b898fb02f4cec46b19df3c46a1eb518b38c279af988f7c2c3303c6af0f1b",
+      "classes": [],
+      "functions": [
+        "acquisition_action",
+        "transfer_dump_report"
+      ]
+    },
+    "factory/__init__.py": {
+      "sha256": "20bac2719f9172d68e05d6d1e7d7e01567a0df91ca72e4a07962cc1ee0ee02d0",
+      "classes": [],
+      "functions": []
+    },
+    "factory/bundle.py": {
+      "sha256": "bf16dcd3d3bf0a77ae01be131ff1802f82a0c53ebef03b4a4fe0c95e500af47c",
+      "classes": [
+        "_RowsBudget"
+      ],
+      "functions": [
+        "_collect",
+        "_collect_rows",
+        "_inventory",
+        "build_dataset",
+        "verify_bundle"
+      ]
+    },
+    "factory/cli.py": {
+      "sha256": "5f5c143fa3bfb721a1925b86b9ea192699ca526e656ac25b92a81ae84658a967",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "factory/generate.py": {
+      "sha256": "a792fdb5bf6a76a9f0134835c4e7efab274967dc18b8f7bd55065f3490cac141",
+      "classes": [],
+      "functions": [
+        "_seed",
+        "_apply",
+        "_family_contract",
+        "compile_factory",
+        "benchmark_manifest"
+      ]
+    },
+    "factory/quality.py": {
+      "sha256": "b4491b17fd654ae055c9406be6318769426e960a0baae334a1021a73a034d8d5",
+      "classes": [],
+      "functions": [
+        "public_view_gate",
+        "quality_report",
+        "_view_signature",
+        "trajectory_fingerprint",
+        "sft_reasons",
+        "semantic_metrics",
+        "content_digest"
+      ]
+    },
+    "factory/registry.py": {
+      "sha256": "44f17f63b1664615ea10c860086a97ac9ae4926c259cd34d6a9a5a57ae135769",
+      "classes": [],
+      "functions": [
+        "register_bundle",
+        "_register_claims"
+      ]
+    },
+    "factory/schema.py": {
+      "sha256": "6699d528010a98752a97a22a997fb4830904c75dfd5ba72ca13ad07eba6878df",
+      "classes": [
+        "Distribution",
+        "FamilyTemplate",
+        "QualityGates",
+        "FactorySpec"
+      ],
+      "functions": [
+        "parameter_registry"
+      ]
+    },
+    "factory/semantic.py": {
+      "sha256": "5458a73a7c24d092c96dc89c6465be4ab7bef5f18a6bf496e227b14988b6899a",
+      "classes": [],
+      "functions": [
+        "fingerprint",
+        "mission_fingerprint",
+        "split_group"
+      ]
+    },
+    "integrations/__init__.py": {
+      "sha256": "109e71f4c9bc7e74d91a223e32e73169295be1476562748ded647cca03785f7b",
+      "classes": [],
+      "functions": []
+    },
+    "integrations/ccsds_backend.py": {
+      "sha256": "1b137311e39ddb645260b10f3e92f8861067e223f4de28c9f05b554801545c38",
+      "classes": [],
+      "functions": [
+        "require_ccsdspy",
+        "variable_length_definition",
+        "parse_packet_file"
+      ]
+    },
+    "integrations/orekit_prop.py": {
+      "sha256": "9bcadf3cd969a927c71b74262d0391dcce67b285b589a9c6f3da95f30c9b19a8",
+      "classes": [],
+      "functions": [
+        "_start_vm",
+        "propagate_keplerian_m"
+      ]
+    },
+    "integrations/sgp4_prop.py": {
+      "sha256": "a974c6e806ebcdc106ee6703abe3d256fdff55b82a029f05126655a7681be4e7",
+      "classes": [],
+      "functions": [
+        "orbit_from_tle"
+      ]
+    },
+    "integrations/spice_ephem.py": {
+      "sha256": "fa3be0eec4db702e49b1ab318642508700ade889c3ac97e7e6146345bcdb3039",
+      "classes": [],
+      "functions": [
+        "load_spice_kernels",
+        "sun_position_spice_m"
+      ]
+    },
+    "llm/__init__.py": {
+      "sha256": "91010ac2f7576302fb975732ddcd851ca9945fe3e96fdceef5fe3535bfcea5f4",
+      "classes": [],
+      "functions": []
+    },
+    "llm/benchmark.py": {
+      "sha256": "0577d527788d95af72675b051b5c63ff009476396aae3cb25270f06874b9c28b",
+      "classes": [],
+      "functions": [
+        "run_agent",
+        "public_policy",
+        "reference_policy",
+        "summarize",
+        "audit",
+        "main"
+      ]
+    },
+    "llm/comparison.py": {
+      "sha256": "5479edbefd59b89e5c69c85fcf3922474491c138f6f782971ed9d461f5fe0e7f",
+      "classes": [],
+      "functions": [
+        "_diagnostic",
+        "run",
+        "audit",
+        "main"
+      ]
+    },
+    "llm/corpus.py": {
+      "sha256": "6a3583bb2696967b7b0d8d3deedc1c6cdc691e7fb82df8dbf0539caef1c0cd54",
+      "classes": [],
+      "functions": [
+        "_read",
+        "_arguments",
+        "_identity",
+        "_analyse",
+        "build_corpus",
+        "verify_corpus",
+        "register_corpus",
+        "main"
+      ]
+    },
+    "llm/episode.py": {
+      "sha256": "0a39a113f5d3965cd15816438fcda626d56675cfb332e8ac566ce4e9b2cefc05",
+      "classes": [
+        "_PublicDecisionError",
+        "LLMEpisode"
+      ],
+      "functions": [
+        "seal",
+        "sources",
+        "_json",
+        "verify_record",
+        "_training_row",
+        "export_training"
+      ]
+    },
+    "llm/learning_experiment.py": {
+      "sha256": "7439fe8cdaebeb8f378271ba7b6a3d45ab8ed85af5c6fa77db7083ca3b347374",
+      "classes": [
+        "LocalPolicy"
+      ],
+      "functions": [
+        "model_manifest",
+        "feasibility",
+        "_nonwait_choices",
+        "_decision_counts",
+        "prepare",
+        "encode_example",
+        "evaluate",
+        "run",
+        "_sealed_read",
+        "_audit_trace",
+        "audit",
+        "main"
+      ]
+    },
+    "llm/local_data.py": {
+      "sha256": "cc8983757560ceea9eb5c15a08cfa2a2c270e2c92f913955719212a8c98c2903",
+      "classes": [],
+      "functions": [
+        "wire_sft_rows",
+        "verify_local_bundle"
+      ]
+    },
+    "llm/mission_suite.py": {
+      "sha256": "0dd6a2ee76602c1207439be36fe145b1824a3a5aca74a4c4da85908d810f6bd4",
+      "classes": [],
+      "functions": [
+        "compile_suite",
+        "validate_suite",
+        "summarize",
+        "run_suite",
+        "audit",
+        "main"
+      ]
+    },
+    "llm/ollama.py": {
+      "sha256": "d6f19bf7013e9c45b274048d5e15c55e36eb5fe3f2e5c3eb9d212bbe0d043800",
+      "classes": [
+        "InferenceStopped",
+        "OllamaPolicy"
+      ],
+      "functions": [
+        "window_messages",
+        "inference_messages",
+        "inference_context",
+        "action_schema",
+        "decode_calls",
+        "wire_context"
+      ]
+    },
+    "llm/operations_suite.py": {
+      "sha256": "84c076f028a3b6058cdd7ced572b0cb82ea7f311f0324a28db493a51e657d629",
+      "classes": [],
+      "functions": [
+        "compile_suite",
+        "validate_suite",
+        "native_evidence",
+        "operational_goal",
+        "export_qualification",
+        "run_suite",
+        "audit",
+        "main"
+      ]
+    },
+    "llm/paired_evaluation.py": {
+      "sha256": "dde13f410ff39ba3ec1bfe5ed140ebfe958885046f4ffba1edcfee331ac006b3",
+      "classes": [],
+      "functions": [
+        "_interval",
+        "evaluate_pairs",
+        "main"
+      ]
+    },
+    "llm/qualification.py": {
+      "sha256": "7b6995f417c3de21184ac7eaff0ed4f194ac28eb6bb37ef862732b993f1a8700",
+      "classes": [],
+      "functions": [
+        "_read",
+        "_plan",
+        "_lease",
+        "_path",
+        "_journal",
+        "_save_journal",
+        "_child",
+        "summarize",
+        "_state",
+        "run_study",
+        "audit_study",
+        "main"
+      ]
+    },
+    "mission/__init__.py": {
+      "sha256": "97d65da09c8acb995cbaa8768dcbe6114ea76fc4a159b6be9f1e69a81776805c",
+      "classes": [],
+      "functions": []
+    },
+    "mission/agent_protocol.py": {
+      "sha256": "da0823df0e014cb476ca5f20265dce9aba8fdb8b595e9b8581aa9c3401ee1556",
+      "classes": [
+        "_Args",
+        "ObserveArgs",
+        "ForecastArgs",
+        "CommandArgs",
+        "SubmitArgs",
+        "CancelArgs",
+        "AdvanceArgs",
+        "RelayArgs"
+      ],
+      "functions": [
+        "tool_schemas",
+        "invoke_tool"
+      ]
+    },
+    "mission/avoidance.py": {
+      "sha256": "7b5a7f6b2056410ed29bb251a5b5827e1f3ccc3a85ce4d6c11bb29a5f2e622e4",
+      "classes": [],
+      "functions": [
+        "avoidance_plan"
+      ]
+    },
+    "mission/awareness.py": {
+      "sha256": "e8a492e492c60f0f3b489ce1cdb2d7afe56c5ebfce140510bc7957d46ce4d5cd",
+      "classes": [
+        "SensorModel",
+        "SensorStream"
+      ],
+      "functions": [
+        "separate_scores"
+      ]
+    },
+    "mission/campaign.py": {
+      "sha256": "f1ee4350448bb956491a400fcbf723ad712738db1e468e6e54d7dfad74dce0fc",
+      "classes": [
+        "DayCampaign",
+        "EncounterPeak",
+        "_Draft",
+        "SharedWindow"
+      ],
+      "functions": [
+        "orbital_period_s",
+        "_force",
+        "_screen_covariance",
+        "_grid",
+        "_closest",
+        "_track_from_keplerian",
+        "_with_burn",
+        "_mission_arc",
+        "_ready_bits",
+        "_share_stations",
+        "_same_pass",
+        "_assign_dishes",
+        "campaign_drafts",
+        "shared_windows",
+        "award_window",
+        "commit_award",
+        "award_day",
+        "_day_plans",
+        "build_day_campaign"
+      ]
+    },
+    "mission/coast.py": {
+      "sha256": "dde8107c413a54dca801a93c09383fe0f904c303b393b8a502700bc4335c3ddb",
+      "classes": [],
+      "functions": [
+        "coast_to_job"
+      ]
+    },
+    "mission/constraints.py": {
+      "sha256": "30a0fe8fdf403e0ac6302b1c5b6f37756a4df3fccf4fd8437b0feb2c03561a15",
+      "classes": [
+        "Constraints"
+      ],
+      "functions": []
+    },
+    "mission/demand.py": {
+      "sha256": "3129219e0cdc711d7b974be7903278e4efd93bac248b5f1ece8b23de2fe2b768",
+      "classes": [],
+      "functions": [
+        "_samples",
+        "_visible",
+        "independent_demand"
+      ]
+    },
+    "mission/events.py": {
+      "sha256": "ef523a47d895d4a26d78378efd2497a9feaf2269b70b408bf86f08e368e41e1b",
+      "classes": [
+        "EventKind",
+        "MissionEvent",
+        "PlannedEvent"
+      ],
+      "functions": []
+    },
+    "mission/factory.py": {
+      "sha256": "d33161ad012691511578e7a3bd045391e3f05e517b91cd2eb1b411da0c3ef4ff",
+      "classes": [],
+      "functions": [
+        "_fleet",
+        "_opportunities",
+        "fleet_strip",
+        "build_mission",
+        "write_mission"
+      ]
+    },
+    "mission/fleet_plan.py": {
+      "sha256": "c6509821ea0213fc9443fa75d4eab21b98e7e58251d2b7d686da8ad647299900",
+      "classes": [
+        "FleetTask",
+        "FleetSchedule"
+      ],
+      "functions": [
+        "_elevations",
+        "_pair",
+        "build_relay_schedule"
+      ]
+    },
+    "mission/geometry_requests.py": {
+      "sha256": "709eccc2c951232291fb6f12ef9024db6fcba7121cc273970347049ef673cee4",
+      "classes": [],
+      "functions": [
+        "ground_distance_m",
+        "strip_fits",
+        "polygon_fits",
+        "revisit_possible",
+        "stereo_possible",
+        "dependency_open",
+        "classify_request"
+      ]
+    },
+    "mission/goals.py": {
+      "sha256": "171085cad082039425dc019af8605545c4cf201d970d674c1c5cf22239c8adbd",
+      "classes": [
+        "MissionGoal"
+      ],
+      "functions": []
+    },
+    "mission/ground_schedule.py": {
+      "sha256": "c38bade02612968732d40bb33f4fa8aaadc4f5cbb8a059487d37f8dfc6b474c4",
+      "classes": [],
+      "functions": [
+        "book_passes"
+      ]
+    },
+    "mission/horizon.py": {
+      "sha256": "b3f248c6f2b0dc38761ba18cc05040e879fcfcd118014c0db3e850968c04be3e",
+      "classes": [
+        "HorizonTask",
+        "HorizonPlan"
+      ],
+      "functions": [
+        "_direction",
+        "schedule_conjunctions",
+        "_secondary",
+        "_conjunction_fleet",
+        "_own_rows",
+        "_pc_against_own",
+        "build_conjunction_plan",
+        "coast_conjunction",
+        "execute_conjunction_plan",
+        "build_two_burn_phase_plan",
+        "_sma_m",
+        "_coast_sma_m",
+        "build_decay_plan",
+        "_decay_orbit",
+        "execute_decay_plan",
+        "_open_neighbors",
+        "_path",
+        "build_reroute_schedule"
+      ]
+    },
+    "mission/loader.py": {
+      "sha256": "cf2e9109ef7b90ba4639c22d3a4fed405ca480d8fab1340da0dc936c2a1c8b57",
+      "classes": [],
+      "functions": [
+        "load_engine"
+      ]
+    },
+    "mission/outcome.py": {
+      "sha256": "f36878940961c06d089b7ef6d4a416d98f8abce8cc905e7e3d288e93d951b8af",
+      "classes": [],
+      "functions": [
+        "classify_outcome"
+      ]
+    },
+    "mission/phasing.py": {
+      "sha256": "56ab270367af9faad2471a8d155f65989e8d1bc2cb73fa5c06c9c57e227972fe",
+      "classes": [],
+      "functions": [
+        "phase_plan"
+      ]
+    },
+    "mission/quality.py": {
+      "sha256": "c97213ba851bd171edea1e6eb2ddb630a89b2d510150f58319d2b687ecd27cda",
+      "classes": [],
+      "functions": [
+        "cloud_cover",
+        "frame_grade"
+      ]
+    },
+    "mission/registry.py": {
+      "sha256": "c115635f5b0371579cd393ae50cbef8a7ec49fc35539f11f0554712a7640b719",
+      "classes": [],
+      "functions": [
+        "scenario_registry"
+      ]
+    },
+    "mission/sar_ops.py": {
+      "sha256": "20da52b15651ec6a761c9a58b7685025ce5fbc5756a33dc4d1a8b56c7d6cc85d",
+      "classes": [
+        "SarDuty"
+      ],
+      "functions": [
+        "incidence_deg",
+        "mode_swath_m",
+        "energy_wh",
+        "energy_allows",
+        "sar_look"
+      ]
+    },
+    "mission/scenario_v2.py": {
+      "sha256": "0b9502319d8dff10eb6bd6980665efcf1ab9f1f39bcd6c4bd4bca2c6a01895a3",
+      "classes": [],
+      "functions": [
+        "load_scenario_v2",
+        "semantic_hash",
+        "scenario_manifest",
+        "world_from_scenario"
+      ]
+    },
+    "mission/scenarios.py": {
+      "sha256": "43f9e822c1b2fe87e43ea0204cae098312ab7b9cced54ef68a66239da0e83a2d",
+      "classes": [
+        "GroundTarget",
+        "ScenarioType",
+        "AnomalyInject",
+        "ConjunctionInject",
+        "ScenarioConfig"
+      ],
+      "functions": []
+    },
+    "mission/session.py": {
+      "sha256": "31d4454753c5091355a8f573ffcec6fe0c561b1433006a88163270fb4c157c3f",
+      "classes": [
+        "RevisionError",
+        "MissionSession"
+      ],
+      "functions": [
+        "mission_report"
+      ]
+    },
+    "mission/shift_scenario.py": {
+      "sha256": "e9229680d35a10f109caadd064069bb61e2c074028791ddc02586aabbd809710",
+      "classes": [],
+      "functions": [
+        "_default_path",
+        "_demand",
+        "_checked",
+        "load_mission_scenario",
+        "load_shift_scenario"
+      ]
+    },
+    "mission/stationkeep.py": {
+      "sha256": "14da84d35b897a8f65efce6582279fa79924c5bae446cef7627a751945a54887",
+      "classes": [],
+      "functions": [
+        "drag_makeup_schedule"
+      ]
+    },
+    "mission/tasking.py": {
+      "sha256": "00f8c22afc3102e3c17ecc503ca228e6c684f849eed95591a392a06f144315cb",
+      "classes": [
+        "TaskRequest",
+        "StationOutage",
+        "SlotOffer"
+      ],
+      "functions": [
+        "_better",
+        "_rank",
+        "_onboard_request",
+        "_payload_matches",
+        "_visible_state",
+        "_visible",
+        "_captured",
+        "_opening_offset",
+        "_prefer_window",
+        "_scarce_window",
+        "_visible_during",
+        "_first_visible_offset",
+        "_first_contact_offset",
+        "_cut_to_event",
+        "_ensure_target",
+        "_focus_target",
+        "_station_down",
+        "_can_dump",
+        "_relay",
+        "_commands",
+        "requests_from_scenario",
+        "_weight",
+        "_receipts_for",
+        "_covered_union",
+        "_countable_receipts",
+        "_single_acquisition",
+        "_completion_time",
+        "service_level",
+        "delivery_score",
+        "request_lifecycle",
+        "exact_slot_plan",
+        "mission_kpis",
+        "_unmet_rows",
+        "run_policy",
+        "_final_rows",
+        "run_scenario"
+      ]
+    },
+    "mission/tools.py": {
+      "sha256": "98475ec464c4ebc1efe2055ffa4b766403feaddcfaa1a736825aca6e893cb01b",
+      "classes": [
+        "ToolBudgetError",
+        "MissionTools"
+      ],
+      "functions": [
+        "choose_request",
+        "run_baseline"
+      ]
+    },
+    "mission/types.py": {
+      "sha256": "b3582570cd1e5a5f441b5297ea482164fe19d2a13d735638a6de4a78063f36a1",
+      "classes": [
+        "MissionType",
+        "MissionProfile"
+      ],
+      "functions": []
+    },
+    "mission/workplan.py": {
+      "sha256": "529d2dd62266bcf50b4d34062125bf0b9ccc0d77a0cfbea99998ca4d5e93c2e6",
+      "classes": [
+        "Opportunity",
+        "WorkItem",
+        "WorkPlan"
+      ],
+      "functions": [
+        "maneuver_item",
+        "_bits_text",
+        "_span",
+        "_cut_out",
+        "_wanted_bits",
+        "schedule_acquisition",
+        "_stations_for",
+        "_target_prefix",
+        "_group_open",
+        "_block_to_opportunity",
+        "collect_opportunities",
+        "build_acquisition_plan"
+      ]
+    },
+    "planning/__init__.py": {
+      "sha256": "bf0603acc28f08c2ae78056ba2a452b9d9851604b5b612f177cd10c810c390f4",
+      "classes": [],
+      "functions": []
+    },
+    "planning/actor_cli.py": {
+      "sha256": "60ce0b2e3efe3fe7389690fe498be0432b13a2af41559bed3e36f52d3b61eb20",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/actor_data.py": {
+      "sha256": "a4ccb4886081001492800532a26b1817d4cc2eb2737867dad2f81c017821f6a8",
+      "classes": [],
+      "functions": [
+        "_source",
+        "publish_actor_data",
+        "_rows",
+        "verify_actor_data"
+      ]
+    },
+    "planning/actor_gym.py": {
+      "sha256": "b2c31e1f5f8b996160952af7dec0926ece6511e584dccb0bf446aa8069a4536a",
+      "classes": [
+        "ActorMissionEnv"
+      ],
+      "functions": []
+    },
+    "planning/actor_online.py": {
+      "sha256": "2ffc66b08a0238df37e50c776dad79fcc4ad89cafa0044f09eef1890b030d08f",
+      "classes": [
+        "ActorCoordinator"
+      ],
+      "functions": [
+        "online_rows"
+      ]
+    },
+    "planning/actor_parallel.py": {
+      "sha256": "fa27751fbc89c247aa0ebc4792568b69ae48e12673805f610e66ce5cc72a2b34",
+      "classes": [
+        "ActorParallelEnv"
+      ],
+      "functions": []
+    },
+    "planning/actor_projection.py": {
+      "sha256": "4d782ec3817381ce9933542b6a54485122da9e1d93b2121475e1b0e917f4a6dd",
+      "classes": [],
+      "functions": [
+        "actor_roles",
+        "actor_catalogues",
+        "project_actor_observation"
+      ]
+    },
+    "planning/assignment.py": {
+      "sha256": "ee53c2152f145c0007869109590b473782279f3e7866a9997277565d16474fc2",
+      "classes": [],
+      "functions": [
+        "assign_configuration"
+      ]
+    },
+    "planning/benchmark.py": {
+      "sha256": "85754736c7e2e39b14b085022505c5ad0d8051484692f560e98558e42eb6cb84",
+      "classes": [
+        "BenchmarkCase",
+        "TeacherGates",
+        "BenchmarkSpec"
+      ],
+      "functions": [
+        "qualify_teacher",
+        "_run_job",
+        "_dispatch",
+        "run_benchmark",
+        "verify_evaluation"
+      ]
+    },
+    "planning/chain.py": {
+      "sha256": "d6d8d93187aad91923529d34c3366d2cef027e9e09da01de591475aa6b3f67c5",
+      "classes": [
+        "ChainSettings",
+        "ChainActor",
+        "ChainDemand",
+        "ChainContact",
+        "ChainAcquisition",
+        "ChainView"
+      ],
+      "functions": [
+        "validate_view",
+        "profile",
+        "collect_chain_forecast",
+        "schedule_chains",
+        "materialize_task",
+        "propose_chain",
+        "verify_chain_proposal",
+        "replan_chain",
+        "verify_chain_replan"
+      ]
+    },
+    "planning/chain_cli.py": {
+      "sha256": "f9ba0e9a3c7d77e47c09de731e533226d0773c7c48dfb84154151dde2103bfec",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/cli.py": {
+      "sha256": "4cd89330c461f2db75bcf14431c2688adf070026aba71579be318ebb36757f4d",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/demand_cli.py": {
+      "sha256": "bc29bbcccbadb7d08e07ab1d6d21b29d855f45bb624b04b4775f5a448e566867",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/demand_contract.py": {
+      "sha256": "69f5febea3f8ef8560c691b51d89865d7952c3d266b6adb72eefb6bd0a6a31a9",
+      "classes": [
+        "DemandPayload",
+        "DemandEvent",
+        "DemandGoals"
+      ],
+      "functions": [
+        "effective_scenario",
+        "validate_demand_schedule",
+        "demand_evidence"
+      ]
+    },
+    "planning/demand_journal.py": {
+      "sha256": "1c0429f1769ca56124dccb220b8f70c18c30955b8a673632947a9943c1b7aea4",
+      "classes": [
+        "DemandBatch"
+      ],
+      "functions": [
+        "_seal",
+        "_base",
+        "_version",
+        "_bound_source",
+        "create_demand_journal",
+        "current_demand_plan",
+        "_augment",
+        "_compile",
+        "verify_demand_journal",
+        "append_demand"
+      ]
+    },
+    "planning/fleet_scheduler.py": {
+      "sha256": "c810be29a9d790a61aa50c814cf7393a8ed4a62162afabd29a71d179f4f8d311",
+      "classes": [
+        "FleetSettings"
+      ],
+      "functions": [
+        "_orders",
+        "schedule_fleet"
+      ]
+    },
+    "planning/forecast_benchmark.py": {
+      "sha256": "ef77104a1dae25d54cfc452637d90a916600e322be03e911b3f0f3e78ac86e6c",
+      "classes": [
+        "ForecastCase",
+        "ForecastTeacherGates",
+        "ForecastBenchmarkSpec"
+      ],
+      "functions": [
+        "forecast_teacher_report",
+        "_summary",
+        "run_forecast_benchmark",
+        "verify_forecast_benchmark"
+      ]
+    },
+    "planning/forecast_cli.py": {
+      "sha256": "b62de36f2aab2294176c26d254e6b25ad779990ddb62970d9c73a78e6c35524a",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/forecast_delivery.py": {
+      "sha256": "7e87dd8b92dc4a3409c1042aae94e5ce5441ac80af858a29218a435e82e474b1",
+      "classes": [
+        "DeliverySchedulerSettings",
+        "_Vehicle",
+        "_Product",
+        "DeliveryForecast"
+      ],
+      "functions": [
+        "_profile",
+        "collect_delivery_forecast",
+        "_validate_view",
+        "schedule_delivery",
+        "forecast_mission_plan"
+      ]
+    },
+    "planning/incident.py": {
+      "sha256": "0de99baccd5bd2978f08679e18b8fee61281380c5a8d22f0b7a46f3bcccebd34",
+      "classes": [
+        "StationDisruption",
+        "IncidentSpec",
+        "RecoveryState"
+      ],
+      "functions": [
+        "recovery_states",
+        "schedule_recovery",
+        "_bare_steps",
+        "recover_incident",
+        "_recover_epoch",
+        "verify_incident"
+      ]
+    },
+    "planning/incident_cli.py": {
+      "sha256": "2df79d478eb596eb864ea0a072ebdb784610bd8c41a63e6b0bc2446841b01a9b",
+      "classes": [],
+      "functions": [
+        "run_command"
+      ]
+    },
+    "planning/incident_data.py": {
+      "sha256": "c52ebbb0acc30ed24f31e8ce0a5b0a55fcc1f2c6cdc2dfb00ce8c1430146d8f4",
+      "classes": [],
+      "functions": [
+        "role_rows",
+        "publish_incident_data",
+        "verify_incident_data",
+        "read_line"
+      ]
+    },
+    "planning/incident_journal.py": {
+      "sha256": "a8d2d058b3302d0e2cf1e7c56b46af930b1f2db0cbe91f458a169717ef0b0e30",
+      "classes": [],
+      "functions": [
+        "_seal",
+        "create_journal",
+        "current_plan",
+        "_fork",
+        "_core",
+        "verify_journal",
+        "append_incident"
+      ]
+    },
+    "planning/joint_network.py": {
+      "sha256": "e10cf594314adfb724958f0a2f27f3005a4577bb94a637520807e588420fa882",
+      "classes": [
+        "NetworkActor",
+        "NetworkDemand",
+        "NetworkEdge",
+        "CaptureSlots",
+        "NetworkRecovery",
+        "JointNetworkView"
+      ],
+      "functions": [
+        "ground_width",
+        "schedule_network"
+      ]
+    },
+    "planning/mission_bundle.py": {
+      "sha256": "fbe2a26fe72e8f95fc84d53ec5030522ed05ca4f3196e6d3473e47ff5c156fe8",
+      "classes": [],
+      "functions": [
+        "strict_json",
+        "read_json",
+        "_operations",
+        "certificate",
+        "_quality",
+        "_bound_rows",
+        "publish_plan_bundle",
+        "verify_plan_bundle"
+      ]
+    },
+    "planning/mission_cli.py": {
+      "sha256": "1065bbbca0fccd34c81f19af570943d994ac9e182ffefb59419c078848f912da",
+      "classes": [],
+      "functions": [
+        "write_new",
+        "run_command"
+      ]
+    },
+    "planning/mission_plan.py": {
+      "sha256": "183b244ef0205ee52f13f42f11f71bc8c3b0b3b04877e9484d5ac7e40d3793a0",
+      "classes": [
+        "PlanGoals",
+        "PlanStep",
+        "RecoveryWitness",
+        "MissionPlan",
+        "PlanExecution"
+      ],
+      "functions": [
+        "_sealed",
+        "validate_plan",
+        "make_mission_plan",
+        "recorded_mission_plan",
+        "check_episode_plan",
+        "validate_execution"
+      ]
+    },
+    "planning/model.py": {
+      "sha256": "d37292e71901f74402e4b876a7ebd777b7d704f15d9d54f483fd603f7cff6555",
+      "classes": [
+        "PolicyConfig",
+        "PlanningInput"
+      ],
+      "functions": [
+        "make_input"
+      ]
+    },
+    "planning/network_benchmark.py": {
+      "sha256": "3fdcc2574bd5eb11f7663437eeeca0fd91778978900a0a63d4ef07df3695d93d",
+      "classes": [
+        "NetworkCase",
+        "NetworkSuite"
+      ],
+      "functions": [
+        "geometry_key",
+        "network_suite",
+        "request_order",
+        "_validate_view",
+        "features",
+        "_training_identity",
+        "_reward",
+        "training_arrays",
+        "fit_selector",
+        "choose_strategy",
+        "workload",
+        "evaluate",
+        "summarize",
+        "audit_benchmark",
+        "main"
+      ]
+    },
+    "planning/network_demand_benchmark.py": {
+      "sha256": "5b52995b9fd660e6e36abed21f3b23ecf1eb305eb8aa3f92efd02b6cd8243abe",
+      "classes": [],
+      "functions": [
+        "demand_suite",
+        "workload",
+        "summarize",
+        "audit",
+        "main"
+      ]
+    },
+    "planning/network_optimal.py": {
+      "sha256": "8b16c8f037be2f9fc6f6cf8527771052ace8a2cce9260e12688860dd5b462287",
+      "classes": [],
+      "functions": [
+        "_view",
+        "_span",
+        "_resources",
+        "verify_exact_schedule",
+        "optimize_network"
+      ]
+    },
+    "planning/network_selector.py": {
+      "sha256": "097a03579c499d5fef84ec8e0a2ce74e5fcc36e94897547e1590f41b8aae6435",
+      "classes": [],
+      "functions": [
+        "fit_regret_selector"
+      ]
+    },
+    "planning/network_selector_study.py": {
+      "sha256": "6d7e7681229fe8f1a9b74bd5a71b2f06875f4260d803a30ddf2959d163a04ec2",
+      "classes": [],
+      "functions": [
+        "selector_suite",
+        "fit_models",
+        "write",
+        "read",
+        "audit",
+        "main"
+      ]
+    },
+    "planning/oracle.py": {
+      "sha256": "fe24a664a314edb0d61ab43f441074a693d1fd56794b39b21b20fc5abac8a219",
+      "classes": [],
+      "functions": [
+        "tiny_oracle"
+      ]
+    },
+    "planning/pointing_envelope.py": {
+      "sha256": "6f6f3b7ad58d6e5b5d21cccced113a5e7357e91425be4f16002d21d3c8cadca8",
+      "classes": [],
+      "functions": [
+        "sealed",
+        "cone_angle",
+        "collect_pointing_envelope",
+        "diagnose_network"
+      ]
+    },
+    "planning/policy.py": {
+      "sha256": "354c51b94fea8bf28875a0039c8fb668f126a6890ad49b64030292bf4a2f1bae",
+      "classes": [
+        "BaselinePolicy"
+      ],
+      "functions": [
+        "conflicts",
+        "_acked_releases",
+        "_ready_ground_product"
+      ]
+    },
+    "planning/release_benchmark.py": {
+      "sha256": "1f6eab5eb4cdd4c4a5ba97936d335784d77928bc466c4c98f3013d197ca0750d",
+      "classes": [
+        "Budget",
+        "Gates",
+        "Case",
+        "Suite"
+      ],
+      "functions": [
+        "select_schedule",
+        "native_metrics",
+        "teacher_report",
+        "_worker",
+        "summarize_envelope",
+        "_launch",
+        "run_suite",
+        "verify_suite",
+        "main"
+      ]
+    },
+    "planning/release_cases.py": {
+      "sha256": "54f0e7a473155b412a009486891e23982901310a46e77d32a1d52746839a7cce",
+      "classes": [],
+      "functions": [
+        "release_suite"
+      ]
+    },
+    "planning/runner.py": {
+      "sha256": "ef9ce87e9dcc3f3b65113ec5dd24fcb900031c2fc1da454850487aee72832802",
+      "classes": [
+        "PlanningRun"
+      ],
+      "functions": [
+        "process_peak_rss_bytes"
+      ]
+    },
+    "planning/sequence_lanes.py": {
+      "sha256": "6ef5e5d4d51b7aefbf4bf88e597cf6cf7a4247c19754a0745fa7e1a5e8cf383d",
+      "classes": [
+        "_Ledger"
+      ],
+      "functions": [
+        "seal",
+        "collect_sequence_geometry",
+        "_admit",
+        "_cost",
+        "_slew_cells",
+        "schedule_sequence",
+        "verify_sequence_schedule"
+      ]
+    },
+    "planning/sequence_recovery.py": {
+      "sha256": "2f09942180c71b479816ee392f4fb9af617ce2305af32889a3d2cd16c4783be6",
+      "classes": [
+        "UnsupportedRecovery"
+      ],
+      "functions": [
+        "collect_recovery_geometry",
+        "schedule_recovery"
+      ]
+    },
+    "planning/terminal_sequence.py": {
+      "sha256": "621962c642c98b84927276a56cb171dcd3e749c1dc3d2d146b90a8e741d5bc30",
+      "classes": [],
+      "functions": [
+        "sealed",
+        "collect_terminal_geometry",
+        "_admit_geometry",
+        "compact_terminal_schedule",
+        "verify_terminal_schedule"
+      ]
+    },
+    "reference/__init__.py": {
+      "sha256": "dc61fb2eaf48ca33305c02876e71f874c1cc4ae11fdacc44669f6d6d7e90ed56",
+      "classes": [],
+      "functions": []
+    },
+    "reference/access.py": {
+      "sha256": "ca3e0fc476ff8d34f8bd92943b0a600aa646cb6a59486d2c422784ca2a6d311f",
+      "classes": [
+        "ReferenceEphemeris"
+      ],
+      "functions": []
+    },
+    "reference/acquisition.py": {
+      "sha256": "a5f3cf2c9c1c652ff00ec6ef49140197e12b1445b378d5c61b83536612bbef14",
+      "classes": [
+        "AcquisitionTarget",
+        "AcquisitionSensor"
+      ],
+      "functions": [
+        "acquisition_geometry",
+        "acquisition_windows"
+      ]
+    },
+    "reference/actuation.py": {
+      "sha256": "83720dfa718fa81889f94bd03c5cfb4a1b3ba2ba33938f27283cc915c01e5d19",
+      "classes": [
+        "RigidThrustSettings",
+        "EngineSettings",
+        "ActuationSettings",
+        "CoupledActuation"
+      ],
+      "functions": []
+    },
+    "reference/adaptation.py": {
+      "sha256": "90c2c0ccc023a119b685bf58e8c0d7ae97db765607813cd46d03b52f2d7a8bac",
+      "classes": [],
+      "functions": [
+        "adapt_reference_run"
+      ]
+    },
+    "reference/area_coverage.py": {
+      "sha256": "79e4d04428adee6ea620c5256287a5e205cad68de263997009e0570734077c88",
+      "classes": [
+        "AreaOfInterest",
+        "AreaRequirement",
+        "RectangularFootprint"
+      ],
+      "functions": [
+        "_libraries",
+        "geometry_manifest",
+        "_domain",
+        "domain",
+        "ray_ellipsoid",
+        "rectangular_footprint",
+        "_project_footprint",
+        "_geometry",
+        "coverage_from_samples",
+        "merge_coverage",
+        "coverage_satisfied",
+        "area_report"
+      ]
+    },
+    "reference/benchmark.py": {
+      "sha256": "8a76d443e346d8c8b1de65cc66dca837cee314570e423b7e5da31046d011a054",
+      "classes": [],
+      "functions": [
+        "evaluate_calendar_suite",
+        "save_calendar_benchmark",
+        "verify_calendar_benchmark"
+      ]
+    },
+    "reference/booking.py": {
+      "sha256": "654daf118adf0e31034c50de85dde099ec89c3505aab49064d7c55ee7a0bc3b7",
+      "classes": [
+        "TerminalBooking",
+        "ExternalReservation"
+      ],
+      "functions": [
+        "validate_bookings",
+        "import_reservations"
+      ]
+    },
+    "reference/covariance.py": {
+      "sha256": "6097ec722fb8bc3fbd7c2526b7bf768ae62f9b2002c2bf6c1e18d6fde4185755",
+      "classes": [
+        "NavigationSettings",
+        "CovarianceArc"
+      ],
+      "functions": [
+        "psd_matrix",
+        "state_jacobian"
+      ]
+    },
+    "reference/dependencies.py": {
+      "sha256": "7234ff0b902706703ad9ccd44a83574a1bc217d3f4a10e45dcb7dea2d4bff61c",
+      "classes": [],
+      "functions": [
+        "dependency_children",
+        "dependency_order"
+      ]
+    },
+    "reference/dtn.py": {
+      "sha256": "c1da9cd612e28936fca7036c426d9b6c434a22313fc997d8f24e5591295396d2",
+      "classes": [
+        "ReceiverResources",
+        "ISLLink",
+        "DTNSettings",
+        "CustodyNetwork"
+      ],
+      "functions": []
+    },
+    "reference/dynamic.py": {
+      "sha256": "739876b617ec33d78c67f247054f1ad6bd6662b6e1149bcf6667cecaceb079a4",
+      "classes": [
+        "IntegratorSettings",
+        "PropulsionSettings",
+        "InitialOrbit",
+        "OrbitSettings",
+        "EOPInput",
+        "WeatherInput",
+        "DynamicMissionSpec",
+        "DynamicReferenceBackend"
+      ],
+      "functions": []
+    },
+    "reference/event_env.py": {
+      "sha256": "622eaf3b188337d9c1de68ce6e85ed7320d3e4640cdb065c4cf2d1ce22a1877e",
+      "classes": [
+        "ReferenceEventDownlinkEnv"
+      ],
+      "functions": []
+    },
+    "reference/events.py": {
+      "sha256": "9d8ded91b6589e87a3be8a8cbf320830664b6cf807c84dc2a67d7397e03171fb",
+      "classes": [],
+      "functions": [
+        "validate_event_envelope",
+        "apply_events"
+      ]
+    },
+    "reference/frames.py": {
+      "sha256": "79ef723b6f37ca976d670f6c5d9d3668b019b26e695b44525a6d924be4cb0a7b",
+      "classes": [
+        "FrameContext"
+      ],
+      "functions": [
+        "_rotation_cached",
+        "frame_cache_info",
+        "clear_frame_cache",
+        "c2t_matrix",
+        "_vector",
+        "_covariance"
+      ]
+    },
+    "reference/geometry_events.py": {
+      "sha256": "f87c9c5c694c9dfc37ff30b4f5ffa0249b6265097478009b06ced74b8c683c24",
+      "classes": [
+        "SearchSettings"
+      ],
+      "functions": [
+        "coverage",
+        "positive_windows",
+        "provider_boundaries",
+        "eclipse_windows"
+      ]
+    },
+    "reference/lifecycle.py": {
+      "sha256": "bcde3116ed87efbdc7e5c2d49df12884dcf36a7563d1c81f63f372769a85db28",
+      "classes": [
+        "CustomerRequest",
+        "OutputProduct",
+        "TransformationJob",
+        "PayloadSettings",
+        "LifecycleSpec",
+        "ProductTransformer",
+        "MetadataTransformer",
+        "GeometryFeatureTransformer",
+        "MaterializationError",
+        "ProductLifecycle"
+      ],
+      "functions": [
+        "register_product_transformer",
+        "resolve_transformers",
+        "graph"
+      ]
+    },
+    "reference/materials.py": {
+      "sha256": "2fb360547a4e5e3c86bc8695f0f55f84898f5922fc9c1cf090046845e8f66caf",
+      "classes": [
+        "MaterialHeatCapacity"
+      ],
+      "functions": [
+        "_temperature",
+        "specific_heat_j_per_kg_k",
+        "specific_enthalpy_delta_j_per_kg",
+        "material_evidence"
+      ]
+    },
+    "reference/observations.py": {
+      "sha256": "c1599a30157c48854a20545c0a4899883fd05642ce05085c6bb374134a6a34ee",
+      "classes": [
+        "RevisitRequirement",
+        "StereoRequirement",
+        "ObservationRequirement",
+        "ObservationSettings",
+        "ObservationBudgetError"
+      ],
+      "functions": [
+        "capture_observation",
+        "merge_observations",
+        "assemble_products",
+        "stereo_angles",
+        "_evaluate_observations",
+        "_cached_evaluation",
+        "evaluate_observations"
+      ]
+    },
+    "reference/operations.py": {
+      "sha256": "cc60b2d25e2aec9ac6d8643a01203625135b833438e57879b506d24f774264d7",
+      "classes": [
+        "_Config",
+        "VehicleResources",
+        "OnboardProduct",
+        "StationOutage",
+        "ReferenceDownlinkMission"
+      ],
+      "functions": []
+    },
+    "reference/operations_env.py": {
+      "sha256": "77c57cb0cf0e35499f6c02523dd527bc8d9dcd9ab27faf267e22bc758027ffa7",
+      "classes": [
+        "ReferenceDownlinkEnv"
+      ],
+      "functions": []
+    },
+    "reference/optimal.py": {
+      "sha256": "54ce0f6273382f3333baddd41ce83d3c85fed8e7af9e67ffaab021bf0723a41f",
+      "classes": [],
+      "functions": [
+        "_is_nonpreemptive",
+        "_problem",
+        "_duration",
+        "_slot",
+        "_execute",
+        "solve_small_downlinks"
+      ]
+    },
+    "reference/orbit.py": {
+      "sha256": "acf5ecfe4ef283447045fd1134bb9b720198e55ed0405284464b05ea4e6d48e3",
+      "classes": [
+        "ForceModel",
+        "ReferenceState"
+      ],
+      "functions": [
+        "_ephemerides",
+        "acceleration",
+        "propagate"
+      ]
+    },
+    "reference/payload_quality.py": {
+      "sha256": "6cb09a2ec43fda20bce6e703bfa823b23e5cd9b4bde541efa82db67846ff1b5c",
+      "classes": [
+        "OpticalModel",
+        "SarModel",
+        "QualityRequirement",
+        "CloudMaskCell",
+        "QualitySampling",
+        "PayloadQuality",
+        "QualityEvidenceBudgetError"
+      ],
+      "functions": [
+        "_mask_tree",
+        "ground_metrics",
+        "resolution_metrics",
+        "merge_evidence",
+        "usable_coverage",
+        "evidence_qualifies"
+      ]
+    },
+    "reference/pointing.py": {
+      "sha256": "2725e48ee529f860892762f92d9249226c9e5ce52a5acd88ca1abc47f6807983",
+      "classes": [],
+      "functions": [
+        "resolve_slew_goal"
+      ]
+    },
+    "reference/providers.py": {
+      "sha256": "7c89ecac3246b1ac98a65af425e1a81d8bae8ba84acefcb9613e5f54132defbd",
+      "classes": [
+        "StateProvider",
+        "_CoastSlice",
+        "DynamicStateProvider"
+      ],
+      "functions": []
+    },
+    "reference/radio.py": {
+      "sha256": "be89d9500eacb30f5a9aa21480686d412b869dc4ae94cc827c67d943f79b82fc",
+      "classes": [
+        "ModemMode",
+        "RFTransmitter",
+        "RFReceiver",
+        "RadioWeather",
+        "RadioNetworkSettings"
+      ],
+      "functions": [
+        "rf_budget"
+      ]
+    },
+    "reference/radio_network.py": {
+      "sha256": "6849ebbbb76145867e5e41345beae6147c1d9ed6050916ba6fd9cacb596820ad",
+      "classes": [
+        "RadioGroundNetwork"
+      ],
+      "functions": [
+        "angular_separation"
+      ]
+    },
+    "reference/resource_lanes.py": {
+      "sha256": "981becc1437764755c5a199cf38dda8dcd64b67d538f8da9848d9b8841c23a86",
+      "classes": [
+        "ActorLanes",
+        "ParallelExecution",
+        "ResourceLanes"
+      ],
+      "functions": [
+        "command_claims"
+      ]
+    },
+    "reference/rigid_attitude.py": {
+      "sha256": "78a37163adb010b5bc3234f31d5d3382645d5de883357741aa8603b01c70e73b",
+      "classes": [
+        "RigidAttitudeModel",
+        "RigidAttitudeState"
+      ],
+      "functions": [
+        "_vector",
+        "thrust_torque_nm",
+        "_rotate",
+        "invariants",
+        "advance_rigid_attitude"
+      ]
+    },
+    "reference/rigid_bus.py": {
+      "sha256": "013473532852276e477dbba2a4b10875f5e59eb20a19dcb4155f798d3bf01984",
+      "classes": [
+        "RigidControllerSettings",
+        "RigidBus"
+      ],
+      "functions": [
+        "error_vector"
+      ]
+    },
+    "reference/scheduling.py": {
+      "sha256": "9057f2f565d4b3a03c08fc7bc4dac69a04a38f7486116c681499005e936db3d4",
+      "classes": [],
+      "functions": [
+        "plan_downlinks",
+        "mission_fingerprint",
+        "plan_remaining_downlinks",
+        "_spec_digest"
+      ]
+    },
+    "reference/spacecraft_bus.py": {
+      "sha256": "dc4d8cd55fb676c95729d7cd7bf3532d24b1041122d3981decb9a9435ca8f2dc",
+      "classes": [
+        "AttitudeSettings",
+        "BusPower",
+        "SpacecraftBusModel",
+        "CoupledResourceMission",
+        "SpacecraftBus"
+      ],
+      "functions": [
+        "bus_preset",
+        "rotate_body",
+        "pointing_quaternion",
+        "angle_deg",
+        "quaternion_angle"
+      ]
+    },
+    "reference/thermal.py": {
+      "sha256": "e1f05c071f26414965121221ee2c1e61ef866bd517b819c0ba69d1680091928b",
+      "classes": [
+        "TransmitterThermal"
+      ],
+      "functions": []
+    },
+    "reference/thermal_bus.py": {
+      "sha256": "ad4c59878404562717c7054ee7edcae1d712851124de234111ba93b2d8a2f7ab",
+      "classes": [
+        "CoupledThermalNetwork"
+      ],
+      "functions": [
+        "rotate"
+      ]
+    },
+    "reference/thermal_network.py": {
+      "sha256": "fde80a00756a07ce52632b9f396244369528b2465de4347b41c90e1a24655092",
+      "classes": [
+        "ThermalNode",
+        "ThermalLink",
+        "ThermalNetworkSettings"
+      ],
+      "functions": [
+        "advance_network",
+        "projected_earth_view_factor"
+      ]
+    },
+    "reference/thrust.py": {
+      "sha256": "8687bd4bfaee933c4e3197031e86ee45eb4fc817f3c644db54f0af212c040371",
+      "classes": [
+        "FiniteThrust",
+        "RotatingThrust",
+        "BalancedCoupleThrust"
+      ],
+      "functions": [
+        "_rotate"
+      ]
+    },
+    "reference/time.py": {
+      "sha256": "9792bd474ebe95ced05e9ec1ca311c256dfd08012f50c04f0ec1dbe0a1a72947",
+      "classes": [
+        "Epoch",
+        "Orientation",
+        "EOPSeries"
+      ],
+      "functions": [
+        "erfa_backend"
+      ]
+    },
+    "reference/unloading.py": {
+      "sha256": "54bee9223a46f43faaa1e478fb53c7d4c58bd38492601b0af962692b8c2bca46",
+      "classes": [
+        "RcsSettings",
+        "UnloadingSettings",
+        "MomentumUnloader"
+      ],
+      "functions": []
+    },
+    "rl/__init__.py": {
+      "sha256": "2cabf080a0171f639722d20d86b3fdd8f942ec1c91028f2eee7a57d6e63e2591",
+      "classes": [],
+      "functions": []
+    },
+    "rl/curriculum.py": {
+      "sha256": "028a23f6b35b0162595b83927f0fb9e41b8027b4410017d247bb9d35bf73e451",
+      "classes": [],
+      "functions": [
+        "_config_path",
+        "load_curriculum"
+      ]
+    },
+    "rl/expert.py": {
+      "sha256": "13271abccad47668336481b798cc8dbde4cd4b806ff9fbce116a28f9d4ec7d0a",
+      "classes": [],
+      "functions": [
+        "expert_action"
+      ]
+    },
+    "rl/reinforce.py": {
+      "sha256": "95cb1947d08370024390d30008efac9bca4c016655d3a641d7ba7ae857024314",
+      "classes": [],
+      "functions": [
+        "_softmax",
+        "_artifact",
+        "train_linear_reinforce",
+        "evaluate_linear_policy",
+        "train_multidiscrete_reinforce"
+      ]
+    },
+    "rl/report.py": {
+      "sha256": "6a2e0aef6f92c96f9c2a61f64479431ced16a43921b999cfc76da6d7a8ec49f0",
+      "classes": [],
+      "functions": [
+        "_greedy_return",
+        "training_report"
+      ]
+    },
+    "rl/rewards.py": {
+      "sha256": "aef265db4775e0766b88fbca861d7d4cab7f1179d227091adf624cc6ca5810f7",
+      "classes": [],
+      "functions": [
+        "_config_path",
+        "load_rewards"
+      ]
+    },
+    "rl/trajectories.py": {
+      "sha256": "a8301be813787e8b6d0c51d28938eb6ad050f6045df31d031e94167c74d149d4",
+      "classes": [],
+      "functions": [
+        "_json_value",
+        "rollout_episode",
+        "write_trajectories"
+      ]
+    },
+    "runtime/__init__.py": {
+      "sha256": "11e57aa1a3801f07ec0a750438fa6f71b340dc2be56ab096c33af29255f22d32",
+      "classes": [],
+      "functions": []
+    },
+    "runtime/adapters.py": {
+      "sha256": "fa3a15e49bf52ff42c95c79533ba908f8fd9aa7cc97a24b3257883304183544b",
+      "classes": [
+        "Backend",
+        "ReferenceBackend",
+        "LegacyBackend"
+      ],
+      "functions": [
+        "make_backend"
+      ]
+    },
+    "runtime/cli.py": {
+      "sha256": "7032fde67ac2528f032d49c665a363adf78fc3a2caae6d62426baef61e2a9b12",
+      "classes": [],
+      "functions": [
+        "apply_plan",
+        "run_command"
+      ]
+    },
+    "runtime/mission.py": {
+      "sha256": "6d5ce5026f3597577280dd06a8032d3bb2b31fb194dd34a1fa6257cb09bd824c",
+      "classes": [
+        "RuntimeContractError",
+        "Runtime",
+        "MissionRuntime",
+        "AgentView"
+      ],
+      "functions": [
+        "_synchronized"
+      ]
+    },
+    "runtime/schema.py": {
+      "sha256": "e10fcd49eb8c7c7b39bbc084f651a10dd9d5e0bb62f56a8a7ccb1b1a0fa7da44",
+      "classes": [
+        "StrictModel",
+        "SourceRecord",
+        "RuntimeLimits",
+        "Fidelity",
+        "ScenarioSpec",
+        "ImpulseSpec",
+        "BurnSpec",
+        "SlewSpec",
+        "ForecastBinding",
+        "BodyBurnSpec",
+        "WheelTorqueSpec",
+        "MomentumUnloadSpec",
+        "RelaySpec",
+        "RuntimeCommand",
+        "AccessPolicy"
+      ],
+      "functions": [
+        "load_scenario",
+        "reference_scenario",
+        "legacy_scenario",
+        "scenario_json_schema",
+        "dynamic_reference_scenario",
+        "lifecycle_scenario",
+        "spacecraft_scenario"
+      ]
+    },
+    "scaling/__init__.py": {
+      "sha256": "d4df8255de58a81f4b754ae3c0d55eb75ffd45d74fd8b868b8d93d11f749527f",
+      "classes": [],
+      "functions": []
+    },
+    "scaling/benchmark.py": {
+      "sha256": "e4e177fe515f9c9d67f972de34d822f41ac863bbdd1ee7cf16dc0fbf732729f9",
+      "classes": [
+        "Workload",
+        "ScaleSpec"
+      ],
+      "functions": [
+        "run_scale",
+        "summarize",
+        "compare_semantics",
+        "_execute_workload"
+      ]
+    },
+    "scaling/campaign.py": {
+      "sha256": "4ac4069334ed21d83ad4a04793965e8e3b08e46e40558032746877682cc06946",
+      "classes": [
+        "CampaignSpec",
+        "CampaignGates"
+      ],
+      "functions": [
+        "campaign_workload",
+        "campaign_evidence"
+      ]
+    },
+    "scaling/contact_capacity.py": {
+      "sha256": "8be407e17bb6cc0e17307bc8fb62c3dabd73106ca0966276851aea9108c9075f",
+      "classes": [],
+      "functions": [
+        "dual_upper_bound",
+        "contact_capacity",
+        "verify_capacity_certificate"
+      ]
+    },
+    "scaling/coupled.py": {
+      "sha256": "986bb4e59fde524f2e22a7274a1e7d015d7258827c8d01b02bd3c89f5795d0b2",
+      "classes": [
+        "CoupledMissionSpec",
+        "CoupledGates"
+      ],
+      "functions": [
+        "coupled_workload",
+        "_compile_coupled",
+        "coupled_evidence"
+      ]
+    },
+    "scaling/ensemble.py": {
+      "sha256": "e59cfb07e5d253bfb58c09ffd6b70e0fe2931e6407344f88ead3f910727018cd",
+      "classes": [
+        "EnsembleQualificationSpec"
+      ],
+      "functions": [
+        "prepare_ensemble_qualification",
+        "_sealed",
+        "summarize_ensemble_qualification",
+        "run_ensemble_qualification",
+        "verify_ensemble_qualification"
+      ]
+    },
+    "scaling/full_orbit.py": {
+      "sha256": "07c5add01cc1e4f57ca92416f074734ad5edac7d069d2677368276ce479aa623",
+      "classes": [
+        "FullOrbitSpec"
+      ],
+      "functions": [
+        "full_orbit_workload",
+        "full_orbit_geometry"
+      ]
+    },
+    "scaling/ground.py": {
+      "sha256": "9eb6c51ee127d78ce0d143a66e775530a83faa7d6dc839f61c4ac61029a85fa0",
+      "classes": [],
+      "functions": [
+        "ground_window_diagnostic"
+      ]
+    },
+    "scaling/independent.py": {
+      "sha256": "e3b9567119d08a3559cc6ee62cd5fd46f6a6f6a80941971cea070c818b2a11f9",
+      "classes": [
+        "OrbitPlane",
+        "FixedSite",
+        "IndependentFleetSpec",
+        "GeometryDeliveryGates"
+      ],
+      "functions": [
+        "circular_state",
+        "independent_workload",
+        "assess_geometry",
+        "geometry_delivery_evidence",
+        "independent_bundle",
+        "verify_independent_bundle"
+      ]
+    },
+    "scaling/numerics.py": {
+      "sha256": "a3881345f50a610f9d5ae16c01d9741b553724d2804b549ccf1650109e9774c4",
+      "classes": [
+        "ActorSample",
+        "ControlSample",
+        "RequestSample",
+        "NumericalSample",
+        "NumericalLimits"
+      ],
+      "functions": [
+        "numerical_snapshot",
+        "_series",
+        "_qdistance",
+        "compare_numerics",
+        "refinement_triplet"
+      ]
+    },
+    "scaling/progress.py": {
+      "sha256": "30f7a212740ae50d9368d926400a1740b9058a2dbc30ec29ca2b254a91bb8ca1",
+      "classes": [
+        "StageReporter"
+      ],
+      "functions": [
+        "_resources",
+        "read_progress"
+      ]
+    },
+    "scaling/qualification.py": {
+      "sha256": "ea646aa26a4fe21919f042bae1c8e040bf032f3e4616c691917b092453d25ec6",
+      "classes": [],
+      "functions": [
+        "row_domains",
+        "qualification_domains"
+      ]
+    },
+    "scaling/restart.py": {
+      "sha256": "620e1f544d1097cae56f9dff9aefbf85c417e42aac11d1cc5a9cc6fad451e2fb",
+      "classes": [],
+      "functions": [
+        "build_identity",
+        "read_json",
+        "validate_packet",
+        "write_prefix",
+        "execute_restart",
+        "validate_observed_restart"
+      ]
+    },
+    "scaling/sequence.py": {
+      "sha256": "e1c0af0c4f166f8eb7ca347d9857588f1b01db915694264c210f9449cc09ea29",
+      "classes": [],
+      "functions": [
+        "sources",
+        "workloads",
+        "select",
+        "_read",
+        "_write",
+        "measure",
+        "_limits",
+        "_run_cell",
+        "run",
+        "audit",
+        "main"
+      ]
+    },
+    "scaling/spool.py": {
+      "sha256": "e3e3b05df1e998dbb38df68427b33054efdadec4ccf675d00ad0686a48ce1804",
+      "classes": [
+        "SpoolBudget",
+        "RowSpool",
+        "SpoolRows"
+      ],
+      "functions": [
+        "close_rows"
+      ]
+    },
+    "scaling/study.py": {
+      "sha256": "63e8323b6750fd26229a781ed9ce28b3cfb9af071f66a32a4852c10b2dc19402",
+      "classes": [
+        "MissionStudySpec"
+      ],
+      "functions": [
+        "study_manifest",
+        "analyze_study",
+        "run_mission_study",
+        "audit_mission_study"
+      ]
+    },
+    "scaling/worker.py": {
+      "sha256": "8aee8511cedd7ed7f7d559646072413358571a741494428f47d80510650bfaa6",
+      "classes": [],
+      "functions": [
+        "_run",
+        "measure",
+        "main",
+        "worker_environment"
+      ]
+    },
+    "scaling/workloads.py": {
+      "sha256": "4a3121cf5e9d48ab5aea6a740c5e1180b8341a6955c009c10584a23474c1491c",
+      "classes": [
+        "FleetWorkloadSpec"
+      ],
+      "functions": [
+        "fleet_workload"
+      ]
+    },
+    "simulation/__init__.py": {
+      "sha256": "c7d7dd310e44d473154f3dcd7a2e352c774f27faa5d0f5580da1d00fff930ac0",
+      "classes": [],
+      "functions": []
+    },
+    "simulation/commands.py": {
+      "sha256": "80ab8175f728e96b9fa7bebfbf9a5ecd8e5911965eacf3d029b631e87fdfbcb6",
+      "classes": [
+        "MissionCommand",
+        "CommandBook"
+      ],
+      "functions": [
+        "_body"
+      ]
+    },
+    "simulation/dtn.py": {
+      "sha256": "6365f5c8d9d007d9ed6582139a803305f21164c2283c7c6b3ba4c494d3cc766e",
+      "classes": [],
+      "functions": [
+        "next_hop",
+        "product_to_send",
+        "order_for_forward"
+      ]
+    },
+    "simulation/engine.py": {
+      "sha256": "ab3213c35207b083ca12ec09b967227afb5eaa9f3f06cb272f9bfa4e8435689e",
+      "classes": [
+        "_Restore",
+        "SimulationEngine"
+      ],
+      "functions": [
+        "_capture_encounter",
+        "_restore_encounter",
+        "_rng_state",
+        "_merge_intervals",
+        "_covered_seconds",
+        "_is_due"
+      ]
+    },
+    "simulation/fleet.py": {
+      "sha256": "a013ee09158ef7bd53644b08cb4236a3518ab52608339f479623a724b801b643",
+      "classes": [
+        "PairGeometry",
+        "ScreenHit",
+        "_StoredCdm",
+        "Fleet"
+      ],
+      "functions": [
+        "_make_vehicle",
+        "one_watt_star_shell"
+      ]
+    },
+    "simulation/fleet_view.py": {
+      "sha256": "351ba690a20c1831545b6461180645fb0e7c9180a747d738baddcfd31238677a",
+      "classes": [],
+      "functions": [
+        "describe_fleet",
+        "_mark_neighbors",
+        "_arc_events",
+        "_conjunction_rows",
+        "_screening_companions",
+        "_shift_span",
+        "_shift_brief",
+        "_shift_episode",
+        "fleet_episode"
+      ]
+    },
+    "simulation/joint.py": {
+      "sha256": "b2d3f8746dd36320450b9f2f6fcffad64e0d395916a67ac6a868654bb8ad74d6",
+      "classes": [
+        "JointExecutor"
+      ],
+      "functions": []
+    },
+    "simulation/owned.py": {
+      "sha256": "83305b273a26f5a22d647f90c528dd9c11ec41a6fe3a065c35a923e2aaec46e9",
+      "classes": [],
+      "functions": [
+        "owned_copy"
+      ]
+    },
+    "simulation/parallel.py": {
+      "sha256": "14c14b7617006d71e0926ff42d728ad0fcbcd34322050a89ffd373b9ff180d4f",
+      "classes": [
+        "ParallelFleet"
+      ],
+      "functions": []
+    },
+    "simulation/relay.py": {
+      "sha256": "00086567aea7b1b05b6b5dcb280b72167f2996d0aab2faa35519539edf6f4cb5",
+      "classes": [],
+      "functions": [
+        "_idle_participant",
+        "relay_step"
+      ]
+    },
+    "simulation/snapshot.py": {
+      "sha256": "1e7a77827d85ac4345d6721b420505622885fb27de36967375a631cc61561335",
+      "classes": [],
+      "functions": [
+        "encode",
+        "decode",
+        "canonical_json",
+        "digest",
+        "atomic_write",
+        "journal",
+        "world_payload",
+        "world_from_payload",
+        "save_world",
+        "load_world"
+      ]
+    },
+    "simulation/state.py": {
+      "sha256": "96c122240cf8f1717e7ef457d4a99049bdf2d5457bd6991de0d23cf7663aecc2",
+      "classes": [
+        "SimulationState"
+      ],
+      "functions": []
+    },
+    "simulation/streaming.py": {
+      "sha256": "f26323e1fb9c4fe481f3f1133da6df73548464ee187ed2a3c554fc6982555c6a",
+      "classes": [],
+      "functions": [
+        "array_digest",
+        "iter_jsonl",
+        "atomic_jsonl",
+        "file_digest"
+      ]
+    },
+    "simulation/terminals.py": {
+      "sha256": "7f579ef4e90d567a149e96c657cedf208a3e31110d0bc4b530e2ac859af3033f",
+      "classes": [],
+      "functions": [
+        "_merge",
+        "assign_terminal_intervals"
+      ]
+    },
+    "simulation/world.py": {
+      "sha256": "608db4ae86d845a9c4dc94a2fd21416073313fd13085d18e206fac961674fcdf",
+      "classes": [
+        "MissionWorld"
+      ],
+      "functions": [
+        "_same_cover",
+        "_target_row",
+        "_resource_interval"
+      ]
+    },
+    "tasks/__init__.py": {
+      "sha256": "a2535212550dd9e2fe14bad521d17c77a47cb0b95cd4a4eabf724299be44aa44",
+      "classes": [],
+      "functions": []
+    },
+    "tasks/cli.py": {
+      "sha256": "6a21c5be4c3e31f92c2aac69a39962a9a6d795743e90f3ecc471a2e49153d51a",
+      "classes": [],
+      "functions": [
+        "apply_decisions",
+        "run_command"
+      ]
+    },
+    "tasks/dataset.py": {
+      "sha256": "55d0f3967d457019ce7c0434ea4ffc85c9e80de17edf8cdf28d294d4621dc36c",
+      "classes": [
+        "VerifiedEpisode"
+      ],
+      "functions": [
+        "iter_dataset",
+        "_options",
+        "_rows",
+        "export_dataset"
+      ]
+    },
+    "tasks/env.py": {
+      "sha256": "5df8679e14ff2dfc4f4488d3fee75120e64c3ca5f344b5a1cd63030bf56ec38e",
+      "classes": [
+        "MissionTaskEnv"
+      ],
+      "functions": [
+        "observation_space",
+        "encode"
+      ]
+    },
+    "tasks/goals.py": {
+      "sha256": "4ecde89ca823f89dfca2f72be98d083008742328cb97e17c524a30f65e2fe27f",
+      "classes": [
+        "_Condition",
+        "DeliveryGoal",
+        "_ActorGoal",
+        "AttitudeGoal",
+        "MomentumGoal",
+        "ImpulseGoal",
+        "OrbitGoal",
+        "RelativeOrbitGoal",
+        "GoalLimits",
+        "MissionGoal"
+      ],
+      "functions": [
+        "_local",
+        "validate_goal",
+        "evaluate_goal",
+        "goal_columns",
+        "goal_features",
+        "goal_resource_features"
+      ]
+    },
+    "tasks/modeling_suite.py": {
+      "sha256": "f10dd6622dc306023e8891c9b96c989039489c7666decf00d0c211c77c26dca5",
+      "classes": [],
+      "functions": [
+        "_inputs",
+        "_rotation",
+        "_orbit_target",
+        "compile_suite",
+        "run_suite",
+        "audit",
+        "main"
+      ]
+    },
+    "tasks/observation.py": {
+      "sha256": "13e4c08eeffc4aa2f13e9ee199aeb3042d93997e5d87fc46752bee2b8983c516",
+      "classes": [
+        "_ProjectionReads",
+        "Projection"
+      ],
+      "functions": [
+        "admissible"
+      ]
+    },
+    "tasks/parallel.py": {
+      "sha256": "e654193d4297d1a81bb9d3736fe353568454489e0910c5ded572aa0c0f800e7e",
+      "classes": [
+        "MissionParallelEnv"
+      ],
+      "functions": []
+    },
+    "tasks/schema.py": {
+      "sha256": "a67e91d640a00977fbd07eaf760ddf21867d61408b1cb53b22a50a974fa82105",
+      "classes": [
+        "TaskRole",
+        "TaskAction",
+        "TaskSpec",
+        "TaskDecision"
+      ],
+      "functions": []
+    },
+    "tasks/session.py": {
+      "sha256": "6ab4aafb0cc67ca0c61f160e54354b06e0b6cc5fac3fff320a02131754ab0f1d",
+      "classes": [
+        "TaskSession"
+      ],
+      "functions": [
+        "objective_registry",
+        "seeded_scenario",
+        "score"
+      ]
+    },
+    "tasks/tools.py": {
+      "sha256": "b0b62a1363ff072a22fd822bac7f6d30a85c11add5b3b28e5a78404d77ad9729",
+      "classes": [
+        "TaskTools"
+      ],
+      "functions": [
+        "step_schema",
+        "joint_step_schema"
+      ]
+    },
+    "validation/__init__.py": {
+      "sha256": "e8aabc05c9032cdcba2b5a0fe6f0e4003c33fad17c291a0d34dec84fc2ec557a",
+      "classes": [],
+      "functions": []
+    },
+    "validation/ai_reference_suite.py": {
+      "sha256": "949bac981d055472a88ff73b28bd465de60ec64d1e0a46f103736b9d52fc9dde",
+      "classes": [],
+      "functions": [
+        "source_manifest",
+        "seal_report",
+        "verify_report",
+        "_runtime",
+        "_rigid_checks",
+        "_check",
+        "_kepler_state",
+        "run_suite"
+      ]
+    },
+    "validation/calibration.py": {
+      "sha256": "3112e9e026257faf7c8ed9a399028c3a4eda470cd2b064290257ea5f7b015296",
+      "classes": [],
+      "functions": [
+        "calibration_workflow_report"
+      ]
+    },
+    "validation/controller_clock.py": {
+      "sha256": "150f934798511aebd1796d803e9decbcc890e8e00ccd070b421b44cc77d8691d",
+      "classes": [],
+      "functions": [
+        "qualify_controller_clock"
+      ]
+    },
+    "validation/coupled_actuators.py": {
+      "sha256": "e75e75502b712091312704ff5d7e9b3d1a10dbae22dc23bd498ad4d3ed5aa93c",
+      "classes": [],
+      "functions": [
+        "actuator_scenario",
+        "_snapshot",
+        "_execute",
+        "_witness",
+        "_compare",
+        "qualify_coupled_actuators",
+        "verify_coupled_actuators"
+      ]
+    },
+    "validation/covariance.py": {
+      "sha256": "c95798743d864576b6188a2f4294e00c8950f6bd877bf21859043ab6c6ca3613",
+      "classes": [],
+      "functions": [
+        "covariance_prediction_report"
+      ]
+    },
+    "validation/envelopes.py": {
+      "sha256": "7cfd10ec2d30c09e6480709deec5408ec1f8b5e4c671edd92ad6f051947c75b3",
+      "classes": [],
+      "functions": [
+        "_finite_tree",
+        "validate_analytic_fixture",
+        "_check",
+        "_orbit",
+        "_thermal",
+        "_rigid",
+        "_rf",
+        "verify_analytic_fixture",
+        "analytic_envelope_report"
+      ]
+    },
+    "validation/force_crosscheck.py": {
+      "sha256": "efd4e8989d44991a1bfcecb91e7a4e409c0902eae691e1f6f9c1addc185741ab",
+      "classes": [],
+      "functions": [
+        "_function",
+        "external_j2",
+        "force_crosscheck"
+      ]
+    },
+    "validation/gcrs_report.py": {
+      "sha256": "cc9bab8e58a177d58a2eac9327c3bf036fdcb51003c7a3873e21adca4883d6e1",
+      "classes": [],
+      "functions": [
+        "reference_physics_report"
+      ]
+    },
+    "validation/geometry_events.py": {
+      "sha256": "2f15803171b32a61fcd790e537b5e783e0169157a7d68c8906929be102f0869e",
+      "classes": [],
+      "functions": [
+        "_bisect_windows",
+        "_compare",
+        "geometry_event_report"
+      ]
+    },
+    "validation/maneuvers.py": {
+      "sha256": "6c90c05f8dd393e5031813c6c4e816bf48c21e28a61e89088d9764b9cbe2602a",
+      "classes": [],
+      "functions": [
+        "finite_burn_report"
+      ]
+    },
+    "validation/materials.py": {
+      "sha256": "3ffee81da0f6faf687e3163a9fdba47cef17c17751f2e0f5f545c7abf8e1a02c",
+      "classes": [],
+      "functions": [
+        "material_validation_report"
+      ]
+    },
+    "validation/network_evidence.py": {
+      "sha256": "f96b5911aa643cdacaefb731941ce158351b4b00d3ab7d29b093f51d8a44fb90",
+      "classes": [],
+      "functions": [
+        "source_manifest",
+        "seal",
+        "peak_rss",
+        "rf_evidence",
+        "workloads",
+        "worker",
+        "validate_row",
+        "run_scale_case",
+        "audit_evidence",
+        "main"
+      ]
+    },
+    "validation/orbit_fixtures.py": {
+      "sha256": "ab3fea5d3a3cde5f8b8530bcee8417d32f8d7f559067899afa3cba4058cf7cc9",
+      "classes": [],
+      "functions": [
+        "verify_orbit_fixture",
+        "verify_packaged_orbit_fixtures"
+      ]
+    },
+    "validation/pointing.py": {
+      "sha256": "2ffb6db2e1b18484c5d4c9601e5c50d74e652489d1b59f158d97ded72bd5564e",
+      "classes": [],
+      "functions": [
+        "validate_pointing_fixture",
+        "_check",
+        "_rigid_config",
+        "_rotation",
+        "attitude_checks",
+        "_context",
+        "burn_checks",
+        "contact_checks",
+        "verify_pointing_fixture",
+        "pointing_validation_report"
+      ]
+    },
+    "validation/profile_evidence.py": {
+      "sha256": "bde7420b0f56289c7e5d304250054292c0d3b4d20fa6b3c77e21e51c56065d94",
+      "classes": [],
+      "functions": [
+        "profile_contracts",
+        "_kepler",
+        "run_evidence",
+        "main"
+      ]
+    },
+    "validation/profiles.py": {
+      "sha256": "c17b5a90ce38f397d0719ff5839d255922271b6f0e938a0b72d2ae5631cfea49",
+      "classes": [
+        "FidelityProfile"
+      ],
+      "functions": [
+        "optional_backends"
+      ]
+    },
+    "validation/report.py": {
+      "sha256": "728b9f19ff6f452f8d5b7dc86784b3b22d0ccff2faedb88602ffccdbeed111d1",
+      "classes": [],
+      "functions": [
+        "_energy",
+        "_momentum",
+        "_raan_deg",
+        "_case",
+        "core_report",
+        "_two_body",
+        "_cannonball_m_s2",
+        "_contact_boundary_sec",
+        "reference_report",
+        "applicability_limits",
+        "main"
+      ]
+    },
+    "viz/__init__.py": {
+      "sha256": "35a661ed597d5ba4982a4dbc9a7928410e89de36e32adfe9dd2afa963aa1cb00",
+      "classes": [],
+      "functions": []
+    },
+    "viz/export.py": {
+      "sha256": "4188890a994e047eb7e201ba443ce8dc2d41294c757aa94f9a3ef50e3ee9627b",
+      "classes": [],
+      "functions": [
+        "_vec",
+        "_capture",
+        "_document",
+        "_write",
+        "export_trajectory",
+        "export_constellation_ops",
+        "export_engine"
+      ]
+    },
+    "workspace.py": {
+      "sha256": "d33e4dbf3af27c7c6a809f4f95fcf040baa116ce77e666c9fad30eb77b97c72a",
+      "classes": [],
+      "functions": []
+    }
+  },
+  "historical_receipts": {
+    "PHYSICAL_MISSION_GOALS_V1": {
+      "receipt_file_sha256": "cd1ade2900bd2dc80b3fdc2e7c4e463e07a51ac576ddb3d896e9aa5568dda0a7",
+      "model_sources_equal_current": false,
+      "meaning": "Source equality only; tests/audits were not rerun by this inventory."
+    },
+    "RELATIVE_MISSION_GOALS_V1": {
+      "receipt_file_sha256": "7de9aa4f55ec4ae4a0eac56c38bb760751c626e3e009d557b9be52a37e09e742",
+      "model_sources_equal_current": true,
+      "meaning": "Source equality only; tests/audits were not rerun by this inventory."
+    }
+  },
+  "new_simulation_tests_run": false,
+  "external_comparator_executed": false,
+  "inventory_sha256": "72c0be43c32c6a67f63c3ff6444fab15237a148a00cb0c07c4d42f0b073b7add"
+}
