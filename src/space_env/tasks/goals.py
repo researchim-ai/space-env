@@ -201,7 +201,7 @@ def _local(runtime, actor):
     return runtime.observe(actor)["actors"][actor]
 
 
-def validate_goal(goal, runtime, controlled_actors):
+def validate_goal(goal, runtime, controlled_actors, *, declared_requests=()):
     """Reject unsupported hardware/goals before allocating an episode history."""
     if goal.deadline_sec > runtime.horizon_sec:
         raise ValueError("goal deadline exceeds native horizon")
@@ -210,7 +210,7 @@ def validate_goal(goal, runtime, controlled_actors):
     requests = (report.get("lifecycle") or {}).get("requests", {})
     for condition in goal.conditions:
         if isinstance(condition, DeliveryGoal):
-            if set(condition.request_ids) - requests.keys():
+            if set(condition.request_ids) - requests.keys() - set(declared_requests):
                 raise ValueError("goal references unknown native request")
             continue
         if condition.actor not in actors:
@@ -289,7 +289,7 @@ def evaluate_goal(goal, runtime, *, previous_failures=(), previous_achievements=
         if isinstance(c, DeliveryGoal):
             requests = report["lifecycle"]["requests"]
             row["met"] = all(
-                requests[r]["status"] == "completed" for r in c.request_ids
+                requests.get(r, {}).get("status") == "completed" for r in c.request_ids
             )
         elif isinstance(c, ProductDeliveryGoal):
             products = {p["id"]: p for p in report["products"]}

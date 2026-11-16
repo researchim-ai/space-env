@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import math
+from itertools import pairwise
 from typing import Literal
 
 from pydantic import Field, model_serializer, model_validator
 
 from space_env.navigation.models import SensorSpec
 from space_env.runtime.schema import FiniteScalar, RuntimeCommand, StrictModel
+from space_env.tasks.events import TaskEnvironmentEvent
 from space_env.tasks.goals import MissionGoal
 from space_env.tasks.modeling import ModelRequirement
 
@@ -95,6 +97,9 @@ class TaskSpec(StrictModel):
         default_factory=dict, max_length=8
     )
     model_requirements: tuple[ModelRequirement, ...] = Field(default=(), max_length=64)
+    environment_events: tuple[TaskEnvironmentEvent, ...] = Field(
+        default=(), max_length=256
+    )
 
     @model_serializer(mode="wrap")
     def serialize_optional_pointing(self, handler):
@@ -107,10 +112,25 @@ class TaskSpec(StrictModel):
             value.pop("navigation_sensors", None)
         if not self.model_requirements:
             value.pop("model_requirements", None)
+        if not self.environment_events:
+            value.pop("environment_events", None)
         return value
 
     @model_validator(mode="after")
     def contract(self):
+        if len({e.id for e in self.environment_events}) != len(self.environment_events):
+            raise ValueError("environment event IDs must be unique")
+        times = [e.at_sec for e in self.environment_events]
+        if any(0 < t <= 1e-9 for t in times) or any(
+            b < a or 0 < b - a <= 1e-9 for a, b in pairwise(times)
+        ):
+            raise ValueError(
+                "environment events must be ordered with distinct times separated by more than 1 ns"
+            )
+        if self.navigation_sensors and self.environment_events:
+            raise ValueError(
+                "sensor tasks do not yet support external environment events"
+            )
         pairs = [(r.feature, a) for r in self.model_requirements for a in r.actors]
         if len(set(pairs)) != len(pairs):
             raise ValueError("duplicate actor modeling requirement")

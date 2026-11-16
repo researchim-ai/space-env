@@ -1,0 +1,77 @@
+{
+  "schema": "space-env.heterogeneous-tradeoff-acceptance/1",
+  "date": "2026-11-11",
+  "source_manifest_sha256": "6850409e2e467a5ec5e70f7e234fcf9dbd8bcee58a7700ebea5b7e9c2f7f4f10",
+  "artifact_root": "artifacts/tradeoff-missions-20261111",
+  "artifacts_sha256": {
+    "full/report.json": "da7e6c5e88950e1823af5386d08731cdc644507431ae665304ebe17980e6c993",
+    "full/manifest.json": "275bbc4cd319e8454e1556caf6cbdf725b36aa81d908b46e64e5ac4efa520d3a",
+    "full/calendars.json": "ddccfdd60d6f318bf5ec2c93d0dcde177d486b9823d030640614c8a3f1be6468",
+    "wheel-check.json": "9572410d7b5ce1d5b7410ce1d23b4bbb56ccbfa4175dc288d18b1d9b5c2a8f74",
+    "installed-smoke.json": "4e6b393d88c945e748dc63999b928aa079a644949e3a6f1c01a77b1d5531f50f",
+    "regression.log": "a400900b458b722ab1185f4793bcb08fb776f889afa04785956ae25dec6ac2f5",
+    "accounting-tests.log": "0e36896a973bff9595ccb474180400b516ba214aba2f60e650c9328907711253",
+    "audit.json": "e37503e6258b26923f4efe95b17a9f806e45ecad2f7caf1548c3a6ecee48c54c",
+    "build.log": "8b22f8fae95ece4a6e468bd120733244b22f7172e6a60b5dc9d6462664c46af3"
+  },
+  "targeted_tests_passed": 117,
+  "native_eo_attempts": 4,
+  "native_eo_replayed": 4,
+  "native_errors": 0,
+  "eo_configurations_constructed": 6,
+  "eo_configurations_fully_executed": 2,
+  "eo_cases": [
+    {
+      "case": "balanced-meridian--12",
+      "policy": "priority",
+      "fulfilled": 4,
+      "priority": 26,
+      "native_return": 30.0
+    },
+    {
+      "case": "balanced-meridian--12",
+      "policy": "route_aware_rolling",
+      "fulfilled": 4,
+      "priority": 26,
+      "native_return": 30.0
+    },
+    {
+      "case": "bulk_tradeoff-meridian-12",
+      "policy": "priority",
+      "fulfilled": 4,
+      "priority": 32,
+      "native_return": 36.0
+    },
+    {
+      "case": "bulk_tradeoff-meridian-12",
+      "policy": "route_aware_rolling",
+      "fulfilled": 4,
+      "priority": 32,
+      "native_return": 36.0
+    }
+  ],
+  "calendar_certificates": 6,
+  "designed_counterexample_families": 3,
+  "calendar_pairs": {
+    "bulk_vs_pair": {
+      "optimum": 12,
+      "greedy": 11
+    },
+    "release_and_gap": {
+      "optimum": 24,
+      "greedy": 17
+    },
+    "infeasible": {
+      "optimum": 0,
+      "greedy": 0
+    }
+  },
+  "independent_bruteforce_test_instances": 8,
+  "wheel_matched_python_json_files": 354,
+  "installed_smoke_eo_steps": 2,
+  "llm_measured": false,
+  "full_mission_optimality": false,
+  "superiority_established": false,
+  "scope": "Exact priority optimality only for bounded static zero-power nonpreemptive calendars; EO is heterogeneous SLA-regression, transformed public geometry, not independent OOD or calibrated flight data.",
+  "sha256": "7377a127480418cb0f4413991d9381655a4088e5e51fc6e15ee88126a4cefdd7"
+}

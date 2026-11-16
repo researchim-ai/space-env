@@ -1,0 +1,56 @@
+{
+  "schema": "space-env.orbit-family-acceptance/1",
+  "date": "2026-11-15",
+  "artifact_root": "artifacts/orbit-family-20261115",
+  "source_manifest_sha256": "d6411afd564869fd2e8a0145af721cc24bc12138100fab4a05151225357c6e87",
+  "artifacts": {
+    "manifest.json": "b94b920b6e46cce5a2fbf1c23f5f750fce4d60dd5ca26173da68de1d16290e9d",
+    "report.json": "dbefdacb84a406a032e35b9c636c60e411af20c168a658cd580b5f0230f2231a",
+    "tests.log": "8357f70e04477846e00e39d07f14dccfb8691965ce8c4797165f9878684b75d9",
+    "regression.log": "af00afaf55a625e8f34432797118d918b053a1411f0f6f50ad634b2cd6d799eb",
+    "wheel-check.json": "fef2b5b62dfe458894c0c7f39aac7ed0506987c64014b5db7fc1608d20d35409",
+    "installed-smoke.json": "f14b622d0a2ebd3cd5459915aa6a11874b37cfc15c05a932993db794a1449d30",
+    "build.log": "8b22f8fae95ece4a6e468bd120733244b22f7172e6a60b5dc9d6462664c46af3",
+    "sft.jsonl": "e18e7bc62a35f15813f59c7eac9cbbf3404c2e4838f09cd93758cf77d02776f4",
+    "rl.jsonl": "9540c32dcb6ec63eba1e4ecd683cc15a1e71aec0dc5ca602ce00900418d44120",
+    "phasing-2-wait.json": "41dfcea30a5da9d5067f25bc6215d4df98ab39a6684288cef08fa91af116184a",
+    "phasing-2-public.json": "df7466722832bb823c8efb1652b1d2f6b37d9ca6d2a8df2d6965c1491be81212",
+    "phasing-4-wait.json": "44d7d599ad0e371d4cfbeb113c7e5767f5302731d20fccc4bb26dfda1e58819b",
+    "phasing-4-public.json": "2ea63a0d17a45d94054dffd69340ba5cac1957f0569ec6b37ad2669053a12f7b",
+    "phasing-8-wait.json": "599c0e735f968bb42ae560d287cd857f722186b6e14d6bdcbc76c22dcd0a83c4",
+    "phasing-8-public.json": "614d2f75ae3ac4fe21fc28134f6db24edb16295f49f4615c12e16991834deec2",
+    "wheel/space_env-0.134.0-py3-none-any.whl": "1f6ca2741c96a0e6e40fd7179b440f54f105bf9b71864059d4ab3d0fcff7240f"
+  },
+  "validation": {
+    "targeted_tests": 44,
+    "additional_regression_tests": 122,
+    "full_episodes_replayed": 6,
+    "fleet_sizes": [
+      2,
+      4,
+      8
+    ],
+    "public_successes": 3,
+    "wait_failures": 3,
+    "sft_demo_rows": 1,
+    "rl_demo_rows": 1,
+    "wheel_python_json_files_matched": 369,
+    "installed_smoke_calls": 2
+  },
+  "claims": {
+    "new_physics": false,
+    "same_native_checkpoints_stepwise_tested": true,
+    "external_llm_measured": false,
+    "training_measured": false,
+    "arbitrary_trajectory_design": false,
+    "multi_day_deployment": false,
+    "continuous_collision_guarantee": false,
+    "distributed_control": false,
+    "joint_service_execution": false,
+    "flight_qualified": false,
+    "independent_holdout": false,
+    "clean_dependency_install": false
+  },
+  "scope": "Fixed 60-second central-gravity phasing and a one-shot visible-template policy; targets from separate RK4 with common constants, not flight accuracy calibration.",
+  "sha256": "4013797a412c0c153ebea663cfe366063a18ee79602dcfc1ff5b3a7afd275768"
+}

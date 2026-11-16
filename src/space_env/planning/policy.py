@@ -275,6 +275,7 @@ class BaselinePolicy:
             info = value["actions"][a["id"]]
             claims = [tuple(c) for c in info["claims"]]
             products, stations = set(), []
+            request_claims, job_claims = [], []
             priorities, deadlines = [], []
             assumptions = [
                 "single-action mask is not joint admission or future feasibility"
@@ -290,6 +291,10 @@ class BaselinePolicy:
             possible = True
             for c in commands:
                 kind, actor = c["kind"], c["actor_id"]
+                if kind == "imaging" and c.get("request_id"):
+                    request_claims.append(c["request_id"])
+                if kind == "transform" and c.get("job_id"):
+                    job_claims.append(c["job_id"])
                 refs = [
                     ("product", c.get("product_id")),
                     ("request", c.get("request_id")),
@@ -414,6 +419,10 @@ class BaselinePolicy:
                 score = priority
             elif self.config.name == "earliest_deadline":
                 score = 1.0 / (1.0 + max(0.0, deadline - now))
+            if len(set(request_claims)) != len(request_claims) or len(
+                set(job_claims)
+            ) != len(job_claims):
+                continue
             if possible or self.config.name != "route_aware_rolling":
                 candidates.append(
                     {
@@ -436,6 +445,8 @@ class BaselinePolicy:
                         ),
                         "claims": claims,
                         "products": sorted(products),
+                        "request_claims": request_claims,
+                        "job_claims": job_claims,
                         "stations": stations,
                         "station_users": [
                             [c["destination_id"], c["actor_id"]]
@@ -507,6 +518,11 @@ class BaselinePolicy:
             ):
                 return False
             if set(c["products"]) & {p for s in selected for p in s["products"]}:
+                return False
+            if any(
+                set(c[key]) & {identifier for s in selected for identifier in s[key]}
+                for key in ("request_claims", "job_claims")
+            ):
                 return False
             for station in set(c["stations"]):
                 ground = value["stations"].get(station, {})

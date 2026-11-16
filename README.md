@@ -846,3 +846,166 @@ python -m examples.llm.qualified_corpus \
 Исполнитель — scripted privileged reference, не LLM. Публичные regression splits
 не называются blind holdout, а teacher data — автоматически экспертными.
 [Протокол, checkpoints и ограничения](docs/SEQUENCE_QUALIFICATION.md).
+
+### Исполняемый каталог миссий
+
+Единый [каталог миссий](docs/MISSION_CATALOG.md) объединяет 28 синтетических
+рецептов физических задач и навигации: экспорт конфигурации, наблюдаемость,
+расписание опорных операций и запуск через штатный контракт агента.
+`python -m space_env.tasks.catalog --output artifacts/missions/catalog.json`
+
+Последовательные физические цели в одном runtime доступны через
+[`CampaignSession`](docs/COMPOSED_MISSIONS.md): сохранение ресурсов, продуктов
+и навигационного фильтра между фазами, дедлайны и холодное восстановление.
+
+### Измеримые доказательства
+
+[Локальный four-track бенчмарк](docs/EVIDENCE_BENCHMARK.md) объединяет физические
+эталоны, 84 попытки исполнения миссий и изолированные масштабные нагрузки.
+Общий формат траекторий позволяет принимать сопоставимые внешние результаты;
+парный held-out анализ отделён от скриптовых демонстраций. Неизмеренные
+возможности и эффект обучения отмечаются явно, без общего рейтинга превосходства.
+
+[Результаты измерений 10 ноября 2026 года](docs/EVIDENCE_BENCHMARK_RESULTS_20261110.md):
+84 native попытки, реальное сравнение центральных орбит с Basilisk 2.12.2
+и локальный протокольный эксперимент с Qwen 3.5 4B.
+
+[Миссии со свободным выбором исполнителя и шлюза](docs/CHOICE_MISSIONS.md):
+все допустимые камеры для каждой заявки, два пути доставки, непрозрачные
+идентификаторы, ограничения ресурсов и воспроизводимое сравнение публичных
+планировщиков. Полный набор содержит 32 попытки; результаты LLM не подразумеваются.
+
+[Измеренные результаты выбора исполнителей](docs/CHOICE_MISSIONS_RESULTS.md):
+все 32 попытки проверены native cold replay, включая неуспешные исходы.
+
+[Неоднородные миссии и ограниченный точный эталон](docs/HETEROGENEOUS_MISSIONS_AND_ORACLE.md):
+разные длительности съёмки/CPU и объёмы данных, явная SLA-награда,
+преобразованные геометрии и weighted-calendar DP с native-проверкой.
+Оптимальность календарного подкласса не распространяется на полные EO-миссии.
+
+### Operational, proximity and network-service task packages
+
+The new `space_env.industrial` API provides three explicitly scoped executors:
+causal mission events and time-costed diagnostics over native EO/CPU/ISL delivery;
+noisy CW relative navigation with interval keepout checks and abort;
+and slotted traffic queues with shared terminals, handover and reserve commissioning.
+They share JSON tools, a Gym text bridge, source-bound replay and verified episodic
+SFT/RL export. They do not imply one jointly qualified flight model: hardware FDIR,
+nonlinear proximity safety and physical constellation deployment remain separate work.
+See [contracts, equations, examples and limits](docs/INDUSTRIAL_MISSION_PACKAGES.md).
+
+```bash
+python -m space_env.industrial.study --output artifacts/my-industrial-study
+python -m space_env.industrial.study --audit artifacts/my-industrial-study
+python -m pytest -q tests/test_industrial_*.py
+```
+
+The next native profiles connect streaming traffic to the existing coupled
+orbit/RF/power/thermal/custody executor and run relative navigation over two
+nonlinear GCRS orbits. Native checkpoints preserve the original clock and
+resources, including a coupled body-thrust prefix. Interval safety checks are
+explicitly limited to central coasts; hardware calibration remains separate.
+See [native coupled missions, equations and limits](docs/NATIVE_COUPLED_MISSIONS.md).
+
+### Семейства задач для AI-агентов
+
+Общий интерфейс выбора миссии: наблюдение Земли, доставка данных группировкой,
+относительная навигация и восстановление после отказов. Доступны 18 публичных
+синтетических профилей с постановкой цели для LLM/Gym, replay и SFT/RL export.
+Области применимости и следующие этапы: [семейства миссий](docs/AGENT_MISSION_FAMILIES.md).
+
+Орбитальное семейство также доступно через общий API: локальное фазирование
+2/4/8 аппаратов с native конечной тягой, резервом топлива и проверкой целевого
+состояния. Теперь 5 семейств / 21 профиль. [Область применимости и запуск](docs/ORBIT_AGENT_FAMILY.md).
+
+[Генерация орбитальных задач](docs/GENERATED_PHASING_TASKS.md): выбор манёвров,
+раздельные диапазоны train/development/test, локальный corpus runner и проверяемый
+train-only SFT/RL export. В общем API теперь 24 стартовых профиля; seed-конфигурации
+расширяют пространство сценариев.
+
+[Планирование по окнам](docs/WINDOWED_ORBIT_PLANNING.md): выбор времени и направления
+манёвра для 2–4 аппаратов с общим слотом диспетчеризации. Доступны 27 стартовых
+профилей; split provenance и train-only export сохранены.
+
+[Динамическое орбитальное перепланирование](docs/DYNAMIC_ORBIT_REPLANNING.md):
+публикуемые во время исполнения изменения окон и dispatch capacity, запасные
+манёвры, сохранение native состояния и частичных результатов. Теперь 33 стартовых
+профиля; восстановимые и критические случаи измеряются раздельно.
+
+[Приоритеты и полезность целей](docs/PRIORITY_GOAL_UTILITY.md): опциональный weighted
+partial-goal reward, latch нарушений объявленных ресурсных ограничений и задачи
+конкуренции за слот. Теперь 42 стартовых профиля; признаки полного успеха сохраняются.
+
+[Обязательные цели и приёмка задачи](docs/DECLARED_TASK_ACCEPTANCE.md): отдельный
+публичный контракт, native/declared dual labels, защита от budget truncation и
+явный версионированный SFT/RL export. Сейчас 51 стартовый профиль.
+
+### Continuous multi-phase agent missions
+
+[`AgentCampaignSession`](docs/AGENT_CAMPAIGNS.md) exposes sequential native goals
+through the shared JSON tool, Gym and replay-verified SFT/RL export. Phases retain
+one physical runtime and its products, resources and navigation state. Evaluator
+phase goals remain outside agent observations. The included finite-thrust and EO
+examples are short synthetic scripted demonstrations, not long-duration validation.
+
+```bash
+python -m examples.modeling.agent_campaign --mission eo --output artifacts/my-agent-campaign
+```
+
+Author-declared [external mission events](docs/TASK_ENVIRONMENT_EVENTS.md) now
+interrupt native task decisions at demand/fault boundaries. Agent campaigns can
+react to newly arriving requests, changed priorities and CPU/ground-station
+interruptions while retaining products and partial processing work. Scheduled
+stimuli are separate from agent commands; their future manifest stays in trusted
+setup. The recovery example is synthetic and explicitly permits fault history.
+
+```bash
+python -m examples.modeling.dynamic_agent_campaign --profile recovery --output artifacts/my-dynamic-mission
+```
+
+A [public-observation reactive baseline](docs/REACTIVE_CAMPAIGN_CONTROL.md)
+can continue delivery and processing after announced interruptions without a
+prewritten command sequence. It uses an explicit public service contract and
+current catalogue masks; it is a bounded heuristic, not an optimal planner.
+
+```bash
+python -m examples.modeling.reactive_campaign_study --output artifacts/my-reactive-campaign-study
+```
+
+The [adaptive campaign controller](docs/ADAPTIVE_CAMPAIGN_CONTROL.md) can lengthen
+idle decisions using current public command/product timers. Newly selected
+commands retain short decision intervals, and unknown external events still
+interrupt waits natively. The paired study reports both saved calls and any
+additional mission time or energy; fewer calls do not imply identical execution.
+
+```bash
+python -m examples.modeling.adaptive_campaign_study --output artifacts/my-adaptive-study
+```
+
+[Long two-spacecraft campaigns](docs/LONG_CAMPAIGNS.md) connect an initial EO/CPU/
+ground-delivery wave to a late request on the second spacecraft and an endurance
+phase on the same coupled runtime. Targets are explicitly constructed synthetic
+opportunities; battery-only J2/RC profiles do not imply hardware calibration or ISL.
+
+```bash
+python -m examples.modeling.long_campaign_study --output artifacts/my-long-campaign
+```
+
+[Relay campaigns](docs/RELAY_CAMPAIGNS.md) connect camera acquisition/processing,
+S-band custody transfer and X-band ground ACK on one long native runtime. Two
+relays compete for a declared terminal/rate pool; saved pre-allocation offers,
+actual grants and bit ledgers make the contention reviewable. Packet/RF and bus
+parameters remain explicitly synthetic.
+
+```bash
+python -m examples.modeling.relay_campaign_study --output artifacts/my-relay-study
+```
+
+Переключение ISL-маршрутов при отказах ретрансляторов, сохранение custody и
+генерация воспроизводимых SFT/RL эпизодов: [Routing campaigns](docs/ROUTING_CAMPAIGNS.md).
+
+[Delayed route telemetry](docs/ROUTE_TELEMETRY.md): decision-boundary samples, configurable transport delay, sample age limits, checkpoint replay and SFT/RL traces. The native central control view remains current.
+
+[Multi-hop campaigns](docs/MULTIHOP_CAMPAIGNS.md): camera → intermediate relay → ground sender, public product-specific topology, loop-safe baseline, native custody and unchanged bundle TTL.
+
+[Detour campaigns](docs/DETOUR_CAMPAIGNS.md): five spacecraft, longer RF bypasses, current public custody history, no-revisit baseline and link recovery discovered by bounded polling.

@@ -1,0 +1,153 @@
+{
+  "$defs": {
+    "Trajectory": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Case Sha256",
+          "type": "string"
+        },
+        "frame": {
+          "const": "GCRS",
+          "title": "Frame",
+          "type": "string"
+        },
+        "epoch_utc": {
+          "const": "2026-07-18T12:00:00Z",
+          "title": "Epoch Utc",
+          "type": "string"
+        },
+        "time_basis": {
+          "const": "elapsed_SI_seconds",
+          "title": "Time Basis",
+          "type": "string"
+        },
+        "units": {
+          "const": "m,m/s",
+          "title": "Units",
+          "type": "string"
+        },
+        "times_sec": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 100001,
+          "minItems": 2,
+          "title": "Times Sec",
+          "type": "array"
+        },
+        "states_si": {
+          "items": {
+            "maxItems": 6,
+            "minItems": 6,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "maxItems": 100001,
+          "minItems": 2,
+          "title": "States Si",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "case_sha256",
+        "frame",
+        "epoch_utc",
+        "time_basis",
+        "units",
+        "times_sec",
+        "states_si"
+      ],
+      "title": "Trajectory",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "space-env.external-trajectories/1",
+      "title": "Schema",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "engine": {
+      "enum": [
+        "Basilisk",
+        "BSK-RL",
+        "Orekit",
+        "Tudat"
+      ],
+      "title": "Engine",
+      "type": "string"
+    },
+    "engine_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "adapter_source_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Adapter Source Sha256",
+      "type": "string"
+    },
+    "solver_settings": {
+      "additionalProperties": true,
+      "maxProperties": 32,
+      "minProperties": 1,
+      "title": "Solver Settings",
+      "type": "object"
+    },
+    "trajectories": {
+      "items": {
+        "$ref": "#/$defs/Trajectory"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Trajectories",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema",
+    "manifest_sha256",
+    "engine",
+    "engine_version",
+    "adapter_source_sha256",
+    "solver_settings",
+    "trajectories"
+  ],
+  "title": "ExternalTrajectories",
+  "type": "object"
+}

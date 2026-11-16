@@ -12,6 +12,7 @@ from space_env.navigation.projection import project_navigation
 from space_env.navigation.session import NavigationSession
 from space_env.runtime import AccessPolicy, MissionRuntime, RuntimeContractError
 from space_env.simulation.snapshot import atomic_write, canonical_json, digest
+from space_env.tasks.events import apply_environment, validate_environment
 from space_env.tasks.goals import (
     OrbitGoal,
     RelativeOrbitGoal,
@@ -169,6 +170,9 @@ class TaskSession:
             access=AccessPolicy(truth=True),
             audit_mode=self._task.runtime_audit,
         )
+        declared_requests = validate_environment(
+            self._task.environment_events, self._runtime
+        )
         self._navigation = None
         if self._task.navigation_sensors:
             self._navigation = NavigationSession._attach(
@@ -182,7 +186,12 @@ class TaskSession:
         self._goal_achievements = ()
         if self._task.goal is not None:
             controlled = {a for role in self._task.roles.values() for a in role.actors}
-            validate_goal(self._task.goal, self._runtime, controlled)
+            validate_goal(
+                self._task.goal,
+                self._runtime,
+                controlled,
+                declared_requests=declared_requests,
+            )
             for condition in self._task.goal.conditions:
                 if isinstance(condition, RelativeOrbitGoal) and any(
                     condition.actor in role.actors
@@ -221,6 +230,14 @@ class TaskSession:
         self._native_revision = self._runtime.revision
         self._cache = {}
         self._transitions = []
+        self._environment_cursor, self._environment_log = apply_environment(
+            self._runtime, self._task.environment_events, 0
+        )
+        self._native_revision = self._runtime.revision
+        if self._task.goal is not None and self._task.environment_events:
+            initial_goal = self._evaluate_goal(self._runtime)
+            self._goal_failures = tuple(initial_goal["failures"])
+            self._goal_achievements = tuple(initial_goal["achieved"])
         self._views = self._refresh(self._runtime, self._projections, 0)
         self._done = False
 
@@ -251,6 +268,12 @@ class TaskSession:
                     {k: v for k, v in view.items() if k != "binding"}
                 )
         return views
+
+    def environment_status(self):
+        """Past attempted stimuli only; no future times, IDs or payloads."""
+        with self._lock:
+            self._assert_runtime()
+            return copy.deepcopy(self._environment_log)
 
     def _evaluate_goal(self, runtime):
         return evaluate_goal(
@@ -393,6 +416,12 @@ class TaskSession:
             before = score(self._runtime)
             start = self._runtime.time_sec
             dt = min(duration, self._runtime.horizon_sec - start)
+            if self._environment_cursor < len(self._task.environment_events):
+                dt = min(
+                    dt,
+                    self._task.environment_events[self._environment_cursor].at_sec
+                    - start,
+                )
             if self._task.goal is not None:
                 dt = min(dt, self._task.goal.deadline_sec - start)
                 for condition in self._task.goal.conditions:
@@ -496,6 +525,9 @@ class TaskSession:
                     dt,
                     lambda duration: native("advance", dt_sec=duration),
                 )
+            environment_cursor, environment_outcomes = apply_environment(
+                candidate, self._task.environment_events, self._environment_cursor
+            )
             after = score(candidate)
             elapsed = candidate.time_sec - start
             components = {
@@ -570,11 +602,15 @@ class TaskSession:
             }
             if after_goal is not None:
                 response["goal"] = after_goal
+            if self._task.environment_events:
+                response["environment_events"] = copy.deepcopy(environment_outcomes)
             if not math.isfinite(reward):
                 raise ValueError("nonfinite task reward")
             record = {"request": req.model_dump(mode="json"), "transition": response}
             canonical_json(record)
             self._runtime = candidate
+            self._environment_cursor = environment_cursor
+            self._environment_log.extend(environment_outcomes)
             if self._navigation is not None:
                 self._navigation._runtime = candidate
                 self._navigation._filters = navigation_filters

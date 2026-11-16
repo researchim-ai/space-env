@@ -1,0 +1,85 @@
+{
+  "schema": "space-env.ai-evidence-acceptance/1",
+  "date": "2026-11-10",
+  "source_manifest_sha256": "c4ecfcc4c99413b0f7527451c2783158789b978e6c87d58344e22e6e08a453fd",
+  "artifact_root": "artifacts/evidence-benchmark-20261110",
+  "artifacts_sha256": {
+    "full/report.json": "9055a8c20dd621b047bbee03b2904a9da05f9bf2752e2e5a8059e762ef86a363",
+    "full/manifest.json": "46dcefe7e737344862ec6ce93f678417152870c59c30e8d0c181de011ef99a6e",
+    "full/physics.json": "af1e1ba6800c3b989f2f6b035dd8b4cb34cb0f05be6a0b443662e15fb967f830",
+    "full/missions.json": "cce1a1fe6d775567907dab08f9a14e04958c96fdda27e757c9185950f633c207",
+    "full/scaling.json": "03ddd287fc2a29d7efe2351bc7c110bf244ec3f0c7224091750e110610d68000",
+    "basilisk-trajectories.json": "1e5d7713810e0868f2877c8422a12e2915ab93db611a6ea086bad64b315121da",
+    "basilisk-comparison.json": "2be366bfcc76ba958258028ecaaf94356eb72fcff568840bf5fa446199f7e383",
+    "basilisk-runtime-identity.json": "0a4c1a07e17a8ca2a80f8e996837d7a15c6a0f18ec49cfb12c4a3a1fe9b1cdd3",
+    "qwen/report.json": "3fcbe77e8a77c5dcdbf21d0bbadd3f2d25c05b73b2e643f3f0ba6b3cca221b05",
+    "qwen-protocol-ablation-plan.json": "fced2a244448e9f1a4f5398fde79b79cf38778d068a67e926d063a977e05a189",
+    "qwen-json32/report.json": "0475491d4e9d36e68b55446df263d795c9f9cf5dd884ca4f7f02d71c0a5112a9",
+    "qwen-fixed32/report.json": "4df05ded7e699a7d49c81b7d9f938ed7bff09a8dcc320e23f49953ebb85f6c08",
+    "installed-smoke/report.json": "b3f9c356d8427cfe4b73509fd8e41fca597e4c618a80a2c8155a45bec238857f",
+    "wheel-verification.json": "90c9b236b51caa7af678f6385a41d9182a8aa88b88efe2b66069359415d76e7c",
+    "tests-new.log": "6361380b857870741d383a3e53cf127f8077e86fbf96868618fb408849bfbbae",
+    "tests-regression.log": "fd0d310f0c145d782201b4a6aaaafca40ac87527109391626018670b7ddd2822",
+    "tests-basilisk.log": "e6c649e59e5603dcfdc2e052cedf668eafc0625e294a29d30d2bfdf64660ab10",
+    "audit-full.json": "cd48e272931baee86cdf6081f8e5afb6d5306fa7ddbc4b658082dc2f464854ad",
+    "audit-installed.json": "a470f67d00b668828543a2fd45818e88485cc4cb81c6ba1ffc42b2921d356412",
+    "audit-qwen-pilot.json": "9ce603de1b8b7fdc35332be0bd6945f9539972488ec9713bd7b4a449cec32574",
+    "audit-qwen-json32.json": "3220ee2b985f699f15d2319ee1cd40fbc0621d20b47a82e3c83a8b7406b8bd42",
+    "audit-qwen-fixed32.json": "8a50a62a8e0a654b5a71c333e0ea95194bdad4dc65f132d191ab2010d663b0d9",
+    "build.log": "8b22f8fae95ece4a6e468bd120733244b22f7172e6a60b5dc9d6462664c46af3",
+    "basilisk-install.log": "f6fa4ce4720963e1e3279adec5e3a363c3f54959115783535781827435653350"
+  },
+  "targeted_tests": {
+    "new": 27,
+    "regression": 67,
+    "optional_real_basilisk": 1,
+    "total_distinct": 95
+  },
+  "native_mission_attempts": 84,
+  "infrastructure_errors": 0,
+  "native_mission_audit": true,
+  "isolated_scale_processes": 8,
+  "maximum_measured_actors": 16,
+  "maximum_measured_products": 64,
+  "physics": {
+    "analytic_checks": 32,
+    "force_formula_checks": 9,
+    "short_j2_arcs": 1,
+    "six_hour_central_cases": 3,
+    "passed": true
+  },
+  "external_engine": {
+    "name": "Basilisk",
+    "version": "2.12.2",
+    "measured_cases": 3,
+    "common_accuracy_gate_passed": true,
+    "adapter_source_sha256": "6106665b0caa39648d390c0f79de3e9d1becfdda401e9f475953887ece88ef24",
+    "scope": "point-mass gravity only; no speed/mission/FSW superiority"
+  },
+  "unexecuted_engines": [
+    "BSK-RL",
+    "Orekit",
+    "Tudat"
+  ],
+  "qwen": {
+    "model": "qwen3.5:4b",
+    "weights_sha256": "81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490",
+    "pilot_calls": 16,
+    "paired_protocol_budget": 32,
+    "json_action_success": false,
+    "json_fixed_success": true,
+    "json_fixed_native_steps": 30,
+    "json_fixed_failed_calls": 0,
+    "scope": "one previously known geometry; protocol ablation, not training or OOD gain"
+  },
+  "installed_wheel": {
+    "matched_python_json_files": 349,
+    "smoke_native_attempts": 18,
+    "isolated_scale_processes": 4,
+    "audited": true
+  },
+  "superiority_established": false,
+  "training_benefit_established": false,
+  "scope": "Local reproducible evidence with explicit limitations; hashes attest byte integrity, not third-party authenticity or flight qualification.",
+  "sha256": "6f8c28804d4383161d67e98b0e1059a25b065517238858b5ed7c5fd7230e9906"
+}

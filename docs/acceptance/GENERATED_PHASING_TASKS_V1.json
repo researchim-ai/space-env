@@ -1,0 +1,97 @@
+{
+  "schema": "space-env.phasing-generation-acceptance/1",
+  "date": "2026-11-15",
+  "artifact_root": "artifacts/phasing-generation-20261115",
+  "source_manifest_sha256": "fc9d4e4ef57501d5da554391c34ffe59b8fbeeb6e35f0c3a1501661de1629d5f",
+  "export_example_sha256": "7d047318ab0e01592a99f8b2f70e18e106f932c9511f237a58c6229157b9a4fb",
+  "artifacts": {
+    "acceptance-corpus/manifest.json": "8715ae2e58cf98b176c1e2e0f9de8bcb8741a11e1a9bbd481ad26e5b60aa9cfa",
+    "acceptance-corpus/report.json": "398da2fb601ec9d06eede2d13e69615d825c88ffdcd6fe7f355cda3303c2e99d",
+    "acceptance-tests.log": "5996452ea99726439a0016be48a6bce3717c67410a97c739cb77954e3fb92152",
+    "acceptance-export/report.json": "3f158d880411444c4ac6df9d399eb0efd4aa1a1e270cc6cda5024a17fe4f285a",
+    "acceptance-wheel-check.json": "1a01de9850012a8e8e8d424e4e76be0a985e874f324fe3565a757e9c8cf693bf",
+    "acceptance-installed-smoke.json": "422a623fd3bcbba793465f02fdac575248d9eb0d4aa4b581e920de31d055e963",
+    "acceptance-build.log": "8b22f8fae95ece4a6e468bd120733244b22f7172e6a60b5dc9d6462664c46af3",
+    "acceptance-corpus/train-0000--wait.json": "4d39547cd6eb0a5496fa0eb3f58e2e44c9d9fd8329a459ef62a6a346bd9349cf",
+    "acceptance-corpus/train-0000--public.json": "114efc572cfe9886ba66098f65b2817f12bbb00e2305e07d60c9ce27a4f81ab5",
+    "acceptance-corpus/train-0001--wait.json": "2d3139683f7453a9cc80918c175b2cea532524116737a2be988239a8f970dc58",
+    "acceptance-corpus/train-0001--public.json": "72c4b6f3bd5001a4e030c4830405305090633d5d7f315299f3218f5a380c534f",
+    "acceptance-corpus/development-0000--wait.json": "78fa74f2ab09f2adaec92fafc03b948515dcec62e2173da918821f0cf5a5a4e4",
+    "acceptance-corpus/development-0000--public.json": "ea26d54cfcf84270703b63b1c4e632d6e5c326327e7650db1b07ec9297e7ea3e",
+    "acceptance-corpus/development-0001--wait.json": "d09ccb24e6edd8e114d7fa1ab8f5bf06921040b7e982fdb8d33ee138bf2ffd76",
+    "acceptance-corpus/development-0001--public.json": "fcbc76609757c6d0ee7dd3f4d80d684a04c453b21bee8ce6b92cad0e0421e7b0",
+    "acceptance-corpus/test-0000--wait.json": "e8991c70a89ad9f5246845a0be3ec35d66aec091beadaf87625b52b85abf18d5",
+    "acceptance-corpus/test-0000--public.json": "8628068c2c382b4283558dbf75d0c0710c3bc0074b7edfc1eedadb414a1cb65d",
+    "acceptance-corpus/test-0001--wait.json": "6fea29ebb6459e9d34fadbaf064279761a734b9126ca4f38bb3df90678100de1",
+    "acceptance-corpus/test-0001--public.json": "accacc62593f3e5e7d50719a9a765d86fdfdd08ed399f75dff14d0ff734a377f",
+    "acceptance-export/train-0000--wait.rl.jsonl": "cd99bc48cc58c647a10287538895f176f601587b712fe69cfd049dd0e50ca1ef",
+    "acceptance-export/train-0000--public.rl.jsonl": "fe4abc4dc32131de330b509a6578581ab771e6f9cf6a5c75c3b42878e030f1b1",
+    "acceptance-export/train-0000--public.sft.jsonl": "822e5620f322654b31d31626e936ee1047f5476c5446136a6f1385b8a88559d6",
+    "acceptance-export/train-0001--wait.rl.jsonl": "1af261036e5c748ed74ed36515cbd99a7a5918db148caeda4f504d468a57fbcd",
+    "acceptance-export/train-0001--public.rl.jsonl": "d3e0fa88387015536ab624859e35ba0226077c2ae7c428b26f8182984d6fcea2",
+    "acceptance-export/train-0001--public.sft.jsonl": "0521bd2cd65353c6d7b418595643fda9e596664570d03d564de88176bcf7ff12",
+    "acceptance-wheel/space_env-0.134.0-py3-none-any.whl": "ccfe27b33cb89002f376555a335f7a580f03dc46e3b4bbcc81805a98a2a13ccf"
+  },
+  "validation": {
+    "tests": 60,
+    "generated_cases": 6,
+    "actors_in_measured_corpus": 2,
+    "samples_per_split": 2,
+    "policies": 2,
+    "full_episodes_replayed": 12,
+    "public_successes": 6,
+    "wait_failures": 6,
+    "invalid_calls": 0,
+    "train_only_sft_rows": 2,
+    "train_only_rl_rows": 4,
+    "wheel_python_json_files_matched": 371
+  },
+  "regimes": {
+    "development": {
+      "horizons": [
+        60,
+        70
+      ],
+      "thrust_centinewtons": [
+        125,
+        150
+      ]
+    },
+    "test": {
+      "horizons": [
+        80,
+        90
+      ],
+      "thrust_centinewtons": [
+        155,
+        180
+      ]
+    },
+    "train": {
+      "horizons": [
+        40,
+        50
+      ],
+      "thrust_centinewtons": [
+        60,
+        120
+      ]
+    }
+  },
+  "claims": {
+    "exact_physical_duplicates_rejected": true,
+    "held_out_horizon_and_thrust": true,
+    "episode_split_provenance_enforced": true,
+    "independent_physics_family": false,
+    "hardware_calibrated": false,
+    "external_llm_measured": false,
+    "training_measured": false,
+    "arbitrary_trajectory_optimisation": false,
+    "multi_day_deployment": false,
+    "continuous_collision_guarantee": false,
+    "clean_dependency_install": false,
+    "universal_superiority": false
+  },
+  "scope": "Constructive central-gravity local phasing with two antipodal burn choices per actor. Scripted numerical predictor uses current public state and commands. Small local corpus, not statistical performance evidence or an independent industrial benchmark.",
+  "sha256": "10c5cdc6e5c09d85fed3faf9233f2adb0bcd5cf5c39cb966d50ed7436f91664d"
+}

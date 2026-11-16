@@ -1,0 +1,65 @@
+{
+  "schema": "space-env.choice-missions-acceptance/1",
+  "run_id": "choice-missions-20261110",
+  "source_manifest_sha256": "08be77b4173389f3903b207781ad26a4690c904057f7b585903a6eb5fedf80db",
+  "artifacts_sha256": {
+    "full/manifest.json": "48b775c5941e01fdeabb668d591307c0ae2a0000ddb31bbd6fd730e3ec1e79c4",
+    "full/report.json": "943aac38811cb323f57874b40da2daba0647e45232c60f0d462dac3963a30daf",
+    "wheel-check.json": "5a19a8a2129b04e89ada4fe5ca5500f231f8a67cee8fe94781bb92822effd77e",
+    "installed-smoke.json": "e5edce708145386564330ddb3bffde8cdc17bd779324860f6d0bf739e1b98423",
+    "tests.log": "275eb6679841f4b2adf7d0ae1d340dc2805bf76b1ea759a6603e97f07a638d92",
+    "audit.json": "a1716eeb10e822ab001c634fdcee0b3613fd5bc8711c36f84ca13f5c1c5bfa2b",
+    "build.log": "8b22f8fae95ece4a6e468bd120733244b22f7172e6a60b5dc9d6462664c46af3"
+  },
+  "case_count": 8,
+  "conditions": 4,
+  "alias_permutations": 2,
+  "independent_geometries": 1,
+  "actors_per_case": 5,
+  "requests_per_case": 6,
+  "actions_per_case": 107,
+  "policy_count": 4,
+  "native_attempts": 32,
+  "cold_replayed": 32,
+  "infrastructure_errors": 0,
+  "targeted_regression_tests_passed": 135,
+  "wheel_matched_python_json_files": 351,
+  "installed_execution_and_replay_steps": 2,
+  "public_policy_summary": {
+    "earliest_deadline": {
+      "attempts": 8,
+      "errors": 0,
+      "fulfilled_lower": 39,
+      "priority_lower": 331
+    },
+    "priority": {
+      "attempts": 8,
+      "errors": 0,
+      "fulfilled_lower": 38,
+      "priority_lower": 392
+    },
+    "route_aware_rolling": {
+      "attempts": 8,
+      "errors": 0,
+      "fulfilled_lower": 38,
+      "priority_lower": 394
+    },
+    "wait": {
+      "attempts": 8,
+      "errors": 0,
+      "fulfilled_lower": 0,
+      "priority_lower": 0
+    }
+  },
+  "global_intent_exclusion": {
+    "request": true,
+    "job": true,
+    "scope": "public joint selection only; native admission remains authoritative"
+  },
+  "llm_measured": false,
+  "optimality_proven": false,
+  "superiority_established": false,
+  "reward_scope": "TaskSpec delivery reward; delivered priority is an additional evaluation metric, not the task reward",
+  "scope": "public synthetic close-formation regression; alias seeds are correlated; scripted outages and release waves, ideal local telemetry; no real unexpected requests, no OOD, training or flight calibration",
+  "sha256": "c741771a4a82c602a87d654983ea6ca38d06790b248c114febd1d57da9a3eeba"
+}

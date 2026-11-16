@@ -347,7 +347,7 @@ class ReferenceDownlinkMission:
         # Explicit ideal independent Sun tracking; no attitude/slew/RF pointing claim.
         return config.solar_area_m2*config.solar_efficiency*SOLAR_CONSTANT*(AU/float((sum(x*x for x in sun))**.5))**2*shadow_state(r, sun).flux_fraction
 
-    def select_transmissions(self, actions, selections, *, processors=(), generation, vehicles=None, ignore_radio=False):
+    def select_transmissions(self, actions, selections, *, processors=(), generation, vehicles=None, ignore_radio=False, ignore_terminal_capacity=False):
         """Readonly native station/booking/rate/SOC admission shared by executors."""
         vehicles = self.vehicles if vehicles is None else vehicles
         chosen, used = {}, dict.fromkeys(self.stations, 0)
@@ -358,7 +358,7 @@ class ReferenceDownlinkMission:
             if station is None or not self._visible(actor, station) or not self.transmitter_ready(actor) or actor in processors or (self.dtn is not None and self.dtn.receiving(actor)):
                 continue
             reserved, free = self.booking_capacity(actor, station)
-            if not reserved and (self.reservation_required[station] or open_used[station] >= free):
+            if not reserved and (self.reservation_required[station] or (not ignore_terminal_capacity and open_used[station] >= free)):
                 continue
             product = self.products[selections[actor]] if actor in selections else self._product(actor, station)
             if product is not None and self.dtn is not None and self.dtn.pinned(product.id):
@@ -371,7 +371,7 @@ class ReferenceDownlinkMission:
             rate = self.transmitter_rates[actor] if ignore_radio else self.effective_rate(actor, station)
             if ignore_radio and self.radio_network is not None:
                 rate = self.radio_network.budget(self, actor, station)["rate_bps"]
-            if product is None or used[station] >= self.stations[station].terminals or rate == 0:
+            if product is None or (not ignore_terminal_capacity and used[station] >= self.stations[station].terminals) or rate == 0:
                 continue
             if self.energy_wh[actor] < floor-1e-12 or (self.energy_wh[actor] <= floor+1e-12 and net < 0):
                 continue

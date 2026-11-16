@@ -112,7 +112,10 @@ class ResourceLanes:
             )
             for a, v in mission.vehicles.items()
         }
+        self.radio_offers = {}
         if mission.radio_network is not None:
+            offered = mission.select_transmissions(actions, products, generation=bus.generation_w, vehicles=vehicles, ignore_radio=True, ignore_terminal_capacity=True)
+            self.radio_offers = {a:s for a,(s,_) in offered.items()}
             candidates = mission.select_transmissions(actions, products, generation=bus.generation_w, vehicles=vehicles, ignore_radio=True)
             mission.radio_network.prepare(mission, candidates)
             right = mission.radio_network.boundary(now, right)
@@ -318,6 +321,7 @@ class ResourceLanes:
                 "start_sec": now,
                 "end_sec": right,
                 "actors": actors,
+                "radio_offers": copy.deepcopy(self.radio_offers),
                 "blocked": copy.deepcopy(denied),
             }
         )
